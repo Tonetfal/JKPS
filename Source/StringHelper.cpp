@@ -109,3 +109,213 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         default: return "Unknown";
     }
 }
+
+sf::Keyboard::Key convertStringToKey(const std::string str)
+{
+    if (str == "A")
+        return sf::Keyboard::Key::A;
+    if (str == "B")
+        return sf::Keyboard::Key::B;
+    if (str == "C")
+        return sf::Keyboard::Key::C;
+    if (str == "D")
+        return sf::Keyboard::Key::D;
+    if (str == "E")
+        return sf::Keyboard::Key::E;
+    if (str == "F")
+        return sf::Keyboard::Key::F;
+    if (str == "G")
+        return sf::Keyboard::Key::G;
+    if (str == "H")
+        return sf::Keyboard::Key::H;
+    if (str == "I")
+        return sf::Keyboard::Key::I;
+    if (str == "J")
+        return sf::Keyboard::Key::J;
+    if (str == "K")
+        return sf::Keyboard::Key::K;
+    if (str == "L")
+        return sf::Keyboard::Key::L;
+    if (str == "M")
+        return sf::Keyboard::Key::M;
+    if (str == "N")
+        return sf::Keyboard::Key::N;
+    if (str == "O")
+        return sf::Keyboard::Key::O;
+    if (str == "P")
+        return sf::Keyboard::Key::P;
+    if (str == "Q")
+        return sf::Keyboard::Key::Q;
+    if (str == "R")
+        return sf::Keyboard::Key::R;
+    if (str == "S")
+        return sf::Keyboard::Key::S;
+    if (str == "T")
+        return sf::Keyboard::Key::T;
+    if (str == "U")
+        return sf::Keyboard::Key::U;
+    if (str == "V")
+        return sf::Keyboard::Key::V;
+    if (str == "W")
+        return sf::Keyboard::Key::W;
+    if (str == "X")
+        return sf::Keyboard::Key::X;
+    if (str == "Y")
+        return sf::Keyboard::Key::Y;
+    if (str == "Z")
+        return sf::Keyboard::Key::Z;
+    if (str == "Num0")
+        return sf::Keyboard::Key::Num0;
+    if (str == "Num1")
+        return sf::Keyboard::Key::Num1;
+    if (str == "Num2")
+        return sf::Keyboard::Key::Num2;
+    if (str == "Num3")
+        return sf::Keyboard::Key::Num3;
+    if (str == "Num4")
+        return sf::Keyboard::Key::Num4;
+    if (str == "Num5")
+        return sf::Keyboard::Key::Num5;
+    if (str == "Num6")
+        return sf::Keyboard::Key::Num6;
+    if (str == "Num7")
+        return sf::Keyboard::Key::Num7;
+    if (str == "Num8")
+        return sf::Keyboard::Key::Num8;
+    if (str == "Num9")
+        return sf::Keyboard::Key::Num9;
+    if (str == "Escape")
+        return sf::Keyboard::Key::Escape;
+    if (str == "LControl")
+        return sf::Keyboard::Key::LControl;
+    if (str == "LShift")
+        return sf::Keyboard::Key::LShift;
+    if (str == "LAlt")
+        return sf::Keyboard::Key::LAlt;
+    if (str == "LSystem")
+        return sf::Keyboard::Key::LSystem;
+    if (str == "RControl")
+        return sf::Keyboard::Key::RControl;
+    if (str == "RShift")
+        return sf::Keyboard::Key::RShift;
+    if (str == "RAlt")
+        return sf::Keyboard::Key::RAlt;
+    if (str == "RSystem")
+        return sf::Keyboard::Key::RSystem;
+    if (str == "Menu")
+        return sf::Keyboard::Key::Menu;
+    if (str == "LBracket")
+        return sf::Keyboard::Key::LBracket;
+    if (str == "RBracket")
+        return sf::Keyboard::Key::RBracket;
+    if (str == "Semicolon")
+        return sf::Keyboard::Key::Semicolon;
+    if (str == "Comma")
+        return sf::Keyboard::Key::Comma;
+    if (str == "Period")
+        return sf::Keyboard::Key::Period;
+    if (str == "Quote")
+        return sf::Keyboard::Key::Quote;
+    if (str == "Slash")
+        return sf::Keyboard::Key::Slash;
+    if (str == "Backslash")
+        return sf::Keyboard::Key::Backslash;
+    if (str == "Tilde")
+        return sf::Keyboard::Key::Tilde;
+    if (str == "Equal")
+        return sf::Keyboard::Key::Equal;
+    if (str == "Hyphen")
+        return sf::Keyboard::Key::Hyphen;
+    if (str == "Space")
+        return sf::Keyboard::Key::Space;
+    if (str == "Enter")
+        return sf::Keyboard::Key::Enter;
+    if (str == "Backspace")
+        return sf::Keyboard::Key::Backspace;
+    if (str == "Tab")
+        return sf::Keyboard::Key::Tab;
+    if (str == "PageUp")
+        return sf::Keyboard::Key::PageUp;
+    if (str == "PageDown")
+        return sf::Keyboard::Key::PageDown;
+    if (str == "End")
+        return sf::Keyboard::Key::End;
+    if (str == "Home")
+        return sf::Keyboard::Key::Home;
+    if (str == "Insert")
+        return sf::Keyboard::Key::Insert;
+    if (str == "Delete")
+        return sf::Keyboard::Key::Delete;
+    if (str == "Add")
+        return sf::Keyboard::Key::Add;
+    if (str == "Subtract")
+        return sf::Keyboard::Key::Subtract;
+    if (str == "Multiply")
+        return sf::Keyboard::Key::Multiply;
+    if (str == "Divide")
+        return sf::Keyboard::Key::Divide;
+    if (str == "Left" || str == "LeftArrow")
+        return sf::Keyboard::Key::Left;
+    if (str == "Right" || str == "RightArrow")
+        return sf::Keyboard::Key::Right;
+    if (str == "Up" || str == "UpArrow")
+        return sf::Keyboard::Key::Up;
+    if (str == "Down" || str == "DownArrow")
+        return sf::Keyboard::Key::Down;
+    if (str == "Numpad0")
+        return sf::Keyboard::Key::Numpad0;
+    if (str == "Numpad1")
+        return sf::Keyboard::Key::Numpad1;
+    if (str == "Numpad2")
+        return sf::Keyboard::Key::Numpad2;
+    if (str == "Numpad3")
+        return sf::Keyboard::Key::Numpad3;
+    if (str == "Numpad4")
+        return sf::Keyboard::Key::Numpad4;
+    if (str == "Numpad5")
+        return sf::Keyboard::Key::Numpad5;
+    if (str == "Numpad6")
+        return sf::Keyboard::Key::Numpad6;
+    if (str == "Numpad7")
+        return sf::Keyboard::Key::Numpad7;
+    if (str == "Numpad8")
+        return sf::Keyboard::Key::Numpad8;
+    if (str == "Numpad9")
+        return sf::Keyboard::Key::Numpad9;
+    if (str == "F1")
+        return sf::Keyboard::Key::F1;
+    if (str == "F2")
+        return sf::Keyboard::Key::F2;
+    if (str == "F3")
+        return sf::Keyboard::Key::F3;
+    if (str == "F4")
+        return sf::Keyboard::Key::F4;
+    if (str == "F5")
+        return sf::Keyboard::Key::F5;
+    if (str == "F6")
+        return sf::Keyboard::Key::F6;
+    if (str == "F7")
+        return sf::Keyboard::Key::F7;
+    if (str == "F8")
+        return sf::Keyboard::Key::F8;
+    if (str == "F9")
+        return sf::Keyboard::Key::F9;
+    if (str == "F10")
+        return sf::Keyboard::Key::F10;
+    if (str == "F11")
+        return sf::Keyboard::Key::F11;
+    if (str == "F12")
+        return sf::Keyboard::Key::F12;
+    if (str == "F13")
+        return sf::Keyboard::Key::F13;
+    if (str == "F14")
+        return sf::Keyboard::Key::F14;
+    if (str == "F15")
+        return sf::Keyboard::Key::F15;
+    if (str == "Pause")
+        return sf::Keyboard::Key::Pause;
+    if (str == "KeyCount")
+        return sf::Keyboard::Key::KeyCount;
+
+    return sf::Keyboard::Key::Unknown;
+}

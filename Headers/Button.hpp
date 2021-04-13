@@ -32,6 +32,7 @@ class Button
 
     private:
         void                        setTextures();
+        void                        setColor();
         void                        setPositions();
         void                        scaleTexture();
 

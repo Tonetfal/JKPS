@@ -1,8 +1,8 @@
 #include "../Headers/Settings.hpp"
 
-std::size_t Settings::KeyAmount = 2;
-std::vector<sf::Keyboard::Key> Settings::Keys({   sf::Keyboard::Key::V
-                                                , sf::Keyboard::Key::B });
+std::vector<sf::Keyboard::Key> Settings::Keys({   sf::Keyboard::Key::Z
+                                                , sf::Keyboard::Key::X });
+std::size_t Settings::KeyAmount = Settings::Keys.size();
 
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
 sf::Color Settings::KeyCountersTextColor(sf::Color::Black);
@@ -12,8 +12,8 @@ std::size_t Settings::KeyCountersTextCharacterSize = 20;
 float Settings::Distance = 5.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 5.f;
 
-sf::Vector2u Settings::DefaultButtonTextureSize(50, 50);
-sf::Color Settings::ButtonImageTransparency(sf::Color(0,0,0,0));
+sf::Vector2u Settings::ButtonTextureSize(50, 50);
+sf::Color Settings::ButtonImageColor(sf::Color(255,255,255,255));
 std::size_t Settings::AnimationVelocity = 15;
 sf::Color Settings::AnimationColor(sf::Color::White);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150));
@@ -22,7 +22,8 @@ sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
 sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 
 Settings::Settings(const std::string& FilePath)
-: minimumKeys(1)
+: configPath(FilePath)
+, minimumKeys(1)
 , maximumKeys(10)
 , mIsChangeable(false)
 , mIsChangeableAlert(5.f)
@@ -30,8 +31,24 @@ Settings::Settings(const std::string& FilePath)
 , mButtonToChange(sf::Keyboard::Unknown)
 , mButtonToChangeIndex(-1)
 {
-    std::ifstream Config(FilePath);
     mIsChangeableAlert.setFillColor(mAlertColor);
+
+    setupKey(Keys, findParameter("Keys"), "Keys");
+
+    // font
+    setColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color");
+    setColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color");
+    setupParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size");
+    setupParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size");
+
+    setupParameter(Distance, 0, 100, findParameter("Distance"), "Distance");
+    setupParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics");
+
+    // button image
+    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size");
+    setColor(ButtonImageColor,findParameter("Button image color"), "Button image color");
+    setColor(AnimationColor, findParameter("Animation color"), "Animation color");
+    setupParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity");
 }
 
 void Settings::handleEvent(sf::Event event)
@@ -64,20 +81,11 @@ void Settings::handleEvent(sf::Event event)
         }
         else
         {
-            bool isThereSameKey = false;
-            int sameKeyIndex = 0;
-            for (size_t i = 0; i < KeyAmount; ++i)
-            {
-                if (event.key.code == Keys[i]
-                &&  mButtonToChangeIndex != i)
-                {
-                    isThereSameKey = true;
-                    sameKeyIndex = i;
-                }
-            }
+            size_t sameKeyIndex = 0;
+            bool isThereSameKeyB = isThereSameKey(event.key.code, sameKeyIndex);
 
             Keys[mButtonToChangeIndex] = event.key.code;
-            if (isThereSameKey)
+            if (isThereSameKeyB)
                 setDefaultKey(sameKeyIndex);
 
             mButtonToChange = sf::Keyboard::Unknown;
@@ -92,24 +100,165 @@ void Settings::draw()
         mWindow->draw(mIsChangeableAlert);
 }
 
-// size_t Settings::controlKeyAmount(std::string& Information)
-// {
-//     size_t i = 0;
-//     for (; Information[i] != '\0' 
-//         && Information[i] >= '0' && Information[i] <= '9'
-//         ; i++)
-//     { }
-//     if (i != Information.length())
-//     {
-//         // Set default
-//         return 0;
-//     }
-    
-//     KeyAmount = std::stoi(Information);
-// }
+std::string Settings::findParameter(const std::string parameterName)
+{
+    std::ifstream config(configPath);
 
-// void Settings::controlKeys(std::string& Information)
+    std::string line;
+    bool found = false;
+    int i = 0;
+
+    while (!config.eof() && !found)
+    {
+        getline(config, line);
+        for (i = 0; i < parameterName.length(); ++i)
+        {
+            if (line[i] != parameterName[i])
+            {
+                i = 0;
+                break;
+            }
+        }
+
+        if (i == parameterName.length())
+            found = true;
+    }
+
+    config.close();
+
+    // Remove parameter name, ':' and space after it
+    return line.substr(parameterName.length()+2, 81);
+}
+
+template <typename T>
+void Settings::setupParameter(  T& parameter
+                        ,       int limitMin
+                        ,       int limitMax
+                        , const std::string information
+                        , const std::string parameterName )
+                        
+{
+    T tmp = 0;
+    try 
+    {
+        tmp = std::stoi(information);
+
+        if (tmp < limitMin || tmp > limitMax)
+            throw std::invalid_argument("");
+    } 
+    catch (std::invalid_argument& e)
+    {
+        std::cerr << "Reading error - " + parameterName + ". Default value will be set.\n";
+        return;
+    }
+
+    parameter = tmp;
+}
+
+void Settings::setColor(sf::Color& color
+                    , const std::string information
+                    , const std::string parameterName)
+{
+    int rgba[4] = { color.r,color.g,color.b,color.a };
+    size_t stringIndex = 0;
+    for (size_t i = 0; i < 4; i++)
+    {
+        // If there is no transparency code
+        if (information[stringIndex-1] != ',' && i == 3)
+            break;
+
+        try 
+        {
+            rgba[i] = std::stoi(information.substr(stringIndex, 81));
+
+            if (rgba[i] < 0 || rgba[i] > 255)
+                throw std::invalid_argument("");
+        } 
+        catch (std::invalid_argument& e)
+        {
+            std::cerr << "Reading error - " + parameterName + ". Default value will be set.\n";
+            return;
+        }
+
+        // Set index on next number
+        stringIndex += std::to_string(rgba[i]).length() + 1;
+    }
+    
+    color = sf::Color(rgba[0], rgba[1], rgba[2], rgba[3]);
+}
+
+template <typename T>
+void Settings::setupVector( T& vector
+                    ,       int limitMin
+                    ,       int limitMax
+                    , const std::string information
+                    , const std::string parameterName)
+{
+    float tmp[2] = { 0 };
+    size_t stringIndex = 0;
+    for (size_t i = 0; i < 2; i++)
+    {
+        try 
+        {
+            tmp[i] = std::stoi(information.substr(stringIndex, 81));
+
+            if (tmp[i] < limitMin || tmp[i] > limitMax)
+                throw std::invalid_argument("");
+        } 
+        catch (std::invalid_argument& e)
+        {
+            std::cerr << "Reading error - " + parameterName + ". Default value will be set.\n";
+            return;
+        }
+
+        // Set index on next number
+        stringIndex += std::to_string(int(tmp[i])).length() + 1;
+    }
+    
+    vector = T(tmp[0], tmp[1]);
+}
+
+void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
+                , const std::string information
+                , const std::string parameterName)
+{
+    size_t stringIndex = 0, nKeys = 0;
+    for (size_t i = 0
+        ; information.length() > stringIndex && nKeys < maximumKeys
+        ; ++i)
+    {
+        std::string keyStr;
+        for (size_t j = stringIndex
+            ; information[j] != ',' && information[j] != '\0'
+            ; ++j)
+        {
+            keyStr += information[j];
+        }
+        
+        stringIndex = information.find(',', stringIndex) + 1;
+
+        sf::Keyboard::Key tmp = convertStringToKey(keyStr);
+
+        if (i > 1)
+            keys.resize(keys.size() + 1);
+
+        size_t owo;
+        if (tmp != sf::Keyboard::Unknown 
+        && !isThereSameKey(tmp, owo))
+            keys[i] = tmp;
+        else
+            setDefaultKey(i);
+
+        // find function returns 0 if the value was not found
+        if (stringIndex == 0)
+            break;
+    }
+    KeyAmount = keys.size();
+}
+
+// void Settings::setButtonImage(std::string& Information)
 // {
+
 // }
 
 // void Settings::setTextFont(std::string& Information)
@@ -117,40 +266,19 @@ void Settings::draw()
 
 // }
 
-// void Settings::setColorText(std::string& Information)
-// {
-
-// }
-
-// void Settings::setCharacterSize(std::string& Information)
-// {
-
-// }
-
-// void Settings::setDistance(std::string& Information)
-// {
-
-// }
-
-// void Settings::setButtonImage(std::string& Information)
-// {
-
-// }
-
-// void Settings::setButtonImageTransparency(std::string& Information)
-// {
-
-// }
-
-// void Settings::setAnimationVelocity(std::string& Information)
-// {
-
-// }
-
-// void Settings::setAnimationColor(std::string& Information)
-// {
-
-// }
+bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne)
+{
+    for (size_t i = 0; i < Keys.size(); ++i)
+    {
+        if (Keys[i] == key)
+        {
+            whichOne = i;
+            return true;
+        }
+    }
+    
+    return false;
+}
 
 void Settings::setDefaultKey(size_t index)
 {

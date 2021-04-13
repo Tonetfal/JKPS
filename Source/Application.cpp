@@ -12,11 +12,11 @@ Application::Application(Settings& settings)
 , mButtons(mWindow)
 , mWindow(sf::VideoMode
                         ( Settings::Distance * Settings::KeyAmount
-                        + Settings::DefaultButtonTextureSize.x * Settings::KeyAmount
+                        + Settings::ButtonTextureSize.x * Settings::KeyAmount
                         + Settings::SpaceBetweenButtonsAndStatistics
                         + Settings::StatisticsTextCharacterSize * 9
                         , Settings::Distance * 2
-                        + Settings::DefaultButtonTextureSize.y )
+                        + Settings::ButtonTextureSize.y )
                     , "KPS"
                     , sf::Style::None)
 {
@@ -134,11 +134,11 @@ void Application::handleEvent(sf::Event event)
         {
             mWindow.setSize(sf::Vector2u
                             ( Settings::Distance * Settings::KeyAmount
-                            + Settings::DefaultButtonTextureSize.x * Settings::KeyAmount
+                            + Settings::ButtonTextureSize.x * Settings::KeyAmount
                             + Settings::SpaceBetweenButtonsAndStatistics
                             + Settings::StatisticsTextCharacterSize * 9
                             , Settings::Distance * 2
-                            + Settings::DefaultButtonTextureSize.y ));
+                            + Settings::ButtonTextureSize.y ));
 
             mWindow.setView(sf::View(sf::FloatRect
                             ( 0, 0

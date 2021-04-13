@@ -54,6 +54,7 @@ void Button::handleInput(std::vector<bool>& needToBeReleased)
 void Button::setupTexture()
 {
     setTextures();
+    setColor();
     scaleTexture();
     setPositions();
 }
@@ -83,6 +84,12 @@ void Button::setTextures()
         element.setTexture(*mButtonTexture);
 }
 
+void Button::setColor()
+{
+    for (auto& element : mKeysSprite)
+        element.setColor(Settings::ButtonImageColor);
+}
+
 void Button::setPositions()
 {
     for (size_t i = 0; i < mKeysSprite.size(); ++i)
@@ -100,9 +107,9 @@ void Button::scaleTexture()
 {
     for (auto& element : mKeysSprite)
     {
-        element.scale(float (Settings::DefaultButtonTextureSize.x
+        element.scale(float (Settings::ButtonTextureSize.x
                         / element.getGlobalBounds().width)
-                    , float (Settings::DefaultButtonTextureSize.y
+                    , float (Settings::ButtonTextureSize.y
                         / element.getGlobalBounds().height));
     }
 }

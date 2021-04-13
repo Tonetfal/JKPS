@@ -7,7 +7,6 @@ void Statistics::setupText(ID id)
     mTexts.get(id).setFillColor(Settings::StatisticsTextColor);
     mTexts.get(id).setPosition(sf::Vector2f
                                 ( mWindow.getSize().x 
-                                + Settings::SpaceBetweenButtonsAndStatistics 
                                 - Settings::StatisticsTextCharacterSize * 9.f
                                 , Settings::Distance 
                                 + Settings::StatisticsTextCharacterSize * id ));
@@ -33,8 +32,8 @@ void Statistics::setupTextPosition(int index)
 
     mKeyCountersText[index].setPosition(sf::Vector2f
                                 (Settings::Distance * (index + 1) 
-                                + Settings::DefaultButtonTextureSize.x / 2.f * (index * 2 + 1)
-                                , Settings::Distance + Settings::DefaultButtonTextureSize.y / 2.f));
+                                + Settings::ButtonTextureSize.x / 2.f * (index * 2 + 1)
+                                , Settings::Distance + Settings::ButtonTextureSize.y / 2.f));
 }
 
 void Statistics::setupLong(ID id)

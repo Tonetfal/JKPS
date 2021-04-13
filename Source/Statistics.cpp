@@ -64,9 +64,10 @@ void Statistics::update(  std::size_t KeyPerSecond
          
         setupTextPosition(i);
         mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
-        while (mKeyCountersText[i].getLocalBounds().width > Settings::DefaultButtonTextureSize.x)
+        while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
             decreaseTextCharacterSize(i);
     }
+
 }
 
 void Statistics::handleEvent(sf::Event event)

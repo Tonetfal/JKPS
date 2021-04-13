@@ -8,6 +8,8 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include "StringHelper.hpp"
+
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -28,26 +30,25 @@ class Settings
 
     private:
 
+        std::string                 findParameter(std::string parameterName);
+
         void                        setDefaultKey(size_t index);
 
-        size_t                      controlKeyAmount(std::string& Information);
-        void                        controlKeys(std::string& Information);
-
+        void                        setColor(sf::Color& color, const std::string information, const std::string parameterName);
+        template <typename T>
+        void                        setupVector(T& vector, int limitMin, int limitMax, const std::string information, const std::string parameterName);
+        template <typename T>
+        void                        setupParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName);
+        void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName);
         // void                        setTextFont(std::string& Information);
-        // void                        setColorText(std::string& Information);
-        // void                        setCharacterSize(std::string& Information);
-
-        // void                        setDistance(std::string& Information);
-
         // void                        setButtonImage(std::string& Information);
-        // void                        setButtonImageTransparency(std::string& Information);
-        // void                        setAnimationVelocity(std::string& Information);
-        // void                        setAnimationColor(std::string& Information);
+
+        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne);
 
 
-    public:                                    
-        static std::size_t          KeyAmount;
+    public:
         static std::vector<sf::Keyboard::Key> Keys;
+        static std::size_t          KeyAmount;
 
         static sf::Color            StatisticsTextColor;
         static sf::Color            KeyCountersTextColor;
@@ -57,8 +58,8 @@ class Settings
         static float                Distance;
         static float                SpaceBetweenButtonsAndStatistics;
 
-        static sf::Vector2u         DefaultButtonTextureSize;
-        static sf::Color            ButtonImageTransparency;
+        static sf::Vector2u         ButtonTextureSize;
+        static sf::Color            ButtonImageColor;
         static std::size_t          AnimationVelocity;
         static sf::Color            AnimationColor;
         static sf::Color            AnimationOnClickTransparency;
@@ -68,6 +69,8 @@ class Settings
 
 
     private:
+        const std::string&          configPath;
+
         const size_t                minimumKeys;
         const size_t                maximumKeys;
 
