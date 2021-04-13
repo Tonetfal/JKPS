@@ -13,11 +13,14 @@
 #include <vector>
 #include <fstream>
 #include <iostream>
+#include <string>
+#include <unistd.h>
+#include <sys/stat.h>
 
 class Settings
 {
     public:
-                                    Settings(const std::string& FilePath);
+                                    Settings();
         void                        handleEvent(sf::Event event);
         void                        draw();
 
@@ -34,22 +37,24 @@ class Settings
 
         void                        setDefaultKey(size_t index);
 
-        void                        setColor(sf::Color& color, const std::string information, const std::string parameterName);
+        void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName);
         template <typename T>
         void                        setupVector(T& vector, int limitMin, int limitMax, const std::string information, const std::string parameterName);
         template <typename T>
-        void                        setupParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName);
+        void                        setupDigitParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName);
+        void                        setupFilePathParameter(std::string& parameter, const std::string information, const std::string parameterName);
         void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName);
-        // void                        setTextFont(std::string& Information);
-        // void                        setButtonImage(std::string& Information);
 
         bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne);
+
+        void                        createDefaultConfig();
 
 
     public:
         static std::vector<sf::Keyboard::Key> Keys;
         static std::size_t          KeyAmount;
 
+        static std::string          FontPath;
         static sf::Color            StatisticsTextColor;
         static sf::Color            KeyCountersTextColor;
         static std::size_t          StatisticsTextCharacterSize;
@@ -58,18 +63,22 @@ class Settings
         static float                Distance;
         static float                SpaceBetweenButtonsAndStatistics;
 
+        static std::string          ButtonTexturePath;
         static sf::Vector2u         ButtonTextureSize;
         static sf::Color            ButtonImageColor;
         static std::size_t          AnimationVelocity;
         static sf::Color            AnimationColor;
         static sf::Color            AnimationOnClickTransparency;
 
+        static std::string          BackgroundTexturePath;
+        static sf::Color            BackgroundColor;
+
         static sf::Keyboard::Key    KeyToIncrease;
         static sf::Keyboard::Key    KeyToDecrease;
 
 
     private:
-        const std::string&          configPath;
+        const std::string           configPath;
 
         const size_t                minimumKeys;
         const size_t                maximumKeys;

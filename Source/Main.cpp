@@ -6,7 +6,7 @@
 
 int main()
 {
-    Settings settings("../KPS.cfg");
+    Settings settings;
     Application app(settings);
     
     try

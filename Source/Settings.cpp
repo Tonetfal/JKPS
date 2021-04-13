@@ -1,9 +1,10 @@
 #include "../Headers/Settings.hpp"
 
-std::vector<sf::Keyboard::Key> Settings::Keys({   sf::Keyboard::Key::Z
-                                                , sf::Keyboard::Key::X });
+std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z
+                                              , sf::Keyboard::Key::X });
 std::size_t Settings::KeyAmount = Settings::Keys.size();
 
+std::string Settings::FontPath = "Ubuntu-Regular.ttf";
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
 sf::Color Settings::KeyCountersTextColor(sf::Color::Black);
 std::size_t Settings::StatisticsTextCharacterSize = 12;
@@ -12,17 +13,21 @@ std::size_t Settings::KeyCountersTextCharacterSize = 20;
 float Settings::Distance = 5.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 5.f;
 
+std::string Settings::ButtonTexturePath = "ButtonTexture.png";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonImageColor(sf::Color(255,255,255,255));
 std::size_t Settings::AnimationVelocity = 15;
 sf::Color Settings::AnimationColor(sf::Color::White);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150));
 
+std::string Settings::BackgroundTexturePath = "BackgroundTexture.png";
+sf::Color Settings::BackgroundColor(sf::Color(0,0,0,0));
+
 sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
 sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 
-Settings::Settings(const std::string& FilePath)
-: configPath(FilePath)
+Settings::Settings()
+: configPath("KPS.cfg")
 , minimumKeys(1)
 , maximumKeys(10)
 , mIsChangeable(false)
@@ -33,22 +38,34 @@ Settings::Settings(const std::string& FilePath)
 {
     mIsChangeableAlert.setFillColor(mAlertColor);
 
+    std::ifstream Config(configPath);
+    if (!Config.is_open())
+    {
+        std::cerr << "Config - Reading error. Default config will be generated.\n";
+        createDefaultConfig();
+        return;
+    }
+
+
     setupKey(Keys, findParameter("Keys"), "Keys");
 
-    // font
-    setColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color");
-    setColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color");
-    setupParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size");
-    setupParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size");
+    setupFilePathParameter(FontPath, findParameter("Text font"), "Text font");
+    setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color");
+    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color");
+    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size");
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size");
 
-    setupParameter(Distance, 0, 100, findParameter("Distance"), "Distance");
-    setupParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics");
+    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance");
+    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics");
 
-    // button image
+    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image");
     setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size");
-    setColor(ButtonImageColor,findParameter("Button image color"), "Button image color");
-    setColor(AnimationColor, findParameter("Animation color"), "Animation color");
-    setupParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity");
+    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color");
+    setupColor(AnimationColor, findParameter("Animation color"), "Animation color");
+    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity");
+
+    setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture");
+    setupColor(BackgroundColor, findParameter("Background color"), "Background color");
 }
 
 void Settings::handleEvent(sf::Event event)
@@ -126,18 +143,24 @@ std::string Settings::findParameter(const std::string parameterName)
 
     config.close();
 
+    // +1 because \0 is also character
+    if (line.length() <= i + 1 || line == "")
+        return "";
+
     // Remove parameter name, ':' and space after it
     return line.substr(parameterName.length()+2, 81);
 }
 
 template <typename T>
-void Settings::setupParameter(  T& parameter
+void Settings::setupDigitParameter(  T& parameter
                         ,       int limitMin
                         ,       int limitMax
                         , const std::string information
                         , const std::string parameterName )
                         
 {
+    if (information == "")
+        return;
     T tmp = 0;
     try 
     {
@@ -155,10 +178,13 @@ void Settings::setupParameter(  T& parameter
     parameter = tmp;
 }
 
-void Settings::setColor(sf::Color& color
+void Settings::setupColor(sf::Color& color
                     , const std::string information
                     , const std::string parameterName)
 {
+    if (information == "")
+        return;
+        
     int rgba[4] = { color.r,color.g,color.b,color.a };
     size_t stringIndex = 0;
     for (size_t i = 0; i < 4; i++)
@@ -194,6 +220,9 @@ void Settings::setupVector( T& vector
                     , const std::string information
                     , const std::string parameterName)
 {
+    if (information == "")
+        return;
+
     float tmp[2] = { 0 };
     size_t stringIndex = 0;
     for (size_t i = 0; i < 2; i++)
@@ -218,10 +247,29 @@ void Settings::setupVector( T& vector
     vector = T(tmp[0], tmp[1]);
 }
 
+void Settings::setupFilePathParameter(  std::string& parameter
+                                , const std::string information
+                                , const std::string parameterName )
+{
+    if (information == "")
+        return;
+
+    if (access(information.c_str(), F_OK ))
+    {
+        std::cerr << "Reading error - " + parameterName + ". Default value will be set.\n";
+        return;
+    }
+
+    parameter = information;
+}
+
 void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
                 , const std::string information
                 , const std::string parameterName)
 {
+    if (information == "")
+        return;
+
     size_t stringIndex = 0, nKeys = 0;
     for (size_t i = 0
         ; information.length() > stringIndex && nKeys < maximumKeys
@@ -255,16 +303,6 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
     }
     KeyAmount = keys.size();
 }
-
-// void Settings::setButtonImage(std::string& Information)
-// {
-
-// }
-
-// void Settings::setTextFont(std::string& Information)
-// {
-
-// }
 
 bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne)
 {
@@ -316,4 +354,55 @@ void Settings::setChangeabilityPosition()
 void Settings::setWindowReference(sf::RenderWindow& window)
 {
     mWindow = &window;
+}
+
+void Settings::createDefaultConfig()
+{
+    std::ofstream Config(configPath);
+    if (!Config.is_open())
+        std::cerr << "Config - Creating error. Config cannot be created.\n";
+    
+    std::string KEKW = 
+        "# This config file contains all KPS settings\n"
+        "#\n"
+        "# If executable file of KPS will not find any config in its directory\n"
+        "# it will generate one by itself\n"
+        "#\n"
+        "# If anything will not be found it will be replaced by default settings\n"
+        "#\n"
+        "# Available keys to set you can get there\n"
+        "# https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php\n"
+        "# UpArrow, DownArrow etc can be written like so\n"
+        "\n"
+        "\n"
+        "[Keys]\n"
+        "Keys: Z,X\n"
+        "\n"
+        "[Text]\n"
+        "Text font: Ubuntu-Regular.ttf\n"
+        "Statistics text color: 255,255,255\n"
+        "Key counters text color: 0,0,0\n"
+        "Statistics character size: 12\n"
+        "Key counters character size: 22\n"
+        "\n"
+        "[Spacing]\n"
+        "# Distance from the borders and between the keys\n"
+        "Distance: 5\n"
+        "Space between buttons and statistics: 10\n"
+        "\n"
+        "[Buttons Graphic]\n"
+        "Button image: ButtonTexture.png\n"
+        "Button texture size: 50,50\n"
+        "Button image color: 255,255,255,255\n"
+        "Animation velocity: 20\n"
+        "Animation color: 255,255,255,255\n"
+        "\n"
+        "[Background]\n"
+        "\n"
+        "Background texture:\n"
+        "Background color: 0,0,0,0\n";
+
+    Config << KEKW;
+
+    Config.close();
 }

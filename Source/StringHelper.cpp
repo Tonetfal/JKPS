@@ -1,5 +1,8 @@
 #include "../Headers/StringHelper.hpp"
 
+// For more information
+// https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php
+
 std::string convertKeyToString(sf::Keyboard::Key key)
 {
     switch (key)
@@ -59,7 +62,6 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         case sf::Keyboard::Slash: return "Slash";
         case sf::Keyboard::Backslash: return "Backslash";
         case sf::Keyboard::Tilde: return "Tilde";
-        case sf::Keyboard::Equal: return "Equal";
         case sf::Keyboard::Hyphen: return "Hyphen";
         case sf::Keyboard::Space: return "Space";
         case sf::Keyboard::Enter: return "Enter";
@@ -222,8 +224,6 @@ sf::Keyboard::Key convertStringToKey(const std::string str)
         return sf::Keyboard::Key::Backslash;
     if (str == "Tilde")
         return sf::Keyboard::Key::Tilde;
-    if (str == "Equal")
-        return sf::Keyboard::Key::Equal;
     if (str == "Hyphen")
         return sf::Keyboard::Key::Hyphen;
     if (str == "Space")
@@ -316,6 +316,5 @@ sf::Keyboard::Key convertStringToKey(const std::string str)
         return sf::Keyboard::Key::Pause;
     if (str == "KeyCount")
         return sf::Keyboard::Key::KeyCount;
-
     return sf::Keyboard::Key::Unknown;
 }

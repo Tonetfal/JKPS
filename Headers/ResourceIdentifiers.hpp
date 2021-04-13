@@ -9,6 +9,7 @@ namespace Textures
     enum ID
     {
         KeyButton,
+        Background,
     };
 }
 

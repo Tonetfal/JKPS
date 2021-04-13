@@ -10,6 +10,7 @@ Application::Application(Settings& settings)
 , mKeyPressingManager()
 , mStatistics(mWindow)
 , mButtons(mWindow)
+, mBackground(mWindow)
 , mWindow(sf::VideoMode
                         ( Settings::Distance * Settings::KeyAmount
                         + Settings::ButtonTextureSize.x * Settings::KeyAmount
@@ -23,9 +24,9 @@ Application::Application(Settings& settings)
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
 
-    mFonts.load(Fonts::Main, "../KPSFont.ttf");
-    mTextures.load(Textures::KeyButton, "../KPSButtonTexture.png");
-    // mTextures.get(Textures::KeyButton).setSmooth(true); Does it change anything?
+    mTextures.load(Textures::KeyButton, Settings::ButtonTexturePath);
+    mTextures.load(Textures::Background, Settings::BackgroundTexturePath);
+    mFonts.load(Fonts::Main, Settings::FontPath);
 
     mStatistics.loadFonts(mFonts);
     mStatistics.setFonts();
@@ -36,6 +37,8 @@ Application::Application(Settings& settings)
 
     mSettings.setWindowReference(mWindow);
     mSettings.setChangeabilityPosition();
+
+    mBackground.loadTextures(mTextures);
 }
 
 void Application::run()
@@ -74,6 +77,8 @@ void Application::processInput()
                 &&  sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                 {
                     mSettings.changeChangeability();
+                    // Break to avoid problems if the user has Q as key
+                    break;
                 }
 
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
@@ -119,6 +124,7 @@ void Application::update(sf::Time dt)
 void Application::render()
 {
     mWindow.clear();
+    mBackground.draw();
     mButtons.draw();
     mStatistics.draw();
     mSettings.draw();

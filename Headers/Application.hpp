@@ -7,6 +7,7 @@
 #include "KeyPressingManager.hpp"
 #include "Statistics.hpp"
 #include "Button.hpp"
+#include "Background.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
@@ -42,4 +43,5 @@ class Application
         KeyPressingManager          mKeyPressingManager;
         Statistics                  mStatistics;
         Button                      mButtons;
+        Background                  mBackground;
 };
