@@ -2,7 +2,9 @@
 
 Background::Background(sf::RenderWindow& window)
 : mWindow(window)
-{ }
+{ 
+    mBackgroundSprite.setColor(Settings::BackgroundColor);
+}
 
 void Background::draw()
 {
