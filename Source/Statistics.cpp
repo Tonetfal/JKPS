@@ -7,7 +7,8 @@
 
 Statistics::Statistics(sf::RenderWindow& window)
 : mWindow(window)
-, mTextFont()
+, mStatisticsFont()
+, mKeyCountersFont()
 , mTexts()
 , mLongs()
 , mStrings()
@@ -35,8 +36,7 @@ Statistics::Statistics(sf::RenderWindow& window)
 
 void Statistics::update(  std::size_t KeyPerSecond
                         , size_t BeatsPerMinute
-                        , std::vector<int>& clickedKeys
-                        , bool isChangeable  )
+                        , std::vector<int>& clickedKeys )
 {
     mLongs.get(KPS) = KeyPerSecond;
     mLongs.get(BPM) = BeatsPerMinute;
@@ -56,7 +56,7 @@ void Statistics::update(  std::size_t KeyPerSecond
 
     for (size_t i = 0; i < Settings::KeyAmount; ++i)
     {
-        if (mKeyCounters[i] == 0 || isChangeable)
+        if (mKeyCounters[i] == 0 || Settings::IsChangeable)
             mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]));
         else
             mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]));
@@ -72,6 +72,10 @@ void Statistics::update(  std::size_t KeyPerSecond
 
 void Statistics::handleEvent(sf::Event event)
 {
+    // if IsChangeable is true, but the key is not pressed,
+    // and ShowKeyCountersText is false, show keys 
+    setupTextVector();
+
     if (event.type == sf::Event::KeyPressed)
     {
         if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease)
@@ -82,6 +86,7 @@ void Statistics::handleEvent(sf::Event event)
 
             if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease))
                 setupLongVector(Settings::KeyAmount - 1);
+                
             setupText(KPS);
             setupText(MaxKPS);
             setupText(TotalKeys);
@@ -113,18 +118,19 @@ void Statistics::draw()
 
 void Statistics::loadFonts(FontHolder& font)
 {
-    mTextFont = &font.get(Fonts::Main);
+    mStatisticsFont = &font.get(Fonts::Statistics);
+    mKeyCountersFont = &font.get(Fonts::KeyCounters);
 }
 
 void Statistics::setFonts()
 {
-    mTexts.get(KPS).setFont(*mTextFont);
-    mTexts.get(MaxKPS).setFont(*mTextFont);
-    mTexts.get(TotalKeys).setFont(*mTextFont);
-    mTexts.get(BPM).setFont(*mTextFont);
+    mTexts.get(KPS).setFont(*mStatisticsFont);
+    mTexts.get(MaxKPS).setFont(*mStatisticsFont);
+    mTexts.get(TotalKeys).setFont(*mStatisticsFont);
+    mTexts.get(BPM).setFont(*mStatisticsFont);
 
     for (auto& element : mKeyCountersText)
-        element.setFont(*mTextFont);
+        element.setFont(*mKeyCountersFont);
 }
 
 void Statistics::reset()

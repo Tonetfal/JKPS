@@ -9,7 +9,7 @@
 struct KeyPressingManager
 {
                                 KeyPressingManager();
-    void                        readClickedKeys(bool work);
+    void                        readClickedKeys();
     void                        handleEvent(sf::Event event);
     void                        clear();
 

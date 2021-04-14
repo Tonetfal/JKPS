@@ -1,9 +1,21 @@
 template <typename Resource, typename Identifier>
-void ResourceHolder<Resource, Identifier>::load(Identifier id, const std::string& path)
+void ResourceHolder<Resource, Identifier>::loadFromFile(Identifier id, const std::string& path)
 {
     std::unique_ptr<Resource> resource(new Resource());
     if (!resource->loadFromFile(path))
         throw std::runtime_error("ResourceHolder::load - Failed to load " + path);
+    
+    insertResource(id, std::move(resource));
+}
+
+template <typename Resource, typename Identifier>
+void ResourceHolder<Resource, Identifier>::loadFromMemory(Identifier id
+                                                , const void* data
+                                                , std::size_t sizeInBytes)
+{
+    std::unique_ptr<Resource> resource(new Resource());
+    if (!resource->loadFromMemory(data, sizeInBytes))
+        throw std::runtime_error("ResourceHolder::load - Failed to load default resource");
     
     insertResource(id, std::move(resource));
 }

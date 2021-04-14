@@ -14,7 +14,10 @@ class ResourceHolder
 
 
     public:
-        void                        load(Identifier id, const std::string& path);
+        void                        loadFromFile(Identifier id, const std::string& path);
+        void                        loadFromMemory(Identifier id
+                                                , const void* data
+                                                , std::size_t sizeInBytes);
         Resource&                   get(Identifier id) const;
 
     

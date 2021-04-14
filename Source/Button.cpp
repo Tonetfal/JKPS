@@ -73,9 +73,9 @@ void Button::setupAnimation()
                                 , 0));
 }
 
-void Button::loadTextures(sf::Texture& buttonTexture)
+void Button::loadTextures(TextureHolder& textureHolder)
 {
-    mButtonTexture = &buttonTexture;
+    mButtonTexture = &textureHolder.get(Textures::KeyButton);
 }
 
 void Button::setTextures()

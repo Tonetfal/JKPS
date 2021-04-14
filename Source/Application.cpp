@@ -3,7 +3,16 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60);
 
 Application::Application(Settings& settings)
-: mTextures()
+: mWindow(sf::VideoMode
+                    ( Settings::Distance * Settings::KeyAmount
+                    + Settings::ButtonTextureSize.x * Settings::KeyAmount
+                    + Settings::SpaceBetweenButtonsAndStatistics
+                    + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
+                    , Settings::Distance * 2
+                    + Settings::ButtonTextureSize.y )
+                , "KPS"
+                , sf::Style::None)
+, mTextures()
 , mFonts()
 , mSettings(settings)
 , mCalculation()
@@ -11,26 +20,37 @@ Application::Application(Settings& settings)
 , mStatistics(mWindow)
 , mButtons(mWindow)
 , mBackground(mWindow)
-, mWindow(sf::VideoMode
-                        ( Settings::Distance * Settings::KeyAmount
-                        + Settings::ButtonTextureSize.x * Settings::KeyAmount
-                        + Settings::SpaceBetweenButtonsAndStatistics
-                        + Settings::StatisticsTextCharacterSize * 9
-                        , Settings::Distance * 2
-                        + Settings::ButtonTextureSize.y )
-                    , "KPS"
-                    , sf::Style::None)
+
 {
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
 
-    mTextures.load(Textures::KeyButton, Settings::ButtonTexturePath);
-    mTextures.load(Textures::Background, Settings::BackgroundTexturePath);
-    mFonts.load(Fonts::Main, Settings::FontPath);
+
+    if (Settings::ButtonTexturePath == "Default")
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 24000);
+    else
+        mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
+
+    if (Settings::BackgroundTexturePath == "Default")
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 72000);
+    else
+        mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
+    
+    
+    if (Settings::KeyCountersFontPath == "Default")
+        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 1800000);
+    else
+        mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath);
+
+    if (Settings::StatisticsFontPath == "Default")
+        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 1800000);
+    else
+        mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
+
 
     mStatistics.loadFonts(mFonts);
     mStatistics.setFonts();
-    mButtons.loadTextures(mTextures.get(Textures::KeyButton));
+    mButtons.loadTextures(mTextures);
 
     mButtons.setupTexture();
     mButtons.setupAnimation();
@@ -39,6 +59,7 @@ Application::Application(Settings& settings)
     mSettings.setChangeabilityPosition();
 
     mBackground.loadTextures(mTextures);
+    mBackground.scaleTexture();
 }
 
 void Application::run()
@@ -65,8 +86,7 @@ void Application::run()
 void Application::processInput()
 {
     sf::Event event;
-    int i = 0;
-    mKeyPressingManager.readClickedKeys(mSettings.isChangeable());
+    mKeyPressingManager.readClickedKeys();
     while (mWindow.pollEvent(event))
     {
         if (mWindow.hasFocus())
@@ -84,12 +104,13 @@ void Application::processInput()
                 if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
                 &&  sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                 {
-                    // Save config
+                    mSettings.saveSettings();
                     mWindow.close();
+                    return;
                 }
             }
 
-            if (mSettings.isChangeable())
+            if (Settings::IsChangeable)
             {
                 mSettings.handleEvent(event);
                 handleEvent(event);
@@ -101,7 +122,7 @@ void Application::processInput()
         }
     }
     
-    if (!mSettings.isChangeable())
+    if (!Settings::IsChangeable)
     {
         mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
         mStatistics.handleInput(mKeyPressingManager);
@@ -115,8 +136,7 @@ void Application::update(sf::Time dt)
     mStatistics.update
                     ( mCalculation.getKeyPerSecond()
                     , mCalculation.getBeatsPerMinute()
-                    , mKeyPressingManager.mClickedKeys
-                    , mSettings.isChangeable() );
+                    , mKeyPressingManager.mClickedKeys );
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
     mKeyPressingManager.clear();
 }
@@ -142,7 +162,7 @@ void Application::handleEvent(sf::Event event)
                             ( Settings::Distance * Settings::KeyAmount
                             + Settings::ButtonTextureSize.x * Settings::KeyAmount
                             + Settings::SpaceBetweenButtonsAndStatistics
-                            + Settings::StatisticsTextCharacterSize * 9
+                            + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
                             , Settings::Distance * 2
                             + Settings::ButtonTextureSize.y ));
 

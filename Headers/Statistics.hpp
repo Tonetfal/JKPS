@@ -38,7 +38,7 @@ class Statistics
     public:
                                     Statistics(sf::RenderWindow& window);
 
-        void                        update(size_t KeyPerSecond, size_t BeatsPerMinute, std::vector<int>& clickedKeys, bool isChangeable);
+        void                        update(size_t KeyPerSecond, size_t BeatsPerMinute, std::vector<int>& clickedKeys);
         void                        handleEvent(sf::Event event);
         void                        handleInput(KeyPressingManager& container);
         void                        draw();
@@ -70,7 +70,8 @@ class Statistics
 
         sf::RenderWindow&           mWindow;
 
-        sf::Font*                   mTextFont;
+        sf::Font*                   mStatisticsFont;
+        sf::Font*                   mKeyCountersFont;
 
         DataHolder<sf::Text, ID>    mTexts;
         DataHolder<long, ID>        mLongs;

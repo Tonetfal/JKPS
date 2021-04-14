@@ -27,7 +27,7 @@ class Button
         void                        setupTexture();
         void                        setupAnimation();
 
-        void                        loadTextures(sf::Texture& buttonTexture);
+        void                        loadTextures(TextureHolder& textureHolder);
 
 
     private:

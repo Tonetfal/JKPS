@@ -17,7 +17,8 @@ namespace Fonts
 {
     enum ID
     {
-        Main,
+        KeyCounters,
+        Statistics,
     };
 }
 

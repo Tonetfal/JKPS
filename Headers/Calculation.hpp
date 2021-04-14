@@ -20,9 +20,9 @@ class Calculation
 
 
     private:
-        int                         mFrameTick;
-        int                         mClickedKeysInCurrentFrame;
-        std::array<int, 60>         mKeysPerTick;
+        size_t                      mFrameTick;
+        size_t                      mClickedKeysInCurrentFrame;
+        std::array<size_t, 60>      mKeysPerTick;
         std::size_t                 mKeyPerSecond;
 
         const size_t                mNumberOfKPSToSave;

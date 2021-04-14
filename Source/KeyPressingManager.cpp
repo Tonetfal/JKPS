@@ -9,9 +9,9 @@ KeyPressingManager::KeyPressingManager()
     clear();
 }
 
-void KeyPressingManager::readClickedKeys(bool work)
+void KeyPressingManager::readClickedKeys()
 {
-    if (!work)
+    if (!Settings::IsChangeable)
     {
         for (size_t i = 0; i < Settings::KeyAmount; i++)
         {

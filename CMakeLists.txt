@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 
 set(PROJECT_NAME "KPS")
-project(${PROJECT_NAME})
+project(${PROJECT_NAME}) 
 
 file(GLOB PROJECT_SOURCE_DIR "Source")
 include_directories(${PROJECT_SOURCE_DIR})

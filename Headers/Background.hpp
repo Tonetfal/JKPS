@@ -4,6 +4,7 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
 
 #include "Settings.hpp"
 #include "ResourceHolder.hpp"
@@ -14,9 +15,12 @@ class Background
     public:
                                 Background(sf::RenderWindow& window);
 
+        void                    handleEvent(sf::Event event);
         void                    draw();
 
         void                    loadTextures(TextureHolder& textureHolder);
+
+        void                    scaleTexture();
 
 
     private:
