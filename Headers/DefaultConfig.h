@@ -3,12 +3,7 @@
 #include <iostream>
 
 static std::string DefaultConfigString = 
-"# This config file contains all KPS settings\n"
-"#\n"
-"# If executable file of KPS will not find any config in its directory\n"
-"# it will generate one by itself\n"
-"#\n"
-"# If anything will not be found it will be replaced by default settings\n"
+"# If anything will not be found default settings for a parameter will be used\n"
 "#\n"
 "# Single keys MUST be written in Caps\n"
 "# Available keys to set you can get there\n"
@@ -18,8 +13,8 @@ static std::string DefaultConfigString =
 "[Keys]\n"
 "Keys: Z,X\n"
 "\n"
-"Statistics font: Ubuntu-Regular.ttf\n"
-"Key counters font: Ubuntu-Regular.ttf\n"
+"Statistics font: arial.ttf\n"
+"Key counters font: arial.ttf\n"
 "Statistics text color: 255,255,255\n"
 "Key counters text color: 0,0,0\n"
 "Statistics character size: 12\n"

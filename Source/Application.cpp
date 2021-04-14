@@ -118,6 +118,7 @@ void Application::processInput()
                 mStatistics.handleEvent(event);
                 mButtons.handleEvent(event);
                 mKeyPressingManager.handleEvent(event);
+                mBackground.handleEvent(event);
             }
         }
     }

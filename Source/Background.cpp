@@ -11,7 +11,7 @@ void Background::handleEvent(sf::Event event)
     if (event.type == sf::Event::KeyPressed)
     {
         if (event.key.code == Settings::KeyToIncrease
-        || event.key.code == Settings::KeyToDecrease)
+        ||  event.key.code == Settings::KeyToDecrease)
         {
             scaleTexture();
         }
@@ -31,7 +31,9 @@ void Background::loadTextures(TextureHolder& textureHolder)
 void Background::scaleTexture()
 {
     mBackgroundSprite.scale((float) mWindow.getSize().x
-                                    / mBackgroundSprite.getTexture()->getSize().x,
+                                    / (mBackgroundSprite.getTexture()->getSize().x
+                                    * mBackgroundSprite.getScale().x),
                             (float) mWindow.getSize().y
-                                    / mBackgroundSprite.getTexture()->getSize().y);
+                                    / (mBackgroundSprite.getTexture()->getSize().y
+                                    * mBackgroundSprite.getScale().y));
 }
