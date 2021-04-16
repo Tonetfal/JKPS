@@ -69,6 +69,6 @@ void Statistics::setupStringVector()
 {
     for (size_t i = 0; i < Settings::KeyAmount; ++i)
     {
-        mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]));
+        mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]).c_str());
     }
 }

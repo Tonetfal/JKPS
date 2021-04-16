@@ -40,6 +40,7 @@ unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHead
 
 Settings::Settings()
 : configPath("KPS.cfg")
+, errorLogPath("KPSErrorLog.txt")
 , minimumKeys(1)
 , maximumKeys(10)
 , mIsChangeableAlert(5.f)
@@ -57,32 +58,54 @@ Settings::Settings()
         return;
     }
 
-    setupKey(Keys, findParameter("Keys"), "Keys");
+    std::ofstream ErrorLog(errorLogPath);
+    if (!ErrorLog.is_open())
+    {
+        std::cerr << "Error log - Creating error. Error log cannot be created.\n";
+        return;
+    }
 
-    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font");
-    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font");
-    setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color");
-    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color");
-    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size");
-    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size");
-    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics");
-    setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters");
 
-    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance");
-    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics");
+    setupKey(Keys, findParameter("Keys"), "Keys", ErrorLog);
 
-    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image");
-    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size");
-    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color");
-    setupColor(AnimationColor, findParameter("Animation color"), "Animation color");
-    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity");
+    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ErrorLog);
+    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ErrorLog);
+    setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ErrorLog);
+    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ErrorLog);
+    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ErrorLog);
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ErrorLog);
+    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ErrorLog);
+    setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ErrorLog);
 
-    setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture");
-    setupColor(BackgroundColor, findParameter("Background color"), "Background color");
+    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance", ErrorLog);
+    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ErrorLog);
 
-    setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color");
+    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image", ErrorLog);
+    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ErrorLog);
+    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color", ErrorLog);
+    setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ErrorLog);
+    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ErrorLog);
+
+    setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ErrorLog);
+    setupColor(BackgroundColor, findParameter("Background color"), "Background color", ErrorLog);
+
+    setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color", ErrorLog);
     mIsChangeableAlert.setFillColor(mAlertColor);
 
+    ErrorLog.close();
+
+    std::ifstream ErrorLogTest(errorLogPath);
+    if (!ErrorLogTest.is_open())
+    {
+        std::cerr << "Error log test - Reading error. Error log cannot be read.\n";
+        Config.close();
+        return;
+    }
+
+    if (ErrorLogTest.peek() == -1)
+        remove(errorLogPath.c_str());
+
+    ErrorLogTest.close();
     Config.close();
 }
 
@@ -174,7 +197,8 @@ void Settings::setupDigitParameter(  T& parameter
                         ,       int limitMin
                         ,       int limitMax
                         , const std::string information
-                        , const std::string parameterName )
+                        , const std::string parameterName
+                        ,       std::ofstream& errorLog )
                         
 {
     if (information == "")
@@ -193,7 +217,7 @@ void Settings::setupDigitParameter(  T& parameter
     } 
     catch (std::invalid_argument& e)
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         return;
     }
 
@@ -202,21 +226,26 @@ void Settings::setupDigitParameter(  T& parameter
 
 void Settings::setupColor(sf::Color& color
                     , const std::string information
-                    , const std::string parameterName)
+                    , const std::string parameterName
+                    ,       std::ofstream& errorLog)
 {
     if (information == "")
     {
         std::cerr << ERROR_MESSAGE(parameterName);
         return;
     }
-        
+    
     int rgba[4] = { color.r,color.g,color.b,color.a };
     size_t stringIndex = 0;
     for (size_t i = 0; i < 4; i++)
     {
-        // If there is no transparency code
-        if (information[stringIndex-1] != ',' && i == 3)
-            break;
+        // Visual Studio doesn't want to compile w/o it :( VS Code does
+        if (i > 0)
+        {
+            // If there is no transparency code
+            if (information[stringIndex-1] != ',' && i == 3)
+                break;
+        }
 
         try 
         {
@@ -227,7 +256,7 @@ void Settings::setupColor(sf::Color& color
         } 
         catch (std::invalid_argument& e)
         {
-            std::cerr << ERROR_MESSAGE(parameterName);
+            errorLog << ERROR_MESSAGE(parameterName);
             return;
         }
 
@@ -243,7 +272,8 @@ void Settings::setupVector( T& vector
                     ,       int limitMin
                     ,       int limitMax
                     , const std::string information
-                    , const std::string parameterName)
+                    , const std::string parameterName
+                    ,       std::ofstream& errorLog)
 {
     if (information == "")
     {
@@ -264,7 +294,7 @@ void Settings::setupVector( T& vector
         } 
         catch (std::invalid_argument& e)
         {
-            std::cerr << ERROR_MESSAGE(parameterName);
+            errorLog << ERROR_MESSAGE(parameterName);
             return;
         }
 
@@ -277,18 +307,22 @@ void Settings::setupVector( T& vector
 
 void Settings::setupFilePathParameter(  std::string& parameter
                                 , const std::string information
-                                , const std::string parameterName )
+                                , const std::string parameterName
+                                ,       std::ofstream& errorLog )
 {
+    if (information == "Default")
+        return;
+
     if (information == "")
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         return;
     }
 
     std::ifstream test(information);
     if (!test.is_open())
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         test.close();
         return;
     }
@@ -299,11 +333,12 @@ void Settings::setupFilePathParameter(  std::string& parameter
 
 void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
                 , const std::string information
-                , const std::string parameterName)
+                , const std::string parameterName
+                ,       std::ofstream& errorLog )
 {
     if (information == "")
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog<< ERROR_MESSAGE(parameterName);
         return;
     }
 
@@ -332,7 +367,7 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
             keys[i] = tmp;
         else
         {
-            std::cerr << ERROR_MESSAGE(parameterName);
+            errorLog << ERROR_MESSAGE(parameterName);
             setDefaultKey(i);
         }
 
@@ -345,7 +380,8 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
 
 void Settings::setupBoolParameter(  bool& parameter
                             , const std::string information
-                            , const std::string parameterName)
+                            , const std::string parameterName
+                            ,       std::ofstream& errorLog)
                         
 {
     parameter = !(information == "false" || information == "FALSE");
@@ -354,7 +390,7 @@ void Settings::setupBoolParameter(  bool& parameter
     ||  information == "false" || information == "FALSE")
         return;
 
-    std::cerr << ERROR_MESSAGE(parameterName);
+    errorLog << ERROR_MESSAGE(parameterName);
 }
 
 bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne)

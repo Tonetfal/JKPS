@@ -20,7 +20,7 @@ Application::Application(Settings& settings)
 , mStatistics(mWindow)
 , mButtons(mWindow)
 , mBackground(mWindow)
-
+, mMoveWindow(false)
 {
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
@@ -122,6 +122,13 @@ void Application::processInput()
             }
         }
     }
+
+    if (mWindow.hasFocus() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                mWindow.setPosition(mWindow.getPosition()
+                                    + sf::Mouse::getPosition()
+                                    - mLastMousePosition);
+                                    
+    mLastMousePosition = sf::Mouse::getPosition();
     
     if (!Settings::IsChangeable)
     {

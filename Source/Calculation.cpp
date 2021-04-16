@@ -5,7 +5,7 @@ Calculation::Calculation()
 , mClickedKeysInCurrentFrame(0)
 , mKeysPerTick()
 , mKeyPerSecond(0)
-, mNumberOfKPSToSave(20)
+, mNumberOfKPSToSave(9)
 , mPreviousKeyPerSeconds()
 {
     mPreviousKeyPerSeconds.resize(mNumberOfKPSToSave);

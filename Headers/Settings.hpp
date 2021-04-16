@@ -40,14 +40,14 @@ class Settings
 
         void                        setDefaultKey(size_t index);
 
-        void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName);
+        void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         template <typename T>
-        void                        setupVector(T& vector, int limitMin, int limitMax, const std::string information, const std::string parameterName);
+        void                        setupVector(T& vector, int limitMin, int limitMax, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         template <typename T>
-        void                        setupDigitParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName);
-        void                        setupFilePathParameter(std::string& parameter, const std::string information, const std::string parameterName);
-        void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName);
-        void                        setupBoolParameter(bool& parameter, const std::string information, const std::string parameterName);
+        void                        setupDigitParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName, std::ofstream& errorLog);
+        void                        setupFilePathParameter(std::string& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
+        void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName, std::ofstream& errorLog);
+        void                        setupBoolParameter(bool& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
 
         bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne);
 
@@ -94,6 +94,7 @@ class Settings
 
     private:
         const std::string           configPath;
+        const std::string           errorLogPath;
 
         const size_t                minimumKeys;
         const size_t                maximumKeys;

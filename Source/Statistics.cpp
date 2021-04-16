@@ -2,8 +2,9 @@
 
 #include <SFML/Graphics.hpp>
 
-#define SET_TEXT_STRING(x) mTexts.get(x).setString(mStrings.get(x) + ": " + \
-                                            std::to_string(mLongs.get(x)));
+#define SET_TEXT_STRING(x) mTexts.get(x).setString((mStrings.get(x) + ": " \
+                                                 + std::to_string(mLongs.get(x))).c_str());
+
 
 Statistics::Statistics(sf::RenderWindow& window)
 : mWindow(window)
@@ -57,9 +58,9 @@ void Statistics::update(  std::size_t KeyPerSecond
     for (size_t i = 0; i < Settings::KeyAmount; ++i)
     {
         if (mKeyCounters[i] == 0 || Settings::IsChangeable)
-            mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]));
+            mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]).c_str());
         else
-            mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]));
+            mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]).c_str());
             
          
         setupTextPosition(i);

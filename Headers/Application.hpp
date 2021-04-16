@@ -44,4 +44,7 @@ class Application
         Statistics                  mStatistics;
         Button                      mButtons;
         Background                  mBackground;
+
+        bool                        mMoveWindow;
+        sf::Vector2i                mLastMousePosition;
 };
