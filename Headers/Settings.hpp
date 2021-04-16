@@ -95,6 +95,7 @@ class Settings
     private:
         const std::string           configPath;
         const std::string           errorLogPath;
+        const std::string           tmpConfigPath;
 
         const size_t                minimumKeys;
         const size_t                maximumKeys;

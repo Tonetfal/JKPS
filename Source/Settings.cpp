@@ -41,14 +41,25 @@ unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHead
 Settings::Settings()
 : configPath("KPS.cfg")
 , errorLogPath("KPSErrorLog.txt")
+, tmpConfigPath("tmpConfig.cfg")
 , minimumKeys(1)
 , maximumKeys(10)
+, mWindow(nullptr)
 , mIsChangeableAlert(5.f)
 , mAlertColor(sf::Color::Red)
 , mButtonToChange(sf::Keyboard::Unknown)
 , mButtonToChangeIndex(-1)
 {
     mIsChangeableAlert.setFillColor(mAlertColor);
+
+    std::ifstream ifErrorLog(errorLogPath);
+    if (ifErrorLog.is_open())
+    {
+        ifErrorLog.close();
+        remove(errorLogPath.c_str());
+    }
+
+    remove(errorLogPath.c_str());
 
     std::ifstream Config(configPath);
     if (!Config.is_open())
@@ -58,55 +69,55 @@ Settings::Settings()
         return;
     }
 
-    std::ofstream ErrorLog(errorLogPath);
-    if (!ErrorLog.is_open())
+    std::ofstream ofErrorLog(errorLogPath);
+    if (!ofErrorLog.is_open())
     {
         std::cerr << "Error log - Creating error. Error log cannot be created.\n";
         return;
     }
 
+    setupKey(Keys, findParameter("Keys"), "Keys", ofErrorLog);
 
-    setupKey(Keys, findParameter("Keys"), "Keys", ErrorLog);
+    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
+    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
+    setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
+    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
+    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
+    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
+    setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
 
-    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ErrorLog);
-    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ErrorLog);
-    setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ErrorLog);
-    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ErrorLog);
-    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ErrorLog);
-    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ErrorLog);
-    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ErrorLog);
-    setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ErrorLog);
+    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance", ofErrorLog);
+    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
 
-    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance", ErrorLog);
-    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ErrorLog);
+    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image", ofErrorLog);
+    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
+    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color", ofErrorLog);
+    setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
+    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
 
-    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image", ErrorLog);
-    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ErrorLog);
-    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color", ErrorLog);
-    setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ErrorLog);
-    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ErrorLog);
+    setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ofErrorLog);
+    setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
 
-    setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ErrorLog);
-    setupColor(BackgroundColor, findParameter("Background color"), "Background color", ErrorLog);
-
-    setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color", ErrorLog);
+    setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
     mIsChangeableAlert.setFillColor(mAlertColor);
 
-    ErrorLog.close();
+    ofErrorLog.close();
 
-    std::ifstream ErrorLogTest(errorLogPath);
-    if (!ErrorLogTest.is_open())
+    ifErrorLog.open(errorLogPath);
+    if (!ifErrorLog.is_open())
     {
         std::cerr << "Error log test - Reading error. Error log cannot be read.\n";
         Config.close();
         return;
     }
-
-    if (ErrorLogTest.peek() == -1)
-        remove(errorLogPath.c_str());
-
-    ErrorLogTest.close();
+    
+    int isEmpty = ifErrorLog.peek();
+    ifErrorLog.close();
     Config.close();
+
+    if (isEmpty == -1)
+        remove(errorLogPath.c_str());
 }
 
 void Settings::handleEvent(sf::Event event)
@@ -184,12 +195,13 @@ std::string Settings::findParameter(const std::string parameterName)
 
     config.close();
 
-    // +1 because \0 is also character
-    if (line.length() <= i + 1 || line == "")
+    if (line.compare(0, parameterName.size(), parameterName))
+        return "";
+    if (line.length() <= parameterName.length() + 2)
         return "";
 
     // Remove parameter name, ':' and space after it
-    return line.substr(parameterName.length()+2, 81);
+    return line.substr(parameterName.length() + 2, 81);
 }
 
 template <typename T>
@@ -203,7 +215,7 @@ void Settings::setupDigitParameter(  T& parameter
 {
     if (information == "")
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         return;
     }
 
@@ -231,7 +243,7 @@ void Settings::setupColor(sf::Color& color
 {
     if (information == "")
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         return;
     }
     
@@ -277,7 +289,7 @@ void Settings::setupVector( T& vector
 {
     if (information == "")
     {
-        std::cerr << ERROR_MESSAGE(parameterName);
+        errorLog << ERROR_MESSAGE(parameterName);
         return;
     }
 
@@ -362,7 +374,6 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
         if (i > 1)
             keys.resize(keys.size() + 1);
 
-        size_t owo;
         if (tmp != sf::Keyboard::Unknown)
             keys[i] = tmp;
         else
@@ -442,7 +453,6 @@ void Settings::setWindowReference(sf::RenderWindow& window)
 
 void Settings::saveSettings()
 {
-    std::ofstream ofConfig("tmpConfig.cfg");
     std::ofstream ofConfigTry(configPath, std::fstream::in);
     if (!ofConfigTry.is_open())
     {
@@ -452,19 +462,23 @@ void Settings::saveSettings()
     }
     ofConfigTry.close();
 
+    std::ofstream ofConfig(tmpConfigPath);
     writeKeys(ofConfig);
 
-    remove(configPath.c_str());
-    rename("tmpConfig.cfg", configPath.c_str());
-
     ofConfig.close();
+
+    remove(configPath.c_str());
+    rename(tmpConfigPath.c_str(), configPath.c_str());
 }
 
 void Settings::createDefaultConfig()
 {
     std::ofstream Config(configPath);
     if (!Config.is_open())
+    {
         std::cerr << "Config - Creating error. Config cannot be created.\n";
+        return;
+    }
 
     Config << DefaultConfigString;
 
