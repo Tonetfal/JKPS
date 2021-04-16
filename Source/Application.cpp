@@ -24,6 +24,9 @@ Application::Application(Settings& settings)
 {
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
+    sf::Image icon;
+    icon.loadFromMemory(iconHeaderArray, 28000);
+    mWindow.setIcon(48, 48, icon.getPixelsPtr());
 
 
     if (Settings::ButtonTexturePath == "Default")

@@ -8,6 +8,7 @@
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
+#include "Default media/Textures/icon.h"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/System/Time.hpp>
