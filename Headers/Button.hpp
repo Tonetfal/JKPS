@@ -1,18 +1,12 @@
 #pragma once
 
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Window/Event.hpp>
 
 #include "KeyPressingManager.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Settings.hpp"
 #include "Statistics.hpp"
-
-#include <vector>
 
 class Button
 {

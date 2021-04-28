@@ -3,15 +3,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/60);
 
 Application::Application(Settings& settings)
-: mWindow(sf::VideoMode
-                    ( Settings::Distance * Settings::KeyAmount
-                    + Settings::ButtonTextureSize.x * Settings::KeyAmount
-                    + Settings::SpaceBetweenButtonsAndStatistics
-                    + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
-                    , Settings::Distance * 2
-                    + Settings::ButtonTextureSize.y )
-                , "KPS"
-                , sf::Style::None)
+: mWindow(sf::VideoMode(getWidth(), getHeight()), "KPS", sf::Style::None)
 , mTextures()
 , mFonts()
 , mSettings(settings)
@@ -26,11 +18,11 @@ Application::Application(Settings& settings)
     mWindow.setFramerateLimit(60);
     sf::Image icon;
     icon.loadFromMemory(iconHeaderArray, 28000);
-    mWindow.setIcon(48, 48, icon.getPixelsPtr());
+    mWindow.setIcon(256, 256, icon.getPixelsPtr());
 
 
     if (Settings::ButtonTexturePath == "Default")
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 24000);
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 148000);
     else
         mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
 
@@ -116,22 +108,22 @@ void Application::processInput()
             if (Settings::IsChangeable)
             {
                 mSettings.handleEvent(event);
-                handleEvent(event);
-                mSettings.setChangeabilityPosition();
-                mStatistics.handleEvent(event);
-                mButtons.handleEvent(event);
-                mKeyPressingManager.handleEvent(event);
-                mBackground.handleEvent(event);
+                mStatistics.handleHighlight(mSettings.getButtonToChangeIndex());
+
+                if (mSettings.wasButtonAmountChanged())
+                {
+                    handleEvent(event);
+                    mSettings.setChangeabilityPosition();
+                    mStatistics.handleEvent(event);
+                    mButtons.handleEvent(event);
+                    mKeyPressingManager.handleEvent(event);
+                    mBackground.handleEvent(event);
+                }
             }
         }
     }
 
-    if (mWindow.hasFocus() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
-                mWindow.setPosition(mWindow.getPosition()
-                                    + sf::Mouse::getPosition()
-                                    - mLastMousePosition);
-                                    
-    mLastMousePosition = sf::Mouse::getPosition();
+    moveWindow();
     
     if (!Settings::IsChangeable)
     {
@@ -144,12 +136,12 @@ void Application::processInput()
 void Application::update(sf::Time dt)
 {
     mCalculation.update();
-    mStatistics.update
-                    ( mCalculation.getKeyPerSecond()
+    mStatistics.update( mCalculation.getKeyPerSecond()
                     , mCalculation.getBeatsPerMinute()
                     , mKeyPressingManager.mClickedKeys );
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
     mKeyPressingManager.clear();
+    mSettings.update();
 }
 
 void Application::render()
@@ -164,23 +156,35 @@ void Application::render()
 
 void Application::handleEvent(sf::Event event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == Settings::KeyToIncrease
-        || event.key.code == Settings::KeyToDecrease)
-        {
-            mWindow.setSize(sf::Vector2u
-                            ( Settings::Distance * Settings::KeyAmount
-                            + Settings::ButtonTextureSize.x * Settings::KeyAmount
-                            + Settings::SpaceBetweenButtonsAndStatistics
-                            + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
-                            , Settings::Distance * 2
-                            + Settings::ButtonTextureSize.y ));
+    mWindow.setSize(sf::Vector2u(getWidth(), getHeight()));
 
-            mWindow.setView(sf::View(sf::FloatRect
-                            ( 0, 0
-                            , mWindow.getSize().x
-                            , mWindow.getSize().y )));
-        }
+    mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x,
+                                                    mWindow.getSize().y)));
+}
+
+void Application::moveWindow()
+{
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
+    &&  mWindow.hasFocus())
+    {
+        mWindow.setPosition(mWindow.getPosition()
+                            + sf::Mouse::getPosition()
+                            - mLastMousePosition);
     }
+    mLastMousePosition = sf::Mouse::getPosition();
+}
+
+unsigned int Application::getWidth()
+{
+    return    Settings::Distance * Settings::ButtonAmount
+            + Settings::ButtonTextureSize.x * Settings::ButtonAmount
+            + Settings::SpaceBetweenButtonsAndStatistics
+            + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText;
+            // 9 is value by eye
+}
+
+unsigned int Application::getHeight()
+{
+    return    Settings::Distance * 2
+            + Settings::ButtonTextureSize.y;
 }

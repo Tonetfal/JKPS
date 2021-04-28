@@ -2,10 +2,7 @@
 
 #include "KeyPressingManager.hpp"
 
-#include <SFML/System/Time.hpp>
-
 #include <array>
-#include <vector>
 
 class Calculation
 {

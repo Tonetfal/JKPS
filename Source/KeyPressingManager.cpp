@@ -4,8 +4,8 @@ KeyPressingManager::KeyPressingManager()
 : mClickedKeys()
 , mNeedToBeReleased()
 {
-    mClickedKeys.resize(Settings::KeyAmount);
-    mNeedToBeReleased.resize(Settings::KeyAmount);
+    mClickedKeys.resize(Settings::ButtonAmount);
+    mNeedToBeReleased.resize(Settings::ButtonAmount);
     clear();
 }
 
@@ -13,7 +13,8 @@ void KeyPressingManager::readClickedKeys()
 {
     if (!Settings::IsChangeable)
     {
-        for (size_t i = 0; i < Settings::KeyAmount; i++)
+        size_t i = 0;
+        for (; i < Settings::KeyAmount; i++)
         {
             if (sf::Keyboard::isKeyPressed(Settings::Keys[i]) && !mNeedToBeReleased[i])
                 ++mClickedKeys[i];
@@ -23,20 +24,23 @@ void KeyPressingManager::readClickedKeys()
             else
                 mNeedToBeReleased[i] = false;
         }
+        for (size_t j = 0; j < Settings::MouseButtonAmount; j++, i++)
+        {
+            if (sf::Mouse::isButtonPressed(Settings::MouseButtons[j]) && !mNeedToBeReleased[i])
+                ++mClickedKeys[i];
+                
+            if(sf::Mouse::isButtonPressed(Settings::MouseButtons[j]))
+                mNeedToBeReleased[i] = true;
+            else
+                mNeedToBeReleased[i] = false;
+        }
     }
 }
 
 void KeyPressingManager::handleEvent(sf::Event event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease)
-        || sf::Keyboard::isKeyPressed(Settings::KeyToDecrease))
-        {
-            mClickedKeys.resize(Settings::KeyAmount);
-            mNeedToBeReleased.resize(Settings::KeyAmount);
-        }
-    }
+    mClickedKeys.resize(Settings::ButtonAmount);
+    mNeedToBeReleased.resize(Settings::ButtonAmount);
 }
 
 void KeyPressingManager::clear()

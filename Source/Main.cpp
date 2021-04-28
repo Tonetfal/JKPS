@@ -2,7 +2,6 @@
 #include "../Headers/Settings.hpp"
 
 #include <stdexcept>
-#include <iostream>
 
 int main()
 {

@@ -10,6 +10,10 @@ include_directories(${PROJECT_SOURCE_DIR})
 file(GLOB_RECURSE SRC_SOURCES "Source/*.cpp")
 file(GLOB_RECURSE SRC_HEADERS "Headers/*.hpp")
 
-find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
 add_executable(${PROJECT_NAME} ${SRC_SOURCES} ${SRC_HEADERS})
+
+target_precompile_headers(${PROJECT_NAME} PUBLIC "Headers/Default media/Fonts/Font_pch.h")
+target_precompile_headers(${PROJECT_NAME} PUBLIC "Headers/Default media/Textures/Textures_pch.h")
+
+find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)
 target_link_libraries(${PROJECT_NAME} sfml-graphics)

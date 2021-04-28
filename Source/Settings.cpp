@@ -4,7 +4,10 @@
 
 std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z
                                               , sf::Keyboard::Key::X });
+std::vector<sf::Mouse::Button> Settings::MouseButtons({ });
 std::size_t Settings::KeyAmount = Settings::Keys.size();
+std::size_t Settings::MouseButtonAmount = Settings::MouseButtons.size();
+std::size_t Settings::ButtonAmount = Settings::KeyAmount + Settings::MouseButtonAmount;
 
 std::string Settings::StatisticsFontPath = "Default";
 std::string Settings::KeyCountersFontPath = "Default";
@@ -32,6 +35,7 @@ sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
 sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 
 bool Settings::IsChangeable = false;
+sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);
 
 unsigned char* Settings::StatisticsDefaultFont = DefaultFont;
 unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
@@ -42,11 +46,14 @@ Settings::Settings()
 : configPath("KPS.cfg")
 , errorLogPath("KPSErrorLog.txt")
 , tmpConfigPath("tmpConfig.cfg")
-, minimumKeys(1)
+, minimumKeys(0)
 , maximumKeys(10)
+, minimumMouseButtons(0)
+, maximumMouseButtons(4)
 , mWindow(nullptr)
 , mIsChangeableAlert(5.f)
 , mAlertColor(sf::Color::Red)
+, mButtonAmountChanged(false)
 , mButtonToChange(sf::Keyboard::Unknown)
 , mButtonToChangeIndex(-1)
 {
@@ -77,6 +84,7 @@ Settings::Settings()
     }
 
     setupKey(Keys, findParameter("Keys"), "Keys", ofErrorLog);
+    setupMouseButton(MouseButtons, findParameter("Buttons"), "Buttons", ofErrorLog);
 
     setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
     setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
@@ -100,6 +108,7 @@ Settings::Settings()
     setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
 
     setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
+    setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
     mIsChangeableAlert.setFillColor(mAlertColor);
 
     ofErrorLog.close();
@@ -128,15 +137,24 @@ void Settings::handleEvent(sf::Event event)
         &&  KeyAmount <= maximumKeys)
         {
             ++KeyAmount;
+            ++ButtonAmount;
+            mButtonAmountChanged = true;
+
             Keys.resize(KeyAmount);
             setDefaultKey(Keys.size() - 1);
+            saveSettings();
         } 
         else if (event.key.code == KeyToDecrease
              &&  KeyAmount > minimumKeys)
         {
             --KeyAmount;
+            --ButtonAmount;
+            mButtonAmountChanged = true;
+
             Keys.resize(KeyAmount);
+            saveSettings();
         }
+        // Change key step 1
         else if (mButtonToChange == sf::Keyboard::Unknown)
         {
             for (size_t i = 0; i < KeyAmount; ++i)
@@ -148,19 +166,57 @@ void Settings::handleEvent(sf::Event event)
                 }
             }
         }
+        // Change key step 2
         else
         {
-            size_t sameKeyIndex = 0;
-            bool isThereSameKeyB = isThereSameKey(event.key.code, sameKeyIndex);
-
             Keys[mButtonToChangeIndex] = event.key.code;
-            if (isThereSameKeyB)
+
+            size_t sameKeyIndex = 0;
+            while (isThereSameKey(event.key.code, sameKeyIndex, mButtonToChangeIndex))
                 setDefaultKey(sameKeyIndex);
 
+            saveSettings();
             mButtonToChange = sf::Keyboard::Unknown;
             mButtonToChangeIndex = -1;
         }
     }
+
+    if (event.type == sf::Event::MouseButtonPressed)
+    {
+        bool isInRangeB = false;
+        size_t i;
+        for (i = 0; i < Settings::ButtonAmount; ++i)
+        {
+            if (isInRange(i))
+            {
+                isInRangeB = true;
+                break;
+            }
+        }
+
+        if (isInRangeB)
+        {
+            // Select
+            if (event.mouseButton.button == sf::Mouse::Left
+            &&  mButtonToChange == sf::Keyboard::Unknown)
+            {
+                mButtonToChange = Keys[i];
+                mButtonToChangeIndex = i;
+                return;
+            }
+            // Deselect
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+                mButtonToChange = sf::Keyboard::Unknown;
+                mButtonToChangeIndex = -1;
+            }
+        }
+    }
+}
+
+void Settings::update()
+{
+    mButtonAmountChanged = false;
 }
 
 void Settings::draw()
@@ -354,10 +410,18 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
         return;
     }
 
+    if (information == "No" || information == "no" || information == "NO")
+    {
+        keys.resize(0);
+        KeyAmount = keys.size();
+        ButtonAmount = KeyAmount; // mouse buttons will be added in their setuper
+        return;
+    }
+
     size_t stringIndex = 0, nKeys = 0;
     for (size_t i = 0
         ; information.length() > stringIndex && nKeys < maximumKeys
-        ; ++i)
+        ; ++i, ++nKeys)
     {
         std::string keyStr;
         for (size_t j = stringIndex
@@ -369,25 +433,83 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
         
         stringIndex = information.find(',', stringIndex) + 1;
 
-        sf::Keyboard::Key tmp = convertStringToKey(keyStr);
+        sf::Keyboard::Key foundKey = convertStringToKey(keyStr);
 
-        if (i > 1)
-            keys.resize(keys.size() + 1);
-
-        if (tmp != sf::Keyboard::Unknown)
-            keys[i] = tmp;
-        else
+        if (foundKey == sf::Keyboard::Unknown)
         {
             errorLog << ERROR_MESSAGE(parameterName);
-            setDefaultKey(i);
+            break;
         }
+
+        keys.resize(i + 1);
+        keys[i] = foundKey;
+        size_t whichOne;
+        while (isThereSameKey(foundKey, whichOne, i))
+            setDefaultKey(whichOne);
 
         // find function returns 0 if the value was not found
         if (stringIndex == 0)
             break;
     }
+
     KeyAmount = keys.size();
+    ButtonAmount = KeyAmount; // mouse buttons will be added in their setuper
 }
+
+void Settings::setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons
+                        , const std::string information
+                        , const std::string parameterName
+                        ,       std::ofstream& errorLog)
+{
+    if (information == "")
+    {
+        errorLog<< ERROR_MESSAGE(parameterName);
+        return;
+    }
+
+    if (information == "No" || information == "no" || information == "NO")
+    {
+        mouseButtons.resize(0);
+        MouseButtonAmount = mouseButtons.size();
+        ButtonAmount += MouseButtonAmount;
+        return;
+    }
+
+    size_t stringIndex = 0, nButtons = 0;
+    for (size_t i = 0
+        ; information.length() > stringIndex && nButtons < maximumMouseButtons
+        ; ++i, ++nButtons)
+    {
+        std::string buttonStr;
+        for (size_t j = stringIndex
+            ; information[j] != ',' && information[j] != '\0'
+            ; ++j)
+        {
+            buttonStr += information[j];
+        }
+        
+        stringIndex = information.find(',', stringIndex) + 1;
+
+        sf::Mouse::Button foundMouseButton = convertStringToButton(buttonStr);
+
+        if (foundMouseButton == sf::Mouse::ButtonCount)
+        {
+            errorLog << ERROR_MESSAGE(parameterName);
+            break;
+        }
+
+        mouseButtons.resize(i + 1);
+        mouseButtons[i] = foundMouseButton;
+
+        // find function returns 0 if the value was not found
+        if (stringIndex == 0)
+            break;
+    }
+
+    MouseButtonAmount = mouseButtons.size();
+    ButtonAmount += MouseButtonAmount;
+}
+
 
 void Settings::setupBoolParameter(  bool& parameter
                             , const std::string information
@@ -404,11 +526,11 @@ void Settings::setupBoolParameter(  bool& parameter
     errorLog << ERROR_MESSAGE(parameterName);
 }
 
-bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne)
+bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore)
 {
     for (size_t i = 0; i < Keys.size(); ++i)
     {
-        if (Keys[i] == key)
+        if (Keys[i] == key && i != indexToIgnore)
         {
             whichOne = i;
             return true;
@@ -420,13 +542,16 @@ bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne)
 
 void Settings::setDefaultKey(size_t index)
 {
+    // sf::Keyboard::Key is an enum, that starts from 0
     size_t keyToAssign = 0;
+
     for (size_t i = 0; i < Settings::KeyAmount; i++)
     {
         if (keyToAssign == Keys[i] && i != index)
         {
             ++keyToAssign;
             i = -1;
+            // -1 cuz I need to recheck to be sure that there is no same key
         }
     }
 
@@ -449,6 +574,11 @@ void Settings::setChangeabilityPosition()
 void Settings::setWindowReference(sf::RenderWindow& window)
 {
     mWindow = &window;
+}
+
+bool Settings::wasButtonAmountChanged()
+{
+    return mButtonAmountChanged;
 }
 
 void Settings::saveSettings()
@@ -489,7 +619,7 @@ void Settings::writeKeys(std::ofstream& ofConfig)
 {
     std::ifstream ifConfig(configPath);
 
-    std::string line, toFind = "Keys";
+    std::string line, toFind = "[Keys]";
     bool found = false;
     size_t i = 0, lineN = 0;
 
@@ -497,16 +627,11 @@ void Settings::writeKeys(std::ofstream& ofConfig)
     {
         getline(ifConfig, line);
         ++lineN;
-        for (i = 0; i < toFind.length(); ++i)
-        {
-            if (line[i] != toFind[i])
-            {
-                i = 0;
-                break;
-            }
-        }
 
-        if (i == toFind.length())
+        if (line.length() < toFind.length())
+            continue;
+
+        if(line.substr(0, toFind.length()) == toFind)
         {
             found = true;
             break;
@@ -515,24 +640,35 @@ void Settings::writeKeys(std::ofstream& ofConfig)
 
     ifConfig.close();
 
-    if (!found)
-        return;
-
     ifConfig.open(configPath);
-    for (size_t i = 0; i+1 < lineN; ++i)
+    // Insert everything before Keys
+    for (size_t i = 0; i < lineN; ++i)
     {
         getline(ifConfig, line);
         ofConfig << line << "\n";
     }
+
     // Skip line to replace
     getline(ifConfig, line);
 
+    // If there is no Keys section
+    if (!found)
+        ofConfig << "\n" << toFind << "\n";
+
     ofConfig << "Keys: ";
-    for (size_t i = 0; i < Keys.size(); ++i)
+    if (Keys.size() > 0)
     {
-        ofConfig << convertKeyToString(Keys[i]) << (i+1 != Keys.size() ? "," : "\n");
+        for (size_t i = 0; i < Keys.size(); ++i)
+        {
+            ofConfig << convertKeyToString(Keys[i]) << (i+1 != Keys.size() ? "," : "\n");
+        }
+    }
+    else
+    {
+        ofConfig << "No\n";
     }
 
+    // Insert everything after Keys
     while (!ifConfig.eof())
     {
         getline(ifConfig, line);
@@ -540,4 +676,36 @@ void Settings::writeKeys(std::ofstream& ofConfig)
     }
 
     ifConfig.close();
+}
+
+bool Settings::isInRange(size_t index)
+{
+    auto mousePosition = sf::Mouse::getPosition() - mWindow->getPosition();
+    // std::cout << "Mouse position: " << mousePosition.x << "\t" << mousePosition.y << "\n";
+    // std::cout << "left x " << Distance * (index + 1) + ButtonTextureSize.x * index << "\t";
+    // std::cout << "right x " << Distance * (index + 1) + ButtonTextureSize.x * (index + 1) << "\t";
+    // std::cout << "top y " << Distance << "\t";
+    // std::cout << "bottom y " << Distance + ButtonTextureSize.y << "\t";
+    // std::cout << "\n";
+
+    // std::cout << bool (mousePosition.x > Distance * (index + 1)) + ButtonTextureSize.x * index << "\t";
+    // std::cout << bool (mousePosition.x < Distance * (index + 1) + ButtonTextureSize.x * (index + 1)) << "\t";
+    // std::cout << bool (mousePosition.y > Distance) << "\t";
+    // std::cout << bool (mousePosition.y < Distance + ButtonTextureSize.y) << "\t";
+    // std::cout << "\n";
+
+    return  mousePosition.x > Distance * (index + 1) + ButtonTextureSize.x * index
+        &&  mousePosition.x < Distance * (index + 1) + ButtonTextureSize.x * (index + 1)
+        &&  mousePosition.y > Distance
+        &&  mousePosition.y < Distance + ButtonTextureSize.y;
+}
+
+sf::Keyboard::Key Settings::getButtonToChange()
+{
+    return mButtonToChange;
+}
+
+int Settings::getButtonToChangeIndex()
+{
+    return mButtonToChangeIndex;
 }

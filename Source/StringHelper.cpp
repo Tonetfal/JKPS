@@ -77,10 +77,10 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         case sf::Keyboard::Subtract: return "Subtract";
         case sf::Keyboard::Multiply: return "Multiply";
         case sf::Keyboard::Divide: return "Divide";
-        case sf::Keyboard::Left: return "Left";
-        case sf::Keyboard::Right: return "Right";
-        case sf::Keyboard::Up: return "Up";
-        case sf::Keyboard::Down: return "Down";
+        case sf::Keyboard::Left: return "A Left";
+        case sf::Keyboard::Right: return "A Right";
+        case sf::Keyboard::Up: return "A Up";
+        case sf::Keyboard::Down: return "A Down";
         case sf::Keyboard::Numpad0: return "Numpad0";
         case sf::Keyboard::Numpad1: return "Numpad1";
         case sf::Keyboard::Numpad2: return "Numpad2";
@@ -317,4 +317,34 @@ sf::Keyboard::Key convertStringToKey(const std::string str)
     if (str == "KeyCount")
         return sf::Keyboard::Key::KeyCount;
     return sf::Keyboard::Key::Unknown;
+}
+
+std::string convertButtonToString(sf::Mouse::Button button)
+{
+    switch(button)
+    {
+        case sf::Mouse::Left: return "M Left";
+        case sf::Mouse::Right: return "M Right";
+        case sf::Mouse::Middle: return "M Middle";
+        case sf::Mouse::XButton1: return "M X1";
+        case sf::Mouse::XButton2: return "M X2";
+        default: return "M Unkown";
+    }
+}
+
+sf::Mouse::Button convertStringToButton(const std::string str)
+{
+    if (str == "Left")
+        return sf::Mouse::Left;
+    if (str == "Right")
+        return sf::Mouse::Right;
+    if (str == "Middle")
+        return sf::Mouse::Middle;
+    if (str == "XButton1")
+        return sf::Mouse::XButton1;
+    if (str == "XButton2")
+        return sf::Mouse::XButton2;
+    // There is not Unkown button
+    return sf::Mouse::ButtonCount;
+    
 }

@@ -1,7 +1,5 @@
 #include "../Headers/Statistics.hpp"
 
-#include <SFML/Graphics.hpp>
-
 #define SET_TEXT_STRING(x) mTexts.get(x).setString((mStrings.get(x) + ": " \
                                                  + std::to_string(mLongs.get(x))).c_str());
 
@@ -55,13 +53,18 @@ void Statistics::update(  std::size_t KeyPerSecond
     SET_TEXT_STRING(BPM);
 
 
-    for (size_t i = 0; i < Settings::KeyAmount; ++i)
+    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         if (mKeyCounters[i] == 0 || Settings::IsChangeable)
-            mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]).c_str());
+        {
+            if (i < Settings::KeyAmount)
+                mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]).c_str());
+            else
+                mKeyCountersText[i].setString(convertButtonToString
+                                                (Settings::MouseButtons[i - Settings::KeyAmount]).c_str());
+        }
         else
             mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]).c_str());
-            
          
         setupTextPosition(i);
         mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
@@ -73,29 +76,19 @@ void Statistics::update(  std::size_t KeyPerSecond
 
 void Statistics::handleEvent(sf::Event event)
 {
-    // if IsChangeable is true, but the key is not pressed,
-    // and ShowKeyCountersText is false, show keys 
+    
+    mKeyCounters.resize(Settings::ButtonAmount);
+    mKeyCountersText.resize(Settings::ButtonAmount);
+
+    if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease))
+        setupLongVector(Settings::ButtonAmount - 1);
+        
+    setupText(KPS);
+    setupText(MaxKPS);
+    setupText(TotalKeys);
+    setupText(BPM);
     setupTextVector();
-
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease)
-        || sf::Keyboard::isKeyPressed(Settings::KeyToDecrease))
-        {
-            mKeyCounters.resize(Settings::KeyAmount);
-            mKeyCountersText.resize(Settings::KeyAmount);
-
-            if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease))
-                setupLongVector(Settings::KeyAmount - 1);
-                
-            setupText(KPS);
-            setupText(MaxKPS);
-            setupText(TotalKeys);
-            setupText(BPM);
-            setupTextVector();
-            setFonts();
-        }
-    }
+    setFonts();
 }
 
 void Statistics::handleInput(KeyPressingManager& container)
@@ -112,7 +105,9 @@ void Statistics::draw()
     mWindow.draw(mTexts.get(BPM));
 
     for (auto& element : mKeyCountersText)
+    {
         mWindow.draw(element);
+    }
 }
 
 
@@ -146,4 +141,14 @@ void Statistics::decreaseTextCharacterSize(int index)
 {
     mKeyCountersText[index].setCharacterSize
                             (mKeyCountersText[index].getCharacterSize() - 1);
+}
+
+void Statistics::handleHighlight(int buttonIndex)
+{
+    // :(
+    for (auto& element : mKeyCountersText)
+        element.setFillColor(Settings::KeyCountersTextColor);
+
+    if (buttonIndex != -1)
+        mKeyCountersText[buttonIndex].setFillColor(Settings::HighlightedKeyColor);
 }

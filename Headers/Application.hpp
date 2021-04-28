@@ -8,14 +8,8 @@
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
-#include "Default media/Textures/icon.h"
+// #include "Default media/Textures/icon.h"
 
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/System/Time.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Window/Event.hpp>
-
-#include <string>
 
 class Application
 {
@@ -30,6 +24,11 @@ class Application
 		void					    render();
 
         void                        handleEvent(sf::Event event);
+
+
+        void                        moveWindow();
+        unsigned int                getWidth();
+        unsigned int                getHeight();
 
 
     private:

@@ -8,14 +8,7 @@ Background::Background(sf::RenderWindow& window)
 
 void Background::handleEvent(sf::Event event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == Settings::KeyToIncrease
-        ||  event.key.code == Settings::KeyToDecrease)
-        {
-            scaleTexture();
-        }
-    }
+    scaleTexture();
 }
 
 void Background::draw()

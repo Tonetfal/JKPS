@@ -2,15 +2,15 @@
 
 Button::Button(sf::RenderWindow& window)
 : mWindow(window)
-, mKeysSprite(Settings::KeyAmount)
-, mKeysAnimation(Settings::KeyAmount)
+, mKeysSprite(Settings::ButtonAmount)
+, mKeysAnimation(Settings::ButtonAmount)
 { 
 
 }
 
 void Button::update(std::vector<bool>& needToBeReleased)
 {
-    for (size_t i = 0; i < Settings::KeyAmount; ++i)
+    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         if (!needToBeReleased[i])
             mKeysAnimation[i].setFillColor(mKeysAnimation[i].getFillColor()
@@ -29,23 +29,16 @@ void Button::draw()
 
 void Button::handleEvent(sf::Event event)
 {
-    if (event.type == sf::Event::KeyPressed)
-    {
-        if (event.key.code == Settings::KeyToIncrease
-        || event.key.code == Settings::KeyToDecrease)
-        {
-            mKeysSprite.resize(Settings::KeyAmount);
-            mKeysAnimation.resize(Settings::KeyAmount);
+    mKeysSprite.resize(Settings::ButtonAmount);
+    mKeysAnimation.resize(Settings::ButtonAmount);
 
-            setupTexture();
-            setupAnimation();
-        }
-    }
+    setupTexture();
+    setupAnimation();
 }
 
 void Button::handleInput(std::vector<bool>& needToBeReleased)
 {
-    for (size_t i = 0; i < Settings::KeyAmount; ++i)
+    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
         if (needToBeReleased[i])
             mKeysAnimation[i].setFillColor(Settings::AnimationColor
                                          + Settings::AnimationOnClickTransparency);

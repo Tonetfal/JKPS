@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Color.hpp>
@@ -9,9 +8,9 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-#include "Default media/Textures/ButtonTexture.h"
-#include "Default media/Textures/BackgroundTexture.h"
-#include "Default media/Fonts/TextFont.h"
+// #include "Default media/Textures/ButtonTexture.h"
+// #include "Default media/Textures/BackgroundTexture.h"
+// #include "Default media/Fonts/TextFont.h"
 #include "DefaultConfig.h"
 
 #include <vector>
@@ -25,14 +24,25 @@ class Settings
     public:
                                     Settings();
         void                        handleEvent(sf::Event event);
+        void                        update();
         void                        draw();
 
         void                        setWindowReference(sf::RenderWindow& window);
 
         void                        changeChangeability();
         void                        setChangeabilityPosition();
+        bool                        wasButtonAmountChanged();
 
         void                        saveSettings();
+
+        sf::Keyboard::Key           getButtonToChange();
+        int                         getButtonToChangeIndex();
+
+
+    private:
+        bool                        isInRange(size_t index);
+
+
 
     private:
 
@@ -47,9 +57,10 @@ class Settings
         void                        setupDigitParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         void                        setupFilePathParameter(std::string& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName, std::ofstream& errorLog);
+        void                        setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         void                        setupBoolParameter(bool& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
 
-        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne);
+        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore);
 
         void                        createDefaultConfig();
 
@@ -57,7 +68,10 @@ class Settings
 
     public:
         static std::vector<sf::Keyboard::Key> Keys;
+        static std::vector<sf::Mouse::Button> MouseButtons;
         static std::size_t          KeyAmount;
+        static std::size_t          MouseButtonAmount;
+        static std::size_t          ButtonAmount;
 
         static std::string          StatisticsFontPath;
         static std::string          KeyCountersFontPath;
@@ -85,6 +99,7 @@ class Settings
         static sf::Keyboard::Key    KeyToDecrease;
 
         static bool                 IsChangeable;
+        static sf::Color            HighlightedKeyColor;
 
         static unsigned char*       KeyCountersDefaultFont;
         static unsigned char*       StatisticsDefaultFont;
@@ -99,11 +114,14 @@ class Settings
 
         const size_t                minimumKeys;
         const size_t                maximumKeys;
+        const size_t                minimumMouseButtons;
+        const size_t                maximumMouseButtons;
 
         sf::RenderWindow*           mWindow;
 
         sf::CircleShape             mIsChangeableAlert;
         sf::Color                   mAlertColor;
+        bool                        mButtonAmountChanged;
 
         sf::Keyboard::Key           mButtonToChange;
         int                         mButtonToChangeIndex;

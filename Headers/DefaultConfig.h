@@ -13,6 +13,10 @@ static std::string DefaultConfigString =
 "[Keys]\n"
 "Keys: Z,X\n"
 "\n"
+"[Mouse]\n"
+"Buttons: No\n"
+"\n"
+"[Statistics]\n"
 "Statistics font: Default\n"
 "Key counters font: Default\n"
 "Statistics text color: 255,255,255\n"
@@ -39,4 +43,5 @@ static std::string DefaultConfigString =
 "Background color: 44,28,31,180\n"
 "\n"
 "[Other]\n"
-"Changeability alert color: 255,0,0\n";
+"Changeability alert color: 255,0,0\n"
+"Highlighted text button color: 255,120,200\n";
