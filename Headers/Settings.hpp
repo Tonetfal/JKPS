@@ -8,12 +8,12 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-// #include "Default media/Textures/ButtonTexture.h"
-// #include "Default media/Textures/AnimationTexture.h"
-// #include "Default media/Textures/BackgroundTexture.h"
-// #include "Default media/Fonts/TextFont.h"
-// #include "DefaultConfig.h"
-#include "DefaultFiles.h"
+// #include "Default media/Textures/ButtonTexture.hpp"
+// #include "Default media/Textures/AnimationTexture.hpp"
+// #include "Default media/Textures/BackgroundTexture.hpp"
+// #include "Default media/Fonts/TextFont.hpp"
+// #include "DefaultConfig.hpp"
+#include "DefaultFiles.hpp"
 
 #include <vector>
 #include <fstream>
