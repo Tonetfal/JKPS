@@ -8,11 +8,12 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-#include "Default media/Textures/ButtonTexture.h"
-#include "Default media/Textures/AnimationTexture.h"
-#include "Default media/Textures/BackgroundTexture.h"
-#include "Default media/Fonts/TextFont.h"
-#include "DefaultConfig.h"
+// #include "Default media/Textures/ButtonTexture.h"
+// #include "Default media/Textures/AnimationTexture.h"
+// #include "Default media/Textures/BackgroundTexture.h"
+// #include "Default media/Fonts/TextFont.h"
+// #include "DefaultConfig.h"
+#include "DefaultFiles.h"
 
 #include <vector>
 #include <fstream>
@@ -107,9 +108,6 @@ class Settings
         static std::string          BackgroundTexturePath;
         static sf::Color            BackgroundColor;
 
-        static sf::Keyboard::Key    KeyToIncrease;
-        static sf::Keyboard::Key    KeyToDecrease;
-
         static bool                 IsChangeable;
         // [Other]
         static sf::Color            HighlightedKeyColor;
@@ -120,6 +118,9 @@ class Settings
         static unsigned char*       DefaultButtonTexture;
         static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
+
+        static sf::Keyboard::Key    KeyToIncrease;
+        static sf::Keyboard::Key    KeyToDecrease;
 
 
     private:

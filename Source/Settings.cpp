@@ -37,9 +37,6 @@ sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150));
 std::string Settings::BackgroundTexturePath = "Default";
 sf::Color Settings::BackgroundColor(sf::Color(44,28,31,180));
 
-sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
-sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
-
 bool Settings::IsChangeable = false;
 sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);
 sf::Color Settings::AlertColor = sf::Color(255,0,0);
@@ -49,6 +46,9 @@ unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
 unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeader;
 unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader;
 unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
+
+sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
+sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 
 Settings::Settings()
 : configPath("KPS.cfg")
