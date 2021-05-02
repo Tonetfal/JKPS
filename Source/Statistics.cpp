@@ -102,7 +102,8 @@ void Statistics::draw()
     mWindow.draw(mTexts.get(KPS));
     mWindow.draw(mTexts.get(MaxKPS));
     mWindow.draw(mTexts.get(TotalKeys));
-    mWindow.draw(mTexts.get(BPM));
+    if (Settings::ShowBPMText)
+        mWindow.draw(mTexts.get(BPM));
 
     for (auto& element : mKeyCountersText)
     {

@@ -4,17 +4,15 @@ Button::Button(sf::RenderWindow& window)
 : mWindow(window)
 , mKeysSprite(Settings::ButtonAmount)
 , mKeysAnimation(Settings::ButtonAmount)
-{ 
-
-}
+{ }
 
 void Button::update(std::vector<bool>& needToBeReleased)
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         if (!needToBeReleased[i])
-            mKeysAnimation[i].setFillColor(mKeysAnimation[i].getFillColor()
-                                            - sf::Color(0,0,0,Settings::AnimationVelocity));
+            mKeysAnimation[i].setColor(mKeysAnimation[i].getColor()
+                                     - sf::Color(0,0,0,Settings::AnimationVelocity));
     }
 }
 
@@ -27,82 +25,73 @@ void Button::draw()
         mWindow.draw(element);
 }
 
+// Increase/Decrease key amount
 void Button::handleEvent(sf::Event event)
 {
     mKeysSprite.resize(Settings::ButtonAmount);
     mKeysAnimation.resize(Settings::ButtonAmount);
 
-    setupTexture();
-    setupAnimation();
+    setupTextures();
 }
 
+// User clicks a key
 void Button::handleInput(std::vector<bool>& needToBeReleased)
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
         if (needToBeReleased[i])
-            mKeysAnimation[i].setFillColor(Settings::AnimationColor
-                                         + Settings::AnimationOnClickTransparency);
+            mKeysAnimation[i].setColor(Settings::AnimationColor
+                                     + Settings::AnimationOnClickTransparency);
 }
 
-void Button::setupTexture()
+void Button::setupTextures()
 {
-    setTextures();
-    setColor();
-    scaleTexture();
-    setPositions();
-}
+    setTextures(mKeysSprite, *mButtonTexture);
+    setColor(mKeysSprite, Settings::ButtonTextureColor);
+    scaleTexture(mKeysSprite, Settings::ButtonTextureSize);
+    setPositions(mKeysSprite);
 
-void Button::setupAnimation()
-{
-    for (auto& element : mKeysAnimation)
-        element.setSize(sf::Vector2f(mKeysSprite[0].getGlobalBounds().width
-                                   , mKeysSprite[0].getGlobalBounds().height));
-    
-    for (auto& element : mKeysAnimation)
-            element.setFillColor(sf::Color
-                                ( Settings::AnimationColor.r
-                                , Settings::AnimationColor.g
-                                , Settings::AnimationColor.b
-                                , 0));
+    setTextures(mKeysAnimation, *mAnimationTexture);
+    setColor(mKeysAnimation, Settings::AnimationTextureColor);
+    scaleTexture(mKeysAnimation, Settings::AnimationTextureSize);
+    setPositions(mKeysAnimation);
 }
 
 void Button::loadTextures(TextureHolder& textureHolder)
 {
     mButtonTexture = &textureHolder.get(Textures::KeyButton);
+    mAnimationTexture = &textureHolder.get(Textures::ButtonAnimation);
 }
 
-void Button::setTextures()
+void Button::setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture)
 {
-    for (auto& element : mKeysSprite)
-        element.setTexture(*mButtonTexture);
+    for (auto& element : vector)
+        element.setTexture(texture);
 }
 
-void Button::setColor()
+void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
 {
-    for (auto& element : mKeysSprite)
-        element.setColor(Settings::ButtonImageColor);
+    for (auto& element : vector)
+        element.setColor(color);
 }
 
-void Button::setPositions()
+void Button::scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& textureSize)
 {
-    for (size_t i = 0; i < mKeysSprite.size(); ++i)
+    for (auto& element : vector)
     {
-        mKeysSprite[i].setPosition(sf::Vector2f(
-                                    Settings::Distance * (i + 1)
-                                    + mKeysSprite[i].getGlobalBounds().width * i
-                                    , Settings::Distance));
-
-        mKeysAnimation[i].setPosition(mKeysSprite[i].getPosition());
+        element.scale(float (textureSize.x
+                        / element.getGlobalBounds().width)
+                    , float (textureSize.y
+                        / element.getGlobalBounds().height));
     }
 }
 
-void Button::scaleTexture()
+void Button::setPositions(std::vector<sf::Sprite>& vector)
 {
-    for (auto& element : mKeysSprite)
+    for (size_t i = 0; i < vector.size(); ++i)
     {
-        element.scale(float (Settings::ButtonTextureSize.x
-                        / element.getGlobalBounds().width)
-                    , float (Settings::ButtonTextureSize.y
-                        / element.getGlobalBounds().height));
+        vector[i].setPosition(sf::Vector2f(
+                                Settings::Distance * (i + 1)
+                                + vector[i].getGlobalBounds().width * i
+                                , Settings::Distance));
     }
 }

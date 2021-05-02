@@ -1,6 +1,6 @@
 #include "../Headers/Application.hpp"
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f/60);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f/Settings::mFramesPerSecond);
 
 Application::Application(Settings& settings)
 : mWindow(sf::VideoMode(getWidth(), getHeight()), "KPS", sf::Style::None)
@@ -17,17 +17,21 @@ Application::Application(Settings& settings)
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
     sf::Image icon;
-    icon.loadFromMemory(iconHeaderArray, 28000);
+    icon.loadFromMemory(iconHeaderArray, 148300);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
 
 
     if (Settings::ButtonTexturePath == "Default")
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 148000);
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 12600);
     else
         mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
+    if (Settings::AnimationTexturePath == "Default") 
+        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 8100);
+    else
+        mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
 
     if (Settings::BackgroundTexturePath == "Default")
-        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 72000);
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 71900);
     else
         mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
     
@@ -47,8 +51,7 @@ Application::Application(Settings& settings)
     mStatistics.setFonts();
     mButtons.loadTextures(mTextures);
 
-    mButtons.setupTexture();
-    mButtons.setupAnimation();
+    mButtons.setupTextures();
 
     mSettings.setWindowReference(mWindow);
     mSettings.setChangeabilityPosition();

@@ -2,6 +2,8 @@
 
 #define ERROR_MESSAGE(x) "Reading error - " + x + ". Default value will be set.\n"
 
+const std::size_t Settings::mFramesPerSecond = 60;
+
 std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z
                                               , sf::Keyboard::Key::X });
 std::vector<sf::Mouse::Button> Settings::MouseButtons({ });
@@ -17,13 +19,17 @@ std::size_t Settings::StatisticsTextCharacterSize = 12;
 std::size_t Settings::KeyCountersTextCharacterSize = 22;
 bool Settings::ShowStatisticsText = true;
 bool Settings::ShowKeyCountersText = true;
+bool Settings::ShowBPMText = true;
 
 float Settings::Distance = 7.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 10.f;
 
 std::string Settings::ButtonTexturePath = "Default";
+std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
-sf::Color Settings::ButtonImageColor(sf::Color(255,255,255,255));
+sf::Vector2u Settings::AnimationTextureSize(50, 50);
+sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
+sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
 std::size_t Settings::AnimationVelocity = 20;
 sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
@@ -36,10 +42,12 @@ sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 
 bool Settings::IsChangeable = false;
 sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);
+sf::Color Settings::AlertColor = sf::Color(255,0,0);
 
 unsigned char* Settings::StatisticsDefaultFont = DefaultFont;
 unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
-unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeaderArray;
+unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeader;
+unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader;
 unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
 
 Settings::Settings()
@@ -52,12 +60,11 @@ Settings::Settings()
 , maximumMouseButtons(4)
 , mWindow(nullptr)
 , mIsChangeableAlert(5.f)
-, mAlertColor(sf::Color::Red)
 , mButtonAmountChanged(false)
 , mButtonToChange(sf::Keyboard::Unknown)
 , mButtonToChangeIndex(-1)
 {
-    mIsChangeableAlert.setFillColor(mAlertColor);
+    mIsChangeableAlert.setFillColor(AlertColor);
 
     std::ifstream ifErrorLog(errorLogPath);
     if (ifErrorLog.is_open())
@@ -83,9 +90,11 @@ Settings::Settings()
         return;
     }
 
+    // [Keys] [Mouse]
     setupKey(Keys, findParameter("Keys"), "Keys", ofErrorLog);
     setupMouseButton(MouseButtons, findParameter("Buttons"), "Buttons", ofErrorLog);
 
+    // [Statistics]
     setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
     setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
     setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
@@ -94,22 +103,29 @@ Settings::Settings()
     setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
     setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
     setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
+    setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 
+    // [Spacing]
     setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance", ofErrorLog);
     setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
 
-    setupFilePathParameter(ButtonTexturePath, findParameter("Button image"), "Button image", ofErrorLog);
+    // [Button graphics]
+    setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
+    setupFilePathParameter(AnimationTexturePath, findParameter("Animation texture"), "Animation texture", ofErrorLog);
     setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
-    setupColor(ButtonImageColor,findParameter("Button image color"), "Button image color", ofErrorLog);
+    setupVector(AnimationTextureSize, 0, 250, findParameter("Animation texture size"), "Animation texture size", ofErrorLog);
+    setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
     setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
 
+    // [Background]
     setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ofErrorLog);
     setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
 
-    setupColor(mAlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
+    // [Other]
+    setupColor(AlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
     setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
-    mIsChangeableAlert.setFillColor(mAlertColor);
+    mIsChangeableAlert.setFillColor(AlertColor);
 
     ofErrorLog.close();
 

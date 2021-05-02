@@ -8,9 +8,10 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-// #include "Default media/Textures/ButtonTexture.h"
-// #include "Default media/Textures/BackgroundTexture.h"
-// #include "Default media/Fonts/TextFont.h"
+#include "Default media/Textures/ButtonTexture.h"
+#include "Default media/Textures/AnimationTexture.h"
+#include "Default media/Textures/BackgroundTexture.h"
+#include "Default media/Fonts/TextFont.h"
 #include "DefaultConfig.h"
 
 #include <vector>
@@ -67,12 +68,16 @@ class Settings
         void                        writeKeys(std::ofstream& ofConfig);
 
     public:
+        const static std::size_t    mFramesPerSecond;
+
+        // [Keys] [Mouse]
         static std::vector<sf::Keyboard::Key> Keys;
         static std::vector<sf::Mouse::Button> MouseButtons;
         static std::size_t          KeyAmount;
         static std::size_t          MouseButtonAmount;
         static std::size_t          ButtonAmount;
 
+        // [Statistics]
         static std::string          StatisticsFontPath;
         static std::string          KeyCountersFontPath;
         static sf::Color            StatisticsTextColor;
@@ -81,17 +86,24 @@ class Settings
         static std::size_t          KeyCountersTextCharacterSize;
         static bool                 ShowStatisticsText;
         static bool                 ShowKeyCountersText;
+        static bool                 ShowBPMText;
 
+        // [Spacing]
         static float                Distance;
         static float                SpaceBetweenButtonsAndStatistics;
 
+        // [Button graphics]
         static std::string          ButtonTexturePath;
+        static std::string          AnimationTexturePath;
         static sf::Vector2u         ButtonTextureSize;
-        static sf::Color            ButtonImageColor;
+        static sf::Vector2u         AnimationTextureSize;
+        static sf::Color            AnimationTextureColor;
+        static sf::Color            ButtonTextureColor;
         static std::size_t          AnimationVelocity;
         static sf::Color            AnimationColor;
         static sf::Color            AnimationOnClickTransparency;
 
+        // [Background]
         static std::string          BackgroundTexturePath;
         static sf::Color            BackgroundColor;
 
@@ -99,11 +111,14 @@ class Settings
         static sf::Keyboard::Key    KeyToDecrease;
 
         static bool                 IsChangeable;
+        // [Other]
         static sf::Color            HighlightedKeyColor;
+        static sf::Color            AlertColor;
 
         static unsigned char*       KeyCountersDefaultFont;
         static unsigned char*       StatisticsDefaultFont;
         static unsigned char*       DefaultButtonTexture;
+        static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
 
 
@@ -120,7 +135,6 @@ class Settings
         sf::RenderWindow*           mWindow;
 
         sf::CircleShape             mIsChangeableAlert;
-        sf::Color                   mAlertColor;
         bool                        mButtonAmountChanged;
 
         sf::Keyboard::Key           mButtonToChange;

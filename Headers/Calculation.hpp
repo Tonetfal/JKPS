@@ -1,8 +1,9 @@
 #pragma once
 
 #include "KeyPressingManager.hpp"
+#include "Settings.hpp"
 
-#include <array>
+#include <math.h>
 
 class Calculation
 {
@@ -17,8 +18,8 @@ class Calculation
 
 
     private:
-        size_t                      mFrameTick;
-        size_t                      mClickedKeysInCurrentFrame;
+        std::size_t                 mFrameTick;
+        std::size_t                 mClickedKeysInCurrentFrame;
         std::array<size_t, 60>      mKeysPerTick;
         std::size_t                 mKeyPerSecond;
 

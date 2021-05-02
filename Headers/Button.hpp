@@ -18,24 +18,24 @@ class Button
         void                        handleInput(std::vector<bool>& clickedKeys);
         void                        handleEvent(sf::Event event);
 
-        void                        setupTexture();
-        void                        setupAnimation();
+        void                        setupTextures();
 
         void                        loadTextures(TextureHolder& textureHolder);
 
 
     private:
-        void                        setTextures();
-        void                        setColor();
-        void                        setPositions();
-        void                        scaleTexture();
+        void                        setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture);
+        void                        setColor(std::vector<sf::Sprite>& vector, sf::Color& color);
+        void                        scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& texture);
+        void                        setPositions(std::vector<sf::Sprite>& vector);
 
     
     private:
         sf::RenderWindow&           mWindow;
 
         sf::Texture*                mButtonTexture;
+        sf::Texture*                mAnimationTexture;
 
         std::vector<sf::Sprite>     mKeysSprite;
-        std::vector<sf::RectangleShape> mKeysAnimation;
+        std::vector<sf::Sprite>     mKeysAnimation;
 };

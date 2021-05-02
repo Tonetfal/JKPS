@@ -7,7 +7,7 @@ Calculation::Calculation()
 , mKeyPerSecond(0)
 , mNumberOfKPSToSave(9)
 , mPreviousKeyPerSeconds()
-{
+{ 
     mPreviousKeyPerSeconds.resize(mNumberOfKPSToSave);
     for (auto& element : mPreviousKeyPerSeconds)
         element = 0;
@@ -23,9 +23,6 @@ void Calculation::handleInput(KeyPressingManager& container, std::vector<sf::Key
 
 void Calculation::update()
 {
-    if (mFrameTick == mKeysPerTick.size())
-        mFrameTick = 0;
-
     if (mKeysPerTick[mFrameTick] > 0)
         mKeyPerSecond -= mKeysPerTick[mFrameTick];
 
@@ -35,6 +32,8 @@ void Calculation::update()
     mPreviousKeyPerSeconds[mFrameTick % mNumberOfKPSToSave] = mKeyPerSecond;
 
     ++mFrameTick;
+    if (mFrameTick == mKeysPerTick.size())
+        mFrameTick = 0;
 }
 
 std::size_t Calculation::getKeyPerSecond()
