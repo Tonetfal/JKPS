@@ -8,11 +8,6 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-// #include "Default media/Textures/ButtonTexture.hpp"
-// #include "Default media/Textures/AnimationTexture.hpp"
-// #include "Default media/Textures/BackgroundTexture.hpp"
-// #include "Default media/Fonts/TextFont.hpp"
-// #include "DefaultConfig.hpp"
 #include "DefaultFiles.hpp"
 
 #include <vector>

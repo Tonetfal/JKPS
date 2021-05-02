@@ -8,7 +8,6 @@
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
-// #include "Default media/Textures/icon.hpp"
 #include "DefaultFiles.hpp"
 
 
