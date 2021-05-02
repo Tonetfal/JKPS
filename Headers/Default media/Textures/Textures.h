@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnimationTexture.h"
+#include "AnimationTexture.hpp"
 #include "BackgroundTexture.h"
 #include "ButtonTexture.h"
 #include "icon.h"
