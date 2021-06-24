@@ -21,6 +21,7 @@ To edit font, button, animation or background texture write the path (without qu
 
 # Notes
 BPM is not accurate, it will be calcuted correctly only after a second and 9 frames.
+
 If you want to have non-square buttons, you have to set the path to the texture with your button, but also you have to change the animation texture, because it is still squared, - just put the same texture, but white one.
 
 # License
