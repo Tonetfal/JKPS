@@ -4,6 +4,7 @@
 #include "Settings.hpp"
 
 #include <math.h>
+#include <array>
 
 class Calculation
 {

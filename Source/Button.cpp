@@ -52,7 +52,7 @@ void Button::setupTextures()
 
     setTextures(mKeysAnimation, *mAnimationTexture);
     setColor(mKeysAnimation, Settings::AnimationTextureColor);
-    scaleTexture(mKeysAnimation, Settings::AnimationTextureSize);
+    scaleTexture(mKeysAnimation, Settings::ButtonTextureSize);
     setPositions(mKeysAnimation);
 }
 
