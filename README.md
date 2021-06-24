@@ -12,9 +12,9 @@ It supports up to 10 keys. Buttons, font, color, background, animation and other
 TODO
 
 # Usage
-To modify keys in program click Ctrl + Q, then click the required button to change with the **left mouse button** or with the **same key** to select it, then click the key that will replace the old one. To deselect a button click with left mouse button on it. To exit from edit mode click Ctrl + Q.
+To modify keys in program press Ctrl + Q, then click the button to change with the **left mouse button** or with the **same key** to select it, then press the key that will replace the old one. To deselect a button click with left mouse button on it. To exit from edit mode press Ctrl + Q.
 
-To exit from program click Ctrl + W or close it from the tray.
+To exit from program press Ctrl + W or close it from the tray.
 
 To edit anything else use KPS.cfg. Any settings value must have a space after semicolon, and if there are several values, such as keys or some digits, they must be separated with comma and do not have any space between.
 
