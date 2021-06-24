@@ -23,7 +23,7 @@ To know what keys can be written in the config check [SFML documentation](https:
 To edit font, button, animation or background texture write the path (without quotes) to the asset. 
 
 # Notes
-BPM is not accurate, it will be calcuted correctly only after a second and 7 frames
+BPM is not accurate, it will be calcuted correctly only after a second and 7 frames.
 
 # License
-TODO
+Licensed under the [MIT License](LICENSE).
