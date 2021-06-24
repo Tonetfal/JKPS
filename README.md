@@ -18,5 +18,8 @@ To edit anything else use KPS.cfg. Any settings value must have a space after se
 
 To edit font, button, animation or background texture write the path to the asset. 
 
+# Notes
+BPM is not accurate, it will be calcuted correctly only after a second and 7 frames
+
 # License
 TODO
