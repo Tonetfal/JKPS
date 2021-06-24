@@ -20,32 +20,7 @@ Application::Application(Settings& settings)
     icon.loadFromMemory(iconHeaderArray, 148300);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
 
-
-    if (Settings::ButtonTexturePath == "Default")
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 12600);
-    else
-        mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
-    if (Settings::AnimationTexturePath == "Default") 
-        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 8100);
-    else
-        mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
-
-    if (Settings::BackgroundTexturePath == "Default")
-        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 71900);
-    else
-        mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
-    
-    
-    if (Settings::KeyCountersFontPath == "Default")
-        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 1800000);
-    else
-        mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath);
-
-    if (Settings::StatisticsFontPath == "Default")
-        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 1800000);
-    else
-        mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
-
+    loadTextures();
 
     mStatistics.loadFonts(mFonts);
     mStatistics.setFonts();
@@ -140,8 +115,7 @@ void Application::update(sf::Time dt)
 {
     mCalculation.update();
     mStatistics.update( mCalculation.getKeyPerSecond()
-                    , mCalculation.getBeatsPerMinute()
-                    , mKeyPressingManager.mClickedKeys );
+        , mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys );
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
     mKeyPressingManager.clear();
     mSettings.update();
@@ -150,10 +124,12 @@ void Application::update(sf::Time dt)
 void Application::render()
 {
     mWindow.clear();
+
     mBackground.draw();
     mButtons.draw();
     mStatistics.draw();
     mSettings.draw();
+    
     mWindow.display();
 }
 
@@ -161,8 +137,39 @@ void Application::handleEvent(sf::Event event)
 {
     mWindow.setSize(sf::Vector2u(getWidth(), getHeight()));
 
-    mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x,
-                                                    mWindow.getSize().y)));
+    sf::Vector2f windowSize(mWindow.getSize());
+    sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
+    mWindow.setView(view);
+}
+
+void Application::loadTextures()
+{
+    std::string defaultName = "Default";
+
+    if (Settings::ButtonTexturePath == defaultName)
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 12600);
+    else
+        mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
+    if (Settings::AnimationTexturePath == defaultName) 
+        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 8100);
+    else
+        mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
+
+    if (Settings::BackgroundTexturePath == defaultName)
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 71900);
+    else
+        mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
+    
+    
+    if (Settings::KeyCountersFontPath == defaultName)
+        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 1800000);
+    else
+        mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath);
+
+    if (Settings::StatisticsFontPath == defaultName)
+        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 1800000);
+    else
+        mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
 }
 
 void Application::moveWindow()
@@ -179,15 +186,14 @@ void Application::moveWindow()
 
 unsigned int Application::getWidth()
 {
-    return    Settings::Distance * Settings::ButtonAmount
-            + Settings::ButtonTextureSize.x * Settings::ButtonAmount
-            + Settings::SpaceBetweenButtonsAndStatistics
-            + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText;
-            // 9 is value by eye
+    return Settings::Distance * Settings::ButtonAmount
+        + Settings::ButtonTextureSize.x * Settings::ButtonAmount
+        + Settings::SpaceBetweenButtonsAndStatistics
+        + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText;
+        // 9 is value by eye
 }
 
 unsigned int Application::getHeight()
 {
-    return    Settings::Distance * 2
-            + Settings::ButtonTextureSize.y;
+    return Settings::Distance * 2 + Settings::ButtonTextureSize.y;
 }

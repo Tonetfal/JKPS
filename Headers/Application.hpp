@@ -20,11 +20,11 @@ class Application
 
     private:
         void					    processInput();
+        void                        handleEvent(sf::Event event);
 		void					    update(sf::Time dt);
 		void					    render();
 
-        void                        handleEvent(sf::Event event);
-
+        void                        loadTextures();
 
         void                        moveWindow();
         unsigned int                getWidth();

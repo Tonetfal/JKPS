@@ -30,8 +30,8 @@ void Statistics::setupTextVector()
 
 void Statistics::setupTextPosition(int index)
 {
-    mKeyCountersText[index].setPosition(sf::Vector2f(getKeyCountersWidth(index),
-                                                     getKeyCountersHeight(index)));
+    mKeyCountersText[index].setPosition(sf::Vector2f(
+        getKeyCountersWidth(index), getKeyCountersHeight(index)));
 }
 
 void Statistics::setupLong(ID id)

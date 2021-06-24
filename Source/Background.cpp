@@ -23,10 +23,11 @@ void Background::loadTextures(TextureHolder& textureHolder)
 
 void Background::scaleTexture()
 {
-    mBackgroundSprite.scale((float) mWindow.getSize().x
-                                    / (mBackgroundSprite.getTexture()->getSize().x
-                                    * mBackgroundSprite.getScale().x),
-                            (float) mWindow.getSize().y
-                                    / (mBackgroundSprite.getTexture()->getSize().y
-                                    * mBackgroundSprite.getScale().y));
+    sf::Vector2f windowSize(mWindow.getSize());
+    sf::Vector2f bgSize(mBackgroundSprite.getTexture()->getSize());
+    sf::Vector2f scale(
+        windowSize.x / (bgSize.x * mBackgroundSprite.getScale().x),
+        windowSize.y / (bgSize.y * mBackgroundSprite.getScale().y));
+
+    mBackgroundSprite.scale(scale);
 }

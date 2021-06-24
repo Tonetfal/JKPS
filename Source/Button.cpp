@@ -11,8 +11,8 @@ void Button::update(std::vector<bool>& needToBeReleased)
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         if (!needToBeReleased[i])
-            mKeysAnimation[i].setColor(mKeysAnimation[i].getColor()
-                                     - sf::Color(0,0,0,Settings::AnimationVelocity));
+            mKeysAnimation[i].setColor(
+                mKeysAnimation[i].getColor() - sf::Color(0,0,0,Settings::AnimationVelocity));
     }
 }
 
@@ -76,12 +76,12 @@ void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
 
 void Button::scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& textureSize)
 {
+    sf::Vector2f vec2f(textureSize);
     for (auto& element : vector)
     {
-        element.scale(float (textureSize.x
-                        / element.getGlobalBounds().width)
-                    , float (textureSize.y
-                        / element.getGlobalBounds().height));
+        element.scale(
+            vec2f.x / element.getGlobalBounds().width, 
+            vec2f.y / element.getGlobalBounds().height);
     }
 }
 
@@ -89,9 +89,9 @@ void Button::setPositions(std::vector<sf::Sprite>& vector)
 {
     for (size_t i = 0; i < vector.size(); ++i)
     {
-        vector[i].setPosition(sf::Vector2f(
-                                Settings::Distance * (i + 1)
-                                + vector[i].getGlobalBounds().width * i
-                                , Settings::Distance));
+        sf::Vector2f position(
+            Settings::Distance * (i + 1) + vector[i].getGlobalBounds().width * i,
+            Settings::Distance);
+        vector[i].setPosition(position);
     }
 }

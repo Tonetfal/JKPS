@@ -696,19 +696,7 @@ void Settings::writeKeys(std::ofstream& ofConfig)
 
 bool Settings::isInRange(size_t index)
 {
-    auto mousePosition = sf::Mouse::getPosition() - mWindow->getPosition();
-    // std::cout << "Mouse position: " << mousePosition.x << "\t" << mousePosition.y << "\n";
-    // std::cout << "left x " << Distance * (index + 1) + ButtonTextureSize.x * index << "\t";
-    // std::cout << "right x " << Distance * (index + 1) + ButtonTextureSize.x * (index + 1) << "\t";
-    // std::cout << "top y " << Distance << "\t";
-    // std::cout << "bottom y " << Distance + ButtonTextureSize.y << "\t";
-    // std::cout << "\n";
-
-    // std::cout << bool (mousePosition.x > Distance * (index + 1)) + ButtonTextureSize.x * index << "\t";
-    // std::cout << bool (mousePosition.x < Distance * (index + 1) + ButtonTextureSize.x * (index + 1)) << "\t";
-    // std::cout << bool (mousePosition.y > Distance) << "\t";
-    // std::cout << bool (mousePosition.y < Distance + ButtonTextureSize.y) << "\t";
-    // std::cout << "\n";
+    sf::Vector2i mousePosition(sf::Mouse::getPosition(*mWindow));
 
     return  mousePosition.x > Distance * (index + 1) + ButtonTextureSize.x * index
         &&  mousePosition.x < Distance * (index + 1) + ButtonTextureSize.x * (index + 1)

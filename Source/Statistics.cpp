@@ -58,10 +58,11 @@ void Statistics::update(  std::size_t KeyPerSecond
         if (mKeyCounters[i] == 0 || Settings::IsChangeable)
         {
             if (i < Settings::KeyAmount)
-                mKeyCountersText[i].setString(convertKeyToString(Settings::Keys[i]).c_str());
+                mKeyCountersText[i].setString(convertKeyToString(
+                    Settings::Keys[i]).c_str());
             else
-                mKeyCountersText[i].setString(convertButtonToString
-                                                (Settings::MouseButtons[i - Settings::KeyAmount]).c_str());
+                mKeyCountersText[i].setString(convertButtonToString(
+                    Settings::MouseButtons[i - Settings::KeyAmount]).c_str());
         }
         else
             mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]).c_str());
@@ -140,8 +141,8 @@ void Statistics::reset()
 
 void Statistics::decreaseTextCharacterSize(int index)
 {
-    mKeyCountersText[index].setCharacterSize
-                            (mKeyCountersText[index].getCharacterSize() - 1);
+    mKeyCountersText[index].setCharacterSize(
+        mKeyCountersText[index].getCharacterSize() - 1);
 }
 
 void Statistics::handleHighlight(int buttonIndex)
