@@ -2,7 +2,7 @@
 KPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
 
 # Preview
-![](/modification demo.gif)
+![](modification demo.gif)
 
 ![](https://i.imgur.com/Oj5TnQZ.gif)
 
