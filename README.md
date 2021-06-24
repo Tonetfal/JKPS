@@ -8,7 +8,7 @@ KPS is a simple program that shows keystates, keys per second, total keys and cu
 
 It supports up to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
 
-# Downloads
+# Download
 TODO
 
 # Usage
