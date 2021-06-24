@@ -39,7 +39,7 @@ static std::string DefaultConfigString =
 "Animation texture size: 50,50\n"
 "Button texture color: 255,255,255,255\n"
 "Animation velocity: 30\n"
-"Animation color: 255,0,100,255\n"
+"Animation color: 255,255,255,255\n"
 "\n"
 "[Background]\n"
 "Background texture: Default\n"
