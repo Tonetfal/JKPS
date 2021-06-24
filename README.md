@@ -4,7 +4,7 @@ Is a simple program that shows keystates, keys per second, total keys and curren
 # Preview
 ![](https://i.imgur.com/aAtnBRt.gif)
 
-It supports 1 to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
+It supports up to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
 
 # Downloads
 TODO
