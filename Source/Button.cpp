@@ -11,8 +11,8 @@ void Button::update(std::vector<bool>& needToBeReleased)
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         if (!needToBeReleased[i])
-            mKeysAnimation[i].setColor(
-                mKeysAnimation[i].getColor() - sf::Color(0,0,0,Settings::AnimationVelocity));
+            mKeysAnimation[i].setColor(mKeysAnimation[i].getColor() - 
+                sf::Color(0,0,0,Settings::AnimationVelocity));
     }
 }
 
@@ -39,8 +39,7 @@ void Button::handleInput(std::vector<bool>& needToBeReleased)
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
         if (needToBeReleased[i])
-            mKeysAnimation[i].setColor(Settings::AnimationColor
-                                     + Settings::AnimationOnClickTransparency);
+            mKeysAnimation[i].setColor(Settings::AnimationColor);
 }
 
 void Button::setupTextures()
