@@ -1,6 +1,16 @@
 #include "../Headers/Settings.hpp"
 
-#define ERROR_MESSAGE(x) "Reading error - " + x + ". Default value will be set.\n"
+std::string getReadingErrMsg(const std::string &parName)
+{
+    return "Reading error - " + parName + ". Default value will be set.\n";
+}
+
+template <typename T>
+std::string getOutOfBoundsErrMsg(const std::string &parName, T bot, T top)
+{
+    return "Out of bounds - " + parName + " cannot be less than " + std::to_string(bot) + 
+        " or more than " + std::to_string(top) + ". Default value will be set.\n";
+}
 
 const std::size_t Settings::mFramesPerSecond = 60;
 
@@ -48,7 +58,9 @@ unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader
 unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
 
 sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
+sf::Keyboard::Key Settings::AltKeyToIncrease(sf::Keyboard::Add);
 sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
+sf::Keyboard::Key Settings::AltKeyToDecrease(sf::Keyboard::Subtract);
 
 Settings::Settings()
 : configPath("KPS.cfg")
@@ -149,7 +161,8 @@ void Settings::handleEvent(sf::Event event)
 {
     if (event.type == sf::Event::KeyPressed)
     {
-        if (event.key.code == KeyToIncrease
+        sf::Keyboard::Key key = event.key.code;
+        if ((key == KeyToIncrease || key == AltKeyToIncrease)
         &&  KeyAmount <= maximumKeys)
         {
             ++KeyAmount;
@@ -160,8 +173,8 @@ void Settings::handleEvent(sf::Event event)
             setDefaultKey(Keys.size() - 1);
             saveSettings();
         } 
-        else if (event.key.code == KeyToDecrease
-             &&  KeyAmount > minimumKeys)
+        else if ((key == KeyToDecrease || key == AltKeyToDecrease)
+        &&  KeyAmount > minimumKeys)
         {
             --KeyAmount;
             --ButtonAmount;
@@ -287,21 +300,16 @@ void Settings::setupDigitParameter(  T& parameter
 {
     if (information == "")
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getReadingErrMsg(parameterName);
         return;
     }
 
     T tmp = 0;
-    try 
-    {
-        tmp = std::stoi(information);
+    tmp = std::stoi(information);
 
-        if (tmp < limitMin || tmp > limitMax)
-            throw std::invalid_argument("");
-    } 
-    catch (std::invalid_argument& e)
+    if (tmp < limitMin || tmp > limitMax)
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getOutOfBoundsErrMsg(parameterName, limitMin, limitMax);
         return;
     }
 
@@ -315,7 +323,7 @@ void Settings::setupColor(sf::Color& color
 {
     if (information == "")
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getReadingErrMsg(parameterName);
         return;
     }
     
@@ -331,16 +339,11 @@ void Settings::setupColor(sf::Color& color
                 break;
         }
 
-        try 
-        {
-            rgba[i] = std::stoi(information.substr(stringIndex, 81));
+        rgba[i] = std::stoi(information.substr(stringIndex, 81));
 
-            if (rgba[i] < 0 || rgba[i] > 255)
-                throw std::invalid_argument("");
-        } 
-        catch (std::invalid_argument& e)
+        if (rgba[i] < 0 || rgba[i] > 255)
         {
-            errorLog << ERROR_MESSAGE(parameterName);
+            errorLog << getOutOfBoundsErrMsg(parameterName, 0, 255);
             return;
         }
 
@@ -361,7 +364,7 @@ void Settings::setupVector( T& vector
 {
     if (information == "")
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getReadingErrMsg(parameterName);
         return;
     }
 
@@ -369,16 +372,11 @@ void Settings::setupVector( T& vector
     size_t stringIndex = 0;
     for (size_t i = 0; i < 2; i++)
     {
-        try 
-        {
-            tmp[i] = std::stoi(information.substr(stringIndex, 81));
+        tmp[i] = std::stoi(information.substr(stringIndex, 81));
 
-            if (tmp[i] < limitMin || tmp[i] > limitMax)
-                throw std::invalid_argument("");
-        } 
-        catch (std::invalid_argument& e)
+        if (tmp[i] < limitMin || tmp[i] > limitMax)
         {
-            errorLog << ERROR_MESSAGE(parameterName);
+            errorLog << getOutOfBoundsErrMsg(parameterName, limitMin, limitMax);
             return;
         }
 
@@ -399,14 +397,14 @@ void Settings::setupFilePathParameter(  std::string& parameter
 
     if (information == "")
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getReadingErrMsg(parameterName);
         return;
     }
 
     std::ifstream test(information);
     if (!test.is_open())
     {
-        errorLog << ERROR_MESSAGE(parameterName);
+        errorLog << getReadingErrMsg(parameterName);
         test.close();
         return;
     }
@@ -422,7 +420,7 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
 {
     if (information == "")
     {
-        errorLog<< ERROR_MESSAGE(parameterName);
+        errorLog<< getReadingErrMsg(parameterName);
         return;
     }
 
@@ -453,7 +451,7 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
 
         if (foundKey == sf::Keyboard::Unknown)
         {
-            errorLog << ERROR_MESSAGE(parameterName);
+            errorLog << getReadingErrMsg(parameterName);
             break;
         }
 
@@ -479,7 +477,7 @@ void Settings::setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons
 {
     if (information == "")
     {
-        errorLog<< ERROR_MESSAGE(parameterName);
+        errorLog<< getReadingErrMsg(parameterName);
         return;
     }
 
@@ -510,7 +508,7 @@ void Settings::setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons
 
         if (foundMouseButton == sf::Mouse::ButtonCount)
         {
-            errorLog << ERROR_MESSAGE(parameterName);
+            errorLog << getReadingErrMsg(parameterName);
             break;
         }
 
@@ -538,8 +536,8 @@ void Settings::setupBoolParameter(  bool& parameter
     if (information == "true" || information == "TRUE"
     ||  information == "false" || information == "FALSE")
         return;
-
-    errorLog << ERROR_MESSAGE(parameterName);
+    else
+        errorLog << getReadingErrMsg(parameterName);
 }
 
 bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore)

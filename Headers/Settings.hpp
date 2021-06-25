@@ -115,7 +115,9 @@ class Settings
         static unsigned char*       DefaultBackgroundTexture;
 
         static sf::Keyboard::Key    KeyToIncrease;
+        static sf::Keyboard::Key    AltKeyToIncrease;
         static sf::Keyboard::Key    KeyToDecrease;
+        static sf::Keyboard::Key    AltKeyToDecrease;
 
 
     private:

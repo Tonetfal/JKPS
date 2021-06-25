@@ -3,11 +3,13 @@
 #include <iostream>
 
 static std::string DefaultConfigString = 
-"# If anything will not be found default settings for a parameter will be used\n"
+"# If any settings will not be found default parameter value will be used\n"
 "#\n"
 "# Single keys MUST be written in Caps\n"
 "# Available keys to set you can get there\n"
 "# https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php\n"
+"# For mouse buttons look here\n"
+"# https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Mouse.php\n"
 "# UpArrow, DownArrow etc can be written like so\n"
 "\n"
 "[Keys]\n"

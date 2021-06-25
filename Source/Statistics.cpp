@@ -77,7 +77,6 @@ void Statistics::update(  std::size_t KeyPerSecond
 
 void Statistics::handleEvent(sf::Event event)
 {
-    
     mKeyCounters.resize(Settings::ButtonAmount);
     mKeyCountersText.resize(Settings::ButtonAmount);
 
