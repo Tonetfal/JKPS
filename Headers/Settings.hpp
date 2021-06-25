@@ -85,8 +85,9 @@ class Settings
         static bool                 ShowBPMText;
 
         // [Spacing]
-        static float                Distance;
+        static float                ButtonDistance;
         static float                SpaceBetweenButtonsAndStatistics;
+        static float                SpaceOnStatisticsRight;
 
         // [Button graphics]
         static std::string          ButtonTexturePath;

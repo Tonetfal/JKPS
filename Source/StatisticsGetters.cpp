@@ -23,26 +23,30 @@ long Statistics::getKeyCounter(std::size_t index)
 unsigned int Statistics::getStatisticsWidth()
 {
     return    mWindow.getSize().x 
-            - Settings::StatisticsTextCharacterSize * 9.f;
+            - Settings::StatisticsTextCharacterSize * 9.f
+            - Settings::SpaceOnStatisticsRight;
             // 9.f is value by eye
 }
 
 unsigned int Statistics::getStatisticsHeight(ID id)
 {
-    return    Settings::Distance 
+    return    Settings::ButtonDistance 
             + Settings::StatisticsTextCharacterSize * id;
 }
 
 unsigned int Statistics::getKeyCountersWidth(size_t index)
 {
-    return    Settings::Distance * (index + 1) 
-            + Settings::ButtonTextureSize.x / 2.f * (index * 2 + 1)
-            - mKeyCountersText[index].getLocalBounds().width / 2;
+    unsigned int buttonCenterX = 
+        Settings::ButtonTextureSize.x * (index + 1) - 
+        Settings::ButtonTextureSize.x / 2U +
+        Settings::ButtonDistance * (index + 1);
+
+    return buttonCenterX - mKeyCountersText[index].getLocalBounds().width / 2.f;
 }
 
 unsigned int Statistics::getKeyCountersHeight(size_t index)
 {
-    return    Settings::ButtonTextureSize.y / 2 
-            - mKeyCountersText[index].getCharacterSize() / 2 
-            + Settings::Distance;
+    unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U + Settings::ButtonDistance;
+
+    return buttonCenterY - mKeyCountersText[index].getLocalBounds().height / 1.4f;
 }

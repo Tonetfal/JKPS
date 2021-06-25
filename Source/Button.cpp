@@ -89,8 +89,8 @@ void Button::setPositions(std::vector<sf::Sprite>& vector)
     for (size_t i = 0; i < vector.size(); ++i)
     {
         sf::Vector2f position(
-            Settings::Distance * (i + 1) + vector[i].getGlobalBounds().width * i,
-            Settings::Distance);
+            Settings::ButtonDistance * (i + 1) + vector[i].getGlobalBounds().width * i,
+            Settings::ButtonDistance);
         vector[i].setPosition(position);
     }
 }

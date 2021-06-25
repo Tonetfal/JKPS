@@ -9,8 +9,8 @@ void Statistics::setupText(ID id)
     if (!Settings::ShowStatisticsText)
         mTexts.get(id).setFillColor((Settings::KeyCountersTextColor - sf::Color(0,0,0,255)));
 
-    mTexts.get(id).setPosition(sf::Vector2f(getStatisticsWidth(),
-                                            getStatisticsHeight(id)));
+    mTexts.get(id).setPosition(sf::Vector2f(
+        getStatisticsWidth(), getStatisticsHeight(id)));
 }
 
 void Statistics::setupTextVector()

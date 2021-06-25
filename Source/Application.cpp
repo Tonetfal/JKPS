@@ -186,14 +186,15 @@ void Application::moveWindow()
 
 unsigned int Application::getWidth()
 {
-    return Settings::Distance * Settings::ButtonAmount
+    return Settings::ButtonDistance * Settings::ButtonAmount
         + Settings::ButtonTextureSize.x * Settings::ButtonAmount
         + Settings::SpaceBetweenButtonsAndStatistics
-        + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText;
+        + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
+        + Settings::SpaceOnStatisticsRight;
         // 9 is value by eye
 }
 
 unsigned int Application::getHeight()
 {
-    return Settings::Distance * 2 + Settings::ButtonTextureSize.y;
+    return Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y;
 }

@@ -31,8 +31,9 @@ bool Settings::ShowStatisticsText = true;
 bool Settings::ShowKeyCountersText = true;
 bool Settings::ShowBPMText = true;
 
-float Settings::Distance = 7.f;
+float Settings::ButtonDistance = 7.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 10.f;
+float Settings::SpaceOnStatisticsRight = 0.f;
 
 std::string Settings::ButtonTexturePath = "Default";
 std::string Settings::AnimationTexturePath = "Default";
@@ -118,8 +119,9 @@ Settings::Settings()
     setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 
     // [Spacing]
-    setupDigitParameter(Distance, 0, 100, findParameter("Distance"), "Distance", ofErrorLog);
+    setupDigitParameter(ButtonDistance, 0, 100, findParameter("Button distance"), "Button distance", ofErrorLog);
     setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
+    setupDigitParameter(SpaceOnStatisticsRight, 0, 200, findParameter("Space on the statistics right"), "Space on the statistics right", ofErrorLog);
 
     // [Button graphics]
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
@@ -696,10 +698,10 @@ bool Settings::isInRange(size_t index)
 {
     sf::Vector2i mousePosition(sf::Mouse::getPosition(*mWindow));
 
-    return  mousePosition.x > Distance * (index + 1) + ButtonTextureSize.x * index
-        &&  mousePosition.x < Distance * (index + 1) + ButtonTextureSize.x * (index + 1)
-        &&  mousePosition.y > Distance
-        &&  mousePosition.y < Distance + ButtonTextureSize.y;
+    return  mousePosition.x > ButtonDistance * (index + 1) + ButtonTextureSize.x * index
+        &&  mousePosition.x < ButtonDistance * (index + 1) + ButtonTextureSize.x * (index + 1)
+        &&  mousePosition.y > ButtonDistance
+        &&  mousePosition.y < ButtonDistance + ButtonTextureSize.y;
 }
 
 sf::Keyboard::Key Settings::getButtonToChange()

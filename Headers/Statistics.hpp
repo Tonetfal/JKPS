@@ -17,6 +17,8 @@
 
 #include <iostream>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 class Statistics
 {
     public:
@@ -72,8 +74,8 @@ class Statistics
         unsigned int                getKeyCountersWidth(size_t index);
         unsigned int                getKeyCountersHeight(size_t index);
 
-    private:
 
+    private:
         sf::RenderWindow&           mWindow;
 
         sf::Font*                   mStatisticsFont;
