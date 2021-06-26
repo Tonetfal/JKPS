@@ -42,7 +42,7 @@ std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
 sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
-std::size_t Settings::AnimationVelocity = 20;
+std::size_t Settings::AnimationVelocity = 6;
 sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
 sf::Vector2f Settings::AnimationScale(1.f, 1.f);
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
@@ -134,9 +134,9 @@ Settings::Settings()
     setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
     float tmp;
     setupDigitParameter(tmp, 0, 2, findParameter("Animation scale on click"), "Animation scale on click", ofErrorLog);
-    Settings::AnimationScale = sf::Vector2f(tmp, tmp);
+    AnimationScale = sf::Vector2f(tmp, tmp);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
-    setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
+    setupDigitParameter(AnimationVelocity, 0, 120, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
 
     // [Background]
     setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ofErrorLog);

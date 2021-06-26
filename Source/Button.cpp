@@ -21,6 +21,87 @@ void Button::update(std::vector<bool>& needToBeReleased)
     updateKeyCounters();
 }
 
+void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
+{
+    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
+    {
+        auto &elem = mAnimationSprite[i];
+        // Velocity = frames to perform the animation (be careful because the config one is substracted by 60)
+        sf::Color animation(0, 0, 0, 
+            255 / Settings::AnimationVelocity);
+
+        if (!needToBeReleased[i])
+        {
+            // Animation color
+            if (elem.getColor().a != 0)
+            {
+                elem.setColor(elem.getColor() - animation);
+            }
+
+            // Animation size
+            if (getDefaultScale().x != mButtonsSprite[i].getScale().x)
+            {
+                bool back;
+                sf::Vector2f scale;
+                do {
+                    back = false;
+                    if (getDefaultScale().x > mButtonsSprite[i].getScale().x)
+                    {
+                        scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
+                        back = false;
+                    }
+
+                    mButtonsSprite[i].setScale(scale);
+                    mAnimationSprite[i].setScale(scale);
+                    mKeyCountersText[i].setScale(mKeyCountersText[i].getScale() +
+                        getScaleForText());
+                    // Re-set position, otherwise the key will go to the left
+                    mKeyCountersText[i].setPosition(float(getKeyCountersWidth(i)), 
+                        float(getKeyCountersHeight(i)));
+
+                    // Check if went out of needed scaling
+                    if (getDefaultScale().x < mButtonsSprite[i].getScale().x)
+                    {
+                        scale = getDefaultScale();
+                        back = true;
+                    }
+                } while (back);
+            }
+        }
+    }
+}
+
+void Button::updateKeyCounters()
+{
+    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
+    {
+        // Display keys if...
+        std::string strToSet("");
+        if (Settings::IsChangeable || Settings::ShowSetKeysText 
+        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+        {
+            if (i < Settings::KeyAmount)
+                strToSet = convertKeyToString(Settings::Keys[i]);
+            else
+                strToSet = convertButtonToString(
+                    Settings::MouseButtons[i - Settings::KeyAmount]);
+        }
+        // Display clicks amount
+        else if (Settings::ShowKeyCountersText)
+            strToSet = std::to_string(mKeyCounters[i]);
+
+        mKeyCountersText[i].setString(strToSet);
+
+        setupTextPosition(i);
+        if (Settings::ShowKeyCountersText)
+        {
+            mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
+            while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
+                decreaseTextCharacterSize(i);
+        }
+    }
+}
+
 void Button::draw()
 {
     for (auto& elem : mButtonsSprite)
@@ -133,86 +214,6 @@ void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
         element.setColor(color);
 }
 
-void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
-{
-    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
-    {
-        auto &elem = mAnimationSprite[i];
-        // If velocity is 1, the animation will last 1 second, if velocity == frames, it will last 1 frame
-        sf::Color animation(0, 0, 0, 
-            255 / Settings::mFramesPerSecond * Settings::AnimationVelocity);
-
-        if (!needToBeReleased[i])
-        {
-            // Animation color
-            if (elem.getColor().a != 0)
-            {
-                elem.setColor(elem.getColor() - animation);
-            }
-
-            // Animation size
-            if (getDefaultScale().x != mButtonsSprite[i].getScale().x)
-            {
-                bool back = false;
-                do {
-                    sf::Vector2f scale;
-                    if (getDefaultScale().x > mButtonsSprite[i].getScale().x)
-                    {
-                        back = false;
-                        scale = getScaleAmountPerFrame();
-                    }
-                    
-                    // No else, because after last if the actual scale can be > 1
-                    if (getDefaultScale().x < mButtonsSprite[i].getScale().x)
-                    {
-                        back = true;
-                        scale = getDefaultScale();
-                    }
-
-                    mButtonsSprite[i].setScale(mButtonsSprite[i].getScale() + scale);
-                    mAnimationSprite[i].setScale(mButtonsSprite[i].getScale());
-                    mKeyCountersText[i].setScale(mKeyCountersText[i].getScale() +
-                        getScaleForText());
-                    // Re-set position, otherwise the key will go to the left
-                    mKeyCountersText[i].setPosition(float(getKeyCountersWidth(i)), 
-                    float(getKeyCountersHeight(i)));
-                } while (back);
-            }
-        }
-    }
-}
-
-void Button::updateKeyCounters()
-{
-    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
-    {
-        // Display keys if...
-        std::string strToSet("");
-        if (Settings::IsChangeable || Settings::ShowSetKeysText 
-        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
-        {
-            if (i < Settings::KeyAmount)
-                strToSet = convertKeyToString(Settings::Keys[i]);
-            else
-                strToSet = convertButtonToString(
-                    Settings::MouseButtons[i - Settings::KeyAmount]);
-        }
-        // Display clicks amount
-        else if (Settings::ShowKeyCountersText)
-            strToSet = std::to_string(mKeyCounters[i]);
-
-        mKeyCountersText[i].setString(strToSet);
-
-        setupTextPosition(i);
-        if (Settings::ShowKeyCountersText)
-        {
-            mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
-            while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
-                decreaseTextCharacterSize(i);
-        }
-    }
-}
-
 
 void Button::scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& textureSize)
 {
@@ -259,7 +260,7 @@ sf::Vector2f Button::getDefaultScale() const
 sf::Vector2f Button::getScaleForText() const
 {
     float x = (1.0f - Settings::AnimationScale.x) / 
-    Settings::mFramesPerSecond * Settings::AnimationVelocity;
+        Settings::AnimationVelocity;
 
     return {x, x};
 }
@@ -268,7 +269,7 @@ sf::Vector2f Button::getScaleForText() const
 sf::Vector2f Button::getScaleAmountPerFrame() const
 {
     float x = (getDefaultScale().x - Settings::ScaledAnimationScale.x) / 
-        Settings::mFramesPerSecond * Settings::AnimationVelocity;
+        Settings::AnimationVelocity;
 
     return {x, x};
 }
