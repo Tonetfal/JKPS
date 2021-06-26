@@ -42,7 +42,7 @@ std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
 sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
-std::size_t Settings::AnimationVelocity = 6;
+std::size_t Settings::AnimationVelocity = 7;
 sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
 sf::Vector2f Settings::AnimationScale(1.f, 1.f);
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
