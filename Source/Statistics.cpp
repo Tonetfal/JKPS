@@ -55,6 +55,7 @@ void Statistics::update(  std::size_t KeyPerSecond
 
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
+        // Display keys
         if (mKeyCounters[i] == 0 || Settings::IsChangeable)
         {
             if (i < Settings::KeyAmount)
@@ -64,9 +65,12 @@ void Statistics::update(  std::size_t KeyPerSecond
                 mKeyCountersText[i].setString(convertButtonToString(
                     Settings::MouseButtons[i - Settings::KeyAmount]).c_str());
         }
-        else
+        // Display clicks amount
+        else if (Settings::ShowKeyCountersText)
             mKeyCountersText[i].setString(std::to_string(mKeyCounters[i]).c_str());
-         
+        else   
+            mKeyCountersText[i].setString("");
+
         setupTextPosition(i);
         mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
         while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
@@ -112,7 +116,6 @@ void Statistics::draw()
 }
 
 
-
 void Statistics::loadFonts(FontHolder& font)
 {
     mStatisticsFont = &font.get(Fonts::Statistics);
@@ -146,7 +149,6 @@ void Statistics::decreaseTextCharacterSize(int index)
 
 void Statistics::handleHighlight(int buttonIndex)
 {
-    // :(
     for (auto& element : mKeyCountersText)
         element.setFillColor(Settings::KeyCountersTextColor);
 

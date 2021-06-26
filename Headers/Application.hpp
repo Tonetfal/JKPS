@@ -27,8 +27,8 @@ class Application
         void                        loadTextures();
 
         void                        moveWindow();
-        unsigned int                getWidth();
-        unsigned int                getHeight();
+        unsigned int                getWindowWidth();
+        unsigned int                getWindowHeight();
 
 
     private:
@@ -45,6 +45,5 @@ class Application
         Button                      mButtons;
         Background                  mBackground;
 
-        bool                        mMoveWindow;
         sf::Vector2i                mLastMousePosition;
 };

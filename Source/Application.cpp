@@ -3,7 +3,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/Settings::mFramesPerSecond);
 
 Application::Application(Settings& settings)
-: mWindow(sf::VideoMode(getWidth(), getHeight()), "KPS", sf::Style::None)
+: mWindow(sf::VideoMode(getWindowWidth(), getWindowHeight()), "KPS", sf::Style::None)
 , mTextures()
 , mFonts()
 , mSettings(settings)
@@ -12,7 +12,6 @@ Application::Application(Settings& settings)
 , mStatistics(mWindow)
 , mButtons(mWindow)
 , mBackground(mWindow)
-, mMoveWindow(false)
 {
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
@@ -119,6 +118,9 @@ void Application::update(sf::Time dt)
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
     mKeyPressingManager.clear();
     mSettings.update();
+
+    std::cout << Settings::ShowKeyCountersText << " ";
+    std::cout << Settings::IsChangeable << "\n";
 }
 
 void Application::render()
@@ -135,7 +137,7 @@ void Application::render()
 
 void Application::handleEvent(sf::Event event)
 {
-    mWindow.setSize(sf::Vector2u(getWidth(), getHeight()));
+    mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
 
     sf::Vector2f windowSize(mWindow.getSize());
     sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
@@ -177,14 +179,13 @@ void Application::moveWindow()
     if (sf::Mouse::isButtonPressed(sf::Mouse::Left)
     &&  mWindow.hasFocus())
     {
-        mWindow.setPosition(mWindow.getPosition()
-                            + sf::Mouse::getPosition()
-                            - mLastMousePosition);
+        mWindow.setPosition(mWindow.getPosition() + 
+            sf::Mouse::getPosition() - mLastMousePosition);
     }
     mLastMousePosition = sf::Mouse::getPosition();
 }
 
-unsigned int Application::getWidth()
+unsigned int Application::getWindowWidth()
 {
     return Settings::ButtonDistance * Settings::ButtonAmount
         + Settings::ButtonTextureSize.x * Settings::ButtonAmount
@@ -194,7 +195,7 @@ unsigned int Application::getWidth()
         // 9 is value by eye
 }
 
-unsigned int Application::getHeight()
+unsigned int Application::getWindowHeight()
 {
     return Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y;
 }
