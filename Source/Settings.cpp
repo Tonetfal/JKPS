@@ -29,6 +29,7 @@ std::size_t Settings::StatisticsTextCharacterSize = 12;
 std::size_t Settings::KeyCountersTextCharacterSize = 22;
 bool Settings::ShowStatisticsText = true;
 bool Settings::ShowKeyCountersText = true;
+bool Settings::ShowSetKeysText = false;
 bool Settings::ShowBPMText = true;
 
 float Settings::ButtonDistance = 7.f;
@@ -115,6 +116,7 @@ Settings::Settings()
     setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
     setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
     setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
+    setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
     setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
     setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 

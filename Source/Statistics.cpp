@@ -14,49 +14,64 @@ Statistics::Statistics(sf::RenderWindow& window)
 , mKeyCounters()
 , mKeyCountersText()
 {
-    setupLong(KPS);
-    setupLong(MaxKPS);
-    setupLong(TotalKeys);
-    setupLong(BPM);
-    setupLongVector();
-    
-    setupText(KPS);
-    setupText(MaxKPS);
-    setupText(TotalKeys);
-    setupText(BPM);
-    setupTextVector();
+    if (Settings::ShowStatisticsText)
+    {
+        setupLong(KPS);
+        setupLong(MaxKPS);
+        setupLong(TotalKeys);
+        
+        setupText(KPS);
+        setupText(MaxKPS);
+        setupText(TotalKeys);
 
-    setupString(KPS, "KPS");
-    setupString(MaxKPS, "Max KPS");
-    setupString(TotalKeys, "Total keys");
-    setupString(BPM, "Current BPM");
-    setupStringVector();
+        setupString(KPS, "KPS");
+        setupString(MaxKPS, "Max KPS");
+        setupString(TotalKeys, "Total keys");
+    }
+
+    if (Settings::ShowBPMText)
+    {
+        setupLong(BPM);
+        setupText(BPM);
+        setupLongVector();
+        setupString(BPM, "Current BPM");
+        setupTextVector();
+        setupStringVector();
+    }
 }
 
 void Statistics::update(  std::size_t KeyPerSecond
                         , size_t BeatsPerMinute
                         , std::vector<int>& clickedKeys )
 {
-    mLongs.get(KPS) = KeyPerSecond;
-    mLongs.get(BPM) = BeatsPerMinute;
+    if (Settings::ShowStatisticsText)
+    {
+        mLongs.get(KPS) = KeyPerSecond;
+        if (mLongs.get(KPS) > mLongs.get(MaxKPS))
+            mLongs.get(MaxKPS) = mLongs.get(KPS);
 
-    if (mLongs.get(KPS) > mLongs.get(MaxKPS))
-        mLongs.get(MaxKPS) = mLongs.get(KPS);
-
-    for (auto& element : clickedKeys)
-        mLongs.get(TotalKeys) += element;
-
-
-    SET_TEXT_STRING(KPS);
-    SET_TEXT_STRING(MaxKPS);
-    SET_TEXT_STRING(TotalKeys);
-    SET_TEXT_STRING(BPM);
+        for (auto& element : clickedKeys)
+            mLongs.get(TotalKeys) += element;
+    }
+    if (Settings::ShowBPMText)
+        mLongs.get(BPM) = BeatsPerMinute;
 
 
+    if (Settings::ShowStatisticsText)
+    {
+        SET_TEXT_STRING(KPS);
+        SET_TEXT_STRING(MaxKPS);
+        SET_TEXT_STRING(TotalKeys);
+    }
+    if (Settings::ShowBPMText)
+        SET_TEXT_STRING(BPM);
+
+
+    // Update counters on the buttons
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         // Display keys
-        if (mKeyCounters[i] == 0 || Settings::IsChangeable)
+        if (mKeyCounters[i] == 0 || Settings::IsChangeable || Settings::ShowSetKeysText)
         {
             if (i < Settings::KeyAmount)
                 mKeyCountersText[i].setString(convertKeyToString(
@@ -72,9 +87,12 @@ void Statistics::update(  std::size_t KeyPerSecond
             mKeyCountersText[i].setString("");
 
         setupTextPosition(i);
-        mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
-        while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
-            decreaseTextCharacterSize(i);
+        if (Settings::ShowKeyCountersText)
+        {
+            mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
+            while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
+                decreaseTextCharacterSize(i);
+        }
     }
 
 }
@@ -87,12 +105,18 @@ void Statistics::handleEvent(sf::Event event)
     if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease))
         setupLongVector(Settings::ButtonAmount - 1);
         
-    setupText(KPS);
-    setupText(MaxKPS);
-    setupText(TotalKeys);
-    setupText(BPM);
-    setupTextVector();
-    setFonts();
+    if (Settings::ShowStatisticsText)
+    {
+        setupText(KPS);
+        setupText(MaxKPS);
+        setupText(TotalKeys);
+    }
+    if (Settings::ShowBPMText)
+    {
+        setupText(BPM);
+        setupTextVector();
+        setFonts();
+    }
 }
 
 void Statistics::handleInput(KeyPressingManager& container)
@@ -103,15 +127,21 @@ void Statistics::handleInput(KeyPressingManager& container)
 
 void Statistics::draw()
 {
-    mWindow.draw(mTexts.get(KPS));
-    mWindow.draw(mTexts.get(MaxKPS));
-    mWindow.draw(mTexts.get(TotalKeys));
-    if (Settings::ShowBPMText)
-        mWindow.draw(mTexts.get(BPM));
-
-    for (auto& element : mKeyCountersText)
+    if (Settings::ShowStatisticsText)
     {
-        mWindow.draw(element);
+        mWindow.draw(mTexts.get(KPS));
+        mWindow.draw(mTexts.get(MaxKPS));
+        mWindow.draw(mTexts.get(TotalKeys));
+        if (Settings::ShowBPMText)
+            mWindow.draw(mTexts.get(BPM));
+    }
+
+    if (Settings::ShowBPMText)
+    {
+        for (auto& element : mKeyCountersText)
+        {
+            mWindow.draw(element);
+        }
     }
 }
 
@@ -124,13 +154,18 @@ void Statistics::loadFonts(FontHolder& font)
 
 void Statistics::setFonts()
 {
-    mTexts.get(KPS).setFont(*mStatisticsFont);
-    mTexts.get(MaxKPS).setFont(*mStatisticsFont);
-    mTexts.get(TotalKeys).setFont(*mStatisticsFont);
-    mTexts.get(BPM).setFont(*mStatisticsFont);
-
-    for (auto& element : mKeyCountersText)
-        element.setFont(*mKeyCountersFont);
+    if (Settings::ShowStatisticsText)
+    {
+        mTexts.get(KPS).setFont(*mStatisticsFont);
+        mTexts.get(MaxKPS).setFont(*mStatisticsFont);
+        mTexts.get(TotalKeys).setFont(*mStatisticsFont);
+        mTexts.get(BPM).setFont(*mStatisticsFont);
+    }
+    if (Settings::ShowBPMText)
+    {
+        for (auto& element : mKeyCountersText)
+            element.setFont(*mKeyCountersFont);
+    }
 }
 
 void Statistics::reset()

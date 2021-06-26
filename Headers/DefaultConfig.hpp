@@ -26,6 +26,7 @@ static std::string DefaultConfigString =
 "Statistics character size: 12\n"
 "Key counters character size: 22\n"
 "Show statistics: true\n"
+"Only show set keys: true\n"
 "Show key counters: true\n"
 "Show BPM: true\n"
 "\n"

@@ -81,6 +81,7 @@ class Settings
         static std::size_t          StatisticsTextCharacterSize;
         static std::size_t          KeyCountersTextCharacterSize;
         static bool                 ShowStatisticsText;
+        static bool                 ShowSetKeysText;
         static bool                 ShowKeyCountersText;
         static bool                 ShowBPMText;
 

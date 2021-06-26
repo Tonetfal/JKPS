@@ -113,14 +113,11 @@ void Application::processInput()
 void Application::update(sf::Time dt)
 {
     mCalculation.update();
-    mStatistics.update( mCalculation.getKeyPerSecond()
-        , mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys );
+    mStatistics.update( mCalculation.getKeyPerSecond(), 
+        mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys );
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
     mKeyPressingManager.clear();
     mSettings.update();
-
-    std::cout << Settings::ShowKeyCountersText << " ";
-    std::cout << Settings::IsChangeable << "\n";
 }
 
 void Application::render()
