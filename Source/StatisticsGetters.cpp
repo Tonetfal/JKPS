@@ -15,10 +15,6 @@ std::size_t Statistics::getTotalKeys()
     return mLongs.get(TotalKeys);
 }
 
-long Statistics::getKeyCounter(std::size_t index)
-{
-    return mKeyCounters[index];
-}
 
 unsigned int Statistics::getStatisticsWidth()
 {
@@ -34,19 +30,3 @@ unsigned int Statistics::getStatisticsHeight(ID id)
             + Settings::StatisticsTextCharacterSize * id;
 }
 
-unsigned int Statistics::getKeyCountersWidth(size_t index)
-{
-    unsigned int buttonCenterX = 
-        Settings::ButtonTextureSize.x * (index + 1) - 
-        Settings::ButtonTextureSize.x / 2U +
-        Settings::ButtonDistance * (index + 1);
-
-    return buttonCenterX - mKeyCountersText[index].getLocalBounds().width / 2.f;
-}
-
-unsigned int Statistics::getKeyCountersHeight(size_t index)
-{
-    unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U + Settings::ButtonDistance;
-
-    return buttonCenterY - mKeyCountersText[index].getLocalBounds().height / 1.4f;
-}

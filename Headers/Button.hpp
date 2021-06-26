@@ -15,27 +15,52 @@ class Button
 
         void                        update(std::vector<bool>& needToBeReleased);
         void                        draw();
-        void                        handleInput(std::vector<bool>& clickedKeys);
+        void                        handleInput(std::vector<bool>& clickedKeys, KeyPressingManager& container);
         void                        handleEvent(sf::Event event);
-
-        void                        setupTextures();
+        void                        handleHighlight(int buttonIndex);
 
         void                        loadTextures(TextureHolder& textureHolder);
+        void                        loadFonts(FontHolder& fontHolder);
+
+        void                        setFonts();
+        void                        setupTextures(); 
 
 
     private:
+        void                        updateAnimation(const std::vector<bool>& needToBeReleased);
+        void                        updateKeyCounters();
+
+
         void                        setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture);
         void                        setColor(std::vector<sf::Sprite>& vector, sf::Color& color);
         void                        scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& texture);
-        void                        setPositions(std::vector<sf::Sprite>& vector);
+        void                        centerOrigin(std::vector<sf::Sprite>& vector);
+        void                        setButtonPositions(std::vector<sf::Sprite>& vector);
+        sf::Vector2f                getDefaultScale() const;
+        sf::Vector2f                getScaleForText() const;
+        sf::Vector2f                getScaleAmountPerFrame() const;
+
+        void                        setupKeyCounterTextVec();
+        void                        setupKeyCounterVec();
+        void                        setupKeyCounterVec(size_t index); 
+        void                        setupKeyCounterStrVec();
+        void                        setupTextPosition(int index);
+        void                        decreaseTextCharacterSize(int index);
+
+        unsigned int                getKeyCountersWidth(size_t index) const;
+        unsigned int                getKeyCountersHeight(size_t index) const;
 
     
     private:
         sf::RenderWindow&           mWindow;
 
+        sf::Font*                   mKeyCountersFont;
+        std::vector<long>           mKeyCounters;
+        std::vector<sf::Text>       mKeyCountersText;
+
         sf::Texture*                mButtonTexture;
         sf::Texture*                mAnimationTexture;
 
-        std::vector<sf::Sprite>     mKeysSprite;
-        std::vector<sf::Sprite>     mKeysAnimation;
+        std::vector<sf::Sprite>     mButtonsSprite;
+        std::vector<sf::Sprite>     mAnimationSprite;
 };

@@ -19,12 +19,14 @@ Application::Application(Settings& settings)
     icon.loadFromMemory(iconHeaderArray, 148300);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
 
-    loadTextures();
+    loadAssets();
 
     mStatistics.loadFonts(mFonts);
     mStatistics.setFonts();
     mButtons.loadTextures(mTextures);
 
+    mButtons.loadFonts(mFonts);
+    mButtons.setFonts();
     mButtons.setupTextures();
 
     mSettings.setWindowReference(mWindow);
@@ -91,7 +93,7 @@ void Application::processInput()
             if (Settings::IsChangeable)
             {
                 mSettings.handleEvent(event);
-                mStatistics.handleHighlight(mSettings.getButtonToChangeIndex());
+                mButtons.handleHighlight(mSettings.getButtonToChangeIndex());
 
                 if (mSettings.wasButtonAmountChanged())
                 {
@@ -111,8 +113,8 @@ void Application::processInput()
     if (!Settings::IsChangeable)
     {
         mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
-        mStatistics.handleInput(mKeyPressingManager);
-        mButtons.handleInput(mKeyPressingManager.mNeedToBeReleased);
+        mButtons.handleInput(mKeyPressingManager.mNeedToBeReleased, 
+            mKeyPressingManager);
     }
 }
 
@@ -128,12 +130,11 @@ void Application::update(sf::Time dt)
 
 void Application::render()
 {
-    std::cout << Settings::ShowSetKeysText << "\n";
     mWindow.clear();
 
     mBackground.draw();
-    mButtons.draw();
     mStatistics.draw();
+    mButtons.draw();
     mSettings.draw();
     
     mWindow.display();
@@ -148,7 +149,7 @@ void Application::handleEvent(sf::Event event)
     mWindow.setView(view);
 }
 
-void Application::loadTextures()
+void Application::loadAssets()
 {
     std::string defaultName = "Default";
 

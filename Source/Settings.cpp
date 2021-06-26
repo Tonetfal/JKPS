@@ -40,11 +40,12 @@ float Settings::SpaceOnStatisticsRight = 0.f;
 std::string Settings::ButtonTexturePath = "Default";
 std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
-sf::Vector2u Settings::AnimationTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
 sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
 std::size_t Settings::AnimationVelocity = 20;
 sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
+sf::Vector2f Settings::AnimationScale(1.f, 1.f);
+sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
 
 std::string Settings::BackgroundTexturePath = "Default";
@@ -130,8 +131,10 @@ Settings::Settings()
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
     setupFilePathParameter(AnimationTexturePath, findParameter("Animation texture"), "Animation texture", ofErrorLog);
     setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
-    setupVector(AnimationTextureSize, 0, 250, findParameter("Animation texture size"), "Animation texture size", ofErrorLog);
     setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
+    float tmp;
+    setupDigitParameter(tmp, 0, 2, findParameter("Animation scale on click"), "Animation scale on click", ofErrorLog);
+    Settings::AnimationScale = sf::Vector2f(tmp, tmp);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
     setupDigitParameter(AnimationVelocity, 0, 1000, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
 
@@ -310,7 +313,9 @@ void Settings::setupDigitParameter(  T& parameter
     }
 
     T tmp = 0;
-    tmp = std::stoi(information);
+    // stof and not stoi because some values can be float, but int values
+    // will be parsed automatically
+    tmp = std::stof(information);
 
     if (tmp < limitMin || tmp > limitMax)
     {
@@ -377,7 +382,9 @@ void Settings::setupVector( T& vector
     size_t stringIndex = 0;
     for (size_t i = 0; i < 2; i++)
     {
-        tmp[i] = std::stoi(information.substr(stringIndex, 81));
+        // stof and not stoi because some values can be float, but int values
+        // will be parsed automatically
+        tmp[i] = std::stof(information.substr(stringIndex, 81));
 
         if (tmp[i] < limitMin || tmp[i] > limitMax)
         {

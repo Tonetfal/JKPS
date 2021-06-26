@@ -24,7 +24,7 @@ class Application
 		void					    update(sf::Time dt);
 		void					    render();
 
-        void                        loadTextures();
+        void                        loadAssets();
 
         void                        moveWindow();
         unsigned int                getWindowWidth();

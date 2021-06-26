@@ -92,10 +92,11 @@ class Settings
         static std::string          ButtonTexturePath;
         static std::string          AnimationTexturePath;
         static sf::Vector2u         ButtonTextureSize;
-        static sf::Vector2u         AnimationTextureSize;
         static sf::Color            AnimationTextureColor;
         static sf::Color            ButtonTextureColor;
         static std::size_t          AnimationVelocity;
+        static sf::Vector2f         AnimationScale;
+        static sf::Vector2f         ScaledAnimationScale;
         static sf::Color            AnimationColor;
         static sf::Color            AnimationOnClickTransparency;
 
