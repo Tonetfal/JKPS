@@ -536,11 +536,12 @@ void Settings::setupBoolParameter(  bool& parameter
                             ,       std::ofstream& errorLog)
                         
 {
-    parameter = !(information == "false" || information == "FALSE");
-
-    if (information == "true" || information == "TRUE"
-    ||  information == "false" || information == "FALSE")
-        return;
+    if (information == "true" || information == "false"
+    ||  information == "True" || information == "False"
+    ||  information == "TRUE" || information == "FALSE")
+    {
+        parameter = !(information == "false" || information == "FALSE" || information == "False");
+    }
     else
         errorLog << getReadingErrMsg(parameterName);
 }

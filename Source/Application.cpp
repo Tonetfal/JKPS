@@ -128,6 +128,7 @@ void Application::update(sf::Time dt)
 
 void Application::render()
 {
+    std::cout << Settings::ShowSetKeysText << "\n";
     mWindow.clear();
 
     mBackground.draw();
