@@ -32,7 +32,6 @@ Application::Application(Settings& settings)
 
     mBackground.loadTextures(mTextures);
     mBackground.scaleTexture();
-    
 }
 
 void Application::run()
@@ -81,6 +80,12 @@ void Application::processInput()
                     mWindow.close();
                     return;
                 }
+            }
+            if (event.type == sf::Event::Closed)
+            {
+                mSettings.saveSettings();
+                mWindow.close();
+                return;
             }
 
             if (Settings::IsChangeable)
