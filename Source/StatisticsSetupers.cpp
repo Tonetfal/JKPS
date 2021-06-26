@@ -9,6 +9,7 @@ void Statistics::setupText(ID id)
 
     mTexts.get(id).setPosition(sf::Vector2f(
         getStatisticsWidth(), getStatisticsHeight(id)));
+        
 }
 
 void Statistics::setupTextVector()

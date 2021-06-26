@@ -40,9 +40,7 @@ class Settings
         bool                        isInRange(size_t index);
 
 
-
     private:
-
         std::string                 findParameter(std::string parameterName);
 
         void                        setDefaultKey(size_t index);

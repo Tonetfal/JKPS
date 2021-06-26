@@ -122,7 +122,7 @@ void Statistics::handleEvent(sf::Event event)
 void Statistics::handleInput(KeyPressingManager& container)
 {
     for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
-        mKeyCounters[i] += container.mClickedKeys[i] ;
+        mKeyCounters[i] += container.mClickedKeys[i];
 }
 
 void Statistics::draw()

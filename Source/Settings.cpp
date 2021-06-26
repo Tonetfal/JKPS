@@ -12,6 +12,7 @@ std::string getOutOfBoundsErrMsg(const std::string &parName, T bot, T top)
         " or more than " + std::to_string(top) + ". Default value will be set.\n";
 }
 
+
 const std::size_t Settings::mFramesPerSecond = 60;
 
 std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z

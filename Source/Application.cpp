@@ -32,6 +32,7 @@ Application::Application(Settings& settings)
 
     mBackground.loadTextures(mTextures);
     mBackground.scaleTexture();
+    
 }
 
 void Application::run()
