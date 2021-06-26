@@ -44,7 +44,7 @@ sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
 sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
 std::size_t Settings::AnimationVelocity = 7;
 sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
-sf::Vector2f Settings::AnimationScale(1.f, 1.f);
+sf::Vector2f Settings::AnimationScale(0.9f, 0.9f);
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
 
