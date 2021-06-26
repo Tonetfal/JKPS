@@ -47,6 +47,8 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
                     back = false;
                     if (getDefaultScale().x > mButtonsSprite[i].getScale().x)
                     {
+                        std::cout << mButtonsSprite[i].getScale().x << "\n";
+                        std::cout << getScaleAmountPerFrame().x << "\n";
                         scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
                         back = false;
                     }
@@ -218,7 +220,7 @@ void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
 void Button::scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& textureSize)
 {
     for (auto& element : vector)
-        element.scale(getDefaultScale());
+        element.setScale(getDefaultScale());
 }
 
 void Button::centerOrigin(std::vector<sf::Sprite>& vector)

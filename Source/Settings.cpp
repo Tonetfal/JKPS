@@ -132,7 +132,7 @@ Settings::Settings()
     setupFilePathParameter(AnimationTexturePath, findParameter("Animation texture"), "Animation texture", ofErrorLog);
     setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
     setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
-    float tmp;
+    float tmp = 1.f;
     setupDigitParameter(tmp, 0, 2, findParameter("Animation scale on click"), "Animation scale on click", ofErrorLog);
     AnimationScale = sf::Vector2f(tmp, tmp);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
