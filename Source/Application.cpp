@@ -34,6 +34,8 @@ Application::Application(Settings& settings)
 
     mBackground.loadTextures(mTextures);
     mBackground.scaleTexture();
+    // mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
+
 }
 
 void Application::run()
@@ -202,5 +204,9 @@ unsigned int Application::getWindowWidth()
 
 unsigned int Application::getWindowHeight()
 {
-    return Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y;
+    // I don't multiply ButtonDistance by 2 since getTotalStatisticsHeight() 
+    // gives values which are a little bit more than the real one
+    
+    return std::max(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance,
+       Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }

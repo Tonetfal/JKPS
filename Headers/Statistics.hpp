@@ -14,6 +14,7 @@
 #include <string>
 #include <stddef.h>
 #include <math.h>
+#include <cmath>
 
 #include <iostream>
 
@@ -50,6 +51,8 @@ class Statistics
         std::size_t                 getKeyPerSecond();
         std::size_t                 getMaxKeyPerSecond();
         std::size_t                 getTotalKeys();
+
+        std::size_t                 getTotalStatisticsHeight();
 
 
     private:
