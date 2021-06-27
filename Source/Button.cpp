@@ -47,8 +47,6 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
                     back = false;
                     if (getDefaultScale().x > mButtonsSprite[i].getScale().x)
                     {
-                        std::cout << mButtonsSprite[i].getScale().x << "\n";
-                        std::cout << getScaleAmountPerFrame().x << "\n";
                         scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
                         back = false;
                     }
