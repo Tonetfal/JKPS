@@ -27,8 +27,7 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
     {
         auto &elem = mAnimationSprite[i];
         // Velocity = frames to perform the animation (be careful because the config one is substracted by 60)
-        sf::Color animation(0, 0, 0, 
-            255 / Settings::AnimationVelocity);
+        sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
 
         if (!needToBeReleased[i])
         {

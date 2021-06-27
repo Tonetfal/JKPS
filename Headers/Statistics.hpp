@@ -31,12 +31,6 @@ class Statistics
             BPM,
         };
 
-        enum KeyCountersType
-        {
-            Numbers,
-            Letters,
-        };
-
         
     public:
                                     Statistics(sf::RenderWindow& window);
