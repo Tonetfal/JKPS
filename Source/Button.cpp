@@ -98,25 +98,15 @@ void Button::updateKeyCounters()
         if (Settings::ShowKeyCountersText)
         {
             mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
-            while (mKeyCountersText[i].getLocalBounds().width > Settings::ButtonTextureSize.x)
+            while (mKeyCountersText[i].getLocalBounds().width > 
+                    Settings::ButtonTextureSize.x - Settings::ButtonTextureSize.x / 10
+                || mKeyCountersText[i].getLocalBounds().height > 
+                    Settings::ButtonTextureSize.y - Settings::ButtonTextureSize.y / 10)
+            {
                 decreaseTextCharacterSize(i);
+            }
         }
     }
-}
-
-void Button::draw()
-{
-    for (auto& elem : mButtonsSprite)
-        mWindow.draw(elem);
-
-    for (auto& elem : mAnimationSprite)
-        mWindow.draw(elem);
-
-    // If is changeable set keys must be displayed
-    if (Settings::ShowKeyCountersText || Settings::IsChangeable
-    ||  Settings::ShowSetKeysText)
-        for (auto& elem : mKeyCountersText)
-            mWindow.draw(elem);
 }
 
 // Increase/Decrease key amount
@@ -142,7 +132,8 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
 {
     if (Settings::ShowKeyCountersText)
         for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
-            mKeyCounters[i] += container.mClickedKeys[i];
+            if (container.mClickedKeys[i] > 0) 
+                mKeyCounters[i] += 1000;
 
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
@@ -166,6 +157,38 @@ void Button::handleHighlight(int buttonIndex)
         mKeyCountersText[buttonIndex].setFillColor(Settings::HighlightedKeyColor);
 }
 
+void Button::draw()
+{
+    for (auto& elem : mButtonsSprite)
+        mWindow.draw(elem);
+
+    for (auto& elem : mAnimationSprite)
+        mWindow.draw(elem);
+
+    // If is changeable set keys must be displayed
+    if (Settings::ShowKeyCountersText || Settings::IsChangeable
+    ||  Settings::ShowSetKeysText)
+        for (auto& elem : mKeyCountersText)
+            mWindow.draw(elem);
+}
+
+void Button::loadTextures(TextureHolder& textureHolder)
+{
+    mButtonTexture = &textureHolder.get(Textures::KeyButton);
+    mAnimationTexture = &textureHolder.get(Textures::ButtonAnimation);
+}
+void Button::loadFonts(FontHolder& fontHolder)
+{
+    mKeyCountersFont = nullptr;
+    mKeyCountersFont = &fontHolder.get(Fonts::KeyCounters);
+}
+
+void Button::setFonts()
+{
+    for (auto& element : mKeyCountersText)
+        element.setFont(*mKeyCountersFont);
+}
+
 void Button::setupTextures()
 {
     setTextures(mButtonsSprite, *mButtonTexture);
@@ -181,33 +204,10 @@ void Button::setupTextures()
     setButtonPositions(mAnimationSprite);
 }
 
-void Button::loadTextures(TextureHolder& textureHolder)
-{
-    mButtonTexture = &textureHolder.get(Textures::KeyButton);
-    mAnimationTexture = &textureHolder.get(Textures::ButtonAnimation);
-}
-void Button::loadFonts(FontHolder& fontHolder)
-{
-    mKeyCountersFont = nullptr;
-    mKeyCountersFont = &fontHolder.get(Fonts::KeyCounters);
-}
-
-void Button::setupTextPosition(int index)
-{
-    mKeyCountersText[index].setPosition(sf::Vector2f(
-        getKeyCountersWidth(index), getKeyCountersHeight(index)));
-}
-
 void Button::setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture)
 {
     for (auto& element : vector)
         element.setTexture(texture);
-}
-
-void Button::setFonts()
-{
-    for (auto& element : mKeyCountersText)
-        element.setFont(*mKeyCountersFont);
 }
 
 void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
@@ -215,7 +215,6 @@ void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
     for (auto& element : vector)
         element.setColor(color);
 }
-
 
 void Button::scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& textureSize)
 {
@@ -276,33 +275,6 @@ sf::Vector2f Button::getScaleAmountPerFrame() const
     return {x, x};
 }
 
-
-
-
-void Button::decreaseTextCharacterSize(int index)
-{
-    mKeyCountersText[index].setCharacterSize(
-        mKeyCountersText[index].getCharacterSize() - 1);
-}
-
-unsigned int Button::getKeyCountersWidth(size_t index) const
-{
-    unsigned int buttonCenterX = 
-        Settings::ButtonTextureSize.x * (index + 1) - 
-        Settings::ButtonTextureSize.x / 2U +
-        Settings::ButtonDistance * (index + 1);
-
-    return buttonCenterX - mKeyCountersText[index].getLocalBounds().width / 2.f;
-}
-
-unsigned int Button::getKeyCountersHeight(size_t index) const
-{
-    unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U + Settings::ButtonDistance;
-
-    return buttonCenterY - mKeyCountersText[index].getLocalBounds().height / 1.4f;
-        // 1.4f is value by eye
-}
-
 void Button::setupKeyCounterTextVec()
 {
     mKeyCountersText.resize(Settings::ButtonAmount);
@@ -335,4 +307,34 @@ void Button::setupKeyCounterStrVec()
     {
         mKeyCountersText[i].setString("0");
     }
+}
+
+void Button::setupTextPosition(int index)
+{
+    mKeyCountersText[index].setPosition(sf::Vector2f(
+        getKeyCountersWidth(index), getKeyCountersHeight(index)));
+}
+
+void Button::decreaseTextCharacterSize(int index)
+{
+    mKeyCountersText[index].setCharacterSize(
+        mKeyCountersText[index].getCharacterSize() - 1);
+}
+
+unsigned int Button::getKeyCountersWidth(size_t index) const
+{
+    unsigned int buttonCenterX = 
+        Settings::ButtonTextureSize.x * (index + 1) - 
+        Settings::ButtonTextureSize.x / 2U +
+        Settings::ButtonDistance * (index + 1);
+
+    return buttonCenterX - mKeyCountersText[index].getLocalBounds().width / 2.f;
+}
+
+unsigned int Button::getKeyCountersHeight(size_t index) const
+{
+    unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U + Settings::ButtonDistance;
+
+    return buttonCenterY - mKeyCountersText[index].getLocalBounds().height / 1.4f;
+        // 1.4f is value by eye
 }

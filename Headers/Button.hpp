@@ -14,10 +14,10 @@ class Button
                                     Button(sf::RenderWindow& window);
 
         void                        update(std::vector<bool>& needToBeReleased);
-        void                        draw();
         void                        handleInput(std::vector<bool>& clickedKeys, KeyPressingManager& container);
         void                        handleEvent(sf::Event event);
         void                        handleHighlight(int buttonIndex);
+        void                        draw();
 
         void                        loadTextures(TextureHolder& textureHolder);
         void                        loadFonts(FontHolder& fontHolder);
@@ -29,7 +29,6 @@ class Button
     private:
         void                        updateAnimation(const std::vector<bool>& needToBeReleased);
         void                        updateKeyCounters();
-
 
         void                        setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture);
         void                        setColor(std::vector<sf::Sprite>& vector, sf::Color& color);
