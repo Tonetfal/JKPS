@@ -2,7 +2,7 @@
 KPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
 
 # Preview
-![](preview.gif)
+![](Preset-1.gif)
 
 It supports up to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
 
@@ -25,11 +25,11 @@ To know what keys and buttons can be written in the config check SFML documentat
 - If you want to have non-square buttons, you have to set the path to the texture with your button, but also you have to change the animation texture, because it is still squared, - just put the same texture, but white one.
 
 # Themes
-![](preview.gif)
-
 ![](Preset-1.gif)
 
 ![](Preset-2.gif)
+
+![](Preset-3.gif)
 
 # License
 Licensed under the [MIT License](LICENSE).
