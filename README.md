@@ -24,7 +24,7 @@ To know what keys and buttons can be written in the config check SFML documentat
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames.
 - If you want to have non-square buttons, you have to set the path to the texture with your button, but also you have to change the animation texture, because it is still squared, - just put the same texture, but white one.
 
-# Themes
+# [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 ![](Preset-1.gif)
 
 ![](Preset-2.gif)
