@@ -25,9 +25,9 @@ std::size_t Settings::ButtonAmount = Settings::KeyAmount + Settings::MouseButton
 std::string Settings::StatisticsFontPath = "Default";
 std::string Settings::KeyCountersFontPath = "Default";
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
-sf::Color Settings::KeyCountersTextColor(sf::Color::Black);
-std::size_t Settings::StatisticsTextCharacterSize = 12;
-std::size_t Settings::KeyCountersTextCharacterSize = 22;
+sf::Color Settings::KeyCountersTextColor(sf::Color::White);
+std::size_t Settings::StatisticsTextCharacterSize = 11;
+std::size_t Settings::KeyCountersTextCharacterSize = 14;
 bool Settings::ShowStatisticsText = true;
 bool Settings::ShowKeyCountersText = true;
 bool Settings::ShowSetKeysText = false;
@@ -35,21 +35,20 @@ bool Settings::ShowBPMText = true;
 
 float Settings::ButtonDistance = 7.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 10.f;
-float Settings::SpaceOnStatisticsRight = 0.f;
+float Settings::SpaceOnStatisticsRight = 35.f;
 
 std::string Settings::ButtonTexturePath = "Default";
 std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
-sf::Color Settings::ButtonTextureColor(sf::Color(255,255,255,255));
-sf::Color Settings::AnimationTextureColor(sf::Color(0,0,0,0));
-std::size_t Settings::AnimationVelocity = 7;
-sf::Color Settings::AnimationColor(sf::Color(255,255,255,255));
-sf::Vector2f Settings::AnimationScale(0.9f, 0.9f);
+sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
+std::size_t Settings::AnimationVelocity = 20;
+sf::Color Settings::AnimationColor(sf::Color(250,180,0));
+sf::Vector2f Settings::AnimationScale(1.f, 1.f);
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
 
 std::string Settings::BackgroundTexturePath = "Default";
-sf::Color Settings::BackgroundColor(sf::Color(44,28,31,180));
+sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
 
 bool Settings::IsChangeable = false;
 sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);

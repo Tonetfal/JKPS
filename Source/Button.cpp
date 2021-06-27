@@ -132,8 +132,7 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
 {
     if (Settings::ShowKeyCountersText)
         for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
-            if (container.mClickedKeys[i] > 0) 
-                mKeyCounters[i] += 1000;
+                mKeyCounters[i] += container.mClickedKeys[i];
 
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
@@ -198,7 +197,7 @@ void Button::setupTextures()
     setButtonPositions(mButtonsSprite);
 
     setTextures(mAnimationSprite, *mAnimationTexture);
-    setColor(mAnimationSprite, Settings::AnimationTextureColor);
+    setColor(mAnimationSprite, sf::Color::Transparent);
     scaleTexture(mAnimationSprite, Settings::ButtonTextureSize);
     centerOrigin(mAnimationSprite);
     setButtonPositions(mAnimationSprite);
@@ -210,7 +209,7 @@ void Button::setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture)
         element.setTexture(texture);
 }
 
-void Button::setColor(std::vector<sf::Sprite>& vector, sf::Color& color)
+void Button::setColor(std::vector<sf::Sprite>& vector, const sf::Color& color)
 {
     for (auto& element : vector)
         element.setColor(color);

@@ -156,27 +156,27 @@ void Application::loadAssets()
     std::string defaultName = "Default";
 
     if (Settings::ButtonTexturePath == defaultName)
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 12600);
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 7400);
     else
         mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
     if (Settings::AnimationTexturePath == defaultName) 
-        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 8100);
+        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 65600);
     else
         mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
 
     if (Settings::BackgroundTexturePath == defaultName)
-        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 71900);
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 14600);
     else
         mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
     
     
     if (Settings::KeyCountersFontPath == defaultName)
-        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 1800000);
+        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 446100);
     else
         mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath);
 
     if (Settings::StatisticsFontPath == defaultName)
-        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 1800000);
+        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
     else
         mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
 }
@@ -206,7 +206,7 @@ unsigned int Application::getWindowHeight()
 {
     // I don't multiply ButtonDistance by 2 since getTotalStatisticsHeight() 
     // gives values which are a little bit more than the real one
-    
+
     return std::max(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance,
        Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }

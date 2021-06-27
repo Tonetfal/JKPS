@@ -31,7 +31,7 @@ class Button
         void                        updateKeyCounters();
 
         void                        setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture);
-        void                        setColor(std::vector<sf::Sprite>& vector, sf::Color& color);
+        void                        setColor(std::vector<sf::Sprite>& vector, const sf::Color& color);
         void                        scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& texture);
         void                        centerOrigin(std::vector<sf::Sprite>& vector);
         void                        setButtonPositions(std::vector<sf::Sprite>& vector);
