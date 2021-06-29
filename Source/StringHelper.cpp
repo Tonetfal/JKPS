@@ -2,8 +2,12 @@
 
 // For more information
 // https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php
+// https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Mouse.php 
+// sf::Keyboard::A is used as unknown key in order to make the user change the regardless
+// the fact that he didn't pass the idiot proof
+// Same thing with mouse, I use sf::Mouse::Left as unknown button
 
-std::string convertKeyToString(sf::Keyboard::Key key)
+std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
 {
     switch (key)
     {
@@ -55,14 +59,14 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         case sf::Keyboard::Menu: return "Menu";
         case sf::Keyboard::LBracket: return "LBracket";
         case sf::Keyboard::RBracket: return "RBracket";
-        case sf::Keyboard::Semicolon: return "Semicolon";
-        case sf::Keyboard::Comma: return "Comma";
-        case sf::Keyboard::Period: return "Period";
-        case sf::Keyboard::Quote: return "Quote";
-        case sf::Keyboard::Slash: return "Slash";
-        case sf::Keyboard::Backslash: return "Backslash";
-        case sf::Keyboard::Tilde: return "Tilde";
-        case sf::Keyboard::Hyphen: return "Hyphen";
+        case sf::Keyboard::Semicolon: return (saveToCfg ? "Semicolon" : ":");
+        case sf::Keyboard::Comma: return (saveToCfg ? "Comma" : ",");
+        case sf::Keyboard::Period: return (saveToCfg ? "Period" : ".");
+        case sf::Keyboard::Quote: return (saveToCfg ? "Quote" : "\"");
+        case sf::Keyboard::Slash: return (saveToCfg ? "Slash" : "/");
+        case sf::Keyboard::Backslash: return (saveToCfg ? "Backslash" : "\\");
+        case sf::Keyboard::Tilde: return (saveToCfg ? "Tilde" : "~");
+        case sf::Keyboard::Hyphen: return (saveToCfg ? "Hyphen" : "-");
         case sf::Keyboard::Space: return "Space";
         case sf::Keyboard::Enter: return "Enter";
         case sf::Keyboard::Backspace: return "Backspace";
@@ -73,14 +77,14 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         case sf::Keyboard::Home: return "Home";
         case sf::Keyboard::Insert: return "Insert";
         case sf::Keyboard::Delete: return "Delete";
-        case sf::Keyboard::Add: return "Add";
-        case sf::Keyboard::Subtract: return "Subtract";
-        case sf::Keyboard::Multiply: return "Multiply";
-        case sf::Keyboard::Divide: return "Divide";
-        case sf::Keyboard::Left: return "A Left";
-        case sf::Keyboard::Right: return "A Right";
-        case sf::Keyboard::Up: return "A Up";
-        case sf::Keyboard::Down: return "A Down";
+        case sf::Keyboard::Add: return (saveToCfg ? "Add" : "+");
+        case sf::Keyboard::Subtract: return (saveToCfg ? "Subtract" : "-");
+        case sf::Keyboard::Multiply: return (saveToCfg ? "Multiply" : "*");
+        case sf::Keyboard::Divide: return (saveToCfg ? "Divide" : "/");
+        case sf::Keyboard::Left: return "Left";
+        case sf::Keyboard::Right: return "Right";
+        case sf::Keyboard::Up: return "Up";
+        case sf::Keyboard::Down: return "Down";
         case sf::Keyboard::Numpad0: return "Numpad0";
         case sf::Keyboard::Numpad1: return "Numpad1";
         case sf::Keyboard::Numpad2: return "Numpad2";
@@ -107,12 +111,11 @@ std::string convertKeyToString(sf::Keyboard::Key key)
         case sf::Keyboard::F14: return "F14";
         case sf::Keyboard::F15: return "F15";
         case sf::Keyboard::Pause: return "Pause";
-        case sf::Keyboard::KeyCount: return "KeyCount";
-        default: return "Unknown";
+        default: return "A";
     }
 }
 
-sf::Keyboard::Key convertStringToKey(const std::string str)
+sf::Keyboard::Key convertStringToKey(const std::string &str)
 {
     if (str == "A")
         return sf::Keyboard::Key::A;
@@ -314,9 +317,8 @@ sf::Keyboard::Key convertStringToKey(const std::string str)
         return sf::Keyboard::Key::F15;
     if (str == "Pause")
         return sf::Keyboard::Key::Pause;
-    if (str == "KeyCount")
-        return sf::Keyboard::Key::KeyCount;
-    return sf::Keyboard::Key::Unknown;
+
+    return sf::Keyboard::Key::A;
 }
 
 std::string convertButtonToString(sf::Mouse::Button button)
@@ -328,11 +330,11 @@ std::string convertButtonToString(sf::Mouse::Button button)
         case sf::Mouse::Middle: return "M Middle";
         case sf::Mouse::XButton1: return "M X1";
         case sf::Mouse::XButton2: return "M X2";
-        default: return "M Unkown";
+        default: return "M Left";
     }
 }
 
-sf::Mouse::Button convertStringToButton(const std::string str)
+sf::Mouse::Button convertStringToButton(const std::string &str)
 {
     if (str == "Left")
         return sf::Mouse::Left;
@@ -344,7 +346,6 @@ sf::Mouse::Button convertStringToButton(const std::string str)
         return sf::Mouse::XButton1;
     if (str == "XButton2")
         return sf::Mouse::XButton2;
-    // There is not Unkown button
-    return sf::Mouse::ButtonCount;
-    
+
+    return sf::Mouse::Left;
 }
