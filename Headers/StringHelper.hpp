@@ -5,7 +5,7 @@
 
 #include <iostream>
 
-std::string convertKeyToString(sf::Keyboard::Key key);
-sf::Keyboard::Key convertStringToKey(const std::string str);
+std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg);
+sf::Keyboard::Key convertStringToKey(const std::string &str);
 std::string convertButtonToString(sf::Mouse::Button button);
-sf::Mouse::Button convertStringToButton(const std::string str);
+sf::Mouse::Button convertStringToButton(const std::string &str);
