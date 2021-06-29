@@ -7,10 +7,7 @@ Button::Button(sf::RenderWindow& window)
 , mKeyCountersText()
 , mButtonsSprite(Settings::ButtonAmount)
 , mAnimationSprite(Settings::ButtonAmount)
-
-, tmp(2.f)
 { 
-    tmp.setOrigin(2.f, 2.f);
 
     if (Settings::ShowKeyCountersText)
         setupKeyCounterVec();
@@ -95,6 +92,7 @@ void Button::updateKeyCounters()
 
         mKeyCountersText[i].setString(strToSet);
 
+        setupTextPosition(i);
         if (Settings::ShowKeyCountersText)
         {
             mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
@@ -106,7 +104,6 @@ void Button::updateKeyCounters()
                 decreaseTextCharacterSize(i);
             }
         }
-        setupTextPosition(i);
     }
 }
 
@@ -171,9 +168,6 @@ void Button::draw()
     ||  Settings::ShowSetKeysText)
         for (auto& elem : mKeyCountersText)
             mWindow.draw(elem);
-
-    tmp.setPosition(mKeyCountersText[0].getPosition());
-    mWindow.draw(tmp);
 }
 
 void Button::loadTextures(TextureHolder& textureHolder)

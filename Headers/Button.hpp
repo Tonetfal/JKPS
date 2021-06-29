@@ -63,6 +63,4 @@ class Button
 
         std::vector<sf::Sprite>     mButtonsSprite;
         std::vector<sf::Sprite>     mAnimationSprite;
-
-        sf::CircleShape tmp;
 };
