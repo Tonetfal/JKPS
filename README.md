@@ -26,13 +26,13 @@ To know what keys and buttons can be written in the config check this [link](htt
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least BPM / 15 notes.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
+![](Preset-4.gif)
+
 ![](Preset-1.gif)
 
 ![](Preset-2.gif)
 
 ![](Preset-3.gif)
-
-![](Present-4.gif)
 
 # License
 Licensed under the [MIT License](LICENSE).
