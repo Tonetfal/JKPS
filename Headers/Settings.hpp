@@ -43,7 +43,7 @@ class Settings
     private:
         std::string                 findParameter(std::string parameterName);
 
-        void                        setDefaultKey(size_t index);
+        sf::Keyboard::Key           getDefaultKey(size_t index);
 
         void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         template <typename T>
@@ -98,6 +98,7 @@ class Settings
         static sf::Vector2f         ScaledAnimationScale;
         static sf::Color            AnimationColor;
         static sf::Color            AnimationOnClickTransparency;
+        static float                AnimationOffset;
 
         // [Background]
         static std::string          BackgroundTexturePath;
