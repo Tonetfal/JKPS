@@ -46,6 +46,7 @@ sf::Color Settings::AnimationColor(sf::Color(250,180,0));
 sf::Vector2f Settings::AnimationScale(1.f, 1.f);
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
+float Settings::AnimationOffset(3.f);
 
 std::string Settings::BackgroundTexturePath = "Default";
 sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
@@ -177,7 +178,9 @@ void Settings::handleEvent(sf::Event event)
             mButtonAmountChanged = true;
 
             Keys.resize(KeyAmount);
-            setDefaultKey(Keys.size() - 1);
+            size_t whichOne; // doesn't need here :(
+            while (isThereSameKey(Keys[KeyAmount - 1], whichOne, KeyAmount - 1))
+                Keys[KeyAmount - 1] = getDefaultKey(KeyAmount - 1);
             saveSettings();
         } 
         else if ((key == KeyToDecrease || key == AltKeyToDecrease)
@@ -206,10 +209,12 @@ void Settings::handleEvent(sf::Event event)
         else
         {
             Keys[mButtonToChangeIndex] = event.key.code;
+            if (event.key.code == sf::Keyboard::Unknown)
+                Keys[mButtonToChangeIndex] = sf::Keyboard::A;
 
             size_t sameKeyIndex = 0;
             while (isThereSameKey(event.key.code, sameKeyIndex, mButtonToChangeIndex))
-                setDefaultKey(sameKeyIndex);
+                Keys[sameKeyIndex] = getDefaultKey(sameKeyIndex);
 
             saveSettings();
             mButtonToChange = sf::Keyboard::Unknown;
@@ -468,9 +473,10 @@ void Settings::setupKey(std::vector<sf::Keyboard::Key>& keys
 
         keys.resize(i + 1);
         keys[i] = foundKey;
+        ++KeyAmount;
         size_t whichOne;
         while (isThereSameKey(foundKey, whichOne, i))
-            setDefaultKey(whichOne);
+            Keys[whichOne] = getDefaultKey(whichOne);
 
         // find function returns 0 if the value was not found
         if (stringIndex == 0)
@@ -566,22 +572,21 @@ bool Settings::isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t in
     return false;
 }
 
-void Settings::setDefaultKey(size_t index)
+sf::Keyboard::Key Settings::getDefaultKey(size_t index)
 {
-    // sf::Keyboard::Key is an enum, that starts from 0
-    size_t keyToAssign = 0;
+    sf::Keyboard::Key keyToAssign(sf::Keyboard::A);
 
     for (size_t i = 0; i < Settings::KeyAmount; i++)
     {
         if (keyToAssign == Keys[i] && i != index)
         {
-            ++keyToAssign;
+            keyToAssign = sf::Keyboard::Key(int(keyToAssign) + 1);
             i = -1;
-            // -1 cuz I need to recheck to be sure that there is no same key
+            // reset is needed to check if there is same key as the "new" one
         }
     }
 
-    Keys[index] = sf::Keyboard::Key(keyToAssign);
+    return keyToAssign;
 }
 
 void Settings::changeChangeability()
@@ -686,7 +691,7 @@ void Settings::writeKeys(std::ofstream& ofConfig)
     {
         for (size_t i = 0; i < Keys.size(); ++i)
         {
-            ofConfig << convertKeyToString(Keys[i]) << (i+1 != Keys.size() ? "," : "\n");
+            ofConfig << convertKeyToString(Keys[i], true) << (i+1 != Keys.size() ? "," : "\n");
         }
     }
     else
