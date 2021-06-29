@@ -48,6 +48,8 @@ class Statistics
 
         std::size_t                 getTotalStatisticsHeight();
 
+        void                        clear();
+
 
     private:
         void                        setupText(ID id);

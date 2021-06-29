@@ -139,6 +139,14 @@ std::size_t Statistics::getTotalStatisticsHeight()
     return height;
 }
 
+void Statistics::clear()
+{
+    mLongs.get(KPS) = 0;
+    mLongs.get(MaxKPS) = 0;
+    mLongs.get(TotalKeys) = 0;
+    mLongs.get(BPM) = 0;
+}
+
 
 void Statistics::setupText(ID id)
 {

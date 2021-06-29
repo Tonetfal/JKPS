@@ -17,6 +17,7 @@ class Calculation
         std::size_t                 getKeyPerSecond();
         std::size_t                 getBeatsPerMinute();
 
+        void                        clear();
 
     private:
         std::size_t                 mFrameTick;

@@ -7,7 +7,11 @@ Button::Button(sf::RenderWindow& window)
 , mKeyCountersText()
 , mButtonsSprite(Settings::ButtonAmount)
 , mAnimationSprite(Settings::ButtonAmount)
+
+, tmp(2.f)
 { 
+    tmp.setOrigin(2.f, 2.f);
+
     if (Settings::ShowKeyCountersText)
         setupKeyCounterVec();
 
@@ -91,7 +95,6 @@ void Button::updateKeyCounters()
 
         mKeyCountersText[i].setString(strToSet);
 
-        setupTextPosition(i);
         if (Settings::ShowKeyCountersText)
         {
             mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
@@ -103,6 +106,7 @@ void Button::updateKeyCounters()
                 decreaseTextCharacterSize(i);
             }
         }
+        setupTextPosition(i);
     }
 }
 
@@ -129,7 +133,8 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
 {
     if (Settings::ShowKeyCountersText)
         for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
-                mKeyCounters[i] += container.mClickedKeys[i];
+            if (container.mClickedKeys[i] > 0)
+                mKeyCounters[i] += 999;//container.mClickedKeys[i];
 
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
@@ -166,6 +171,9 @@ void Button::draw()
     ||  Settings::ShowSetKeysText)
         for (auto& elem : mKeyCountersText)
             mWindow.draw(elem);
+
+    tmp.setPosition(mKeyCountersText[0].getPosition());
+    mWindow.draw(tmp);
 }
 
 void Button::loadTextures(TextureHolder& textureHolder)
@@ -198,6 +206,12 @@ void Button::setupTextures()
     scaleTexture(mAnimationSprite, Settings::ButtonTextureSize);
     centerOrigin(mAnimationSprite);
     setButtonPositions(mAnimationSprite);
+}
+
+void Button::clear()
+{
+    for (auto &elem : mKeyCounters)
+        elem = 0;
 }
 
 void Button::setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture)
@@ -324,13 +338,15 @@ unsigned int Button::getKeyCountersWidth(size_t index) const
         Settings::ButtonTextureSize.x / 2U +
         Settings::ButtonDistance * (index + 1);
 
-    return buttonCenterX - mKeyCountersText[index].getLocalBounds().width / 2.f;
+    const sf::Text &elem(mKeyCountersText[index]);
+    return buttonCenterX - elem.getLocalBounds().width * elem.getScale().x / 1.9f;
 }
 
 unsigned int Button::getKeyCountersHeight(size_t index) const
 {
     unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U + Settings::ButtonDistance;
 
-    return buttonCenterY - mKeyCountersText[index].getLocalBounds().height / 1.4f;
+    const sf::Text &elem(mKeyCountersText[index]);
+    return buttonCenterY - elem.getLocalBounds().height * elem.getScale().y  / 1.4f;
         // 1.4f is value by eye
 }

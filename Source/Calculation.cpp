@@ -49,3 +49,14 @@ std::size_t Calculation::getBeatsPerMinute()
     
     return result * 60 / mNumberOfKPSToSave / 4;
 }
+
+void Calculation::clear()
+{
+    mFrameTick = 0;
+    mClickedKeysInCurrentFrame = 0;
+    for (auto &elem : mKeysPerTick)
+        elem = 0;
+    mKeyPerSecond = 0;
+    for (auto &elem : mPreviousKeyPerSeconds)
+        elem = 0;
+}

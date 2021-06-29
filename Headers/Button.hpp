@@ -25,6 +25,7 @@ class Button
         void                        setFonts();
         void                        setupTextures(); 
 
+        void                        clear();
 
     private:
         void                        updateAnimation(const std::vector<bool>& needToBeReleased);
@@ -62,4 +63,6 @@ class Button
 
         std::vector<sf::Sprite>     mButtonsSprite;
         std::vector<sf::Sprite>     mAnimationSprite;
+
+        sf::CircleShape tmp;
 };

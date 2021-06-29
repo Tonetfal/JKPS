@@ -67,24 +67,32 @@ void Application::processInput()
     {
         if (mWindow.hasFocus())
         {
-            if (event.type == sf::Event::KeyPressed)
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             {
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
-                &&  sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
                 {
                     mSettings.changeChangeability();
                     // Break to avoid problems if the user has Q as key
                     break;
                 }
 
-                if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)
-                &&  sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
+                {
+                    mButtons.clear();
+                    mStatistics.clear();
+                    mCalculation.clear();
+                    // Return in order to don't count X as a clicked key, if a user has set it as its key
+                    return;
+                }
+
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
                 {
                     mSettings.saveSettings();
                     mWindow.close();
                     return;
                 }
             }
+
             if (event.type == sf::Event::Closed)
             {
                 mSettings.saveSettings();
