@@ -15,45 +15,67 @@ std::string getOutOfBoundsErrMsg(const std::string &parName, T bot, T top)
 
 const std::size_t Settings::mFramesPerSecond = 60;
 
+// [Keys] [Mouse]
 std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z
                                               , sf::Keyboard::Key::X });
 std::vector<sf::Mouse::Button> Settings::MouseButtons({ });
+
+// Non config parameters
 std::size_t Settings::KeyAmount = Settings::Keys.size();
 std::size_t Settings::MouseButtonAmount = Settings::MouseButtons.size();
 std::size_t Settings::ButtonAmount = Settings::KeyAmount + Settings::MouseButtonAmount;
 
+
+// [Statistics text]
 std::string Settings::StatisticsFontPath = "Default";
-std::string Settings::KeyCountersFontPath = "Default";
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
-sf::Color Settings::KeyCountersTextColor(sf::Color::White);
 std::size_t Settings::StatisticsTextCharacterSize = 11;
-std::size_t Settings::KeyCountersTextCharacterSize = 14;
+bool Settings::StatisticsBold = false;
+bool Settings::StatisticsItalic = false;
 bool Settings::ShowStatisticsText = true;
-bool Settings::ShowKeyCountersText = true;
-bool Settings::ShowSetKeysText = false;
 bool Settings::ShowBPMText = true;
 
+// [Button text]
+std::size_t Settings::KeyCountersTextCharacterSize = 14;
+std::string Settings::KeyCountersFontPath = "Default";
+sf::Color Settings::KeyCountersTextColor(sf::Color::White);
+bool Settings::KeyCountersBold = false;
+bool Settings::KeyCountersItalic = false;
+bool Settings::ShowKeyCountersText = true;
+bool Settings::ShowSetKeysText = false;
+
+// [Spacing]
 float Settings::ButtonDistance = 7.f;
 float Settings::SpaceBetweenButtonsAndStatistics = 10.f;
 float Settings::SpaceOnStatisticsRight = 35.f;
 
+// [Button graphics]
 std::string Settings::ButtonTexturePath = "Default";
-std::string Settings::AnimationTexturePath = "Default";
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
+
+// [Animation graphics]
+std::string Settings::AnimationTexturePath = "Default";
 std::size_t Settings::AnimationVelocity = 20;
-sf::Color Settings::AnimationColor(sf::Color(250,180,0));
 sf::Vector2f Settings::AnimationScale(1.f, 1.f);
-sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
+sf::Color Settings::AnimationColor(sf::Color(250,180,0));
+
+// Non config parameters
 sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
+sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 float Settings::AnimationOffset(3.f);
 
+
+// [Background]
 std::string Settings::BackgroundTexturePath = "Default";
 sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
 
-bool Settings::IsChangeable = false;
+// [Edit mode]
 sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);
 sf::Color Settings::AlertColor = sf::Color(255,0,0);
+
+// Non config parameters
+bool Settings::IsChangeable = false;
 
 unsigned char* Settings::StatisticsDefaultFont = DefaultFont;
 unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
@@ -61,10 +83,14 @@ unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeader;
 unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader;
 unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
 
+// Hot keys
 sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
 sf::Keyboard::Key Settings::AltKeyToIncrease(sf::Keyboard::Add);
 sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
 sf::Keyboard::Key Settings::AltKeyToDecrease(sf::Keyboard::Subtract);
+sf::Keyboard::Key Settings::KeyForEditMode(sf::Keyboard::Q);
+sf::Keyboard::Key Settings::KeyToClear(sf::Keyboard::X);
+sf::Keyboard::Key Settings::KeyExit(sf::Keyboard::W);
 
 Settings::Settings()
 : configPath("KPS.cfg")
@@ -110,17 +136,23 @@ Settings::Settings()
     setupKey(Keys, findParameter("Keys"), "Keys", ofErrorLog);
     setupMouseButton(MouseButtons, findParameter("Buttons"), "Buttons", ofErrorLog);
 
-    // [Statistics]
+    // [Statistics text]
     setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
-    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
     setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
-    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
     setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
-    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
+    setupBoolParameter(StatisticsBold, findParameter("Statistics bold"), "Statistics bold", ofErrorLog);
+    setupBoolParameter(StatisticsItalic, findParameter("Statistics italic"), "Statistics italic", ofErrorLog);
     setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
+    setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
+
+    // [Button text]
+    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
+    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
+    setupBoolParameter(KeyCountersBold, findParameter("Key counters bold"), "Key counters bold", ofErrorLog);
+    setupBoolParameter(KeyCountersItalic, findParameter("Key counters italic"), "Key counters italic", ofErrorLog);
     setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
     setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
-    setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 
     // [Spacing]
     setupDigitParameter(ButtonDistance, 0, 100, findParameter("Button distance"), "Button distance", ofErrorLog);
@@ -129,9 +161,11 @@ Settings::Settings()
 
     // [Button graphics]
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
-    setupFilePathParameter(AnimationTexturePath, findParameter("Animation texture"), "Animation texture", ofErrorLog);
     setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
     setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
+    
+    // [Animation graphics]
+    setupFilePathParameter(AnimationTexturePath, findParameter("Animation texture"), "Animation texture", ofErrorLog);
     float tmp = 1.f;
     setupDigitParameter(tmp, 0, 2, findParameter("Animation scale on click"), "Animation scale on click", ofErrorLog);
     AnimationScale = sf::Vector2f(tmp, tmp);
@@ -142,7 +176,7 @@ Settings::Settings()
     setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ofErrorLog);
     setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
 
-    // [Other]
+    // [Edit mode]
     setupColor(AlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
     setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
     mIsChangeableAlert.setFillColor(AlertColor);

@@ -67,21 +67,29 @@ class Settings
         // [Keys] [Mouse]
         static std::vector<sf::Keyboard::Key> Keys;
         static std::vector<sf::Mouse::Button> MouseButtons;
+
+        // Non config parameters
         static std::size_t          KeyAmount;
         static std::size_t          MouseButtonAmount;
         static std::size_t          ButtonAmount;
 
-        // [Statistics]
+        // [Statistics text]
         static std::string          StatisticsFontPath;
-        static std::string          KeyCountersFontPath;
         static sf::Color            StatisticsTextColor;
-        static sf::Color            KeyCountersTextColor;
         static std::size_t          StatisticsTextCharacterSize;
-        static std::size_t          KeyCountersTextCharacterSize;
+        static bool                 StatisticsBold;
+        static bool                 StatisticsItalic;
         static bool                 ShowStatisticsText;
+        static bool                 ShowBPMText;
+
+        // [Button text]
+        static std::string          KeyCountersFontPath;
+        static sf::Color            KeyCountersTextColor;
+        static std::size_t          KeyCountersTextCharacterSize;
+        static bool                 KeyCountersBold;
+        static bool                 KeyCountersItalic;
         static bool                 ShowSetKeysText;
         static bool                 ShowKeyCountersText;
-        static bool                 ShowBPMText;
 
         // [Spacing]
         static float                ButtonDistance;
@@ -90,24 +98,30 @@ class Settings
 
         // [Button graphics]
         static std::string          ButtonTexturePath;
-        static std::string          AnimationTexturePath;
         static sf::Vector2u         ButtonTextureSize;
         static sf::Color            ButtonTextureColor;
+
+        // [Animation graphics]
+        static std::string          AnimationTexturePath;
         static std::size_t          AnimationVelocity;
         static sf::Vector2f         AnimationScale;
-        static sf::Vector2f         ScaledAnimationScale;
         static sf::Color            AnimationColor;
+
+        // Non config parameters
         static sf::Color            AnimationOnClickTransparency;
+        static sf::Vector2f         ScaledAnimationScale;
         static float                AnimationOffset;
 
         // [Background]
         static std::string          BackgroundTexturePath;
         static sf::Color            BackgroundColor;
 
-        static bool                 IsChangeable;
-        // [Other]
+        // [Edit mode]
         static sf::Color            HighlightedKeyColor;
         static sf::Color            AlertColor;
+
+        // Non config parameters
+        static bool                 IsChangeable;
 
         static unsigned char*       KeyCountersDefaultFont;
         static unsigned char*       StatisticsDefaultFont;
@@ -115,10 +129,14 @@ class Settings
         static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
 
+        // Hot keys
         static sf::Keyboard::Key    KeyToIncrease;
         static sf::Keyboard::Key    AltKeyToIncrease;
         static sf::Keyboard::Key    KeyToDecrease;
         static sf::Keyboard::Key    AltKeyToDecrease;
+        static sf::Keyboard::Key    KeyForEditMode;
+        static sf::Keyboard::Key    KeyToClear;
+        static sf::Keyboard::Key    KeyExit;
 
 
     private:

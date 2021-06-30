@@ -71,14 +71,14 @@ void Application::processInput()
             {
                 if (event.type == sf::Event::KeyPressed)
                 {
-                    if (event.key.code == sf::Keyboard::Q)
+                    if (event.key.code == Settings::KeyForEditMode)
                     {
                         mSettings.changeChangeability();
                         // Break to avoid problems if the user has Q as key
                         break;
                     }
 
-                    if (event.key.code == sf::Keyboard::X)
+                    if (event.key.code == Settings::KeyToClear)
                     {
                         mButtons.clear();
                         mStatistics.clear();
@@ -87,7 +87,7 @@ void Application::processInput()
                         return;
                     }
 
-                    if (event.key.code == sf::Keyboard::W)
+                    if (event.key.code == Settings::KeyExit)
                     {
                         mSettings.saveSettings();
                         mWindow.close();

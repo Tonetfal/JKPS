@@ -8,11 +8,12 @@ Button::Button(sf::RenderWindow& window)
 , mButtonsSprite(Settings::ButtonAmount)
 , mAnimationSprite(Settings::ButtonAmount)
 { 
-
     if (Settings::ShowKeyCountersText)
     {
         setupKeyCounterVec();
     }
+    // Everything must be initialized regardless the fact that every parameter could be false,
+    // because if user enters in edit mode actual keys must be displayed
     setupButtonsYOffsetVec();
     setupKeyCounterTextVec();
     setupKeyCounterStrVec();
@@ -319,6 +320,11 @@ void Button::setupKeyCounterTextVec()
     {
         mKeyCountersText[i].setCharacterSize(Settings::KeyCountersTextCharacterSize);
         mKeyCountersText[i].setFillColor(Settings::KeyCountersTextColor);
+        // Doesn't want to work w/o cast
+        sf::Text::Style style(static_cast<sf::Text::Style>(
+            (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
+            (Settings::KeyCountersItalic ? sf::Text::Italic : 0)));
+        mKeyCountersText[i].setStyle(style);
 
         setupTextPosition(i);
     }
