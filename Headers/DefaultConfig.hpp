@@ -26,7 +26,7 @@ static std::string DefaultConfigString =
 "Show statistics: true\n"
 "Show BPM: true\n"
 "\n"
-"[Button text]\n"
+"[Buttons text]\n"
 "Key counters font: Default\n"
 "Key counters text color: 255,255,255\n"
 "Key counters character size: 14\n"
