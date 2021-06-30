@@ -7,7 +7,11 @@ Button::Button(sf::RenderWindow& window)
 , mKeyCountersText()
 , mButtonsSprite(Settings::ButtonAmount)
 , mAnimationSprite(Settings::ButtonAmount)
+, mAnimationStyle(static_cast<AnimationStyle>(Settings::AnimationStyle))
 { 
+    if (mAnimationStyle > AnimationCounter && mAnimationStyle < 0)
+        mAnimationStyle = AnimationCounter;
+
     if (Settings::ShowKeyCountersText)
     {
         setupKeyCounterVec();
@@ -31,62 +35,21 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
     {
         auto &elem = mAnimationSprite[i];
         // Velocity = frames to perform the animation
-        sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
+        static const sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
 
         if (!needToBeReleased[i])
         {
-            // Animation color
-            if (elem.getColor().a != 0)
+            switch (mAnimationStyle)
             {
-#ifndef PRESS_ANIMATION
-                elem.setColor(elem.getColor() - animation);
-#endif
+                case Light:
+                    fadeKeyLight(i);
+                    if (elem.getColor().a != 0)
+                        elem.setColor(elem.getColor() - animation);
+                    break;
+                case Press:
+                    raiseKey(i);
+                    break;
             }
-
-            // Animation size
-#ifdef PRESS_ANIMATION
-            if (true)
-            {
-                raiseKey(i);
-            }
-            else
-            {
-#endif
-                if (getDefaultScale().x != mButtonsSprite[i].getScale().x)
-                {
-                    bool back;
-                    sf::Vector2f scale;
-                    do {
-                        back = false;
-                        if ((getScaleAmountPerFrame().x > 0 ? 
-                            getDefaultScale().x > mButtonsSprite[i].getScale().x :
-                            getDefaultScale().x < mButtonsSprite[i].getScale().x))
-                        {
-                            scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
-                            back = false;
-                        }
-
-                        mButtonsSprite[i].setScale(scale);
-                        mAnimationSprite[i].setScale(scale);
-                        mKeyCountersText[i].setScale(mKeyCountersText[i].getScale() +
-                            getScaleForText());
-                        // Re-set position, otherwise the key will go to the left
-                        mKeyCountersText[i].setPosition(float(getKeyCountersWidth(i)), 
-                            float(getKeyCountersHeight(i)));
-
-                        // Check if went out of needed scaling
-                        if ((getScaleAmountPerFrame().x > 0 ?
-                            getDefaultScale().x < mButtonsSprite[i].getScale().x :
-                            getDefaultScale().x > mButtonsSprite[i].getScale().x))
-                        {
-                            scale = getDefaultScale();
-                            back = true;
-                        }
-                    } while (back);
-                }
-#ifdef PRESS_ANIMATION
-            }
-#endif
         }
     }
 }
@@ -101,9 +64,7 @@ void Button::updateKeyCounters()
         || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
         {
             if (i < Settings::KeyAmount)
-            {
                 strToSet = convertKeyToString(Settings::Keys[i], false);
-            }
             else
                 strToSet = convertButtonToString(
                     Settings::MouseButtons[i - Settings::KeyAmount]);
@@ -158,23 +119,11 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
     {
         if (needToBeReleased[i])
         {
-#ifndef PRESS_ANIMATION
-            mAnimationSprite[i].setColor(Settings::AnimationColor);
-#endif
-#ifdef PRESS_ANIMATION
-            if (true)
+            switch (mAnimationStyle)
             {
-                lowerKey(i);
+                case Light: lightUpKey(i); break;
+                case Press: lowerKey(i); break;
             }
-            else
-            {
-#endif
-                mAnimationSprite[i].setScale(Settings::ScaledAnimationScale);
-                mButtonsSprite[i].setScale(Settings::ScaledAnimationScale);
-                mKeyCountersText[i].setScale(Settings::AnimationScale);
-#ifdef PRESS_ANIMATION
-            }
-#endif
         }
     }
 }
@@ -368,6 +317,50 @@ void Button::decreaseTextCharacterSize(int index)
 {
     mKeyCountersText[index].setCharacterSize(
         mKeyCountersText[index].getCharacterSize() - 1);
+}
+
+void Button::lightUpKey(size_t index)
+{
+    mAnimationSprite[index].setColor(Settings::AnimationColor);
+    mAnimationSprite[index].setScale(Settings::ScaledAnimationScale);
+    mButtonsSprite[index].setScale(Settings::ScaledAnimationScale);
+    mKeyCountersText[index].setScale(Settings::AnimationScale);
+}
+void Button::fadeKeyLight(size_t index)
+{
+    sf::Sprite &sprite = mButtonsSprite[index];
+    if (getDefaultScale().x != sprite.getScale().x)
+    {
+        bool back;
+        sf::Vector2f scale;
+        do {
+            back = false;
+            if ((getScaleAmountPerFrame().x > 0 ? 
+                getDefaultScale().x > sprite.getScale().x :
+                getDefaultScale().x < sprite.getScale().x))
+            {
+                scale = sprite.getScale() + getScaleAmountPerFrame();
+                back = false;
+            }
+
+            sprite.setScale(scale);
+            mAnimationSprite[index].setScale(scale);
+            mKeyCountersText[index].setScale(mKeyCountersText[index].getScale() +
+                getScaleForText());
+            // Re-set position, otherwise the key will go to the left
+            mKeyCountersText[index].setPosition(float(getKeyCountersWidth(index)), 
+                float(getKeyCountersHeight(index)));
+
+            // Check if went out of needed scaling
+            if ((getScaleAmountPerFrame().x > 0 ?
+                getDefaultScale().x < sprite.getScale().x :
+                getDefaultScale().x > sprite.getScale().x))
+            {
+                scale = getDefaultScale();
+                back = true;
+            }
+        } while (back);
+    }
 }
 
 void Button::raiseKey(size_t index)

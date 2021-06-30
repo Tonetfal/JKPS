@@ -11,6 +11,15 @@
 class Button
 {
     public:
+        enum AnimationStyle
+        {
+            Light,
+            Press,
+            AnimationCounter,
+        };
+
+
+    public:
                                     Button(sf::RenderWindow& window);
 
         void                        update(std::vector<bool>& needToBeReleased);
@@ -48,6 +57,8 @@ class Button
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
 
+        void                        lightUpKey(size_t index);
+        void                        fadeKeyLight(size_t index);
         void                        raiseKey(size_t index);
         void                        lowerKey(size_t index);
 
@@ -61,11 +72,13 @@ class Button
         sf::Font*                   mKeyCountersFont;
         std::vector<long>           mKeyCounters;
         std::vector<sf::Text>       mKeyCountersText;
-        std::vector<float>          mButtonsYOffset;
 
         sf::Texture*                mButtonTexture;
         sf::Texture*                mAnimationTexture;
 
         std::vector<sf::Sprite>     mButtonsSprite;
         std::vector<sf::Sprite>     mAnimationSprite;
+
+        AnimationStyle              mAnimationStyle;
+        std::vector<float>          mButtonsYOffset;
 };
