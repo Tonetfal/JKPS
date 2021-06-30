@@ -215,9 +215,6 @@ unsigned int Application::getWindowWidth()
 
 unsigned int Application::getWindowHeight()
 {
-    // I don't multiply ButtonDistance by 2 since getTotalStatisticsHeight() 
-    // gives values which are a little bit more than the real one
-
-    return std::max(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance,
+    return std::max(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2,
        Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }
