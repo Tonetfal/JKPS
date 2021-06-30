@@ -12,9 +12,10 @@ Button::Button(sf::RenderWindow& window)
     if (Settings::ShowKeyCountersText)
     {
         setupKeyCounterVec();
-        setupKeyCounterTextVec();
-        setupKeyCounterStrVec();
     }
+    setupButtonsYOffsetVec();
+    setupKeyCounterTextVec();
+    setupKeyCounterStrVec();
 }
 
 void Button::update(std::vector<bool>& needToBeReleased)
@@ -52,13 +53,17 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
 #endif
                 if (getDefaultScale().x != mButtonsSprite[i].getScale().x)
                 {
+                    std::cout << mButtonsSprite[i].getScale().x << "\n";
                     bool back;
                     sf::Vector2f scale;
                     do {
                         back = false;
-                        if (getDefaultScale().x > mButtonsSprite[i].getScale().x)
+                        if ((getScaleAmountPerFrame().x > 0 ? 
+                            getDefaultScale().x > mButtonsSprite[i].getScale().x :
+                            getDefaultScale().x < mButtonsSprite[i].getScale().x))
                         {
                             scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
+                            std::cout << "sc " << mButtonsSprite[i].getScale().x << " " << getScaleAmountPerFrame().x << "\n";
                             back = false;
                         }
 
@@ -71,7 +76,9 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
                             float(getKeyCountersHeight(i)));
 
                         // Check if went out of needed scaling
-                        if (getDefaultScale().x < mButtonsSprite[i].getScale().x)
+                        if ((getScaleAmountPerFrame().x > 0 ?
+                            getDefaultScale().x < mButtonsSprite[i].getScale().x :
+                            getDefaultScale().x > mButtonsSprite[i].getScale().x))
                         {
                             scale = getDefaultScale();
                             back = true;
@@ -319,22 +326,24 @@ void Button::setupKeyCounterTextVec()
     }
 }
 
+void Button::setupButtonsYOffsetVec()
+{
+    mButtonsYOffset.resize(Settings::ButtonAmount);
+    for (auto& element : mButtonsYOffset)
+        element = 0;
+}
+
 void Button::setupKeyCounterVec()
 {
     mKeyCounters.resize(Settings::ButtonAmount);
-    mKeyCountersYOffset.resize(Settings::ButtonAmount);
     for (auto& element : mKeyCounters)
-        element = 0;
-    for (auto& element : mKeyCountersYOffset)
         element = 0;
 }
 
 void Button::setupKeyCounterVec(size_t index)
 {
     mKeyCounters.resize(Settings::ButtonAmount);
-    mKeyCountersYOffset.resize(Settings::ButtonAmount);
     mKeyCounters[index] = 0;
-    mKeyCountersYOffset[index] = 0;
 }
 
 void Button::setupKeyCounterStrVec()
@@ -348,7 +357,7 @@ void Button::setupKeyCounterStrVec()
 void Button::setupTextPosition(int index)
 {
     mKeyCountersText[index].setPosition(getKeyCountersWidth(index), 
-        getKeyCountersHeight(index) + mKeyCountersYOffset[index]);
+        getKeyCountersHeight(index) + mButtonsYOffset[index]);
 }
 
 void Button::decreaseTextCharacterSize(int index)
@@ -365,7 +374,7 @@ void Button::raiseKey(size_t index)
 
     if (mButtonsSprite[index].getPosition().y != buttonHeight)
     {
-        mKeyCountersYOffset[index] -= offset;
+        mButtonsYOffset[index] -= offset;
         mButtonsSprite[index].move(0.f, -offset);
         mKeyCountersText[index].move(0.f, -offset);
     }
@@ -379,7 +388,7 @@ void Button::lowerKey(size_t index)
 
     if (mButtonsSprite[index].getPosition().y != buttonLoweredHeight)
     {
-        mKeyCountersYOffset[index] = offset;
+        mButtonsYOffset[index] = offset;
         mButtonsSprite[index].setPosition(mButtonsSprite[index].getPosition().x, buttonLoweredHeight);
         mKeyCountersText[index].setPosition(mKeyCountersText[index].getPosition().x, counterLoweredHeight);
     }

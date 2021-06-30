@@ -44,6 +44,7 @@ class Button
         void                        setupKeyCounterVec();
         void                        setupKeyCounterVec(size_t index); 
         void                        setupKeyCounterStrVec();
+        void                        setupButtonsYOffsetVec();
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
 
@@ -60,7 +61,7 @@ class Button
         sf::Font*                   mKeyCountersFont;
         std::vector<long>           mKeyCounters;
         std::vector<sf::Text>       mKeyCountersText;
-        std::vector<float>          mKeyCountersYOffset;
+        std::vector<float>          mButtonsYOffset;
 
         sf::Texture*                mButtonTexture;
         sf::Texture*                mAnimationTexture;
