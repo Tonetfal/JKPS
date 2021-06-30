@@ -53,7 +53,6 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
 #endif
                 if (getDefaultScale().x != mButtonsSprite[i].getScale().x)
                 {
-                    std::cout << mButtonsSprite[i].getScale().x << "\n";
                     bool back;
                     sf::Vector2f scale;
                     do {
@@ -63,7 +62,6 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
                             getDefaultScale().x < mButtonsSprite[i].getScale().x))
                         {
                             scale = mButtonsSprite[i].getScale() + getScaleAmountPerFrame();
-                            std::cout << "sc " << mButtonsSprite[i].getScale().x << " " << getScaleAmountPerFrame().x << "\n";
                             back = false;
                         }
 
