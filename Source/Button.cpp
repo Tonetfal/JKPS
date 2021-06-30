@@ -10,10 +10,11 @@ Button::Button(sf::RenderWindow& window)
 { 
 
     if (Settings::ShowKeyCountersText)
+    {
         setupKeyCounterVec();
-
-    setupKeyCounterTextVec();
-    setupKeyCounterStrVec();
+        setupKeyCounterTextVec();
+        setupKeyCounterStrVec();
+    }
 }
 
 void Button::update(std::vector<bool>& needToBeReleased)
@@ -35,7 +36,9 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
             // Animation color
             if (elem.getColor().a != 0)
             {
-                // elem.setColor(elem.getColor() - animation);
+#ifndef PRESS_ANIMATION
+                elem.setColor(elem.getColor() - animation);
+#endif
             }
 
             // Animation size
@@ -149,8 +152,9 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
     {
         if (needToBeReleased[i])
         {
-            // mAnimationSprite[i].setColor(Settings::AnimationColor);
-
+#ifndef PRESS_ANIMATION
+            mAnimationSprite[i].setColor(Settings::AnimationColor);
+#endif
 #ifdef PRESS_ANIMATION
             if (true)
             {
