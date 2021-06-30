@@ -7,7 +7,7 @@ KPS is a simple program that shows keystates, keys per second, total keys and cu
 It supports up to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
 
 # Usage
-Modifications can be done in edit mode, which can be open/closed by pressing Ctrl + Q.
+Modifications can be done in edit mode, which can be opened/closed by pressing Ctrl + Q.
 If you want to add/remove a key press +/-, but if you want to change a key, click with left mouse button or with the same key, then the key will be selected, and it will change its own color, then press the key that will replace the old one.
 These actions look like:
 
