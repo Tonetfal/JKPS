@@ -52,7 +52,6 @@ class Button
         void                        setupKeyCounterTextVec();
         void                        setupKeyCounterVec();
         void                        setupKeyCounterVec(size_t index); 
-        void                        setupKeyCounterStrVec();
         void                        setupButtonsYOffsetVec();
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
