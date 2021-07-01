@@ -29,6 +29,7 @@ class Statistics
             MaxKPS,
             TotalKeys,
             BPM,
+            StatisticsCounter
         };
 
         
