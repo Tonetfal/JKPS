@@ -80,12 +80,15 @@ class Settings
         static bool                 StatisticsBold;
         static bool                 StatisticsItalic;
         static bool                 ShowStatisticsText;
+        static bool                 ShowMaxKPS;
         static bool                 ShowBPMText;
 
         // [Button text]
         static std::string          KeyCountersFontPath;
         static sf::Color            KeyCountersTextColor;
         static std::size_t          KeyCountersTextCharacterSize;
+        static float                KeyCounterWidth;
+        static float                KeyCounterHeight;
         static bool                 KeyCountersBold;
         static bool                 KeyCountersItalic;
         static bool                 ShowSetKeysText;
@@ -93,6 +96,7 @@ class Settings
 
         // [Spacing]
         static float                ButtonDistance;
+        static float                StatisticsDistance;
         static float                SpaceBetweenButtonsAndStatistics;
         static float                SpaceOnStatisticsRight;
 
@@ -123,6 +127,9 @@ class Settings
 
         // Non config parameters
         static bool                 IsChangeable;
+
+        // [Theme developer]
+        static int                  ValueToMultiplyOnClick;
 
         static unsigned char*       KeyCountersDefaultFont;
         static unsigned char*       StatisticsDefaultFont;
