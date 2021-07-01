@@ -21,43 +21,47 @@ std::vector<sf::Keyboard::Key> Settings::Keys({ sf::Keyboard::Key::Z
 std::vector<sf::Mouse::Button> Settings::MouseButtons({ });
 
 // Non config parameters
-std::size_t Settings::KeyAmount = Settings::Keys.size();
-std::size_t Settings::MouseButtonAmount = Settings::MouseButtons.size();
-std::size_t Settings::ButtonAmount = Settings::KeyAmount + Settings::MouseButtonAmount;
+std::size_t Settings::KeyAmount(Settings::Keys.size());
+std::size_t Settings::MouseButtonAmount(Settings::MouseButtons.size());
+std::size_t Settings::ButtonAmount(Settings::KeyAmount + Settings::MouseButtonAmount);
 
 
 // [Statistics text]
-std::string Settings::StatisticsFontPath = "Default";
+std::string Settings::StatisticsFontPath("Default");
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
-std::size_t Settings::StatisticsTextCharacterSize = 11;
-bool Settings::StatisticsBold = false;
-bool Settings::StatisticsItalic = false;
-bool Settings::ShowStatisticsText = true;
-bool Settings::ShowBPMText = true;
+std::size_t Settings::StatisticsTextCharacterSize(13);
+bool Settings::StatisticsBold(false);
+bool Settings::StatisticsItalic(false);
+bool Settings::ShowStatisticsText(true);
+bool Settings::ShowMaxKPS(true);
+bool Settings::ShowBPMText(true);
 
 // [Button text]
-std::size_t Settings::KeyCountersTextCharacterSize = 14;
-std::string Settings::KeyCountersFontPath = "Default";
+std::string Settings::KeyCountersFontPath("Default");
 sf::Color Settings::KeyCountersTextColor(sf::Color::White);
-bool Settings::KeyCountersBold = false;
-bool Settings::KeyCountersItalic = false;
-bool Settings::ShowKeyCountersText = true;
-bool Settings::ShowSetKeysText = false;
+std::size_t Settings::KeyCountersTextCharacterSize(14);
+float Settings::KeyCounterWidth(1.f);
+float Settings::KeyCounterHeight(1.35f);
+bool Settings::KeyCountersBold(false);
+bool Settings::KeyCountersItalic(false);
+bool Settings::ShowSetKeysText(false);
+bool Settings::ShowKeyCountersText(true);
 
 // [Spacing]
-float Settings::ButtonDistance = 7.f;
-float Settings::SpaceBetweenButtonsAndStatistics = 10.f;
-float Settings::SpaceOnStatisticsRight = 35.f;
+float Settings::ButtonDistance(7.f);
+float Settings::StatisticsDistance(5.f);
+float Settings::SpaceBetweenButtonsAndStatistics(10.f);
+float Settings::SpaceOnStatisticsRight(120.f);
 
 // [Button graphics]
-std::string Settings::ButtonTexturePath = "Default";
+std::string Settings::ButtonTexturePath("Default");
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
 
 // [Animation graphics]
-int Settings::AnimationStyle = 0;
-std::string Settings::AnimationTexturePath = "Default";
-std::size_t Settings::AnimationVelocity = 20;
+int Settings::AnimationStyle(0);
+std::string Settings::AnimationTexturePath("Default");
+std::size_t Settings::AnimationVelocity(20);
 sf::Vector2f Settings::AnimationScale(1.f, 1.f);
 sf::Color Settings::AnimationColor(sf::Color(250,180,0));
 float Settings::AnimationOffset(3.f);
@@ -68,15 +72,18 @@ sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 
 
 // [Background]
-std::string Settings::BackgroundTexturePath = "Default";
+std::string Settings::BackgroundTexturePath("Default");
 sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
 
 // [Edit mode]
-sf::Color Settings::HighlightedKeyColor = sf::Color(255,0,0);
-sf::Color Settings::AlertColor = sf::Color(255,0,0);
+sf::Color Settings::HighlightedKeyColor(sf::Color(255,180,0));
+sf::Color Settings::AlertColor(sf::Color(210,30,210));
 
 // Non config parameters
-bool Settings::IsChangeable = false;
+bool Settings::IsChangeable(false);
+
+// [Theme developer]
+int Settings::ValueToMultiplyOnClick(1);
 
 unsigned char* Settings::StatisticsDefaultFont = DefaultFont;
 unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
@@ -144,12 +151,18 @@ Settings::Settings()
     setupBoolParameter(StatisticsBold, findParameter("Statistics bold"), "Statistics bold", ofErrorLog);
     setupBoolParameter(StatisticsItalic, findParameter("Statistics italic"), "Statistics italic", ofErrorLog);
     setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
+    setupBoolParameter(ShowMaxKPS, findParameter("Show max KPS on separate line"), "Show max KPS on separate line", ofErrorLog);
     setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 
     // [Button text]
     setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
     setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
     setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
+    setupDigitParameter(KeyCounterWidth, 0, 3, findParameter("Key counters width"), "Key counters width", ofErrorLog);
+    if (KeyCounterWidth == 0) KeyCounterWidth = 0.000001f;
+    setupDigitParameter(KeyCounterHeight, 0, 3, findParameter("Key counters height"), "Key counters height", ofErrorLog);
+    if (KeyCounterHeight == 0) KeyCounterHeight = 0.000001f;
+
     setupBoolParameter(KeyCountersBold, findParameter("Key counters bold"), "Key counters bold", ofErrorLog);
     setupBoolParameter(KeyCountersItalic, findParameter("Key counters italic"), "Key counters italic", ofErrorLog);
     setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
@@ -157,8 +170,10 @@ Settings::Settings()
 
     // [Spacing]
     setupDigitParameter(ButtonDistance, 0, 100, findParameter("Button distance"), "Button distance", ofErrorLog);
-    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 200, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
-    setupDigitParameter(SpaceOnStatisticsRight, 0, 200, findParameter("Space on the statistics right"), "Space on the statistics right", ofErrorLog);
+    setupDigitParameter(StatisticsDistance, 0, 100, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
+    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 400, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
+    if (SpaceBetweenButtonsAndStatistics == 0) SpaceBetweenButtonsAndStatistics = 1;
+    setupDigitParameter(SpaceOnStatisticsRight, 0, 400, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
 
     // [Button graphics]
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
@@ -181,9 +196,12 @@ Settings::Settings()
     setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
 
     // [Edit mode]
-    setupColor(AlertColor, findParameter("Changeability alert color"), "Changeability alert color", ofErrorLog);
+    setupColor(AlertColor, findParameter("Edit mode alert color"), "Edit mode alert color", ofErrorLog);
     setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
     mIsChangeableAlert.setFillColor(AlertColor);
+
+    // [Theme developer]
+    setupDigitParameter(ValueToMultiplyOnClick, 1, __INT_MAX__, findParameter("Value to multiply on click"), "Value to multiply on click", ofErrorLog);
 
     ofErrorLog.close();
 

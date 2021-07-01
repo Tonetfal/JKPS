@@ -3,7 +3,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/Settings::mFramesPerSecond);
 
 Application::Application(Settings& settings)
-: mWindow(sf::VideoMode(getWindowWidth(), getWindowHeight()), "KPS", sf::Style::None)
+: mWindow(sf::VideoMode(getWindowWidth(), 150), "KPS", sf::Style::None)
 , mTextures()
 , mFonts()
 , mSettings(settings)
@@ -22,11 +22,12 @@ Application::Application(Settings& settings)
     loadAssets();
 
     mStatistics.loadFonts(mFonts);
-    mStatistics.setFonts();
     mButtons.loadTextures(mTextures);
 
+    mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
+    mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
+
     mButtons.loadFonts(mFonts);
-    mButtons.setFonts();
     mButtons.setupTextures();
 
     mSettings.setWindowReference(mWindow);
@@ -34,8 +35,6 @@ Application::Application(Settings& settings)
 
     mBackground.loadTextures(mTextures);
     mBackground.scaleTexture();
-    // mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
-
 }
 
 void Application::run()
@@ -205,16 +204,13 @@ void Application::moveWindow()
 
 unsigned int Application::getWindowWidth()
 {
-    return Settings::ButtonDistance * Settings::ButtonAmount
-        + Settings::ButtonTextureSize.x * Settings::ButtonAmount
-        + Settings::SpaceBetweenButtonsAndStatistics
-        + (Settings::StatisticsTextCharacterSize * 9) * Settings::ShowStatisticsText
-        + Settings::SpaceOnStatisticsRight;
-        // 9 is value by eye
+    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * 
+        Settings::ButtonAmount + Settings::SpaceBetweenButtonsAndStatistics + 
+        Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight + 1;
 }
 
 unsigned int Application::getWindowHeight()
 {
-    return std::max(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2,
+    return std::max(float(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2),
        Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }
