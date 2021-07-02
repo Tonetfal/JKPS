@@ -8,6 +8,9 @@
 #include "Settings.hpp"
 #include "Statistics.hpp"
 
+#include <memory>
+#include <cassert>
+
 class Button
 {
     public:
@@ -36,25 +39,25 @@ class Button
 
         void                        clear();
 
+
     private:
         void                        updateAnimation(const std::vector<bool>& needToBeReleased);
         void                        updateKeyCounters();
 
-        void                        setTextures(std::vector<sf::Sprite>& vector, sf::Texture& texture);
-        void                        setColor(std::vector<sf::Sprite>& vector, const sf::Color& color);
-        void                        scaleTexture(std::vector<sf::Sprite>& vector, const sf::Vector2u& texture);
-        void                        centerOrigin(std::vector<sf::Sprite>& vector);
-        void                        setButtonPositions(std::vector<sf::Sprite>& vector);
+        void                        setTextures(std::vector<std::unique_ptr<sf::Sprite>>& vector, sf::Texture& texture);
+        void                        setColor(std::vector<std::unique_ptr<sf::Sprite>>& vector, const sf::Color& color);
+        void                        scaleTexture(std::vector<std::unique_ptr<sf::Sprite>>& vector, const sf::Vector2u& texture);
+        void                        centerOrigin(std::vector<std::unique_ptr<sf::Sprite>>& vector);
+        void                        setButtonPositions(std::vector<std::unique_ptr<sf::Sprite>>& vector);
         sf::Vector2f                getDefaultScale() const;
         sf::Vector2f                getScaleForText() const;
         sf::Vector2f                getScaleAmountPerFrame() const;
 
         void                        setupKeyCounterTextVec();
-        void                        setupKeyCounterVec();
-        void                        setupKeyCounterVec(size_t index); 
-        void                        setupButtonsYOffsetVec();
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
+
+        void                        resizeVectors();
 
         void                        lightUpKey(size_t index);
         void                        fadeKeyLight(size_t index);
@@ -70,13 +73,13 @@ class Button
 
         sf::Font*                   mKeyCountersFont;
         std::vector<long>           mKeyCounters;
-        std::vector<sf::Text>       mKeyCountersText;
+        std::vector<std::unique_ptr<sf::Text>> mKeyCountersText;
 
         sf::Texture*                mButtonTexture;
         sf::Texture*                mAnimationTexture;
 
-        std::vector<sf::Sprite>     mButtonsSprite;
-        std::vector<sf::Sprite>     mAnimationSprite;
+        std::vector<std::unique_ptr<sf::Sprite>> mButtonsSprite;
+        std::vector<std::unique_ptr<sf::Sprite>> mAnimationSprite;
 
         AnimationStyle              mAnimationStyle;
         std::vector<float>          mButtonsYOffset;
