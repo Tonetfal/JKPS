@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <stdio.h>
+#include <climits>
 
 class Settings
 {

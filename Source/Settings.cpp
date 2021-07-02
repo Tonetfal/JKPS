@@ -201,7 +201,7 @@ Settings::Settings()
     mIsChangeableAlert.setFillColor(AlertColor);
 
     // [Theme developer]
-    setupDigitParameter(ValueToMultiplyOnClick, 1, __INT_MAX__, findParameter("Value to multiply on click"), "Value to multiply on click", ofErrorLog);
+    setupDigitParameter(ValueToMultiplyOnClick, 1, INT_MAX, findParameter("Value to multiply on click"), "Value to multiply on click", ofErrorLog);
 
     ofErrorLog.close();
 
