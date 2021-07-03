@@ -48,6 +48,7 @@ class Button : public SceneNode
         void reduceButtonSize();
         void increaseButtonSize();
 
+        void setupText();
         void centerText();
         void centerOrigin();
 
@@ -69,6 +70,7 @@ class Button : public SceneNode
         size_t mCounter;
         bool mIsPressed;
         bool mIsAnimationActive;
+        unsigned int mPrevModeState;
 
 #ifdef TEXT_DEBUG
         GraphicalDebug mDebug;

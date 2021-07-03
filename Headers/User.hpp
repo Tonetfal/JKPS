@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Button.hpp"
 #include "Command.hpp"
 #include "CommandQueue.hpp"
+#include "KeyCombination.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -17,7 +17,7 @@ class User
 	public:
 		enum Action
 		{
-			EditMode,
+			ChangeMode,
 			IncreaseKeys,
 			DecreaseKeys,
 			ResetStatistics,

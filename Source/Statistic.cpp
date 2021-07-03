@@ -84,8 +84,6 @@ sf::Vector2f Statistic::getStartPosition(float textHeight)
     if (statTotalHeight < Settings::ButtonTextureSize.y)
         y = (Settings::ButtonTextureSize.y - statTotalHeight) / 2.f - Settings::ButtonDistance;
 
-    std::cout << statTotalHeight << "\n";
-    std::cout << x << " " << y << "\n";
     return { x, y };
 }
 
@@ -97,4 +95,9 @@ float Statistic::getWidth() const
 float Statistic::getHeight() const
 {
     return mText.getLocalBounds().height;
+}
+
+void Statistic::clear()
+{
+    Calculator::clear();
 }

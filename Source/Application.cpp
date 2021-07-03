@@ -1,4 +1,5 @@
 #include "../Headers/Application.hpp"
+#include "../Headers/Settings.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60);

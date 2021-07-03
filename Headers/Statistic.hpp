@@ -40,7 +40,6 @@ class Statistic : public SceneNode
     private:
         virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
 
-
     private:
         sf::Text mText;
         std::string mStat;

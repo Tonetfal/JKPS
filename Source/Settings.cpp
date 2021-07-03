@@ -75,6 +75,7 @@ sf::Color Settings::AlertColor(sf::Color(210,30,210));
 
 // Non config parameters
 bool Settings::IsChangeable(false);
+float Settings::AlertRadius(5.f);
 
 // [Theme developer]
 int Settings::ValueToMultiplyOnClick(1);
@@ -86,6 +87,7 @@ int Settings::ValueToMultiplyOnClick(1);
 // unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
 
 // Hot keys
+KeyCombination Settings::CombinationToShowKeys(Keys::LControl);
 KeyCombination Settings::CombinationToIncrease(Keys::LControl, Keys::Equal);
 KeyCombination Settings::CombinationToDecrease(Keys::LControl, Keys::Dash);
 KeyCombination Settings::CombinationForEditMode(Keys::LControl, Keys::Q);

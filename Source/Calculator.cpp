@@ -62,11 +62,13 @@ void Calculator::add()
 
 void Calculator::clear()
 {
+    mKeysPerSecond = 0;
+    mMaxKeyPerSecond = 0;
+    mTotalKeys = 0;
     mBufferIt = 0;
     mPressesInCurrentUpdate = 0;
     for (auto &elem : mBuffer)
         elem = 0;
-    mKeysPerSecond = 0;
     for (auto &elem : mKPSBuffer)
         elem = 0;
 }
@@ -75,3 +77,4 @@ unsigned Calculator::getCategory() const
 {
     return Category::Calculator;
 }
+

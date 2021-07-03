@@ -13,7 +13,6 @@ KeyCombination::KeyCombination(Keys k1, Keys k2, Keys k3)
         mKeys.push_back(k3);
 }
 
-    #include <iostream>
 bool KeyCombination::isCombinationPressed(const KeyCombination &combination)
 {
     for (auto key : combination.mKeys)
@@ -34,6 +33,9 @@ bool KeyCombination::isCombinationPressed(const KeyCombination &combination)
 
 bool KeyCombination::operator==(const KeyCombination &combination) const
 {
+    if (mKeys.size() != combination.mKeys.size())
+        return false;
+
     for (auto key1 : combination.mKeys)
     {
         bool isEqual;
@@ -51,12 +53,30 @@ bool KeyCombination::operator==(const KeyCombination &combination) const
     return true;
 }
 
-bool KeyCombination::operator<(const KeyCombination &combination) const
-{
-    return mKeys[0] < combination.mKeys[0];
-}
-
 bool KeyCombination::operator==(Keys key) const
 {
-    return mKeys[0] == key;
+    return mKeys.size() == 1 && mKeys[0] == key;
 }
+
+bool KeyCombination::operator<(const KeyCombination &combination) const
+{
+    const std::vector<Keys> &l = mKeys;
+    const std::vector<Keys> &r = combination.mKeys;
+
+    if (l[0] < r[0]) return true;
+    if (l[0] > r[0]) return false;
+
+    if (l.size() == 1) return false;
+
+    if (l[1] < r[1]) return true;
+    if (l[1] > r[1]) return false;
+
+    if (l.size() == 2) return false;
+
+    if (l[2] < r[2]) return true;
+    if (l[2] > r[2]) return false;
+
+    return false;
+}
+
+

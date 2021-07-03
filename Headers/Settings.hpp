@@ -124,6 +124,7 @@ class Settings
 
         // Non config parameters
         static bool                 IsChangeable;
+        static float                AlertRadius;
 
         // [Theme developer]
         static int                  ValueToMultiplyOnClick;
@@ -135,6 +136,7 @@ class Settings
         static unsigned char*       DefaultBackgroundTexture;
 
         // Hot keys
+        static KeyCombination       CombinationToShowKeys;
         static KeyCombination       CombinationToIncrease;
         static KeyCombination       CombinationToDecrease;
         static KeyCombination       CombinationForEditMode;
