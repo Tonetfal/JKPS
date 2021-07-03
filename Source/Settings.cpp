@@ -17,7 +17,7 @@ std::string getOutOfBoundsErrMsg(const std::string &parName, T bot, T top)
 std::vector<Keys> Settings::mKeys({ Keys::Z, Keys::X, Keys::MLeft, Keys::MRight });
 
 // Non config parameters
-std::size_t Settings::ButtonAmount(mKeys.size());
+unsigned int Settings::ButtonAmount(mKeys.size());
 
 
 // [Statistics text]
@@ -35,7 +35,7 @@ std::string Settings::KeyCountersFontPath("Default");
 sf::Color Settings::KeyCountersTextColor(sf::Color::White);
 std::size_t Settings::KeyCountersTextCharacterSize(60);
 float Settings::KeyCounterWidth(1.f);
-float Settings::KeyCounterHeight(1.35f);
+float Settings::KeyCounterHeight(0.95f);
 bool Settings::KeyCountersBold(false);
 bool Settings::KeyCountersItalic(false);
 bool Settings::ShowSetKeysText(false);
@@ -45,7 +45,7 @@ bool Settings::ShowKeyCountersText(true);
 float Settings::ButtonDistance(7.f);
 float Settings::StatisticsDistance(5.f);
 float Settings::SpaceBetweenButtonsAndStatistics(10.f);
-float Settings::SpaceOnStatisticsRight(120.f);
+float Settings::SpaceOnStatisticsRight(500.f);
 
 // [Button graphics]
 std::string Settings::ButtonTexturePath("Default");

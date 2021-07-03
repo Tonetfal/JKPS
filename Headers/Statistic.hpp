@@ -5,17 +5,36 @@
 
 #include <SFML/Graphics/Text.hpp>
 
+#define STATISTIC_DEBUG
 
-class Statistic
+#ifdef STATISTIC_DEBUG
+#include "GraphicalDebug.hpp"
+#endif
+
+class Statistic : public SceneNode
 {
     public:
-        Statistic(const FontHolder &fonts);
+        enum Type
+        {
+            KPS,
+            MaxKPS,
+            Total,
+            BPM,
+            StatisticCounter
+        };
+
+
+    public:
+        Statistic(const FontHolder &fonts, Type type);
         virtual void updateCurrent(sf::Time dt);
 
         unsigned getCategory() const;
+        static sf::Vector2f getStartPosition(float textHeight);
 
-        static float getWidth(size_t index);
-        static float getHeight(size_t index);
+        float getWidth() const;
+        float getHeight() const;
+
+        void clear();
 
 
     private:
@@ -24,4 +43,12 @@ class Statistic
 
     private:
         sf::Text mText;
+        std::string mStat;
+        Type mType;
+
+        std::function<int()> mFunction;
+
+#ifdef STATISTIC_DEBUG
+        GraphicalDebug mDebug;
+#endif
 };

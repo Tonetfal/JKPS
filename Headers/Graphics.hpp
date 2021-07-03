@@ -6,7 +6,6 @@
 #include "SpriteNode.hpp"
 #include "CommandQueue.hpp"
 #include "Command.hpp"
-#include "Button.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
 #include <SFML/Graphics/View.hpp>
@@ -31,6 +30,7 @@ class Graphics : private sf::NonCopyable
         void draw();
 
         CommandQueue &getCommandQueue();
+
 
     private:
         void loadTextures();

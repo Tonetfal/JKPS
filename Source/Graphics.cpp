@@ -1,4 +1,7 @@
 #include "../Headers/Graphics.hpp"
+#include "../Headers/Button.hpp"
+#include "../Headers/Statistic.hpp"
+#include "../Headers/Calculator.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
@@ -52,13 +55,51 @@ void Graphics::loadFonts()
 
 void Graphics::buildScene()
 {
+    std::unique_ptr<Calculator> calculator(new Calculator());
+    mSceneGraph.attachChild(std::move(calculator));
+
     std::unique_ptr<Button> button(nullptr);
     
     sf::Vector2f textureCenter(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) / 2.f);
+
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         button = std::unique_ptr<Button>(new Button(mTextures, mFonts, Settings::mKeys[i]));
         button->setPosition(sf::Vector2f(Button::getWidth(i), Button::getHeight(i)));
         mSceneGraph.attachChild(std::move(button));
+    }
+
+
+    std::unique_ptr<Statistic> statistic = nullptr;
+    Statistic *firstLine = nullptr;
+
+    statistic = std::unique_ptr<Statistic>(new Statistic(mFonts, Statistic::KPS));
+    statistic->setPosition(Statistic::getStartPosition(statistic->getHeight()));
+    firstLine = statistic.get();
+    mSceneGraph.attachChild(std::move(statistic));
+
+    int decrement = 0;
+    for (size_t i = 1; i < Statistic::StatisticCounter; ++i)
+    {
+        switch (static_cast<Statistic::Type>(i))
+        {
+            case Statistic::MaxKPS:
+                if (!Settings::ShowMaxKPS)
+                {
+                    ++decrement;
+                    continue;
+                }
+            case Statistic::BPM:
+                if (!Settings::ShowBPMText)
+                {
+                    decrement++;
+                    continue;
+                }
+            default:
+                break;
+        }
+        statistic = std::unique_ptr<Statistic>(new Statistic(mFonts, static_cast<Statistic::Type>(i)));
+        statistic->setPosition(0, (firstLine->getHeight() + Settings::StatisticsDistance) * (i - decrement));
+        firstLine->attachChild(std::move(statistic));
     }
 }

@@ -20,7 +20,7 @@ User::User()
 	// mKeyBinding[Settings::CombinationForEditMode] = EditMode;
 	// mKeyBinding[Settings::CombinationToIncrease] = IncreaseKeys;
 	// mKeyBinding[Settings::CombinationToDecrease] = DecreaseKeys;
-	// mKeyBinding[Settings::CombinationToClear] = ResetStatistics;
+	mKeyBinding[Settings::CombinationToClear] = ResetStatistics;
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
         mKeyBinding[Settings::mKeys[i]] = static_cast<Action>(i + Button0);
 
@@ -31,9 +31,12 @@ User::User()
 	// mActionBinding.find(EditMode)->second.category = Category::EditMode;
     // mActionBinding.find(IncreaseKeys)->second.category = Category::Button;
     // mActionBinding.find(DecreaseKeys)->second.category = Category::Button;
-	// mActionBinding.find(ResetStatistics)->second.category = Category::Statistics;
+	mActionBinding.find(ResetStatistics)->second.category = Category::Statistics;
     for (size_t i = Button0; i <= Button9; ++i)
-        mActionBinding.find(static_cast<Action>(i))->second.category = Category::Button;
+	{
+        mActionBinding.find(static_cast<Action>(i))->second.category = 
+			Category::Button ;
+	}
 }
 
 void User::handleEvent(const sf::Event& event, CommandQueue& commands)
@@ -80,6 +83,7 @@ void User::handleRealtimeInput(CommandQueue& commands)
 
 void User::initializeActions()
 {
+	// mActionBinding[ResetStatistics].action = 
     for (size_t i = Button0; i <= Button9; ++i)
     {
         Action action = static_cast<Action>(i);

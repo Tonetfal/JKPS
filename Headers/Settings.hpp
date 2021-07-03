@@ -65,10 +65,10 @@ class Settings
         // const static std::size_t    mFramesPerSecond;
 
         // [Keys] [Mouse]
-        static std::vector<Keys> mKeys;
+        static std::vector<Keys>    mKeys;
 
         // Non config parameters
-        static std::size_t          ButtonAmount;
+        static unsigned int         ButtonAmount;
 
         // [Statistics text]
         static std::string          StatisticsFontPath;
@@ -135,11 +135,11 @@ class Settings
         static unsigned char*       DefaultBackgroundTexture;
 
         // Hot keys
-        static KeyCombination CombinationToIncrease;
-        static KeyCombination CombinationToDecrease;
-        static KeyCombination CombinationForEditMode;
-        static KeyCombination CombinationToClear;
-        static KeyCombination CombinationToExit;
+        static KeyCombination       CombinationToIncrease;
+        static KeyCombination       CombinationToDecrease;
+        static KeyCombination       CombinationForEditMode;
+        static KeyCombination       CombinationToClear;
+        static KeyCombination       CombinationToExit;
 
         const size_t                minimumKeys;
         const size_t                maximumKeys;

@@ -1,7 +1,7 @@
 #include "../Headers/Application.hpp"
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f / 30);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60);
 
 Application::Application()
 : mWindow (sf::VideoMode(getWindowWidth(), getWindowHeight()), "KPS", sf::Style::None)
@@ -37,7 +37,6 @@ void Application::processInput()
     sf::Event event;
     while (mWindow.pollEvent(event)) 
     {
-        // if (event.type == sf::Event::MouseMoved)
         // Fill up the queue
         mUser.handleEvent(event, commands);
         
@@ -80,7 +79,8 @@ void Application::moveWindow(sf::Vector2i mousePosition)
 
 unsigned int Application::getWindowWidth() const
 {
-    return (Settings::ButtonTextureSize.x + Settings::ButtonDistance) * Settings::ButtonAmount + Settings::ButtonDistance;
+    return (Settings::ButtonTextureSize.x + Settings::ButtonDistance) * Settings::ButtonAmount 
+        + Settings::ButtonDistance + Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight;
 }
 
 unsigned int Application::getWindowHeight() const

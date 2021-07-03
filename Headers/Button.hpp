@@ -11,8 +11,7 @@
 
 #define TEXT_DEBUG
 #ifdef TEXT_DEBUG
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
+#include "GraphicalDebug.hpp"
 #endif
 
 
@@ -37,6 +36,8 @@ class Button : public SceneNode
 
         static float getWidth(size_t index);
         static float getHeight(size_t index);
+        
+        void clear();
 
 
     private:
@@ -70,7 +71,6 @@ class Button : public SceneNode
         bool mIsAnimationActive;
 
 #ifdef TEXT_DEBUG
-        sf::CircleShape mOrigin;
-        sf::RectangleShape mRectangle;
+        GraphicalDebug mDebug;
 #endif
 };

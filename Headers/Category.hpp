@@ -11,5 +11,6 @@ namespace Category
 		Button 		= 1 << 1,
 		Statistics 	= 1 << 2,
 		EditMode 	= 1 << 3,
+		Calculator  = 1 << 4,
 	};
 }

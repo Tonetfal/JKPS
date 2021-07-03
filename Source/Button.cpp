@@ -1,5 +1,6 @@
 #include "../Headers/Button.hpp"
 #include "../Headers/ResourceHolder.hpp"
+#include "../Headers/Calculator.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -10,17 +11,7 @@ Button::Button(const TextureHolder &textures, const FontHolder &fonts, Keys key)
 , mCounter(0)
 , mIsPressed(false)
 , mIsAnimationActive(false)
-#ifdef TEXT_DEBUG
-, mOrigin(5.f)
-, mRectangle()
-#endif
 { 
-#ifdef TEXT_DEBUG
-    mOrigin.setOrigin(5.f, 5.f);
-    mRectangle.setFillColor(sf::Color::Transparent);
-    mRectangle.setOutlineThickness(1.f);
-    mRectangle.setOutlineColor(sf::Color::Magenta);
-#endif
     mButtonSprite.setTexture(textures.get(Textures::Button));
     mAnimationSprite.setTexture(textures.get(Textures::Animation));
 
@@ -69,9 +60,9 @@ void Button::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) cons
 	target.draw(mButtonSprite, states);
     target.draw(mAnimationSprite, states);
     target.draw(mText, states);
+
 #ifdef TEXT_DEBUG
-    target.draw(mOrigin, states);
-    target.draw(mRectangle, states);
+    target.draw(mDebug, states);
 #endif
 }
 
@@ -86,6 +77,7 @@ void Button::pressButton()
     if (!mIsPressed)
     {
         mCounter += 1 * Settings::ValueToMultiplyOnClick;
+        Calculator::add();
         mText.setString(std::to_string(mCounter));
 
         // Reset text ch. size because the overall size can decrease so it will fit
@@ -174,23 +166,21 @@ void Button::centerText()
     sf::Vector2f buttonCenter(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) / 2.f);
     sf::Vector2f textSize(mText.getGlobalBounds().width, mText.getGlobalBounds().height);
     centerOrigin();
-    mText.setPosition(buttonCenter);
+
+    // Scale the position as the user want, because it is impossible to calculate things perfectly due to different fonts
+    mText.setPosition(
+        buttonCenter.x + textSize.x * Settings::KeyCounterWidth - textSize.x,
+        buttonCenter.y + textSize.y * -Settings::KeyCounterHeight + textSize.y);
 
 #ifdef TEXT_DEBUG
-    mOrigin.setPosition(mText.getPosition());
-    mRectangle.setSize(textSize);
-    mRectangle.setPosition(mText.getGlobalBounds().left, mText.getGlobalBounds().top);
+    mDebug(mText, mText.getPosition());
 #endif
-
-    // mText.setPosition(
-    //     buttonCenter.x + textSize.x * Settings::KeyCounterWidth - textSize.x,
-    //     buttonCenter.y + textSize.y * -Settings::KeyCounterHeight + textSize.y);
 }
 
 void Button::centerOrigin()
 {
     sf::Vector2f textSize(mText.getLocalBounds().width, mText.getLocalBounds().height);
-    mText.setOrigin(textSize.x / 2.f, textSize.y );
+    mText.setOrigin(textSize.x / 2.f, textSize.y);
 }
 
 void Button::makeFitText()
@@ -202,6 +192,7 @@ void Button::makeFitText()
         mText.setCharacterSize(mText.getCharacterSize() - 1);
         textSize = sf::Vector2f(mText.getLocalBounds().width, mText.getLocalBounds().height);
     }
+    // Re-center the text, otherwise it will be on the left
     centerText();
 }
 
