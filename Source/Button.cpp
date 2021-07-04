@@ -57,7 +57,8 @@ void Button::updateKeyCounters()
         // Display keys if...
         std::string strToSet("");
         if (Settings::IsChangeable || Settings::ShowSetKeysText 
-        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)
+        || sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) // if ShowKeyCountersText is false mKeyCounters is not initialized
         {
             if (i < Settings::KeyAmount)
                 strToSet = convertKeyToString(Settings::Keys[i], false);
