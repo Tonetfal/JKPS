@@ -153,9 +153,7 @@ void Button::draw()
 void Button::loadTextures(TextureHolder& textureHolder)
 {
     mButtonTexture = &textureHolder.get(Textures::KeyButton);
-    mButtonTexture->setSmooth(true);
     mAnimationTexture = &textureHolder.get(Textures::ButtonAnimation);
-    mAnimationTexture->setSmooth(true);
 }
 void Button::loadFonts(FontHolder& fontHolder)
 {
