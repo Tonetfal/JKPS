@@ -4,7 +4,7 @@
 
 static std::string DefaultConfigString = 
 "# Download link:\n"
-"# https://github.com/JekiTheMonkey/KPS/releases\n"
+"# https://github.com/JekiTheMonkey/JKPS/releases\n"
 "# My Discord: Jeki the Monkey from München#3932\n"
 "# If any settings will not be found default parameter value will be used\n"
 "#\n"
@@ -54,7 +54,7 @@ static std::string DefaultConfigString =
 "[Animation graphics]\n"
 "Animation style: 1\n"
 "Animation texture: Default\n"
-"Animation velocity: 20\n"
+"Animation velocity: 5\n"
 "# Style 1\n"
 "Animation scale on click: 1\n"
 "Animation color: 255,180,0\n"
