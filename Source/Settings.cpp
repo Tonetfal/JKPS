@@ -76,8 +76,8 @@ std::string Settings::BackgroundTexturePath("Default");
 sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
 
 // [Edit mode]
-sf::Color Settings::HighlightedKeyColor(sf::Color(255,180,0));
-sf::Color Settings::AlertColor(sf::Color(210,30,210));
+sf::Color Settings::HighlightedKeyColor(sf::Color(210,30,210));
+sf::Color Settings::AlertColor(sf::Color(255,180,0));
 
 // Non config parameters
 bool Settings::IsChangeable(false);
