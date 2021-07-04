@@ -1,5 +1,5 @@
-# KPS
-KPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
+# JKPS
+JKPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
 
 # Preview
 ![](Preset-1.gif)
@@ -14,7 +14,7 @@ These actions look like:
 ![](modification-demo.gif)
 
 
-Other settings can be changed in the KPS.cfg file, that will be generated in the same directory after you run the program. If there is already one, nothing will be generated, but if there is any error, error log will be generated.
+Other settings can be changed in the JKPS.cfg file, that will be generated in the same directory after you run the program. If there is already one, nothing will be generated, but if there is any error, error log will be generated.
 When you change anything in the config you must put one space between semicolon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes.
 To exit the program just click Ctrl + W or close it from the tray.
 
