@@ -3,7 +3,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/Settings::mFramesPerSecond);
 
 Application::Application(Settings& settings)
-: mWindow(sf::VideoMode(getWindowWidth(), 150), "KPS", sf::Style::None)
+: mWindow(sf::VideoMode(getWindowWidth(), 150), "JKPS", sf::Style::None)
 , mTextures()
 , mFonts()
 , mSettings(settings)
