@@ -9,7 +9,7 @@ static std::string DefaultConfigString =
 "# If any settings will not be found default parameter value will be used\n"
 "#\n"
 "# Read this page to know how to edit keys and mouse buttons from config\n"
-"# https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5n \n"
+"# https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5 \n"
 "\n"
 "[Keys]\n"
 "Keys: Z,X\n"
