@@ -188,7 +188,7 @@ Settings::Settings()
     setupDigitParameter(tmp, 0, 2, findParameter("Animation scale on click"), "Animation scale on click", ofErrorLog);
     AnimationScale = sf::Vector2f(tmp, tmp);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
-    setupDigitParameter(AnimationVelocity, 0, 120, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
+    setupDigitParameter(AnimationVelocity, 1, 120, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
     setupDigitParameter(AnimationOffset, 0, 10, findParameter("Animation offset"), "Animation offset", ofErrorLog);
 
     // [Background]
