@@ -14,7 +14,7 @@ std::string getOutOfBoundsErrMsg(const std::string &parName, T bot, T top)
 
 
 // [Keys] [Mouse]
-std::vector<Keys> Settings::mKeys({ Keys::Z, Keys::X, Keys::MLeft, Keys::MRight });
+std::vector<Keys> Settings::mKeys({ Keys::Z});//, Keys::X, Keys::MLeft, Keys::MRight });
 
 // Non config parameters
 unsigned int Settings::ButtonAmount(mKeys.size());
@@ -88,11 +88,17 @@ int Settings::ValueToMultiplyOnClick(1);
 
 // Hot keys
 KeyCombination Settings::CombinationToShowKeys(Keys::LControl);
-KeyCombination Settings::CombinationToIncrease(Keys::LControl, Keys::Equal);
-KeyCombination Settings::CombinationToDecrease(Keys::LControl, Keys::Dash);
+KeyCombination Settings::CombinationToIncrease(Keys::Equal);
+KeyCombination Settings::CombinationToDecrease(Keys::Dash);
 KeyCombination Settings::CombinationForEditMode(Keys::LControl, Keys::Q);
 KeyCombination Settings::CombinationToClear(Keys::LControl, Keys::X);
 KeyCombination Settings::CombinationToExit(Keys::LControl, Keys::W);
+
+// Key limits
+const unsigned Settings::minimumKeys(0);
+const unsigned Settings::maximumKeys(10);
+const unsigned Settings::minimumMouseButtons(0);
+const unsigned Settings::maximumMouseButtons(4);
 
 // Settings::Settings()
 // : configPath("KPS.cfg")

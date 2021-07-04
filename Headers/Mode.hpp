@@ -24,6 +24,7 @@ class Mode : public SceneNode
         static void selectKey(Keys key);
         
         static Keys getSelectedKey();
+        static bool wasKeyChanged();
         static State getState();
         unsigned getCategory() const;
         
@@ -33,8 +34,9 @@ class Mode : public SceneNode
 
 
     private:
-        static State mState;
         sf::CircleShape mAlert;
-        static Keys mSelectedKey;
+        static State state;
+        static Keys selectedKey;
         static bool needToRelease;
+        static bool wasChanged;
 };

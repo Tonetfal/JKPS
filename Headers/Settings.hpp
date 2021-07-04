@@ -143,10 +143,10 @@ class Settings
         static KeyCombination       CombinationToClear;
         static KeyCombination       CombinationToExit;
 
-        const size_t                minimumKeys;
-        const size_t                maximumKeys;
-        const size_t                minimumMouseButtons;
-        const size_t                maximumMouseButtons;
+        static const unsigned       minimumKeys;
+        static const unsigned       maximumKeys;
+        static const unsigned       minimumMouseButtons;
+        static const unsigned       maximumMouseButtons;
 
 
     private:

@@ -21,8 +21,6 @@ class Application  : private sf::NonCopyable
         void render();
 
         void moveWindow(sf::Vector2i mousePosition);
-        unsigned int getWindowWidth() const;
-        unsigned int getWindowHeight() const;
 
 
     private:

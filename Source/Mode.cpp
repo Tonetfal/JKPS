@@ -4,9 +4,11 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 
-Mode::State Mode::mState(Mode::Normal);
-Keys Mode::mSelectedKey(Keys::Unknown);
+
+Mode::State Mode::state(Mode::Normal);
+Keys Mode::selectedKey(Keys::Unknown);
 bool Mode::needToRelease(false);
+bool Mode::wasChanged(false);
 
 Mode::Mode()
 {
@@ -17,7 +19,7 @@ Mode::Mode()
 
 void Mode::updateCurrent(sf::Time dt)
 {
-    if (!KeyCombination::isCombinationPressed(mSelectedKey))
+    if (!KeyCombination::isCombinationPressed(selectedKey))
     {
         needToRelease = false;
     }
@@ -27,8 +29,8 @@ void Mode::switchState()
 {
     switch (getState())
     {
-        case Normal: mState = Edit; break;
-        case Edit: mState = Normal; break;
+        case Normal: state = Edit; break;
+        case Edit: state = Normal; selectedKey = Keys::Unknown; break;
         default: break;
     }
 }
@@ -38,14 +40,19 @@ void Mode::selectKey(Keys key)
     if (!needToRelease)
     {
         // mSelectedKey = (mSelectedKey == key ? Keys::Unknown : key);
-        mSelectedKey = key;
+        selectedKey = key;
         needToRelease = true;
     }
 }
 
 Keys Mode::getSelectedKey()
 {
-    return mSelectedKey;
+    return selectedKey;
+}
+
+bool Mode::wasKeyChanged()
+{
+    return wasChanged;
 }
 
 void Mode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
@@ -56,7 +63,7 @@ void Mode::drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const
 
 Mode::State Mode::getState()
 {
-    return mState;
+    return state;
 }
 
 unsigned Mode::getCategory() const

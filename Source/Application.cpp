@@ -5,7 +5,7 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60);
 
 Application::Application()
-: mWindow (sf::VideoMode(getWindowWidth(), getWindowHeight()), "KPS", sf::Style::None)
+: mWindow (sf::VideoMode(Graphics::getWindowWidth(), Graphics::getWindowHeight()), "KPS", sf::Style::None)
 , mGraphics(mWindow)
 , mUser()
 {
@@ -76,15 +76,4 @@ void Application::moveWindow(sf::Vector2i mousePosition)
         mWindow.setPosition(mWindow.getPosition() - deltaMovement);
 
     lastMousePosition = mousePosition;
-}
-
-unsigned int Application::getWindowWidth() const
-{
-    return (Settings::ButtonTextureSize.x + Settings::ButtonDistance) * Settings::ButtonAmount 
-        + Settings::ButtonDistance + Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight;
-}
-
-unsigned int Application::getWindowHeight() const
-{
-    return Settings::ButtonTextureSize.y + Settings::ButtonDistance * 2;
 }

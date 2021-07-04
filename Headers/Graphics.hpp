@@ -21,6 +21,8 @@ namespace sf
 {
 	class RenderWindow;
 }
+class Statistic;
+class Mode;
 
 class Graphics : private sf::NonCopyable
 {
@@ -31,11 +33,18 @@ class Graphics : private sf::NonCopyable
 
         CommandQueue &getCommandQueue();
 
+        static unsigned int getWindowWidth();
+        static unsigned int getWindowHeight();
+        // ~Graphics();
+
 
     private:
         void loadTextures();
         void loadFonts();
         void buildScene();
+
+        void changeButtons();
+
 
 
     private:
@@ -46,4 +55,9 @@ class Graphics : private sf::NonCopyable
 
         SceneNode mSceneGraph;
         CommandQueue mCommandQueue;
+
+        Statistic* mStatFirstLine;
+        // Mode* mMode;
+        // std::array<SceneNode*, 10> mButtons;
+        bool mNeedToRelease;
 };
