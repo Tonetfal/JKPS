@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 
-set(PROJECT_NAME "KPS")
+set(PROJECT_NAME "JKPS")
 project(${PROJECT_NAME}) 
 
 file(GLOB PROJECT_SOURCE_DIR "Source")

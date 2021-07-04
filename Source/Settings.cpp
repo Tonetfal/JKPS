@@ -101,8 +101,8 @@ sf::Keyboard::Key Settings::KeyToClear(sf::Keyboard::X);
 sf::Keyboard::Key Settings::KeyExit(sf::Keyboard::W);
 
 Settings::Settings()
-: configPath("KPS.cfg")
-, errorLogPath("KPSErrorLog.txt")
+: configPath("JKPS.cfg")
+, errorLogPath("JKPSErrorLog.txt")
 , tmpConfigPath("tmpConfig.cfg")
 , minimumKeys(0)
 , maximumKeys(10)
