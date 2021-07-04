@@ -66,12 +66,8 @@ bool KeyCombination::operator<(const KeyCombination &combination) const
     if (l[0] < r[0]) return true;
     if (l[0] > r[0]) return false;
 
-    if (l.size() == 1) return false;
-
     if (l[1] < r[1]) return true;
     if (l[1] > r[1]) return false;
-
-    if (l.size() == 2) return false;
 
     if (l[2] < r[2]) return true;
     if (l[2] > r[2]) return false;
