@@ -30,6 +30,7 @@ class Button : public SceneNode
 		virtual void updateCurrent(sf::Time dt);
 
         void pressButton();
+        void showKey();
 
         Keys getKey() const;
 		unsigned getCategory() const;
@@ -42,6 +43,7 @@ class Button : public SceneNode
 
     private:
         virtual void drawCurrent(sf::RenderTarget &target, sf::RenderStates states) const;
+        void updateText();
 
         void lightKey();
         void fadeKey();
@@ -71,6 +73,7 @@ class Button : public SceneNode
         bool mIsPressed;
         bool mIsAnimationActive;
         unsigned int mPrevModeState;
+        bool mShowKeys;
 
 #ifdef TEXT_DEBUG
         GraphicalDebug mDebug;

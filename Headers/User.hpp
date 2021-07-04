@@ -31,6 +31,7 @@ class User
 			Button7,
 			Button8,
 			Button9,
+			ViewKey,
 			ActionCount
 		};
 

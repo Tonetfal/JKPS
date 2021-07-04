@@ -35,9 +35,18 @@ struct StatisticReseter
 	}
 };
 
+struct KeyShower
+{
+	void operator() (Button &button, sf::Time) const
+	{
+		button.showKey();
+	}
+};
+
 User::User()
 {
 	// Set initial key bindings
+	mKeyBinding[Settings::CombinationToShowKeys] = ViewKey;
 	mKeyBinding[Settings::CombinationForEditMode] = ChangeMode;
 	mKeyBinding[Settings::CombinationToIncrease] = IncreaseKeys;
 	mKeyBinding[Settings::CombinationToDecrease] = DecreaseKeys;
@@ -45,13 +54,13 @@ User::User()
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
         mKeyBinding[Settings::mKeys[i]] = static_cast<Action>(i + Button0);
 
-
 	// Set initial action bindings
 	initializeActions();
 
 	// Assign all categories
 	mActionBinding.find(ChangeMode)->second.category = Category::EditMode;
     mActionBinding.find(IncreaseKeys)->second.category = Category::Button;
+	mActionBinding.find(ViewKey)->second.category = Category::Button;
     mActionBinding.find(DecreaseKeys)->second.category = Category::Button;
 	mActionBinding.find(ResetStatistics)->second.category = Category::Statistics;
     for (size_t i = Button0; i <= Button9; ++i)
@@ -125,6 +134,7 @@ void User::initializeActions()
 {
 	mActionBinding[ChangeMode].action = derivedAction<Mode>(ModeChanger());
 	mActionBinding[ResetStatistics].action = derivedAction<Statistic>(StatisticReseter());
+	mActionBinding[ViewKey].action = derivedAction<Button>(KeyShower());
 
     for (size_t i = Button0; i <= Button9; ++i)
     {

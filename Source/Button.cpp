@@ -13,6 +13,7 @@ Button::Button(const TextureHolder &textures, const FontHolder &fonts, Keys key)
 , mIsPressed(false)
 , mIsAnimationActive(false)
 , mPrevModeState(Mode::Normal)
+, mShowKeys(false)
 { 
     mButtonSprite.setTexture(textures.get(Textures::Button));
     mAnimationSprite.setTexture(textures.get(Textures::Animation));
@@ -30,6 +31,7 @@ Button::Button(const TextureHolder &textures, const FontHolder &fonts, Keys key)
     mAnimationSprite.setColor(sf::Color::Transparent);
 
     mText.setFont(fonts.get(Fonts::KeyCounter));
+    mText.setString(convertKeyToString(mKey, false));
     setupText();
     sf::Text::Style style(static_cast<sf::Text::Style>(
         (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
@@ -38,9 +40,7 @@ Button::Button(const TextureHolder &textures, const FontHolder &fonts, Keys key)
 
 void Button::updateCurrent(sf::Time dt)
 {
-    if (KeyCombination::isCombinationPressed(Settings::CombinationToClear))
-        clear();
-    setupText();
+    updateText();
 
     mIsPressed = KeyCombination::isCombinationPressed(mKey);
     if (mIsAnimationActive && !mIsPressed)
@@ -50,9 +50,44 @@ void Button::updateCurrent(sf::Time dt)
             case Light: fadeKey(); increaseButtonSize(); break;
             case Press: break;
         }
-
-        centerText();
     }
+}
+
+void Button::updateText()
+{
+    if (KeyCombination::isCombinationPressed(Settings::CombinationToClear)
+    &&  Mode::getState() == Mode::Normal)
+    {
+        clear();
+        mText.setString(convertKeyToString(mKey, false));
+        setupText();
+    }
+
+    if (Mode::getState() == Mode::Normal && mPrevModeState != Mode::Normal)
+    {
+        mText.setString(mCounter == 0 ? convertKeyToString(mKey, false) : std::to_string(mCounter));
+        setupText();
+        mPrevModeState = Mode::Normal;
+    }
+
+    if ((Mode::getState() == Mode::Edit && mPrevModeState != Mode::Edit)
+    ||  Mode::wasKeyChanged())
+    {
+        mText.setString(convertKeyToString(mKey, false));
+        setupText();
+        mPrevModeState = Mode::Edit;
+    }
+
+    if (mShowKeys && !KeyCombination::isCombinationPressed(Settings::CombinationToShowKeys)
+    && Mode::getState() == Mode::Normal)
+    {
+        mText.setString(mCounter == 0 ? convertKeyToString(mKey, false) : std::to_string(mCounter));
+        setupText();
+        mShowKeys = false;
+    }
+
+    if (Mode::getSelectedKey() != mKey)
+        mText.setFillColor(Settings::KeyCountersTextColor);
 }
 
 
@@ -83,7 +118,10 @@ void Button::pressButton()
             Calculator::add();
 
             // Reset text ch. size because the overall size can decrease so it will fit
-            setupText();
+            mText.setString(std::to_string(mCounter));
+            mText.setCharacterSize(Settings::KeyCountersTextCharacterSize);
+            makeFitText();
+            centerText();
             
             mIsPressed = true;
         }
@@ -92,6 +130,8 @@ void Button::pressButton()
     if (Mode::getState() == Mode::Edit)
     {
         Mode::selectKey(mKey);
+        if (Mode::getSelectedKey() == mKey)
+            mText.setFillColor(Settings::HighlightedKeyColor);
     }
 }
 
@@ -147,6 +187,13 @@ void Button::increaseButtonSize()
     } while(back);
 }
 
+void Button::showKey()
+{
+    mText.setString(convertKeyToString(mKey, false));
+    setupText();
+    mShowKeys = true;
+}
+
 void Button::clear()
 {
     mCounter = 0;
@@ -174,22 +221,6 @@ float Button::getHeight(size_t index)
 
 void Button::setupText()
 {
-    std::string strToSet("");
-    switch (Mode::getState())
-    {
-        case Mode::Normal: 
-            strToSet = (!KeyCombination::isCombinationPressed(Settings::CombinationToShowKeys) 
-                && mCounter != 0 ? std::to_string(mCounter) : convertKeyToString(mKey, false));
-            break;
-
-        case Mode::Edit:
-            strToSet = convertKeyToString(mKey, false);
-            mText.setColor((Mode::getSelectedKey() == mKey) ? 
-                Settings::HighlightedKeyColor : Settings::KeyCountersTextColor);
-            break;
-    }
-
-    mText.setString(strToSet);
     mText.setCharacterSize(Settings::KeyCountersTextCharacterSize);
     makeFitText();
     centerText();
