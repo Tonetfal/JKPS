@@ -82,8 +82,7 @@ void Application::processInput()
                         mButtons.clear();
                         mStatistics.clear();
                         mCalculation.clear();
-                        // Return in order to don't count X as a clicked key, if a user has set it as its key
-                        return;
+                        mKeyPressingManager.clear();
                     }
 
                     if (event.key.code == Settings::KeyExit)
