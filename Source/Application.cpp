@@ -16,7 +16,7 @@ Application::Application(Settings& settings)
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
     sf::Image icon;
-    icon.loadFromMemory(iconHeaderArray, 148300);
+    icon.loadFromMemory(iconHeaderArray, 53200);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
 
     loadAssets();
