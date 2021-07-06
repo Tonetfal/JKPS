@@ -54,30 +54,7 @@ void Button::updateKeyCounters()
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
-        // Display keys if...
-        std::string strToSet("");
-        if (Settings::IsChangeable || Settings::ShowSetKeysText 
-        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
-        {
-            if (i < Settings::KeyAmount)
-                strToSet = convertKeyToString(Settings::Keys[i], false);
-            else
-                strToSet = convertButtonToString(
-                    Settings::MouseButtons[i - Settings::KeyAmount]);
-        }
-        // Display key counters
-        else 
-            if (Settings::ShowKeyCountersText)
-                strToSet = std::to_string(mKeyCounters[i]);
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
-        &&  !Settings::ShowSetKeysText)
-            strToSet = strToSet = convertKeyToString(Settings::Keys[i], false);
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
-        &&  Settings::ShowSetKeysText)
-            strToSet = std::to_string(mKeyCounters[i]);
-
-        mKeyCountersText[i]->setString(strToSet);
+        mKeyCountersText[i]->setString(getButtonText(i));
 
         if (Settings::ShowKeyCountersText)
         {
@@ -299,6 +276,45 @@ void Button::decreaseTextCharacterSize(int index)
     mKeyCountersText[index]->setCharacterSize(
         mKeyCountersText[index]->getCharacterSize() - 1);
 }
+
+std::string Button::getButtonText(unsigned index) const
+{
+    // Display keys if...
+    std::string str("");
+    if (Settings::IsChangeable || Settings::ShowSetKeysText 
+    || (Settings::ShowKeyCountersText && mKeyCounters[index] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+    {
+        if (index < Settings::KeyAmount)
+            str = convertKeyToString(Settings::Keys[index], false);
+        else
+            str = convertButtonToString(
+                Settings::MouseButtons[index - Settings::KeyAmount]);
+    }
+    // Display key counters
+    else 
+        if (Settings::ShowKeyCountersText)
+            str = std::to_string(mKeyCounters[index]);
+
+    // If LCtrl is pressed show the opposite value of the default one
+    if (mWindow.hasFocus())
+    {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
+        &&  !Settings::ShowSetKeysText)
+        {
+            if (index < Settings::KeyAmount)
+                str = str = convertKeyToString(Settings::Keys[index], false);
+            else
+                str = convertButtonToString(
+                    Settings::MouseButtons[index - Settings::KeyAmount]);
+        }
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
+        &&  Settings::ShowSetKeysText)
+                str = std::to_string(mKeyCounters[index]);
+    }
+    return str;
+}
+
 
 void Button::resizeVectors()
 {
