@@ -56,6 +56,7 @@ class Button
         void                        setupKeyCounterTextVec();
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
+        std::string                 getButtonText(unsigned index) const;
 
         void                        resizeVectors();
 

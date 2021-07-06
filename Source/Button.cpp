@@ -266,7 +266,7 @@ void Button::setupKeyCounterTextVec()
 void Button::setupTextPosition(int index)
 {
     sf::Text &elem = *mKeyCountersText[index];
-    elem.setOrigin(elem.getGlobalBounds().width / 2.f, elem.getGlobalBounds().height / 2.f);
+    elem.setOrigin(elem.getGlobalBounds().width / 2.f / elem.getScale().x, elem.getGlobalBounds().height / 2.f);
     elem.setPosition(getKeyCountersWidth(index), 
         getKeyCountersHeight(index) + mButtonsYOffset[index]);
 }
