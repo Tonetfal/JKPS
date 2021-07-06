@@ -205,7 +205,7 @@ void Statistics::setupText(ID id)
     mTexts.build(id);
     mTexts.get(id).setCharacterSize(Settings::StatisticsTextCharacterSize);
     mTexts.get(id).setFillColor(Settings::StatisticsTextColor);
-    // Doesn't want to work w/o cast
+
     sf::Text::Style style(static_cast<sf::Text::Style>(
         (Settings::StatisticsBold ? sf::Text::Bold : 0) | 
         (Settings::StatisticsItalic ? sf::Text::Italic : 0)));
@@ -226,7 +226,7 @@ void Statistics::setupString(ID id, const std::string& name)
 
 unsigned int Statistics::getStatisticsWidth()
 {
-    return (Settings::ButtonAmount + Settings::MouseButtonAmount) * 
+    return (Settings::KeyAmount + Settings::MouseButtonAmount) * 
         (Settings::ButtonTextureSize.x + Settings::ButtonDistance) +
         Settings::SpaceBetweenButtonsAndStatistics;
 }
