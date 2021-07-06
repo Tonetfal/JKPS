@@ -57,8 +57,7 @@ void Button::updateKeyCounters()
         // Display keys if...
         std::string strToSet("");
         if (Settings::IsChangeable || Settings::ShowSetKeysText 
-        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)
-        || sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+        || (Settings::ShowKeyCountersText && mKeyCounters[i] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
         {
             if (i < Settings::KeyAmount)
                 strToSet = convertKeyToString(Settings::Keys[i], false);
@@ -66,13 +65,20 @@ void Button::updateKeyCounters()
                 strToSet = convertButtonToString(
                     Settings::MouseButtons[i - Settings::KeyAmount]);
         }
-        // Display clicks amount
-        else if (Settings::ShowKeyCountersText)
+        // Display key counters
+        else 
+            if (Settings::ShowKeyCountersText)
+                strToSet = std::to_string(mKeyCounters[i]);
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
+        &&  !Settings::ShowSetKeysText)
+            strToSet = strToSet = convertKeyToString(Settings::Keys[i], false);
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
+        &&  Settings::ShowSetKeysText)
             strToSet = std::to_string(mKeyCounters[i]);
 
         mKeyCountersText[i]->setString(strToSet);
 
-        setupTextPosition(i);
         if (Settings::ShowKeyCountersText)
         {
             mKeyCountersText[i]->setCharacterSize(Settings::KeyCountersTextCharacterSize);
@@ -84,6 +90,7 @@ void Button::updateKeyCounters()
                 decreaseTextCharacterSize(i);
             }
         }
+        setupTextPosition(i);
     }
 }
 
@@ -155,6 +162,7 @@ void Button::loadTextures(TextureHolder& textureHolder)
     mButtonTexture = &textureHolder.get(Textures::KeyButton);
     mAnimationTexture = &textureHolder.get(Textures::ButtonAnimation);
 }
+
 void Button::loadFonts(FontHolder& fontHolder)
 {
     mKeyCountersFont = nullptr;
