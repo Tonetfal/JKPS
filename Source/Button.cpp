@@ -263,12 +263,19 @@ void Button::setupKeyCounterTextVec()
     }
 }
 
-void Button::setupTextPosition(int index)
+void Button::setupTextPosition(int idx)
 {
-    sf::Text &elem = *mKeyCountersText[index];
-    elem.setOrigin(elem.getGlobalBounds().width / 2.f / elem.getScale().x, elem.getGlobalBounds().height / 2.f);
-    elem.setPosition(getKeyCountersWidth(index), 
-        getKeyCountersHeight(index) + mButtonsYOffset[index]);
+    sf::Text &elem = *mKeyCountersText[idx];
+    if (std::pow(10, mKeyCounterDigits[idx]) <= mKeyCounters[idx])
+    {
+        ++mKeyCounterDigits[idx];
+        mCurDefaultTextHeight[idx] = elem.getGlobalBounds().height / 2.f;
+    }
+
+    // Without dividing the x axes by current scale the text goes so much to the left, when the button is pressed
+    elem.setOrigin(elem.getGlobalBounds().width / 2.f / elem.getScale().x, 
+        mCurDefaultTextHeight[idx] != 0 ? mCurDefaultTextHeight[idx] : elem.getGlobalBounds().height / 2.f);
+    elem.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx) + mButtonsYOffset[idx]);
 }
 
 void Button::decreaseTextCharacterSize(int index)
@@ -330,13 +337,14 @@ void Button::resizeVectors()
     mKeyCountersText.resize(Settings::ButtonAmount);
     mButtonsSprite.resize(Settings::ButtonAmount);
     mAnimationSprite.resize(Settings::ButtonAmount);
+    mCurDefaultTextHeight.resize(Settings::ButtonAmount);
+    mKeyCounterDigits.resize(Settings::ButtonAmount);
 
     if (prevSize < Settings::ButtonAmount)
     {
         for (size_t i = prevSize; i < Settings::ButtonAmount; i++)
         {
-            mButtonsYOffset[i] = 0;
-            mKeyCounters[i] = 0;
+            mButtonsYOffset[i] = mKeyCounters[i] = mCurDefaultTextHeight[i] = mKeyCounterDigits[i] = 0;
             mKeyCountersText[i] = std::move(std::unique_ptr<sf::Text>(new sf::Text));
             mButtonsSprite[i] = std::move(std::unique_ptr<sf::Sprite>(new sf::Sprite));
             mAnimationSprite[i] = std::move(std::unique_ptr<sf::Sprite>(new sf::Sprite));

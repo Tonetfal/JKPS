@@ -84,4 +84,7 @@ class Button
 
         AnimationStyle              mAnimationStyle;
         std::vector<float>          mButtonsYOffset;
+
+        std::vector<float>          mCurDefaultTextHeight;
+        std::vector<unsigned>       mKeyCounterDigits;
 };
