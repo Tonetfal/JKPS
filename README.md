@@ -4,21 +4,32 @@ JKPS is a simple program that shows keystates, keys per second, total keys and c
 # Preview
 ![](Preview-White-orange.gif)
 
-It supports up to 10 keys. Buttons, font, color, background, animation and other things can be changed in the config.
+It supports up to 10 keys. Buttons, fonts, colors, background, animations and other things can be changed in the config.
 
 # Usage
 Modifications can be done in edit mode, which can be opened/closed by pressing Ctrl + Q.
-If you want to add/remove a key press +/-, but if you want to change a key, click with left mouse button or with the same key, then the key will be selected, and it will change its own color, then press the key that will replace the old one.
+If you want to add/remove a key press +/-, but if you want to change a key, click with left mouse button or with the same key, then the key will be selected, and it will change its color, then press the key that will replace the old one.
 These actions look like:
 
 ![](modification-demo.gif)
 
+When you are done with editing exit from edit mode by pressing Ctrl + Q.
 
 Other settings can be changed in the JKPS.cfg file, that will be generated in the same directory after you run the program. If there is already one, nothing will be generated, but if there is any error, error log will be generated.
-When you change anything in the config you must put one space between semicolon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes.
-To exit the program just click Ctrl + W or close it from the tray.
+
+When you change anything in the config you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
 
 To know what keys and buttons can be written in the config check this [link](https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5).
+
+# Hotkeys
+
+Ctrl + Q - Enter/exit Edit mode
+
+Ctrl + W - Close the program
+
+Ctrl + X - Reset all the statistics
+
+Ctrl - Show opposite buttons value (key counters or set keys)
 
 # Notes
 - Capture the program as a game in OBS, not as a window, until you want that the graphics will be updated
@@ -36,6 +47,12 @@ To know what keys and buttons can be written in the config check this [link](htt
 ![](Preview-Dark-violet.gif)
 
 ![](Preview-Dark-classic.gif)
+
+# Links
+
+[Download](https://github.com/JekiTheMonkey/JKPS/releases/)
+
+[Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
 # License
 Licensed under the [MIT License](LICENSE).
