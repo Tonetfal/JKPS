@@ -52,6 +52,7 @@ class Button
         sf::Vector2f                getDefaultScale() const;
         sf::Vector2f                getScaleForText() const;
         sf::Vector2f                getScaleAmountPerFrame() const;
+        float                       getDefaultTextHeight() const;
 
         void                        setupKeyCounterTextVec();
         void                        setupTextPosition(int index);

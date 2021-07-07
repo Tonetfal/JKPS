@@ -247,6 +247,22 @@ sf::Vector2f Button::getScaleAmountPerFrame() const
     return {x, x};
 }
 
+float Button::getDefaultTextHeight() const
+{
+    static float defHeight = 0.f;
+    if (defHeight == 0.f)
+    {
+        auto &elem = *mKeyCountersText[0];
+        sf::Text tmp;
+        tmp.setFont(*elem.getFont());
+        tmp.setCharacterSize(elem.getCharacterSize());
+        tmp.setString("0");
+        defHeight = tmp.getGlobalBounds().height;
+    }
+
+    return defHeight;
+}
+
 void Button::setupKeyCounterTextVec()
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
@@ -266,15 +282,10 @@ void Button::setupKeyCounterTextVec()
 void Button::setupTextPosition(int idx)
 {
     sf::Text &elem = *mKeyCountersText[idx];
-    if (std::pow(10, mKeyCounterDigits[idx]) <= mKeyCounters[idx])
-    {
-        ++mKeyCounterDigits[idx];
-        mCurDefaultTextHeight[idx] = elem.getGlobalBounds().height / 2.f;
-    }
 
-    // Without dividing the x axes by current scale the text goes so much to the left, when the button is pressed
-    elem.setOrigin(elem.getGlobalBounds().width / 2.f / elem.getScale().x, 
-        mCurDefaultTextHeight[idx] != 0 ? mCurDefaultTextHeight[idx] : elem.getGlobalBounds().height / 2.f);
+    elem.setOrigin(
+        elem.getGlobalBounds().width / 2.f / elem.getScale().x, 
+        getDefaultTextHeight() / 2.f);
     elem.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx) + mButtonsYOffset[idx]);
 }
 
