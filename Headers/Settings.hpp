@@ -90,6 +90,8 @@ class Settings
         static std::size_t          KeyCountersTextCharacterSize;
         static float                KeyCounterWidth;
         static float                KeyCounterHeight;
+        static float                KeyCountersHorizontalBounds;
+        static float                KeyCountersVerticalBounds;
         static bool                 KeyCountersBold;
         static bool                 KeyCountersItalic;
         static bool                 ShowSetKeysText;

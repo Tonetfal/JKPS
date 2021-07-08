@@ -42,7 +42,7 @@ class Button
 
     private:
         void                        updateAnimation(const std::vector<bool>& needToBeReleased);
-        void                        updateKeyCounters();
+        void                        updateButtonText();
 
         void                        setTextures(std::vector<std::unique_ptr<sf::Sprite>>& vector, sf::Texture& texture);
         void                        setColor(std::vector<std::unique_ptr<sf::Sprite>>& vector, const sf::Color& color);
@@ -52,7 +52,9 @@ class Button
         sf::Vector2f                getDefaultScale() const;
         sf::Vector2f                getScaleForText() const;
         sf::Vector2f                getScaleAmountPerFrame() const;
-        float                       getDefaultTextHeight() const;
+        float                       getDefaultTextHeight(unsigned chSz) const;
+        float                       getTextMaxWidth() const;
+        float                       getTextMaxHeight() const;
 
         void                        setupKeyCounterTextVec();
         void                        setupTextPosition(int index);
@@ -75,7 +77,7 @@ class Button
 
         sf::Font*                   mKeyCountersFont;
         std::vector<long>           mKeyCounters;
-        std::vector<std::unique_ptr<sf::Text>> mKeyCountersText;
+        std::vector<std::unique_ptr<sf::Text>> mButtonsText;
 
         sf::Texture*                mButtonTexture;
         sf::Texture*                mAnimationTexture;

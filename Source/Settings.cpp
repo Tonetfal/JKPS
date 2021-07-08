@@ -42,6 +42,8 @@ sf::Color Settings::KeyCountersTextColor(sf::Color::White);
 std::size_t Settings::KeyCountersTextCharacterSize(14);
 float Settings::KeyCounterWidth(1.f);
 float Settings::KeyCounterHeight(1.35f);
+float Settings::KeyCountersHorizontalBounds(10.f);
+float Settings::KeyCountersVerticalBounds(10.f);
 bool Settings::KeyCountersBold(false);
 bool Settings::KeyCountersItalic(false);
 bool Settings::ShowSetKeysText(false);
@@ -162,7 +164,8 @@ Settings::Settings()
     if (KeyCounterWidth == 0) KeyCounterWidth = 0.000001f;
     setupDigitParameter(KeyCounterHeight, 0, 3, findParameter("Key counters height"), "Key counters height", ofErrorLog);
     if (KeyCounterHeight == 0) KeyCounterHeight = 0.000001f;
-
+    setupDigitParameter(KeyCountersHorizontalBounds, -100, 250, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersVerticalBounds, -100, 250, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
     setupBoolParameter(KeyCountersBold, findParameter("Key counters bold"), "Key counters bold", ofErrorLog);
     setupBoolParameter(KeyCountersItalic, findParameter("Key counters italic"), "Key counters italic", ofErrorLog);
     setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
