@@ -20,6 +20,7 @@ namespace Fonts
     {
         KeyCounters,
         Statistics,
+        KPS
     };
 }
 

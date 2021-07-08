@@ -75,6 +75,9 @@ class Settings
         static std::size_t          ButtonAmount;
 
         // [Statistics text]
+        static float                StatisticsDistance;
+        static float                SpaceBetweenButtonsAndStatistics;
+        static float                SpaceOnStatisticsRight;
         static std::string          StatisticsFontPath;
         static sf::Color            StatisticsTextColor;
         static std::size_t          StatisticsTextCharacterSize;
@@ -97,17 +100,8 @@ class Settings
         static bool                 ShowSetKeysText;
         static bool                 ShowKeyCountersText;
 
-        // [Spacing]
-        static float                ButtonDistance;
-        static float                StatisticsDistance;
-        static float                SpaceBetweenButtonsAndStatistics;
-        static float                SpaceOnStatisticsRight;
-        static unsigned             WindowBonusSizeTop;
-        static unsigned             WindowBonusSizeBottom;
-        static unsigned             WindowBonusSizeLeft;
-        static unsigned             WindowBonusSizeRight;
-
         // [Button graphics]
+        static float                ButtonDistance;
         static std::string          ButtonTexturePath;
         static sf::Vector2u         ButtonTextureSize;
         static sf::Color            ButtonTextureColor;
@@ -127,6 +121,7 @@ class Settings
         // [Background]
         static std::string          BackgroundTexturePath;
         static sf::Color            BackgroundColor;
+        static bool                 ScaleBackground;
 
         // [Edit mode]
         static sf::Color            HighlightedKeyColor;
@@ -134,6 +129,23 @@ class Settings
 
         // Non config parameters
         static bool                 IsChangeable;
+
+        // [Main window]
+        static bool                 WindowTitleBar;
+        static unsigned             WindowBonusSizeTop;
+        static unsigned             WindowBonusSizeBottom;
+        static unsigned             WindowBonusSizeLeft;
+        static unsigned             WindowBonusSizeRight;
+
+        // [KPS window]
+        static bool                 KPSWindowEnabledFromStart;
+        static sf::Vector2u         KPSWindowSize;
+        static float                KPSWindowDistanceTop;
+        static float                KPSWindowDistanceBetween;
+        static sf::Color            KPSWindowColor;
+        static std::string          KPSWindowFontPath;
+        static unsigned             KPSTextSize;
+        static unsigned             KPSNumberSize;
 
         // [Theme developer]
         static int                  ValueToMultiplyOnClick;
@@ -143,6 +155,7 @@ class Settings
         static unsigned char*       DefaultButtonTexture;
         static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
+        static unsigned char*       DefaultKPSWindowFont;
 
         // Hot keys
         static sf::Keyboard::Key    KeyToIncrease;
@@ -152,6 +165,7 @@ class Settings
         static sf::Keyboard::Key    KeyForEditMode;
         static sf::Keyboard::Key    KeyToClear;
         static sf::Keyboard::Key    KeyExit;
+        static sf::Keyboard::Key    KeyToOpenKPSWindow;
 
 
     private:

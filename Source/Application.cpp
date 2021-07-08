@@ -3,7 +3,8 @@
 const sf::Time Application::TimePerFrame = sf::seconds(1.f/Settings::mFramesPerSecond);
 
 Application::Application(Settings& settings)
-: mWindow(sf::VideoMode(getWindowWidth(), 150), "JKPS", sf::Style::None)
+: mWindow(sf::VideoMode(getWindowWidth(), 150), "JKPS", 
+    Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None)
 , mTextures()
 , mFonts()
 , mSettings(settings)
@@ -12,6 +13,7 @@ Application::Application(Settings& settings)
 , mStatistics(mWindow)
 , mButtons(mWindow)
 , mBackground(mWindow)
+, mKPSWindow()
 {
 	mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
@@ -24,7 +26,6 @@ Application::Application(Settings& settings)
     mStatistics.loadFonts(mFonts);
     mButtons.loadTextures(mTextures);
 
-    std::cout << getWindowHeight() << "\n";
     mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
     mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
 
@@ -35,7 +36,8 @@ Application::Application(Settings& settings)
     mSettings.setChangeabilityPosition();
 
     mBackground.loadTextures(mTextures);
-    mBackground.scaleTexture();
+
+    mKPSWindow.loadFont(mFonts.get(Fonts::KPS));
 }
 
 void Application::run()
@@ -95,6 +97,7 @@ void Application::processInput()
                 }
             }
 
+            mKPSWindow.handleEvent(event);
             if (event.type == sf::Event::Closed)
             {
                 mSettings.saveSettings();
@@ -120,7 +123,9 @@ void Application::processInput()
         }
     }
 
-    moveWindow();
+    mKPSWindow.handleOwnEvent();
+    if (!Settings::WindowTitleBar)
+        moveWindow();
     
     if (!Settings::IsChangeable)
     {
@@ -133,9 +138,9 @@ void Application::processInput()
 void Application::update(sf::Time dt)
 {
     mCalculation.update();
-    mStatistics.update( mCalculation.getKeyPerSecond(), 
-        mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys );
+    mStatistics.update(mCalculation.getKeyPerSecond(), mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys);
     mButtons.update(mKeyPressingManager.mNeedToBeReleased);
+    mKPSWindow.update(mCalculation.getKeyPerSecond());
     mKeyPressingManager.clear();
     mSettings.update();
 }
@@ -148,6 +153,7 @@ void Application::render()
     mStatistics.draw();
     mButtons.draw();
     mSettings.draw();
+    mKPSWindow.draw();
     
     mWindow.display();
 }
@@ -189,6 +195,11 @@ void Application::loadAssets()
         mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
     else
         mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
+
+    if (Settings::KPSWindowFontPath == defaultName)
+        mFonts.loadFromMemory(Fonts::KPS, Settings::DefaultKPSWindowFont, 456100);
+    else
+        mFonts.loadFromFile(Fonts::KPS, Settings::KPSWindowFontPath);
 }
 
 void Application::moveWindow()
@@ -204,16 +215,21 @@ void Application::moveWindow()
 
 unsigned int Application::getWindowWidth()
 {
-    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * 
-        Settings::ButtonAmount + Settings::SpaceBetweenButtonsAndStatistics + 
+    float tmp = 0.f;
+    if (Settings::ButtonDistance > 0)
+        tmp += Settings::ButtonDistance;
+
+    return (tmp + Settings::ButtonTextureSize.x) * Settings::ButtonAmount + 
         Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight + 
         Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight + 1;
 }
 
 unsigned int Application::getWindowHeight()
 {
-    return Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y +
+    float tmp = 0.f;
+    if (Settings::ButtonDistance > 0)
+        tmp += Settings::ButtonDistance * 2;
+
+    return tmp + Settings::ButtonTextureSize.y +
         Settings::WindowBonusSizeTop + Settings::WindowBonusSizeBottom;
-    // return std::max(float(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2),
-    //    Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }

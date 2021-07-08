@@ -8,6 +8,7 @@
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
+#include "KPSWindow.hpp"
 #include "DefaultFiles.hpp"
 
 
@@ -44,6 +45,7 @@ class Application
         Statistics                  mStatistics;
         Button                      mButtons;
         Background                  mBackground;
+        KPSWindow                   mKPSWindow;
 
         sf::Vector2i                mLastMousePosition;
 };

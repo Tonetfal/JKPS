@@ -27,6 +27,9 @@ std::size_t Settings::ButtonAmount(Settings::KeyAmount + Settings::MouseButtonAm
 
 
 // [Statistics text]
+float Settings::StatisticsDistance(5.f);
+float Settings::SpaceBetweenButtonsAndStatistics(10.f);
+float Settings::SpaceOnStatisticsRight(120.f);
 std::string Settings::StatisticsFontPath("Default");
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
 std::size_t Settings::StatisticsTextCharacterSize(13);
@@ -49,18 +52,8 @@ bool Settings::KeyCountersItalic(false);
 bool Settings::ShowSetKeysText(false);
 bool Settings::ShowKeyCountersText(true);
 
-// [Spacing]
-float Settings::ButtonDistance(7.f);
-float Settings::StatisticsDistance(5.f);
-float Settings::SpaceBetweenButtonsAndStatistics(10.f);
-float Settings::SpaceOnStatisticsRight(120.f);
-unsigned Settings::WindowBonusSizeTop(0.f);
-unsigned Settings::WindowBonusSizeBottom(0.f);
-unsigned Settings::WindowBonusSizeLeft(0.f);
-unsigned Settings::WindowBonusSizeRight(0.f);
-
-
 // [Button graphics]
+float Settings::ButtonDistance(7.f);
 std::string Settings::ButtonTexturePath("Default");
 sf::Vector2u Settings::ButtonTextureSize(50, 50);
 sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
@@ -81,6 +74,7 @@ sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 // [Background]
 std::string Settings::BackgroundTexturePath("Default");
 sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
+bool Settings::ScaleBackground(true);
 
 // [Edit mode]
 sf::Color Settings::HighlightedKeyColor(sf::Color(210,30,210));
@@ -88,6 +82,23 @@ sf::Color Settings::AlertColor(sf::Color(255,180,0));
 
 // Non config parameters
 bool Settings::IsChangeable(false);
+
+// [Main window]
+bool Settings::WindowTitleBar(false);
+unsigned Settings::WindowBonusSizeTop(0.f);
+unsigned Settings::WindowBonusSizeBottom(0.f);
+unsigned Settings::WindowBonusSizeLeft(0.f);
+unsigned Settings::WindowBonusSizeRight(0.f);
+
+// [KPS window]
+bool Settings::KPSWindowEnabledFromStart(false);
+sf::Vector2u Settings::KPSWindowSize(300U, 300U);
+sf::Color Settings::KPSWindowColor(sf::Color(0, 177, 64));
+std::string Settings::KPSWindowFontPath("Default");
+unsigned Settings::KPSTextSize(130U);
+unsigned Settings::KPSNumberSize(100U);
+float Settings::KPSWindowDistanceTop(20.f);
+float Settings::KPSWindowDistanceBetween(50.f);
 
 // [Theme developer]
 int Settings::ValueToMultiplyOnClick(1);
@@ -97,6 +108,7 @@ unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
 unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeader;
 unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader;
 unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
+unsigned char* Settings::DefaultKPSWindowFont = KPSWindowDefaultFont;
 
 // Hot keys
 sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
@@ -106,6 +118,7 @@ sf::Keyboard::Key Settings::AltKeyToDecrease(sf::Keyboard::Subtract);
 sf::Keyboard::Key Settings::KeyForEditMode(sf::Keyboard::Q);
 sf::Keyboard::Key Settings::KeyToClear(sf::Keyboard::X);
 sf::Keyboard::Key Settings::KeyExit(sf::Keyboard::W);
+sf::Keyboard::Key Settings::KeyToOpenKPSWindow(sf::Keyboard::K);
 
 Settings::Settings()
 : configPath("JKPS.cfg")
@@ -152,9 +165,13 @@ Settings::Settings()
     setupMouseButton(MouseButtons, findParameter("Buttons"), "Buttons", ofErrorLog);
 
     // [Statistics text]
+    setupDigitParameter(StatisticsDistance, 0, 500, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
+    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 500, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
+    if (SpaceBetweenButtonsAndStatistics == 0) SpaceBetweenButtonsAndStatistics = 1;
+    setupDigitParameter(SpaceOnStatisticsRight, 0, 500, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
     setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
     setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
-    setupDigitParameter(StatisticsTextCharacterSize, 0, 100, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
+    setupDigitParameter(StatisticsTextCharacterSize, 0, 500, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
     setupBoolParameter(StatisticsBold, findParameter("Statistics bold"), "Statistics bold", ofErrorLog);
     setupBoolParameter(StatisticsItalic, findParameter("Statistics italic"), "Statistics italic", ofErrorLog);
     setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
@@ -164,33 +181,24 @@ Settings::Settings()
     // [Button text]
     setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
     setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
-    setupDigitParameter(KeyCountersTextCharacterSize, 0, 100, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 500, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
     setupDigitParameter(KeyCounterWidth, 0, 3, findParameter("Key counters width"), "Key counters width", ofErrorLog);
     if (KeyCounterWidth == 0) KeyCounterWidth = 0.000001f;
     setupDigitParameter(KeyCounterHeight, 0, 3, findParameter("Key counters height"), "Key counters height", ofErrorLog);
     if (KeyCounterHeight == 0) KeyCounterHeight = 0.000001f;
-    setupDigitParameter(KeyCountersHorizontalBounds, -100, 250, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersVerticalBounds, -100, 250, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
     setupBoolParameter(KeyCountersBold, findParameter("Key counters bold"), "Key counters bold", ofErrorLog);
     setupBoolParameter(KeyCountersItalic, findParameter("Key counters italic"), "Key counters italic", ofErrorLog);
     setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
     setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
 
-    // [Spacing]
-    setupDigitParameter(ButtonDistance, 0, 100, findParameter("Button distance"), "Button distance", ofErrorLog);
-    setupDigitParameter(StatisticsDistance, 0, 100, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
-    setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 400, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
-    if (SpaceBetweenButtonsAndStatistics == 0) SpaceBetweenButtonsAndStatistics = 1;
-    setupDigitParameter(SpaceOnStatisticsRight, 0, 500, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
-    setupDigitParameter(WindowBonusSizeTop, 0, 500, findParameter("Window bonus size top"), "Window bonus size top", ofErrorLog);
-    setupDigitParameter(WindowBonusSizeBottom, 0, 500, findParameter("Window bonus size bottom"), "Window bonus size bottom", ofErrorLog);
-    setupDigitParameter(WindowBonusSizeLeft, 0, 500, findParameter("Window bonus size left"), "Window bonus size left", ofErrorLog);
-    setupDigitParameter(WindowBonusSizeRight, 0, 500, findParameter("Window bonus size right"), "Window bonus size right", ofErrorLog);
-    
-
     // [Button graphics]
+    setupDigitParameter(ButtonDistance, -500, 500, findParameter("Button distance"), "Button distance", ofErrorLog);
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);
-    setupVector(ButtonTextureSize, 0, 250, findParameter("Button texture size"), "Button texture size", ofErrorLog);
+    setupVector(ButtonTextureSize, 0, 1080, findParameter("Button texture size"), "Button texture size", ofErrorLog);
     setupColor(ButtonTextureColor,findParameter("Button texture color"), "Button texture color", ofErrorLog);
     
     // [Animation graphics]
@@ -202,16 +210,34 @@ Settings::Settings()
     AnimationScale = sf::Vector2f(tmp, tmp);
     setupColor(AnimationColor, findParameter("Animation color"), "Animation color", ofErrorLog);
     setupDigitParameter(AnimationVelocity, 1, 120, findParameter("Animation velocity"), "Animation velocity", ofErrorLog);
-    setupDigitParameter(AnimationOffset, 0, 10, findParameter("Animation offset"), "Animation offset", ofErrorLog);
+    setupDigitParameter(AnimationOffset, 0, 100, findParameter("Animation offset"), "Animation offset", ofErrorLog);
 
     // [Background]
     setupFilePathParameter(BackgroundTexturePath, findParameter("Background texture"), "Background texture", ofErrorLog);
     setupColor(BackgroundColor, findParameter("Background color"), "Background color", ofErrorLog);
+    setupBoolParameter(ScaleBackground, findParameter("Scale background texture if it does not fit"), "Scale background texture if it does not fit", ofErrorLog);
 
     // [Edit mode]
     setupColor(AlertColor, findParameter("Edit mode alert color"), "Edit mode alert color", ofErrorLog);
     setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
     mIsChangeableAlert.setFillColor(AlertColor);
+
+    // [Main window]
+    setupBoolParameter(WindowTitleBar, findParameter("Window title bar"), "Window title bar", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeTop, 0, 500, findParameter("Window bonus size top"), "Window bonus size top", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeBottom, 0, 500, findParameter("Window bonus size bottom"), "Window bonus size bottom", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeLeft, 0, 500, findParameter("Window bonus size left"), "Window bonus size left", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeRight, 0, 500, findParameter("Window bonus size right"), "Window bonus size right", ofErrorLog);
+
+    // [KPS window]
+    setupBoolParameter(KPSWindowEnabledFromStart, findParameter("Enable from start"), "Enable from start", ofErrorLog);
+    setupVector(KPSWindowSize, 0, 1000, findParameter("Window size"), "Window size", ofErrorLog);
+    setupColor(KPSWindowColor, findParameter("KPS Background color"), "KPS Background color", ofErrorLog);
+    setupFilePathParameter(KPSWindowFontPath, findParameter("Text font"), "Text font", ofErrorLog);
+    setupDigitParameter(KPSTextSize, 0, 500, findParameter("Text size"), "Text size", ofErrorLog);
+    setupDigitParameter(KPSNumberSize, 0, 500, findParameter("Number size"), "Number size", ofErrorLog);
+    setupDigitParameter(KPSWindowDistanceTop, 0, 500, findParameter("KPS extra window distance from top"), "KPS extra window distance from top", ofErrorLog);
+    setupDigitParameter(KPSWindowDistanceBetween, 0, 500, findParameter("KPS extra window distance between text"), "KPS extra window distance between text", ofErrorLog);
 
     // [Theme developer]
     setupDigitParameter(ValueToMultiplyOnClick, 1, INT_MAX, findParameter("Value to multiply on click"), "Value to multiply on click", ofErrorLog);
@@ -240,7 +266,7 @@ void Settings::handleEvent(sf::Event event)
     {
         sf::Keyboard::Key key = event.key.code;
         if ((key == KeyToIncrease || key == AltKeyToIncrease)
-        &&  KeyAmount <= maximumKeys)
+        &&  KeyAmount < maximumKeys)
         {
             ++KeyAmount;
             ++ButtonAmount;

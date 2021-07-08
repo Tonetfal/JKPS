@@ -85,17 +85,13 @@ void Statistics::handleEvent(sf::Event event)
 
 void Statistics::draw()
 {
+    float tmp = 0.f;
+    if (Settings::ButtonDistance > 0)
+        tmp = Settings::ButtonDistance * 2;
     sf::Transform transform = sf::Transform::Identity;
-    // if (mWindow.getSize().y == getTotalStatisticsHeight() + Settings::ButtonDistance * 2)
-    // {
-        transform.translate(getStatisticsWidth() + Settings::WindowBonusSizeLeft, 
-            Settings::ButtonDistance + Settings::WindowBonusSizeTop);
-    // }
-    // else
-    // {
-    //     transform.translate(getStatisticsWidth(), (mWindow.getSize().y - 
-    //         (Settings::ButtonDistance * 2 + getTotalStatisticsHeight())) / 2 + Settings::ButtonDistance);
-    // }
+    transform.translate(getStatisticsWidth(), (mWindow.getSize().y - 
+        Settings::WindowBonusSizeBottom + Settings::WindowBonusSizeTop -
+        (tmp + getTotalStatisticsHeight())) / 2 + tmp / 2);
 
     if (Settings::ShowStatisticsText)
     {
@@ -227,9 +223,8 @@ void Statistics::setupString(ID id, const std::string& name)
 
 unsigned int Statistics::getStatisticsWidth()
 {
-    return (Settings::KeyAmount + Settings::MouseButtonAmount) * 
-        (Settings::ButtonTextureSize.x + Settings::ButtonDistance) +
-        Settings::SpaceBetweenButtonsAndStatistics;
+    return (Settings::ButtonAmount) * (Settings::ButtonTextureSize.x + Settings::ButtonDistance) +
+        Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft;
 }
 
 unsigned int Statistics::getStatisticsHeight(ID id)
