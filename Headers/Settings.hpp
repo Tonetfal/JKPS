@@ -102,6 +102,10 @@ class Settings
         static float                StatisticsDistance;
         static float                SpaceBetweenButtonsAndStatistics;
         static float                SpaceOnStatisticsRight;
+        static unsigned             WindowBonusSizeTop;
+        static unsigned             WindowBonusSizeBottom;
+        static unsigned             WindowBonusSizeLeft;
+        static unsigned             WindowBonusSizeRight;
 
         // [Button graphics]
         static std::string          ButtonTexturePath;

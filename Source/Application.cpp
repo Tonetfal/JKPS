@@ -24,6 +24,7 @@ Application::Application(Settings& settings)
     mStatistics.loadFonts(mFonts);
     mButtons.loadTextures(mTextures);
 
+    std::cout << getWindowHeight() << "\n";
     mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
     mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
 
@@ -205,11 +206,14 @@ unsigned int Application::getWindowWidth()
 {
     return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * 
         Settings::ButtonAmount + Settings::SpaceBetweenButtonsAndStatistics + 
-        Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight + 1;
+        Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight + 
+        Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight + 1;
 }
 
 unsigned int Application::getWindowHeight()
 {
-    return std::max(float(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2),
-       Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
+    return Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y +
+        Settings::WindowBonusSizeTop + Settings::WindowBonusSizeBottom;
+    // return std::max(float(mStatistics.getTotalStatisticsHeight() + Settings::ButtonDistance * 2),
+    //    Settings::ButtonDistance * 2 + Settings::ButtonTextureSize.y);
 }

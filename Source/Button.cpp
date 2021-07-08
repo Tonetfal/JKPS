@@ -114,7 +114,8 @@ void Button::handleHighlight(int buttonIndex)
 void Button::draw()
 {
     sf::Transform transform = sf::Transform::Identity;
-    transform.translate(Settings::ButtonDistance, Settings::ButtonDistance);
+    transform.translate(Settings::ButtonDistance + Settings::WindowBonusSizeLeft, 
+        Settings::ButtonDistance + Settings::WindowBonusSizeTop);
 
     for (auto& elem : mButtonsSprite)
         mWindow.draw(*elem, transform);

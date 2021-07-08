@@ -54,6 +54,11 @@ float Settings::ButtonDistance(7.f);
 float Settings::StatisticsDistance(5.f);
 float Settings::SpaceBetweenButtonsAndStatistics(10.f);
 float Settings::SpaceOnStatisticsRight(120.f);
+unsigned Settings::WindowBonusSizeTop(0.f);
+unsigned Settings::WindowBonusSizeBottom(0.f);
+unsigned Settings::WindowBonusSizeLeft(0.f);
+unsigned Settings::WindowBonusSizeRight(0.f);
+
 
 // [Button graphics]
 std::string Settings::ButtonTexturePath("Default");
@@ -176,7 +181,12 @@ Settings::Settings()
     setupDigitParameter(StatisticsDistance, 0, 100, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
     setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 400, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
     if (SpaceBetweenButtonsAndStatistics == 0) SpaceBetweenButtonsAndStatistics = 1;
-    setupDigitParameter(SpaceOnStatisticsRight, 0, 400, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
+    setupDigitParameter(SpaceOnStatisticsRight, 0, 500, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeTop, 0, 500, findParameter("Window bonus size top"), "Window bonus size top", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeBottom, 0, 500, findParameter("Window bonus size bottom"), "Window bonus size bottom", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeLeft, 0, 500, findParameter("Window bonus size left"), "Window bonus size left", ofErrorLog);
+    setupDigitParameter(WindowBonusSizeRight, 0, 500, findParameter("Window bonus size right"), "Window bonus size right", ofErrorLog);
+    
 
     // [Button graphics]
     setupFilePathParameter(ButtonTexturePath, findParameter("Button texture"), "Button texture", ofErrorLog);

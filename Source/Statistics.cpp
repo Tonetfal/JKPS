@@ -86,15 +86,16 @@ void Statistics::handleEvent(sf::Event event)
 void Statistics::draw()
 {
     sf::Transform transform = sf::Transform::Identity;
-    if (mWindow.getSize().y == getTotalStatisticsHeight() + Settings::ButtonDistance * 2)
-    {
-        transform.translate(getStatisticsWidth(), Settings::ButtonDistance);
-    }
-    else
-    {
-        transform.translate(getStatisticsWidth(), (mWindow.getSize().y - 
-            (Settings::ButtonDistance * 2 + getTotalStatisticsHeight())) / 2 + Settings::ButtonDistance);
-    }
+    // if (mWindow.getSize().y == getTotalStatisticsHeight() + Settings::ButtonDistance * 2)
+    // {
+        transform.translate(getStatisticsWidth() + Settings::WindowBonusSizeLeft, 
+            Settings::ButtonDistance + Settings::WindowBonusSizeTop);
+    // }
+    // else
+    // {
+    //     transform.translate(getStatisticsWidth(), (mWindow.getSize().y - 
+    //         (Settings::ButtonDistance * 2 + getTotalStatisticsHeight())) / 2 + Settings::ButtonDistance);
+    // }
 
     if (Settings::ShowStatisticsText)
     {
