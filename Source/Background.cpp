@@ -6,9 +6,11 @@ Background::Background(sf::RenderWindow& window)
     mBackgroundSprite.setColor(Settings::BackgroundColor);
 }
 
+// This is needed to rescale the background when the amount of keys is changed
 void Background::handleEvent(sf::Event event)
 {
-    scaleTexture();
+    if (Settings::ScaleBackground)
+        scaleTexture();
 }
 
 void Background::draw()
@@ -19,6 +21,8 @@ void Background::draw()
 void Background::loadTextures(TextureHolder& textureHolder)
 {
     mBackgroundSprite.setTexture(textureHolder.get(Textures::Background));
+    if (Settings::ScaleBackground)
+        scaleTexture();
 }
 
 void Background::scaleTexture()
