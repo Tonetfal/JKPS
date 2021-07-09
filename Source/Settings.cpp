@@ -274,7 +274,7 @@ void Settings::handleEvent(sf::Event event)
             saveSettings();
         } 
         else if ((key == KeyToDecrease || key == AltKeyToDecrease)
-        &&  KeyAmount > minimumKeys)
+        &&  KeyAmount > minimumKeys + 1)
         {
             --KeyAmount;
             --ButtonAmount;
