@@ -18,7 +18,6 @@ static std::string DefaultConfigString =
 "Buttons: No\n"
 "\n"
 "[Statistics text]\n"
-"# Distance between statistic lines\n"
 "Statistics distance: 5\n"
 "Space between buttons and statistics: 15\n"
 "Statistics font: Default\n"
