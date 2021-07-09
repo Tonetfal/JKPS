@@ -164,29 +164,29 @@ Settings::Settings()
     setupMouseButton(MouseButtons, findParameter("Buttons"), "Buttons", ofErrorLog);
 
     // [Statistics text]
-    setupDigitParameter(StatisticsDistance, 0, 500, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
+    setupDigitParameter(StatisticsDistance, 0, 500, findParameter("Statistics text distance"), "Statistics text distance", ofErrorLog);
     setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 500, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
-    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
+    setupFilePathParameter(StatisticsFontPath, findParameter("Statistics text font"), "Statistics text font", ofErrorLog);
     setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
-    setupDigitParameter(StatisticsTextCharacterSize, 0, 500, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);
-    setupBoolParameter(StatisticsBold, findParameter("Statistics bold"), "Statistics bold", ofErrorLog);
-    setupBoolParameter(StatisticsItalic, findParameter("Statistics italic"), "Statistics italic", ofErrorLog);
-    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics"), "Show statistics", ofErrorLog);
+    setupDigitParameter(StatisticsTextCharacterSize, 0, 500, findParameter("Statistics text character size"), "Statistics text character size", ofErrorLog);
+    setupBoolParameter(StatisticsBold, findParameter("Statistics text bold"), "Statistics text bold", ofErrorLog);
+    setupBoolParameter(StatisticsItalic, findParameter("Statistics text italic"), "Statistics text italic", ofErrorLog);
+    setupBoolParameter(ShowStatisticsText, findParameter("Show statistics text"), "Show statistics text", ofErrorLog);
     setupBoolParameter(ShowMaxKPS, findParameter("Show max KPS on separate line"), "Show max KPS on separate line", ofErrorLog);
     setupBoolParameter(ShowBPMText, findParameter("Show BPM"), "Show BPM", ofErrorLog);
 
     // [Button text]
-    setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
-    setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
-    setupDigitParameter(KeyCountersTextCharacterSize, 0, 500, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
-    setupDigitParameter(KeyCounterWidth, -500, 500, findParameter("Key counters width"), "Key counters width", ofErrorLog);
-    setupDigitParameter(KeyCounterHeight, -500, 500, findParameter("Key counters height"), "Key counters height", ofErrorLog);
-    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);
-    setupBoolParameter(KeyCountersBold, findParameter("Key counters bold"), "Key counters bold", ofErrorLog);
-    setupBoolParameter(KeyCountersItalic, findParameter("Key counters italic"), "Key counters italic", ofErrorLog);
+    setupFilePathParameter(KeyCountersFontPath, findParameter("Buttons text font"), "Buttons text font", ofErrorLog);
+    setupColor(KeyCountersTextColor, findParameter("Buttons text color"), "Buttons text color", ofErrorLog);
+    setupDigitParameter(KeyCountersTextCharacterSize, 0, 500, findParameter("Buttons text character size"), "Buttons text character size", ofErrorLog);
+    setupDigitParameter(KeyCounterWidth, -500, 500, findParameter("Buttons text width"), "Button text width", ofErrorLog);
+    setupDigitParameter(KeyCounterHeight, -500, 500, findParameter("Buttons text height"), "Button textheight", ofErrorLog);
+    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Buttons text horizontal bounds"), "Buttons text horizontal bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Buttons text horizontal bounds"), "Buttons text horizontal bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Buttons text vertical bounds"), "Buttons text vertical bounds", ofErrorLog);
+    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Buttons text vertical bounds"), "Buttons text vertical bounds", ofErrorLog);
+    setupBoolParameter(KeyCountersBold, findParameter("Buttons text bold"), "Buttons text bold", ofErrorLog);
+    setupBoolParameter(KeyCountersItalic, findParameter("Buttons text italic"), "Buttons text italic", ofErrorLog);
     setupBoolParameter(ShowSetKeysText, findParameter("Only show set keys"), "Only show set keys", ofErrorLog);
     setupBoolParameter(ShowKeyCountersText, findParameter("Show key counters"), "Show key counters", ofErrorLog);
 
