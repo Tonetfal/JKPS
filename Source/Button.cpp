@@ -288,9 +288,7 @@ void Button::setupTextPosition(int idx)
 {
     sf::Text &elem = *mButtonsText[idx];
 
-    elem.setOrigin(
-        elem.getLocalBounds().left + elem.getLocalBounds().width / 2.f / elem.getScale().x, 
-        elem.getLocalBounds().top + getDefaultTextHeight(elem.getCharacterSize()) / 2.f);
+    elem.setOrigin(getCenterOriginText(idx));
     elem.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx) + mButtonsYOffset[idx]);
 }
 
@@ -448,7 +446,7 @@ unsigned int Button::getKeyCountersWidth(size_t index) const
         Settings::ButtonTextureSize.x * (index + 1) - 
         Settings::ButtonTextureSize.x / 2U;
 
-    return buttonCenterX + elem.getLocalBounds().width * Settings::KeyCounterWidth - elem.getLocalBounds().width;
+    return buttonCenterX + Settings::KeyCounterWidth;
 }
 
 unsigned int Button::getKeyCountersHeight(size_t index) const
@@ -456,5 +454,12 @@ unsigned int Button::getKeyCountersHeight(size_t index) const
     const sf::Text &elem(*mButtonsText[index]);
     unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U;
 
-    return buttonCenterY + elem.getLocalBounds().height * -Settings::KeyCounterHeight + elem.getLocalBounds().height;
+    return buttonCenterY - Settings::KeyCounterHeight;
+}
+
+sf::Vector2f Button::getCenterOriginText(unsigned idx) const
+{
+    sf::Text &e = *mButtonsText[idx];
+    return { e.getLocalBounds().left + e.getLocalBounds().width / 2.f , 
+             e.getLocalBounds().top + e.getLocalBounds().height / 2.f  };
 }

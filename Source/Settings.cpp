@@ -179,10 +179,8 @@ Settings::Settings()
     setupFilePathParameter(KeyCountersFontPath, findParameter("Key counters font"), "Key counters font", ofErrorLog);
     setupColor(KeyCountersTextColor, findParameter("Key counters text color"), "Key counters text color", ofErrorLog);
     setupDigitParameter(KeyCountersTextCharacterSize, 0, 500, findParameter("Key counters character size"), "Key counters character size", ofErrorLog);
-    setupDigitParameter(KeyCounterWidth, 0, 3, findParameter("Key counters width"), "Key counters width", ofErrorLog);
-    if (KeyCounterWidth == 0) KeyCounterWidth = 0.000001f;
-    setupDigitParameter(KeyCounterHeight, 0, 3, findParameter("Key counters height"), "Key counters height", ofErrorLog);
-    if (KeyCounterHeight == 0) KeyCounterHeight = 0.000001f;
+    setupDigitParameter(KeyCounterWidth, -500, 500, findParameter("Key counters width"), "Key counters width", ofErrorLog);
+    setupDigitParameter(KeyCounterHeight, -500, 500, findParameter("Key counters height"), "Key counters height", ofErrorLog);
     setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
     setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Key counters horizontal bounds"), "Key counters horizontal bounds", ofErrorLog);
     setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Key counters vertical bounds"), "Key counters vertical bounds", ofErrorLog);

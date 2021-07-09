@@ -55,6 +55,7 @@ class Button
         float                       getDefaultTextHeight(unsigned chSz) const;
         float                       getTextMaxWidth() const;
         float                       getTextMaxHeight() const;
+        sf::Vector2f                getCenterOriginText(unsigned idx) const;
 
         void                        setupKeyCounterTextVec();
         void                        setupTextPosition(int index);
