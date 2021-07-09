@@ -126,24 +126,25 @@ void Statistics::setFonts()
         }
     }
 
-    bool skip = false;
+    int skip = 0;
     for (size_t i = 0; i < StatisticsCounter; ++i)
     {
         if ((ID(i) == MaxKPS && !Settings::ShowMaxKPS)
         ||  (ID(i) == BPM && !Settings::ShowBPMText))
         {
-            skip = true;
+            ++skip;
             continue;
         }
 
         sf::Text &elem = mTexts.get(ID(i));
         elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
+        // Calculate statistics position by taking position of last element
         if (i > 0)
         {
             sf::Text &prev = mTexts.get(ID(i - 1 - skip));
             elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
         }
-        skip = false;
+        skip = 0;
     }
 }
 
