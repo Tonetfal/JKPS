@@ -34,7 +34,7 @@ static std::string DefaultConfigString =
 "Key counters text color: 255,255,255\n"
 "Key counters character size: 15\n"
 "Key counters width: 1\n"
-"Key counters height: 1.35\n"
+"Key counters height: 1\n"
 "Key counters horizontal bounds: 4\n"
 "Key counters vertical bounds: 4\n"
 "Key counters bold: false\n"

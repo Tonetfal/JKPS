@@ -43,7 +43,7 @@ std::string Settings::KeyCountersFontPath("Default");
 sf::Color Settings::KeyCountersTextColor(sf::Color::White);
 std::size_t Settings::KeyCountersTextCharacterSize(15);
 float Settings::KeyCounterWidth(1.f);
-float Settings::KeyCounterHeight(1.35f);
+float Settings::KeyCounterHeight(1.f);
 float Settings::KeyCountersHorizontalBounds(4.f);
 float Settings::KeyCountersVerticalBounds(4.f);
 bool Settings::KeyCountersBold(false);
