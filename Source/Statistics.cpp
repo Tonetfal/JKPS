@@ -86,8 +86,8 @@ void Statistics::handleEvent(sf::Event event)
 void Statistics::draw()
 {
     sf::Transform transform = sf::Transform::Identity;
-    transform.translate(getStatisticsWidth(), (
-        int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
+    transform.translate(getStatisticsWidth(), 
+        (int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
         int(Settings::WindowBonusSizeTop) - int(getTotalStatisticsHeight())) / 2);
 
     if (Settings::ShowStatisticsText)
@@ -127,18 +127,37 @@ void Statistics::setFonts()
     }
 
 
+    // for (size_t i = 0; i < StatisticsCounter; ++i)
+    // {
+    //     if (ID(i) > MaxKPS && !Settings::ShowMaxKPS)
+    //     {
+    //         mTexts.get(ID(i)).setPosition(0, getStatisticsHeight(ID(i)) - 
+    //             Settings::StatisticsDistance - mTexts.get(MaxKPS).getLocalBounds().height);
+    //         continue;
+    //     }
+    //     if (ID(i) != BPM || Settings::ShowBPMText)
+    //     {
+    //         mTexts.get(ID(i)).setPosition(0, getStatisticsHeight(ID(i)));
+    //     }
+    // }
+    bool skip = false;
     for (size_t i = 0; i < StatisticsCounter; ++i)
     {
-        if (ID(i) > MaxKPS && !Settings::ShowMaxKPS)
+        if ((ID(i) == MaxKPS && !Settings::ShowMaxKPS)
+        ||  (ID(i) == BPM && !Settings::ShowBPMText))
         {
-            mTexts.get(ID(i)).setPosition(0, getStatisticsHeight(ID(i)) - 
-                Settings::StatisticsDistance - mTexts.get(MaxKPS).getLocalBounds().height);
+            skip = true;
             continue;
         }
-        if (ID(i) != BPM || Settings::ShowBPMText)
+
+        sf::Text &elem = mTexts.get(ID(i));
+        elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
+        if (i > 0)
         {
-            mTexts.get(ID(i)).setPosition(0, getStatisticsHeight(ID(i)));
+            sf::Text &prev = mTexts.get(ID(i - 1 - skip));
+            elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
         }
+        skip = false;
     }
 }
 
