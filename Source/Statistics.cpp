@@ -226,7 +226,8 @@ void Statistics::setupString(ID id, const std::string& name)
 
 unsigned int Statistics::getStatisticsWidth()
 {
-    return (Settings::ButtonAmount) * Settings::ButtonTextureSize.x +
+    return Settings::ButtonAmount * Settings::ButtonTextureSize.x +
+        (Settings::ButtonAmount - 1) * Settings::ButtonDistance +
         Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft;
 }
 

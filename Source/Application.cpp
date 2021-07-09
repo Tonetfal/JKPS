@@ -216,6 +216,7 @@ void Application::moveWindow()
 unsigned int Application::getWindowWidth()
 {
     return Settings::ButtonTextureSize.x * Settings::ButtonAmount + 
+        (Settings::ButtonAmount - 1) * Settings::ButtonDistance +
         Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft + 
         Settings::WindowBonusSizeRight + 1;
 }
