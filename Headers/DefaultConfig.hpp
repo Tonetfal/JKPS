@@ -85,5 +85,4 @@ static std::string DefaultConfigString =
 "KPS extra window distance between text: 50\n"
 "\n"
 "[Theme developer]\n"
-"# This is needed to test if key counters will fit in the window in a fast way\n"
 "Value to multiply on click: 1\n";
