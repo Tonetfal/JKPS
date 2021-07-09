@@ -28,7 +28,7 @@ std::size_t Settings::ButtonAmount(Settings::KeyAmount + Settings::MouseButtonAm
 
 // [Statistics text]
 float Settings::StatisticsDistance(5.f);
-float Settings::SpaceBetweenButtonsAndStatistics(10.f);
+float Settings::SpaceBetweenButtonsAndStatistics(15.f);
 std::string Settings::StatisticsFontPath("Default");
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
 std::size_t Settings::StatisticsTextCharacterSize(14);
@@ -87,7 +87,7 @@ bool Settings::WindowTitleBar(false);
 unsigned Settings::WindowBonusSizeTop(6.f);
 unsigned Settings::WindowBonusSizeBottom(6.f);
 unsigned Settings::WindowBonusSizeLeft(6.f);
-unsigned Settings::WindowBonusSizeRight(120.f);
+unsigned Settings::WindowBonusSizeRight(130.f);
 
 // [KPS window]
 bool Settings::KPSWindowEnabledFromStart(false);
