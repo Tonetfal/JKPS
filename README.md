@@ -29,6 +29,8 @@ Ctrl + W - Close the program
 
 Ctrl + X - Reset all the statistics
 
+Ctrl + K - Open an extra window with KPS
+
 Ctrl - Show opposite buttons value (key counters or set keys)
 
 # Notes
@@ -37,6 +39,8 @@ Ctrl - Show opposite buttons value (key counters or set keys)
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least BPM / 15 notes.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
+
+![](Preview-Medieval.gif)
 
 ![](Preview-Modern-purple.gif)
 
