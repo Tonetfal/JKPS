@@ -289,8 +289,8 @@ void Button::setupTextPosition(int idx)
     sf::Text &elem = *mButtonsText[idx];
 
     elem.setOrigin(
-        elem.getGlobalBounds().width / 2.f / elem.getScale().x, 
-        getDefaultTextHeight(elem.getCharacterSize()) / 2.f);
+        elem.getLocalBounds().left + elem.getLocalBounds().width / 2.f / elem.getScale().x, 
+        elem.getLocalBounds().top + getDefaultTextHeight(elem.getCharacterSize()) / 2.f);
     elem.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx) + mButtonsYOffset[idx]);
 }
 

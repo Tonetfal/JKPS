@@ -138,7 +138,7 @@ void Statistics::setFonts()
 
         sf::Text &elem = mTexts.get(ID(i));
         elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
-        // Calculate statistics position by taking position of last element
+        // Calculate statistics position by taking position of previous drawn element
         if (i > 0)
         {
             sf::Text &prev = mTexts.get(ID(i - 1 - skip));
