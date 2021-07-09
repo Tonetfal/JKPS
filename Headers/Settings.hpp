@@ -77,7 +77,6 @@ class Settings
         // [Statistics text]
         static float                StatisticsDistance;
         static float                SpaceBetweenButtonsAndStatistics;
-        static float                SpaceOnStatisticsRight;
         static std::string          StatisticsFontPath;
         static sf::Color            StatisticsTextColor;
         static std::size_t          StatisticsTextCharacterSize;

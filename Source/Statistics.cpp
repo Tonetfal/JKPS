@@ -85,13 +85,10 @@ void Statistics::handleEvent(sf::Event event)
 
 void Statistics::draw()
 {
-    float tmp = 0.f;
-    if (Settings::ButtonDistance > 0)
-        tmp = Settings::ButtonDistance * 2;
     sf::Transform transform = sf::Transform::Identity;
-    transform.translate(getStatisticsWidth(), (mWindow.getSize().y - 
-        Settings::WindowBonusSizeBottom + Settings::WindowBonusSizeTop -
-        (tmp + getTotalStatisticsHeight())) / 2 + tmp / 2);
+    transform.translate(getStatisticsWidth(), (
+        int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
+        int(Settings::WindowBonusSizeTop) - int(getTotalStatisticsHeight())) / 2);
 
     if (Settings::ShowStatisticsText)
     {
@@ -223,7 +220,7 @@ void Statistics::setupString(ID id, const std::string& name)
 
 unsigned int Statistics::getStatisticsWidth()
 {
-    return (Settings::ButtonAmount) * (Settings::ButtonTextureSize.x + Settings::ButtonDistance) +
+    return (Settings::ButtonAmount) * Settings::ButtonTextureSize.x +
         Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft;
 }
 

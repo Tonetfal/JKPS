@@ -29,10 +29,9 @@ std::size_t Settings::ButtonAmount(Settings::KeyAmount + Settings::MouseButtonAm
 // [Statistics text]
 float Settings::StatisticsDistance(5.f);
 float Settings::SpaceBetweenButtonsAndStatistics(10.f);
-float Settings::SpaceOnStatisticsRight(120.f);
 std::string Settings::StatisticsFontPath("Default");
 sf::Color Settings::StatisticsTextColor(sf::Color::White);
-std::size_t Settings::StatisticsTextCharacterSize(13);
+std::size_t Settings::StatisticsTextCharacterSize(14);
 bool Settings::StatisticsBold(false);
 bool Settings::StatisticsItalic(false);
 bool Settings::ShowStatisticsText(true);
@@ -42,20 +41,20 @@ bool Settings::ShowBPMText(true);
 // [Button text]
 std::string Settings::KeyCountersFontPath("Default");
 sf::Color Settings::KeyCountersTextColor(sf::Color::White);
-std::size_t Settings::KeyCountersTextCharacterSize(14);
+std::size_t Settings::KeyCountersTextCharacterSize(15);
 float Settings::KeyCounterWidth(1.f);
 float Settings::KeyCounterHeight(1.35f);
-float Settings::KeyCountersHorizontalBounds(10.f);
-float Settings::KeyCountersVerticalBounds(10.f);
+float Settings::KeyCountersHorizontalBounds(4.f);
+float Settings::KeyCountersVerticalBounds(4.f);
 bool Settings::KeyCountersBold(false);
 bool Settings::KeyCountersItalic(false);
 bool Settings::ShowSetKeysText(false);
 bool Settings::ShowKeyCountersText(true);
 
 // [Button graphics]
-float Settings::ButtonDistance(7.f);
+float Settings::ButtonDistance(6.f);
 std::string Settings::ButtonTexturePath("Default");
-sf::Vector2u Settings::ButtonTextureSize(50, 50);
+sf::Vector2u Settings::ButtonTextureSize(60, 60);
 sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
 
 // [Animation graphics]
@@ -85,10 +84,10 @@ bool Settings::IsChangeable(false);
 
 // [Main window]
 bool Settings::WindowTitleBar(false);
-unsigned Settings::WindowBonusSizeTop(0.f);
-unsigned Settings::WindowBonusSizeBottom(0.f);
-unsigned Settings::WindowBonusSizeLeft(0.f);
-unsigned Settings::WindowBonusSizeRight(0.f);
+unsigned Settings::WindowBonusSizeTop(6.f);
+unsigned Settings::WindowBonusSizeBottom(6.f);
+unsigned Settings::WindowBonusSizeLeft(6.f);
+unsigned Settings::WindowBonusSizeRight(120.f);
 
 // [KPS window]
 bool Settings::KPSWindowEnabledFromStart(false);
@@ -167,8 +166,6 @@ Settings::Settings()
     // [Statistics text]
     setupDigitParameter(StatisticsDistance, 0, 500, findParameter("Statistics distance"), "Statistics distance", ofErrorLog);
     setupDigitParameter(SpaceBetweenButtonsAndStatistics, 0, 500, findParameter("Space between buttons and statistics"), "Space between buttons and statistics", ofErrorLog);
-    if (SpaceBetweenButtonsAndStatistics == 0) SpaceBetweenButtonsAndStatistics = 1;
-    setupDigitParameter(SpaceOnStatisticsRight, 0, 500, findParameter("Space on the buttons right"), "Space on the buttons right", ofErrorLog);
     setupFilePathParameter(StatisticsFontPath, findParameter("Statistics font"), "Statistics font", ofErrorLog);
     setupColor(StatisticsTextColor, findParameter("Statistics text color"), "Statistics text color", ofErrorLog);
     setupDigitParameter(StatisticsTextCharacterSize, 0, 500, findParameter("Statistics character size"), "Statistics character size", ofErrorLog);

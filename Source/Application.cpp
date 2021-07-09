@@ -215,21 +215,13 @@ void Application::moveWindow()
 
 unsigned int Application::getWindowWidth()
 {
-    float tmp = 0.f;
-    if (Settings::ButtonDistance > 0)
-        tmp += Settings::ButtonDistance;
-
-    return (tmp + Settings::ButtonTextureSize.x) * Settings::ButtonAmount + 
-        Settings::SpaceBetweenButtonsAndStatistics + Settings::SpaceOnStatisticsRight + 
-        Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight + 1;
+    return Settings::ButtonTextureSize.x * Settings::ButtonAmount + 
+        Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft + 
+        Settings::WindowBonusSizeRight + 1;
 }
 
 unsigned int Application::getWindowHeight()
 {
-    float tmp = 0.f;
-    if (Settings::ButtonDistance > 0)
-        tmp += Settings::ButtonDistance * 2;
-
-    return tmp + Settings::ButtonTextureSize.y +
-        Settings::WindowBonusSizeTop + Settings::WindowBonusSizeBottom;
+    return Settings::ButtonTextureSize.y + Settings::WindowBonusSizeTop + 
+        Settings::WindowBonusSizeBottom;
 }
