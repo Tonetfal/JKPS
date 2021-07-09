@@ -172,11 +172,11 @@ void Application::loadAssets()
     std::string defaultName = "Default";
 
     if (Settings::ButtonTexturePath == defaultName)
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 7400);
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 71200);
     else
         mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
     if (Settings::AnimationTexturePath == defaultName) 
-        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 65600);
+        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 100700);
     else
         mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
 
@@ -197,7 +197,7 @@ void Application::loadAssets()
         mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
 
     if (Settings::KPSWindowFontPath == defaultName)
-        mFonts.loadFromMemory(Fonts::KPS, Settings::DefaultKPSWindowFont, 456100);
+        mFonts.loadFromMemory(Fonts::KPS, Settings::DefaultKPSWindowFont, 459300);
     else
         mFonts.loadFromFile(Fonts::KPS, Settings::KPSWindowFontPath);
 }

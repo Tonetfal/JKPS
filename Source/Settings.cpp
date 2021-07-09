@@ -220,7 +220,6 @@ Settings::Settings()
     // [Edit mode]
     setupColor(AlertColor, findParameter("Edit mode alert color"), "Edit mode alert color", ofErrorLog);
     setupColor(HighlightedKeyColor, findParameter("Highlighted text button color"), "Highlighted text button color", ofErrorLog);
-    mIsChangeableAlert.setFillColor(AlertColor);
 
     // [Main window]
     setupBoolParameter(WindowTitleBar, findParameter("Window title bar"), "Window title bar", ofErrorLog);
@@ -258,6 +257,7 @@ Settings::Settings()
 
     if (isEmpty == -1)
         remove(errorLogPath.c_str());
+    mIsChangeableAlert.setFillColor(AlertColor);
 }
 
 void Settings::handleEvent(sf::Event event)
