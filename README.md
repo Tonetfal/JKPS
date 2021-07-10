@@ -33,6 +33,12 @@ Ctrl + K - Open an extra window with KPS
 
 Ctrl - Show opposite buttons value (key counters or set keys)
 
+# Extra window with KPS
+
+This window can be used with greenscreen in order to show only the text.
+
+![](Preview-kps-window.gif)
+
 # Notes
 - Capture the program as a game in OBS, not as a window, until you want that the graphics will be updated
 - To make the program work with green screen just change the "Background color" to 0,177,64.
