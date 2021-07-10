@@ -21,6 +21,8 @@ When you change anything in the config you must put one space between colon and 
 
 To know what keys and buttons can be written in the config check this [link](https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5).
 
+Entire explanation of the config you can find [here](https://gist.github.com/JekiTheMonkey/06c7b7dc0401729c2574a04442b19225).
+
 # Hotkeys
 
 Ctrl + Q - Enter/exit Edit mode
