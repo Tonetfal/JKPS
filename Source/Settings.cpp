@@ -182,8 +182,6 @@ Settings::Settings()
     setupDigitParameter(KeyCounterWidth, -500, 500, findParameter("Buttons text width"), "Button text width", ofErrorLog);
     setupDigitParameter(KeyCounterHeight, -500, 500, findParameter("Buttons text height"), "Button textheight", ofErrorLog);
     setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Buttons text horizontal bounds"), "Buttons text horizontal bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Buttons text horizontal bounds"), "Buttons text horizontal bounds", ofErrorLog);
-    setupDigitParameter(KeyCountersHorizontalBounds, -500, 500, findParameter("Buttons text vertical bounds"), "Buttons text vertical bounds", ofErrorLog);
     setupDigitParameter(KeyCountersVerticalBounds, -500, 500, findParameter("Buttons text vertical bounds"), "Buttons text vertical bounds", ofErrorLog);
     setupBoolParameter(KeyCountersBold, findParameter("Buttons text bold"), "Buttons text bold", ofErrorLog);
     setupBoolParameter(KeyCountersItalic, findParameter("Buttons text italic"), "Buttons text italic", ofErrorLog);

@@ -260,12 +260,12 @@ float Button::getDefaultTextHeight(unsigned chSz) const
 
 float Button::getTextMaxWidth() const
 {
-    return Settings::ButtonTextureSize.x - Settings::KeyCountersHorizontalBounds * 2.f;
+    return Settings::ButtonTextureSize.x - Settings::KeyCountersVerticalBounds * 2.f;
 }
 
 float Button::getTextMaxHeight() const
 {
-    return Settings::ButtonTextureSize.y - Settings::KeyCountersVerticalBounds * 2.f;
+    return Settings::ButtonTextureSize.y - Settings::KeyCountersHorizontalBounds * 2.f;
 }
 
 void Button::setupKeyCounterTextVec()
@@ -274,7 +274,6 @@ void Button::setupKeyCounterTextVec()
     {
         mButtonsText[i]->setCharacterSize(Settings::KeyCountersTextCharacterSize);
         mButtonsText[i]->setFillColor(Settings::KeyCountersTextColor);
-        // Doesn't want to work w/o cast
         sf::Text::Style style(static_cast<sf::Text::Style>(
             (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
             (Settings::KeyCountersItalic ? sf::Text::Italic : 0)));
