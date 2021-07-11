@@ -66,6 +66,7 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::Slash: return (saveToCfg ? "Slash" : "/");
         case sf::Keyboard::Backslash: return (saveToCfg ? "Backslash" : "\\");
         case sf::Keyboard::Tilde: return (saveToCfg ? "Tilde" : "~");
+        case sf::Keyboard::Equal: return (saveToCfg ? "Equal" : "=");
         case sf::Keyboard::Hyphen: return (saveToCfg ? "Hyphen" : "-");
         case sf::Keyboard::Space: return "Space";
         case sf::Keyboard::Enter: return "Enter";
