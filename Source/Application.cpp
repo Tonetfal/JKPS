@@ -33,7 +33,6 @@ Application::Application(Settings& settings)
     mButtons.setupTextures();
 
     mSettings.setWindowReference(mWindow);
-    mSettings.setChangeabilityPosition();
 
     mBackground.loadTextures(mTextures);
 
@@ -73,13 +72,6 @@ void Application::processInput()
             {
                 if (event.type == sf::Event::KeyPressed)
                 {
-                    if (event.key.code == Settings::KeyForEditMode)
-                    {
-                        mSettings.changeChangeability();
-                        // Break to avoid problems if the user has Q as key
-                        break;
-                    }
-
                     if (event.key.code == Settings::KeyToClear)
                     {
                         mButtons.clear();
@@ -105,20 +97,16 @@ void Application::processInput()
                 return;
             }
 
-            if (Settings::IsChangeable)
-            {
-                mSettings.handleEvent(event);
-                mButtons.handleHighlight(mSettings.getButtonToChangeIndex());
+            mSettings.handleEvent(event);
+            mButtons.highlightKey(mSettings.getButtonToChangeIndex());
 
-                if (mSettings.wasButtonAmountChanged())
-                {
-                    handleEvent(event);
-                    mSettings.setChangeabilityPosition();
-                    mStatistics.handleEvent(event);
-                    mButtons.handleEvent(event);
-                    mKeyPressingManager.handleEvent(event);
-                    mBackground.handleEvent(event);
-                }
+            if (mSettings.wasButtonAmountChanged())
+            {
+                handleEvent(event);
+                mStatistics.handleEvent(event);
+                mButtons.handleEvent(event);
+                mKeyPressingManager.handleEvent(event);
+                mBackground.handleEvent(event);
             }
         }
     }
@@ -127,12 +115,8 @@ void Application::processInput()
     if (!Settings::WindowTitleBar)
         moveWindow();
     
-    if (!Settings::IsChangeable)
-    {
-        mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
-        mButtons.handleInput(mKeyPressingManager.mNeedToBeReleased, 
-            mKeyPressingManager);
-    }
+    mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
+    mButtons.handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
 }
 
 void Application::update(sf::Time dt)
@@ -152,7 +136,6 @@ void Application::render()
     mBackground.draw();
     mStatistics.draw();
     mButtons.draw();
-    mSettings.draw();
     mKPSWindow.draw();
     
     mWindow.display();

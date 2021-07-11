@@ -28,7 +28,7 @@ class Button
         void                        update(std::vector<bool>& needToBeReleased);
         void                        handleInput(std::vector<bool>& clickedKeys, KeyPressingManager& container);
         void                        handleEvent(sf::Event event);
-        void                        handleHighlight(int buttonIndex);
+        void                        highlightKey(int buttonIndex);
         void                        draw();
 
         void                        loadTextures(TextureHolder& textureHolder);

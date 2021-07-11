@@ -102,7 +102,7 @@ void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager
     }
 }
 
-void Button::handleHighlight(int buttonIndex)
+void Button::highlightKey(int buttonIndex)
 {
     for (auto& element : mButtonsText)
         element->setFillColor(Settings::KeyCountersTextColor);
@@ -124,10 +124,11 @@ void Button::draw()
 
 
     // If is changeable set keys must be displayed
-    if (Settings::ShowKeyCountersText || Settings::IsChangeable
-    ||  Settings::ShowSetKeysText)
+    if (Settings::ShowKeyCountersText || Settings::ShowSetKeysText)
+    {
         for (auto& elem : mButtonsText)
             mWindow.draw(*elem, transform);
+    }
 }
 
 void Button::loadTextures(TextureHolder& textureHolder)
@@ -301,8 +302,8 @@ std::string Button::getButtonText(unsigned index) const
 {
     // Display keys if...
     std::string str("");
-    if (Settings::IsChangeable || Settings::ShowSetKeysText 
-    || (Settings::ShowKeyCountersText && mKeyCounters[index] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+    if (Settings::ShowSetKeysText || (Settings::ShowKeyCountersText 
+    && mKeyCounters[index] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
     {
         if (index < Settings::KeyAmount)
             str = convertKeyToString(Settings::Keys[index], false);

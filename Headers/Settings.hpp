@@ -23,7 +23,6 @@ class Settings
                                     Settings();
         void                        handleEvent(sf::Event event);
         void                        update();
-        void                        draw();
 
         void                        setWindowReference(sf::RenderWindow& window);
 
@@ -38,13 +37,16 @@ class Settings
 
 
     private:
+        void                        addKey();
+        void                        removeKey();
+        void                        changeKey(sf::Keyboard::Key newKey);
+        sf::Keyboard::Key           getDefaultKey(size_t index);
+        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore);
         bool                        isInRange(size_t index);
 
 
     private:
         std::string                 findParameter(std::string parameterName);
-
-        sf::Keyboard::Key           getDefaultKey(size_t index);
 
         void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         template <typename T>
@@ -56,10 +58,7 @@ class Settings
         void                        setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons, const std::string information, const std::string parameterName, std::ofstream& errorLog);
         void                        setupBoolParameter(bool& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
 
-        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore);
-
         void                        createDefaultConfig();
-
         void                        writeKeys(std::ofstream& ofConfig);
 
     public:
@@ -124,10 +123,6 @@ class Settings
 
         // [Edit mode]
         static sf::Color            HighlightedKeyColor;
-        static sf::Color            AlertColor;
-
-        // Non config parameters
-        static bool                 IsChangeable;
 
         // [Main window]
         static bool                 WindowTitleBar;
@@ -161,7 +156,6 @@ class Settings
         static sf::Keyboard::Key    AltKeyToIncrease;
         static sf::Keyboard::Key    KeyToDecrease;
         static sf::Keyboard::Key    AltKeyToDecrease;
-        static sf::Keyboard::Key    KeyForEditMode;
         static sf::Keyboard::Key    KeyToClear;
         static sf::Keyboard::Key    KeyExit;
         static sf::Keyboard::Key    KeyToOpenKPSWindow;
@@ -179,9 +173,8 @@ class Settings
 
         sf::RenderWindow*           mWindow;
 
-        sf::CircleShape             mIsChangeableAlert;
-        bool                        mButtonAmountChanged;
-
-        sf::Keyboard::Key           mButtonToChange;
+        bool                        mIsButtonSelected;
         int                         mButtonToChangeIndex;
+        sf::Keyboard::Key           mButtonToChange;
+        bool                        mButtonAmountChanged;
 };
