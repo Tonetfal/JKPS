@@ -85,13 +85,13 @@ void Statistics::handleEvent(sf::Event event)
 
 void Statistics::draw()
 {
-    sf::Transform transform = sf::Transform::Identity;
-    transform.translate(getStatisticsWidth(), 
-        (int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
-        int(Settings::WindowBonusSizeTop) - int(getTotalStatisticsHeight())) / 2);
-
     if (Settings::ShowStatisticsText)
     {
+        sf::Transform transform = sf::Transform::Identity;
+        transform.translate(getStatisticsWidth(), 
+            (int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
+            int(Settings::WindowBonusSizeTop) - int(getTotalStatisticsHeight())) / 2);
+
         mWindow.draw(mTexts.get(KPS), transform);
         if (Settings::ShowMaxKPS)
             mWindow.draw(mTexts.get(MaxKPS), transform);
@@ -124,27 +124,27 @@ void Statistics::setFonts()
             mTexts.get(BPM).setFont(*mStatisticsFont);
             mTexts.get(BPM).setOrigin(0, mTexts.get(KPS).getLocalBounds().height / 2.f);
         }
-    }
 
-    int skip = 0;
-    for (size_t i = 0; i < StatisticsCounter; ++i)
-    {
-        if ((ID(i) == MaxKPS && !Settings::ShowMaxKPS)
-        ||  (ID(i) == BPM && !Settings::ShowBPMText))
+        int skip = 0;
+        for (size_t i = 0; i < StatisticsCounter; ++i)
         {
-            ++skip;
-            continue;
-        }
+            if ((ID(i) == MaxKPS && !Settings::ShowMaxKPS)
+            ||  (ID(i) == BPM && !Settings::ShowBPMText))
+            {
+                ++skip;
+                continue;
+            }
 
-        sf::Text &elem = mTexts.get(ID(i));
-        elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
-        // Calculate statistics position by taking position of previous drawn element
-        if (i > 0)
-        {
-            sf::Text &prev = mTexts.get(ID(i - 1 - skip));
-            elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
+            sf::Text &elem = mTexts.get(ID(i));
+            elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
+            // Calculate statistics position by taking position of previous drawn element
+            if (i > 0)
+            {
+                sf::Text &prev = mTexts.get(ID(i - 1 - skip));
+                elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
+            }
+            skip = 0;
         }
-        skip = 0;
     }
 }
 

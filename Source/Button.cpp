@@ -302,19 +302,28 @@ std::string Button::getButtonText(unsigned index) const
 {
     // Display keys if...
     std::string str("");
-    if (Settings::ShowSetKeysText || (Settings::ShowKeyCountersText 
-    && mKeyCounters[index] == 0)) // if ShowKeyCountersText is false mKeyCounters is not initialized
+    if (Settings::getButtonToChangeIndex() != -1 || Settings::ShowSetKeysText 
+    || (Settings::ShowKeyCountersText &&  mKeyCounters[index] == 0)) 
+    // if ShowKeyCountersText is false mKeyCounters is not initialized
     {
         if (index < Settings::KeyAmount)
+        {
             str = convertKeyToString(Settings::Keys[index], false);
+        }
         else
+        {
             str = convertButtonToString(
                 Settings::MouseButtons[index - Settings::KeyAmount]);
+        }
     }
     // Display key counters
     else 
+    {
         if (Settings::ShowKeyCountersText)
+        {
             str = std::to_string(mKeyCounters[index]);
+        }
+    }
 
     // If LCtrl is pressed show the opposite value of the default one
     if (mWindow.hasFocus())
@@ -323,15 +332,21 @@ std::string Button::getButtonText(unsigned index) const
         &&  !Settings::ShowSetKeysText)
         {
             if (index < Settings::KeyAmount)
+            {
                 str = str = convertKeyToString(Settings::Keys[index], false);
+            }
             else
+            {
                 str = convertButtonToString(
                     Settings::MouseButtons[index - Settings::KeyAmount]);
+            }
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
         &&  Settings::ShowSetKeysText)
-                str = std::to_string(mKeyCounters[index]);
+        {
+            str = std::to_string(mKeyCounters[index]);
+        }
     }
     return str;
 }

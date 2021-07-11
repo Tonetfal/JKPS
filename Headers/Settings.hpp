@@ -32,8 +32,8 @@ class Settings
 
         void                        saveSettings();
 
-        sf::Keyboard::Key           getButtonToChange();
-        int                         getButtonToChangeIndex();
+        static sf::Keyboard::Key    getButtonToChange();
+        static int                  getButtonToChangeIndex();
 
 
     private:
@@ -173,8 +173,8 @@ class Settings
 
         sf::RenderWindow*           mWindow;
 
-        bool                        mIsButtonSelected;
-        int                         mButtonToChangeIndex;
-        sf::Keyboard::Key           mButtonToChange;
-        bool                        mButtonAmountChanged;
+        static bool                 mIsButtonSelected;
+        static int                  mButtonToChangeIndex;
+        static sf::Keyboard::Key    mButtonToChange;
+        static bool                 mButtonAmountChanged;
 };

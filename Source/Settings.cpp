@@ -114,6 +114,11 @@ sf::Keyboard::Key Settings::KeyToClear(sf::Keyboard::X);
 sf::Keyboard::Key Settings::KeyExit(sf::Keyboard::W);
 sf::Keyboard::Key Settings::KeyToOpenKPSWindow(sf::Keyboard::K);
 
+bool Settings::mIsButtonSelected(false);
+int Settings::mButtonToChangeIndex(-1);
+sf::Keyboard::Key Settings::mButtonToChange(sf::Keyboard::Unknown);
+bool Settings::mButtonAmountChanged(false);
+
 Settings::Settings()
 : configPath("JKPS.cfg")
 , errorLogPath("JKPSErrorLog.txt")
@@ -123,10 +128,6 @@ Settings::Settings()
 , minimumMouseButtons(0)
 , maximumMouseButtons(4)
 , mWindow(nullptr)
-, mIsButtonSelected(false)
-, mButtonToChangeIndex(-1)
-, mButtonToChange(sf::Keyboard::Unknown)
-, mButtonAmountChanged(false)
 {
     std::ifstream ifErrorLog(errorLogPath);
     if (ifErrorLog.is_open())

@@ -110,11 +110,10 @@ void Application::processInput()
             }
         }
     }
-
-    mKPSWindow.handleOwnEvent();
     if (!Settings::WindowTitleBar)
         moveWindow();
-    
+
+    mKPSWindow.handleOwnEvent();
     mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
     mButtons.handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
 }
