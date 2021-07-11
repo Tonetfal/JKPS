@@ -228,6 +228,8 @@ sf::Keyboard::Key convertStringToKey(const std::string &str)
         return sf::Keyboard::Key::Backslash;
     if (str == "Tilde")
         return sf::Keyboard::Key::Tilde;
+    if (str == "Equal")
+        return sf::Keyboard::Key::Equal;
     if (str == "Hyphen")
         return sf::Keyboard::Key::Hyphen;
     if (str == "Space")
