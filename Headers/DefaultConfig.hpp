@@ -3,86 +3,87 @@
 #include <iostream>
 
 static std::string DefaultConfigString = 
-"# Download link:\n"
-"# https://github.com/JekiTheMonkey/JKPS/releases \n"
-"# My Discord: Jeki the Monkey from München#3932\n"
-"# If any settings will not be found default parameter value will be used\n"
-"#\n"
-"# Read this page to know how to edit keys and mouse buttons from config\n"
-"# https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5 \n"
-"\n"
-"[Keys]\n"
-"Keys: Z,X\n"
-"\n"
-"[Mouse]\n"
-"Buttons: No\n"
-"\n"
-"[Statistics text]\n"
-"Statistics text distance: 5\n"
-"Space between buttons and statistics: 15\n"
-"Statistics text font: Default\n"
-"Statistics text color: 255,255,255\n"
-"Statistics text character size: 14\n"
-"Statistics text bold: false\n"
-"Statistics text italic: false\n"
-"Show statistics text: true\n"
-"Show max KPS on separate line: true\n"
-"Show BPM: true\n"
-"\n"
-"[Buttons text]\n"
-"Buttons text font: Default\n"
-"Buttons text color: 255,255,255\n"
-"Buttons text character size: 15\n"
-"Buttons text width: 0\n"
-"Buttons text height: 0\n"
-"Buttons text horizontal bounds: 4\n"
-"Buttons text vertical bounds: 4\n"
-"Buttons text bold: false\n"
-"Buttons text italic: false\n"
-"Only show set keys: false\n"
-"Show key counters: true\n"
-"\n"
-"[Button graphics]\n"
-"Button distance: 6\n"
-"Button texture: Default\n"
-"Button texture size: 60,60\n"
-"Button texture color: 30,30,30\n"
-"\n"
-"[Animation graphics]\n"
-"Animation style: 1\n"
-"Animation texture: Default\n"
-"Animation velocity: 5\n"
-"# Style 1\n"
-"Animation scale on click: 1\n"
-"Animation color: 255,180,0\n"
-"# Style 2\n"
-"Animation offset: 3\n"
-"\n"
-"[Background]\n"
-"Background texture: Default\n"
-"Background color: 170,170,170\n"
-"Scale background texture if it does not fit: true\n"
-"\n"
-"[Edit mode]\n"
-"Edit mode alert color: 255,180,0\n"
-"Highlighted text button color: 210,30,210\n"
-"\n"
-"[Main window]\n"
-"Window title bar: false\n"
-"Window bonus size top: 6\n"
-"Window bonus size bottom: 6\n"
-"Window bonus size left: 6\n"
-"Window bonus size right: 130\n"
-"\n"
-"[KPS window]\n"
-"Enable from start: false\n"
-"Window size: 300,300\n"
-"KPS Background color: 0,177,64\n"
-"Text font: Default\n"
-"Text size: 130\n"
-"Number size: 100\n"
-"KPS extra window distance from top: 20\n"
-"KPS extra window distance between text: 50\n"
-"\n"
-"[Theme developer]\n"
-"Value to multiply on click: 1\n";
+R"(# Download link:
+# https://github.com/JekiTheMonkey/JKPS/releases 
+# My Discord: Jeki the Monkey from München#3932
+# If any settings will not be found default parameter value will be used
+#
+# Read this page to know how to edit keys and mouse buttons from config
+# https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5 
+
+[Keys]
+Keys: Z,X
+
+[Mouse]
+Buttons: No
+
+[Statistics text]
+Statistics text distance: 5
+Space between buttons and statistics: 15
+Statistics text font: Default
+Statistics text color: 255,255,255
+Statistics text character size: 14
+Statistics text bold: false
+Statistics text italic: false
+Show statistics text: true
+Show max KPS on separate line: true
+Show BPM: true
+
+[Buttons text]
+Buttons text font: Default
+Buttons text color: 255,255,255
+Buttons text character size: 15
+Buttons text width: 0
+Buttons text height: 0
+Buttons text horizontal bounds: 4
+Buttons text vertical bounds: 4
+Buttons text bold: false
+Buttons text italic: false
+Only show set keys: false
+Show key counters: true
+
+[Button graphics]
+Button distance: 6
+Button texture: Default
+Button texture size: 60,60
+Button texture color: 30,30,30
+
+[Animation graphics]
+Animation style: 1
+Animation texture: Default
+Animation velocity: 5
+# Style 1
+Animation scale on click: 1
+Animation color: 255,180,0
+# Style 2
+Animation offset: 3
+
+[Background]
+Background texture: Default
+Background color: 170,170,170
+Scale background texture if it does not fit: true
+
+[Edit mode]
+Edit mode alert color: 255,180,0
+Highlighted text button color: 210,30,210
+
+[Main window]
+Window title bar: false
+Window bonus size top: 6
+Window bonus size bottom: 6
+Window bonus size left: 6
+Window bonus size right: 130
+
+[KPS window]
+Enable from start: false
+Window size: 300,300
+KPS Background color: 0,177,64
+Text font: Default
+Text size: 130
+Number size: 100
+KPS extra window distance from top: 20
+KPS extra window distance between text: 50
+
+[Theme developer]
+Value to multiply on click: 1
+)";
