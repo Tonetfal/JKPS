@@ -6,7 +6,7 @@ struct KeyPressingManager
 {
                                 KeyPressingManager();
     void                        readClickedKeys();
-    void                        handleEvent(sf::Event event);
+    void                        resize();
     void                        clear();
 
     std::vector<int>            mClickedKeys;
