@@ -40,6 +40,10 @@ Ctrl + K - Open an extra window with KPS
 
 Ctrl (hold) - Show opposite button values
 
+# Graphical menu
+
+![](Media/menu-demo.gif)
+
 # Extra window with KPS
 
 ![](Media/Preview-kps-window.gif)
