@@ -219,18 +219,17 @@ sf::Vector2f Button::getDefaultScale() const
     sf::Vector2f scale(Settings::ButtonTextureSize.x / textureWidth, 
         Settings::ButtonTextureSize.y / textureHeight);
 
-    Settings::ScaledAnimationScale = scale - scale * (1.f - Settings::AnimationScale.x);
+    Settings::ScaledAnimationScale = scale - scale * (1.f - Settings::AnimationScale.x / 100);
 
     return scale;
 }
 
 sf::Vector2f Button::getScaleForText() const
 {
-    float x = (1.0f - Settings::AnimationScale.x) / 
+    float x = (1.0f - Settings::AnimationScale.x / 100) / 
         Settings::AnimationVelocity;
-    float y = (1.0f - Settings::AnimationScale.y) / 
+    float y = (1.0f - Settings::AnimationScale.y / 100) / 
         Settings::AnimationVelocity;
-    std::cout << x << " " << y << "\n";
 
     return { x, y };
 }
@@ -406,7 +405,7 @@ void Button::lightUpKey(size_t index)
     mAnimationSprite[index]->setColor(Settings::AnimationColor);
     mAnimationSprite[index]->setScale(Settings::ScaledAnimationScale);
     mButtonsSprite[index]->setScale(Settings::ScaledAnimationScale);
-    mButtonsText[index]->setScale(Settings::AnimationScale);
+    mButtonsText[index]->setScale(Settings::AnimationScale / 100.f);
 }
 
 void Button::fadeKeyLight(size_t index)

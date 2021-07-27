@@ -177,7 +177,9 @@ void ParameterLine::handleValueModEvent(sf::Event event)
                 }
             }
             assert(btnIdx != -1);
-            str = mParameter->getValPt(btnIdx);
+            std::string tmp = mParameter->getValPt(btnIdx);
+            str = tmp.find('.') == std::string::npos ? tmp : tmp.substr(0, tmp.find('.'));
+            
         }
         assert(!str.empty());
         sf::Keyboard::Key key = event.key.code;
