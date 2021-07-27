@@ -87,10 +87,10 @@ void LogicalParameter::setVector(const std::string &str, unsigned idx)
         case Type::VectorF: 
             switch(idx)
             {
-                case 0: mVal.vFp->x = std::stof(str); break;
-                case 1: mVal.vFp->y = std::stof(str); break;
+                case 0: mVal.vFp->x = std::stoi(str); break;
+                case 1: mVal.vFp->y = std::stoi(str); break;
             }
-            mValStr = std::to_string(mVal.vFp->x) + ',' + std::to_string(mVal.vFp->y);
+            mValStr = std::to_string(static_cast<int>(mVal.vFp->x)) + ',' + std::to_string(static_cast<int>(mVal.vFp->y));
             break;
     }
     mChanged = true;
@@ -171,7 +171,7 @@ void LogicalParameter::setValStr(const std::string &str, unsigned idx)
         case LogicalParameter::Type::Unsigned: setDigit(std::stoi(str)); break;
         case LogicalParameter::Type::Int: setDigit(std::stoi(str)); break;
         case LogicalParameter::Type::Bool: setBool(str); break;
-        case LogicalParameter::Type::Float: setDigit(std::stof(str)); break;
+        case LogicalParameter::Type::Float: setDigit(std::stoi(str)); break;
         case LogicalParameter::Type::String: setString(str); break;
         case LogicalParameter::Type::Color: setColor(str, idx); break;
         case LogicalParameter::Type::VectorU:
