@@ -18,7 +18,9 @@ To change how the program looks you have to press Ctrl + A to open graphical men
 
 If you want to use other font or image for anything, then you have to provide it. 
 
-If you want to change anything in the config, that is generated in the same directory where the program is, then you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
+If you want to change anything in the config, that is generated in the same directory where the program is, then you must put one space between colon and 
+the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a 
+texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
 
 To know what keys and buttons can be written in the config check this [link](https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5).
 
