@@ -63,6 +63,7 @@ class Button : public sf::Drawable, public sf::Transformable
         std::string                 getButtonText(unsigned index) const;
 
         void                        resizeVectors();
+        bool                        isBeyondDefaultScale(const sf::Sprite &sprite) const;
 
         void                        lightUpKey(size_t index);
         void                        fadeKeyLight(size_t index);

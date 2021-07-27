@@ -32,6 +32,7 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
+        static int a = 0;
         auto &elem = mAnimationSprite[i];
         // Velocity = frames to perform the animation
         const sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
@@ -219,16 +220,18 @@ sf::Vector2f Button::getDefaultScale() const
     sf::Vector2f scale(Settings::ButtonTextureSize.x / textureWidth, 
         Settings::ButtonTextureSize.y / textureHeight);
 
-    Settings::ScaledAnimationScale = scale - scale * (1.f - Settings::AnimationScale.x / 100);
+    Settings::ScaledAnimationScale = sf::Vector2f(
+        scale.x - scale.x * (1.f - Settings::AnimationScale.x / 100),
+        scale.y - scale.y * (1.f - Settings::AnimationScale.y / 100));
 
     return scale;
 }
 
 sf::Vector2f Button::getScaleForText() const
 {
-    float x = (1.0f - Settings::AnimationScale.x / 100) / 
+    float x = (1.f - Settings::AnimationScale.x / 100) / 
         Settings::AnimationVelocity;
-    float y = (1.0f - Settings::AnimationScale.y / 100) / 
+    float y = (1.f - Settings::AnimationScale.y / 100) / 
         Settings::AnimationVelocity;
 
     return { x, y };
@@ -411,36 +414,27 @@ void Button::lightUpKey(size_t index)
 void Button::fadeKeyLight(size_t index)
 {
     sf::Sprite &sprite = *mButtonsSprite[index];
-    if (getDefaultScale().x != sprite.getScale().x)
+    if (getDefaultScale().x != sprite.getScale().x 
+    ||  getDefaultScale().y != sprite.getScale().y)
     {
-        bool back;
         sf::Vector2f scale;
-        do {
-            back = false;
-            if ((getScaleAmountPerFrame().x > 0 ? 
-                getDefaultScale().x > sprite.getScale().x :
-                getDefaultScale().x < sprite.getScale().x))
-            {
-                scale = sprite.getScale() + getScaleAmountPerFrame();
-                back = false;
-            }
+        scale = sprite.getScale() + getScaleAmountPerFrame();
 
-            sprite.setScale(scale);
-            mAnimationSprite[index]->setScale(scale);
-            mButtonsText[index]->setScale(mButtonsText[index]->getScale() +
-                getScaleForText());
-            // Re-set position, otherwise the key will go to the left
+        sprite.setScale(scale);
+        mAnimationSprite[index]->setScale(scale);
+        mButtonsText[index]->setScale(mButtonsText[index]->getScale() +
+            getScaleForText());
+        // Re-set position, otherwise the key will go to the left
+        setupTextPosition(index);
+        
+        // Check if went out of needed scaling
+        if (isBeyondDefaultScale(sprite))
+        {
+            sprite.setScale(getDefaultScale());
+            mAnimationSprite[index]->setScale(getDefaultScale());
+            mButtonsText[index]->setScale(sf::Vector2f(1,1));
             setupTextPosition(index);
-
-            // Check if went out of needed scaling
-            if ((getScaleAmountPerFrame().x > 0 ?
-                getDefaultScale().x < sprite.getScale().x :
-                getDefaultScale().x > sprite.getScale().x))
-            {
-                scale = getDefaultScale();
-                back = true;
-            }
-        } while (back);
+        }
     }
 }
 
@@ -507,3 +501,15 @@ sf::Vector2f Button::getCenterOriginText(unsigned idx) const
     return { e.getLocalBounds().left + e.getLocalBounds().width / 2.f , 
              e.getLocalBounds().top + e.getLocalBounds().height / 2.f  };
 }
+
+bool Button::isBeyondDefaultScale(const sf::Sprite &sprite) const
+{
+    // if it has to extend on x axes (!(> 0)), then check if it isn't extended beyond. same thing with y axes
+    return 
+        (getScaleAmountPerFrame().x > 0 ? 
+            getDefaultScale().x < sprite.getScale().x :
+            getDefaultScale().x > sprite.getScale().x)
+    ||  (getScaleAmountPerFrame().y > 0 ? 
+            getDefaultScale().y < sprite.getScale().y :
+            getDefaultScale().y > sprite.getScale().y);
+}   
