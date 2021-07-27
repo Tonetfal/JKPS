@@ -5,18 +5,22 @@
 
 static unsigned maxLen = 4U;
 
-KPSWindow::KPSWindow()
+KPSWindow::KPSWindow(const FontHolder &fonts)
+: mTextFont(&fonts.get(Fonts::KPSText))
+, mNumberFont(&fonts.get(Fonts::KPSNumber))
 {
-    mKPSText.setCharacterSize(Settings::KPSTextSize);
+    mKPSText.setFont(*mTextFont);
+    mKPSNumber.setFont(*mNumberFont);
+
     mKPSText.setString("KPS");
-    mKPSNumber.setCharacterSize(Settings::KPSNumberSize);
     mKPSNumber.setString("0");
     if (Settings::KPSWindowEnabledFromStart)
     {
         mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
-                Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
+            Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
     }
 
+    setupText();
     mDefaultWidthCenters = new float(maxLen);
 }
 
@@ -63,7 +67,7 @@ void KPSWindow::update(std::size_t kps)
     }
 }
 
-void KPSWindow::draw()
+void KPSWindow::render()
 {
     if (mWindow.isOpen())
     {
@@ -71,23 +75,43 @@ void KPSWindow::draw()
         sf::Transform numberTranform = sf::Transform::Identity;
 
         textTransform.translate((mWindow.getSize().x - mKPSText.getLocalBounds().width + 
-            mKPSText.getLocalBounds().left) / 2.f, Settings::KPSWindowDistanceTop);
+            mKPSText.getLocalBounds().left) / 2.f, Settings::KPSWindowTopPadding);
 
         numberTranform.translate(mWindow.getSize().x / 2.f - mKPSNumber.getLocalBounds().left, 
-            mKPSText.getLocalBounds().height + Settings::KPSWindowDistanceBetween + Settings::KPSWindowDistanceTop);
+            mKPSText.getLocalBounds().height + Settings::KPSWindowDistanceBetween + Settings::KPSWindowTopPadding);
 
-        mWindow.clear(Settings::KPSWindowColor);
+        mWindow.clear(Settings::KPSBackgroundColor);
         mWindow.draw(mKPSText, textTransform);
         mWindow.draw(mKPSNumber, numberTranform);
         mWindow.display();
     }
 }
 
-void KPSWindow::loadFont(const sf::Font &font)
+void KPSWindow::setupText()
 {
-    mKPSText.setFont(font);
-    mKPSNumber.setFont(font);
     mKPSText.setOrigin(mKPSText.getLocalBounds().left, mKPSText.getLocalBounds().top);
     mKPSNumber.setOrigin((mKPSNumber.getLocalBounds().left + mKPSNumber.getLocalBounds().width) / 2.f, 
         mKPSNumber.getLocalBounds().top);
+
+    mKPSText.setCharacterSize(Settings::KPSTextSize);
+    mKPSNumber.setCharacterSize(Settings::KPSNumberSize);
+
+    mKPSText.setFillColor(Settings::KPSTextColor);
+    mKPSNumber.setFillColor(Settings::KPSNumberColor);
+
+    mWindow.setSize(sf::Vector2u(Settings::KPSWindowSize.x, Settings::KPSWindowSize.y));
+    mWindow.setView(sf::View( { 0, 0, static_cast<float>(Settings::KPSWindowSize.x), static_cast<float>(Settings::KPSWindowSize.y) } ));
+}   
+
+bool KPSWindow::parameterIdMatches(LogicalParameter::ID id)
+{
+    return
+        id == LogicalParameter::ID::KPSWndwSz ||
+        id == LogicalParameter::ID::KPSWndwTxtChSz ||
+        id == LogicalParameter::ID::KPSWndwNumChSz ||
+        id == LogicalParameter::ID::KPSWndwBgClr ||
+        id == LogicalParameter::ID::KPSWndwTxtClr ||
+        id == LogicalParameter::ID::KPSWndwNumClr ||
+        id == LogicalParameter::ID::KPSWndwTopPadding ||
+        id == LogicalParameter::ID::KPSWndwDistBtw;
 }
