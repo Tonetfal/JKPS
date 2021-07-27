@@ -1,23 +1,24 @@
 # JKPS
-JKPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
+JKPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rhythm games such as osu!, stepmania etc.
 
 # Preview
 ![](Media/Preview-White-orange.gif)
 
-It supports up to 10 keys. Buttons, fonts, colors, background, animations and other things can be changed in the config.
+It supports up to 10 keyboard keys and 5 mouse buttons. Numerical parameters and keys and be changed in-program, but the textures and fonts only in the config.
 
 # Usage
-Modifications can be done in edit mode, which can be opened/closed by pressing Ctrl + Q.
-If you want to add/remove a key press +/-, but if you want to change a key, click with left mouse button or with the same key, then the key will be selected, and it will change its color, then press the key that will replace the old one.
+To add or remove a keyboard key press Ctrl + "+" or "-". 
+
+To change a key click with right mouse button on the button to select it, and then click the required key on the keyboard
 These actions look like:
 
 ![](Media/modification-demo.gif)
 
-When you are done with editing exit from edit mode by pressing Ctrl + Q.
+To change how the program looks you have to press Ctrl + A to open graphical menu.
 
-Other settings can be changed in the JKPS.cfg file, that will be generated in the same directory after you run the program. If there is already one, nothing will be generated, but if there is any error, error log will be generated.
+If you want to use other font or image for anything, then you have to provide it. 
 
-When you change anything in the config you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
+If you want to change anything in the config, that is generated in the same directory where the program is, then you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
 
 To know what keys and buttons can be written in the config check this [link](https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5).
 
@@ -26,6 +27,8 @@ Entire explanation of the config you can find [here](https://gist.github.com/Jek
 # Hotkeys
 
 Click with right mouse button on the key to edit it
+
+Ctrl + "+/-" - Add/remove keyboard keys
 
 Ctrl + W - Close the program
 
@@ -39,14 +42,12 @@ Ctrl (hold) - Show opposite button values
 
 # Extra window with KPS
 
-This window can be used with greenscreen in order to show only the text.
-
 ![](Media/Preview-kps-window.gif)
 
 # Notes
-- Capture the program as a game in OBS, not as a window, until you want that the graphics will be updated
+- Capture the program as a game in OBS, not as a window.
 - To make the program work with green screen just change the "Background color" to 0,177,64.
-- BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least BPM / 15 notes.
+- BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
