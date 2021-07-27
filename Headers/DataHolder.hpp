@@ -14,6 +14,7 @@ class DataHolder
 
     public:
         void                        build(Identifier id);
+        const Data&                 get(Identifier id) const;
         Data&                       get(Identifier id);
 
 

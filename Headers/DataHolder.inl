@@ -6,6 +6,15 @@ void DataHolder<Data, Identifier>::build(Identifier id)
 }
 
 template <typename Data, typename Identifier>
+const Data& DataHolder<Data, Identifier>::get(Identifier id) const
+{
+    auto found = mDataMap.find(id);
+    assert(found != mDataMap.end());
+
+    return *found->second;
+}
+
+template <typename Data, typename Identifier>
 Data& DataHolder<Data, Identifier>::get(Identifier id)
 {
     auto found = mDataMap.find(id);
