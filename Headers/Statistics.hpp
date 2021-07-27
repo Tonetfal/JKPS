@@ -1,26 +1,21 @@
 #pragma once
 
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/System/Vector2.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
+#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Text.hpp>
 
-#include "KeyPressingManager.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "DataHolder.hpp"
-#include "StringHelper.hpp"
+#include "LogicalParameter.hpp"
 
-#include <vector>
 #include <string>
-#include <stddef.h>
-#include <math.h>
-#include <cmath>
+#include <vector>
 
-#include <iostream>
 
-#include <SFML/Graphics/RectangleShape.hpp>
-
-class Statistics
+class Statistics : public sf::Drawable, public sf::Transformable
 {
     public:
         enum ID
@@ -34,36 +29,38 @@ class Statistics
 
         
     public:
-                                    Statistics(sf::RenderWindow& window);
+                                    Statistics(const FontHolder& fonts);
 
         void                        update(size_t KeyPerSecond, size_t BeatsPerMinute, std::vector<int>& clickedKeys);
-        void                        handleEvent(sf::Event event);
-        void                        draw();
+        void                        resize();
+        virtual void                draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-        void                        loadFonts(FontHolder& font);
-        void                        setFonts();
+        void                        setupText();
 
         std::size_t                 getKeyPerSecond();
         std::size_t                 getMaxKeyPerSecond();
         std::size_t                 getTotalKeys();
 
-        std::size_t                 getTotalStatisticsHeight();
+        std::size_t                 getTotalStatisticsHeight() const;
 
         void                        clear();
 
+        static bool                 parameterIdMatches(LogicalParameter::ID id);
+
 
     private:
+        void                        setFonts();
         void                        setupText(ID id);
+        void                        setTextPositions();
         void                        setupLong(ID id);
         void                        setupString(ID id, const std::string& name);
+        void                        setTextString(ID id);
 
-        unsigned int                getStatisticsWidth();
-        unsigned int                getStatisticsHeight(ID id);
+        unsigned int                getStatisticsWidth() const;
+        unsigned int                getStatisticsHeight(ID id) const;
 
 
     private:
-        sf::RenderWindow&           mWindow;
-
         sf::Font*                   mStatisticsFont;
 
         DataHolder<sf::Text, ID>    mTexts;
