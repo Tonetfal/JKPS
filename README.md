@@ -2,7 +2,7 @@
 JKPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rythm games such as osu!, stepmania etc.
 
 # Preview
-![](Preview-White-orange.gif)
+![](Media/Preview-White-orange.gif)
 
 It supports up to 10 keys. Buttons, fonts, colors, background, animations and other things can be changed in the config.
 
@@ -11,7 +11,7 @@ Modifications can be done in edit mode, which can be opened/closed by pressing C
 If you want to add/remove a key press +/-, but if you want to change a key, click with left mouse button or with the same key, then the key will be selected, and it will change its color, then press the key that will replace the old one.
 These actions look like:
 
-![](modification-demo.gif)
+![](Media/modification-demo.gif)
 
 When you are done with editing exit from edit mode by pressing Ctrl + Q.
 
@@ -25,21 +25,23 @@ Entire explanation of the config you can find [here](https://gist.github.com/Jek
 
 # Hotkeys
 
-Ctrl + Q - Enter/exit Edit mode
+Click with right mouse button on the key to edit it
 
 Ctrl + W - Close the program
 
 Ctrl + X - Reset all the statistics
 
+Ctrl + A - Open graphical menu
+
 Ctrl + K - Open an extra window with KPS
 
-Ctrl - Show opposite buttons value (key counters or set keys)
+Ctrl (hold) - Show opposite button values
 
 # Extra window with KPS
 
 This window can be used with greenscreen in order to show only the text.
 
-![](Preview-kps-window.gif)
+![](Media/Preview-kps-window.gif)
 
 # Notes
 - Capture the program as a game in OBS, not as a window, until you want that the graphics will be updated
@@ -48,17 +50,17 @@ This window can be used with greenscreen in order to show only the text.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
-![](Preview-Medieval.gif)
+![](Media/Preview-Medieval.gif)
 
-![](Preview-Modern-purple.gif)
+![](Media/Preview-Modern-purple.gif)
 
-![](Preview-Dark-minimalistic.gif)
+![](Media/Preview-Dark-minimalistic.gif)
 
-![](Preview-White-orange.gif)
+![](Media/Preview-White-orange.gif)
 
-![](Preview-Dark-violet.gif)
+![](Media/Preview-Dark-violet.gif)
 
-![](Preview-Dark-classic.gif)
+![](Media/Preview-Dark-classic.gif)
 
 # Links
 
