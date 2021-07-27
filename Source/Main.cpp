@@ -1,12 +1,12 @@
 #include "../Headers/Application.hpp"
-#include "../Headers/Settings.hpp"
+#include "../Headers/Menu.hpp"
 
 #include <stdexcept>
 
 int main()
 {
-    Settings settings;
-    Application app(settings);
+    Menu menu;
+    Application app(menu);
     
     try
     {
