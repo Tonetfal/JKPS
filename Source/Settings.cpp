@@ -1,5 +1,9 @@
 #include "../Headers/Settings.hpp"
 #include "../Headers/ConfigHelper.hpp"
+#include "../Headers/DefaultFiles.hpp"
+
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 
 const std::size_t Settings::mFramesPerSecond = 60;
@@ -112,11 +116,7 @@ sf::Keyboard::Key Settings::mButtonToChange(sf::Keyboard::Unknown);
 bool Settings::mButtonAmountChanged(false);
 
 Settings::Settings()
-: minimumKeys(0)
-, maximumKeys(10)
-, minimumMouseButtons(0)
-, maximumMouseButtons(4)
-, mWindow(nullptr)
+: mWindow(nullptr)
 { }
 
 void Settings::handleEvent(sf::Event event)
@@ -128,14 +128,14 @@ void Settings::handleEvent(sf::Event event)
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
         {
             if ((key == KeyToIncrease || key == AltKeyToIncrease) 
-            && Settings::Keys.size() < maximumKeys)
+            && Settings::Keys.size() < ConfigHelper::maxKeys)
             {
                 addKey();
                 ++ButtonAmount;
             }
 
             if ((key == KeyToDecrease || key == AltKeyToDecrease) 
-            && Settings::Keys.size() > minimumKeys + 1)
+            && Settings::Keys.size() > ConfigHelper::minKeys + 1)
             {
                 removeKey();
                 --ButtonAmount;

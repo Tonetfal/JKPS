@@ -1,7 +1,9 @@
 #include "../Headers/KPSWindow.hpp"
 #include "../Headers/Settings.hpp"
+#include "../Headers/ResourceHolder.hpp"
 
 #include <SFML/Window/Event.hpp>
+
 
 static unsigned maxLen = 4U;
 

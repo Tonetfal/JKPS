@@ -2,6 +2,9 @@
 #include "../Headers/Menu.hpp"
 #include "../Headers/LogicalParameter.hpp"
 #include "../Headers/ChangedParametersQueue.hpp"
+#include "../Headers/Settings.hpp"
+#include "../Headers/DefaultFiles.hpp"
+#include "../Headers/Menu.hpp"
 
 
 const sf::Time Application::TimePerFrame = sf::seconds(1.f / Settings::mFramesPerSecond);

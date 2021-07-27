@@ -3,16 +3,18 @@
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Calculation.hpp"
-#include "Settings.hpp"
 #include "KeyPressingManager.hpp"
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
 #include "KPSWindow.hpp"
-#include "DefaultFiles.hpp"
-#include "Menu.hpp"
+
+#include <SFML/System/Time.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
 
 #include <memory>
+
+class Menu;
 
 
 class Application
