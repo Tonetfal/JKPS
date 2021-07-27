@@ -11,6 +11,9 @@ namespace Textures
         KeyButton,
         ButtonAnimation,
         Background,
+        rgbCircle,
+        vMark,
+        xMark,
     };
 }
 
@@ -20,7 +23,10 @@ namespace Fonts
     {
         KeyCounters,
         Statistics,
-        KPS
+        KPSText,
+        KPSNumber,
+        Parameter,
+        Value,
     };
 }
 
