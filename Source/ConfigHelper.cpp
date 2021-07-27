@@ -297,7 +297,7 @@ void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr)
         unsigned cpyIdx; // redundant here, since new key is swapped, not the old one
         while (isKeyAlreadyPresent(keys, keys.back(), cpyIdx, i))
         {
-            key = getDefaultKey(keys);
+            keys.back() = getDefaultKey(keys);
         }
 
         // If there is no data to read - break
@@ -323,7 +323,7 @@ void readButtons(std::vector<sf::Mouse::Button> &buttons, const std::string &val
         unsigned cpyIdx; // redundant here, since new key is swapped, not the old one
         while (isButtonAlreadyPresent(buttons, buttons.back(), cpyIdx, i))
         {
-            button = getDefaultButton(buttons);
+            buttons.back() = getDefaultButton(buttons);
         }
 
         // If there is no data to read - break
