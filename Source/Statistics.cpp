@@ -46,7 +46,14 @@ void Statistics::update(std::size_t KeyPerSecond,
         if (!Settings::ShowMaxKPS)
         {
             if (mLongs.get(KPS) == 0)
+            {
                 mLongs.get(KPS) = mLongs.get(MaxKPS);
+                mStrings.get(KPS) = "Max";
+            }
+            else
+            {
+                mStrings.get(KPS) = "KPS";
+            }
         }
 
         for (auto& element : clickedKeys)
