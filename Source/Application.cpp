@@ -212,7 +212,7 @@ void Application::loadAssets()
         mFonts.loadFromFile(Fonts::KPSNumber, Settings::KPSWindowNumberFontPath);
 
     sf::Image icon;
-    icon.loadFromMemory(iconHeaderArray, 53200);
+    icon.loadFromMemory(IconTexture, 53200);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
 }
 
