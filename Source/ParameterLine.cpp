@@ -118,7 +118,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                         if (*it == mSelectedValue)
                         {
                             deselect(); 
-                            // isn't next element the end ? ... : ...
+                            // is the previous element the first one ? ... : ...
                             select(it == mParameterValues.begin() ? mParameterValues.back() : *(it - 1));
                             // return in order to avoid further tabulation and segmentation fault
                             return;
