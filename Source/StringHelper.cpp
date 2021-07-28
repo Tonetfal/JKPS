@@ -1,5 +1,70 @@
 #include "../Headers/StringHelper.hpp"
 
+#include <cassert>
+
+unsigned readAmountOfParms(const std::string &str)
+{
+    unsigned amt = 0;
+    for (unsigned idx = 0; idx < str.size(); ++idx)
+    {
+        if (str[idx] == ',' || idx + 1 == str.size())
+            ++amt;
+    }
+
+    return amt;
+}
+
+std::string readValue(const std::string &str, unsigned n)
+{
+    unsigned idx, nVal = 0;
+    // Skip all previous values
+    for (idx = 0; idx < str.size() && nVal != n; ++idx)
+    {
+        if (str[idx] == ',')
+            ++nVal;
+    }
+    
+    assert(nVal == n);
+    
+    std::string retVal;
+    // Write everything in new str until newline or comma
+    for (unsigned i = 0; idx < str.size() && str[idx] != ','; ++idx, ++i)
+    {
+        retVal += str[idx];
+    }
+
+    return retVal;
+}
+
+static void modifyNumOnIdx(std::string &str, unsigned idx, bool add, char num = ' ')
+{
+    std::string substr = str.substr(idx + !add);
+    if (add)
+    {
+        str.resize(str.size() + 1);
+        str[idx] = num;
+        for (unsigned i = 0; i < substr.size(); ++i)
+            str[idx + i + 1] = substr[i];        
+    }
+    else
+    {
+        for (unsigned i = 0; i < substr.size(); ++i)
+            str[idx + i] = substr[i];        
+        str.resize(str.size() - 1);
+    }
+}
+
+void addChOnIdx(std::string &str, unsigned idx, int num)
+{
+    assert((0 <= num && 9 >= num) || num == '-');
+    modifyNumOnIdx(str, idx, true, num < 10 ? num + '0' : num);
+}
+
+void rmChOnIdx(std::string &str, unsigned idx)
+{
+    modifyNumOnIdx(str, idx, false);
+}
+
 // For more information
 // https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php
 // https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Mouse.php 
@@ -7,7 +72,8 @@
 // the fact that he didn't pass the idiot proof
 // Same thing with mouse, I use sf::Mouse::Left as unknown button
 
-std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
+
+std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg)
 {
     switch (key)
     {
@@ -37,16 +103,16 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::X: return "X";
         case sf::Keyboard::Y: return "Y";
         case sf::Keyboard::Z: return "Z";
-        case sf::Keyboard::Num0: return "Num0";
-        case sf::Keyboard::Num1: return "Num1";
-        case sf::Keyboard::Num2: return "Num2";
-        case sf::Keyboard::Num3: return "Num3";
-        case sf::Keyboard::Num4: return "Num4";
-        case sf::Keyboard::Num5: return "Num5";
-        case sf::Keyboard::Num6: return "Num6";
-        case sf::Keyboard::Num7: return "Num7";
-        case sf::Keyboard::Num8: return "Num8";
-        case sf::Keyboard::Num9: return "Num9";
+        case sf::Keyboard::Num0: return (saveToCfg ? "Num0" : "0");
+        case sf::Keyboard::Num1: return (saveToCfg ? "Num1" : "1");
+        case sf::Keyboard::Num2: return (saveToCfg ? "Num2" : "2");
+        case sf::Keyboard::Num3: return (saveToCfg ? "Num3" : "3");
+        case sf::Keyboard::Num4: return (saveToCfg ? "Num4" : "4");
+        case sf::Keyboard::Num5: return (saveToCfg ? "Num5" : "5");
+        case sf::Keyboard::Num6: return (saveToCfg ? "Num6" : "6");
+        case sf::Keyboard::Num7: return (saveToCfg ? "Num7" : "7");
+        case sf::Keyboard::Num8: return (saveToCfg ? "Num8" : "8");
+        case sf::Keyboard::Num9: return (saveToCfg ? "Num9" : "9");
         case sf::Keyboard::Escape: return "Escape";
         case sf::Keyboard::LControl: return "LControl";
         case sf::Keyboard::LShift: return "LShift";
@@ -57,8 +123,8 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::RAlt: return "RAlt";
         case sf::Keyboard::RSystem: return "RSystem";
         case sf::Keyboard::Menu: return "Menu";
-        case sf::Keyboard::LBracket: return "LBracket";
-        case sf::Keyboard::RBracket: return "RBracket";
+        case sf::Keyboard::LBracket: return (saveToCfg ? "LBracket" : "[");
+        case sf::Keyboard::RBracket: return (saveToCfg ? "RBracket" : "]");
         case sf::Keyboard::Semicolon: return (saveToCfg ? "Semicolon" : ":");
         case sf::Keyboard::Comma: return (saveToCfg ? "Comma" : ",");
         case sf::Keyboard::Period: return (saveToCfg ? "Period" : ".");
@@ -72,12 +138,12 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::Enter: return "Enter";
         case sf::Keyboard::Backspace: return "Backspace";
         case sf::Keyboard::Tab: return "Tab";
-        case sf::Keyboard::PageUp: return "PageUp";
-        case sf::Keyboard::PageDown: return "PageDown";
+        case sf::Keyboard::PageUp: return (saveToCfg ? "PageUp" : "PgUp");
+        case sf::Keyboard::PageDown: return (saveToCfg ? "PageDown" : "PgDn");
         case sf::Keyboard::End: return "End";
         case sf::Keyboard::Home: return "Home";
-        case sf::Keyboard::Insert: return "Insert";
-        case sf::Keyboard::Delete: return "Delete";
+        case sf::Keyboard::Insert: return (saveToCfg ? "Insert" : "Ins");
+        case sf::Keyboard::Delete: return (saveToCfg ? "Delete" : "Del");
         case sf::Keyboard::Add: return (saveToCfg ? "Add" : "+");
         case sf::Keyboard::Subtract: return (saveToCfg ? "Subtract" : "-");
         case sf::Keyboard::Multiply: return (saveToCfg ? "Multiply" : "*");
@@ -86,16 +152,16 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::Right: return "Right";
         case sf::Keyboard::Up: return "Up";
         case sf::Keyboard::Down: return "Down";
-        case sf::Keyboard::Numpad0: return "Numpad0";
-        case sf::Keyboard::Numpad1: return "Numpad1";
-        case sf::Keyboard::Numpad2: return "Numpad2";
-        case sf::Keyboard::Numpad3: return "Numpad3";
-        case sf::Keyboard::Numpad4: return "Numpad4";
-        case sf::Keyboard::Numpad5: return "Numpad5";
-        case sf::Keyboard::Numpad6: return "Numpad6";
-        case sf::Keyboard::Numpad7: return "Numpad7";
-        case sf::Keyboard::Numpad8: return "Numpad8";
-        case sf::Keyboard::Numpad9: return "Numpad9";
+        case sf::Keyboard::Numpad0: return (saveToCfg ? "Numpad0" : "Num0");
+        case sf::Keyboard::Numpad1: return (saveToCfg ? "Numpad1" : "Num1");
+        case sf::Keyboard::Numpad2: return (saveToCfg ? "Numpad2" : "Num2");
+        case sf::Keyboard::Numpad3: return (saveToCfg ? "Numpad3" : "Num3");
+        case sf::Keyboard::Numpad4: return (saveToCfg ? "Numpad4" : "Num4");
+        case sf::Keyboard::Numpad5: return (saveToCfg ? "Numpad5" : "Num5");
+        case sf::Keyboard::Numpad6: return (saveToCfg ? "Numpad6" : "Num6");
+        case sf::Keyboard::Numpad7: return (saveToCfg ? "Numpad7" : "Num7");
+        case sf::Keyboard::Numpad8: return (saveToCfg ? "Numpad8" : "Num8");
+        case sf::Keyboard::Numpad9: return (saveToCfg ? "Numpad9" : "Num9");
         case sf::Keyboard::F1: return "F1";
         case sf::Keyboard::F2: return "F2";
         case sf::Keyboard::F3: return "F3";
@@ -116,7 +182,7 @@ std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg)
     }
 }
 
-sf::Keyboard::Key convertStringToKey(const std::string &str)
+sf::Keyboard::Key strToKey(const std::string &str)
 {
     if (str == "A")
         return sf::Keyboard::Key::A;
@@ -324,7 +390,7 @@ sf::Keyboard::Key convertStringToKey(const std::string &str)
     return sf::Keyboard::Key::A;
 }
 
-std::string convertButtonToString(sf::Mouse::Button button)
+std::string btnToStr(sf::Mouse::Button button)
 {
     switch(button)
     {
@@ -337,7 +403,7 @@ std::string convertButtonToString(sf::Mouse::Button button)
     }
 }
 
-sf::Mouse::Button convertStringToButton(const std::string &str)
+sf::Mouse::Button strToBtn(const std::string &str)
 {
     if (str == "Left")
         return sf::Mouse::Left;

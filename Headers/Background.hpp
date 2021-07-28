@@ -1,30 +1,30 @@
 #pragma once
 
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Color.hpp>
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/Event.hpp>
 
-#include "Settings.hpp"
-#include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 
-class Background
+namespace sf
+{
+    class RenderWindow;
+}
+
+
+class Background : public sf::Drawable, public sf::Transformable
 {
     public:
-                                Background(sf::RenderWindow& window);
+        Background(const TextureHolder& textureHolder, sf::RenderWindow& window);
 
-        void                    handleEvent(sf::Event event);
-        void                    draw();
+        virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-        void                    loadTextures(TextureHolder& textureHolder);
-
-        void                    scaleTexture();
+        void resize();
+        void scale();
+        void setupTexture();
 
 
     private:
-        sf::RenderWindow&       mWindow;
-
-        sf::Sprite              mBackgroundSprite;
+        sf::RenderWindow& mWindow;
+        sf::Sprite mBackgroundSprite;
 };

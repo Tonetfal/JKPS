@@ -1,43 +1,45 @@
 #pragma once
 
+#include <SFML/Graphics/Drawable.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
 
 #include "KeyPressingManager.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "Settings.hpp"
 #include "Statistics.hpp"
+#include "LogicalParameter.hpp"
 
 #include <memory>
-#include <cassert>
+#include <vector>
 
-class Button
+
+class Button : public sf::Drawable, public sf::Transformable
 {
     public:
         enum AnimationStyle
         {
-            Light,
+            Light = 1,
             Press,
             AnimationCounter,
         };
 
 
     public:
-                                    Button(sf::RenderWindow& window);
+                                    Button(const TextureHolder& textureHolder, const FontHolder& fontHolder);
 
         void                        update(std::vector<bool>& needToBeReleased);
         void                        handleInput(std::vector<bool>& clickedKeys, KeyPressingManager& container);
-        void                        handleEvent(sf::Event event);
         void                        highlightKey(int buttonIndex);
-        void                        draw();
-
-        void                        loadTextures(TextureHolder& textureHolder);
-        void                        loadFonts(FontHolder& fontHolder);
+        virtual void                draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void                        setFonts();
         void                        setupTextures(); 
+        void                        setupKeyCounterTextVec();
 
+        void                        resize();
         void                        clear();
+
+        static bool                 parameterIdMatches(LogicalParameter::ID id);
 
 
     private:
@@ -52,17 +54,16 @@ class Button
         sf::Vector2f                getDefaultScale() const;
         sf::Vector2f                getScaleForText() const;
         sf::Vector2f                getScaleAmountPerFrame() const;
-        float                       getDefaultTextHeight(unsigned chSz) const;
         float                       getTextMaxWidth() const;
         float                       getTextMaxHeight() const;
         sf::Vector2f                getCenterOriginText(unsigned idx) const;
 
-        void                        setupKeyCounterTextVec();
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
         std::string                 getButtonText(unsigned index) const;
 
         void                        resizeVectors();
+        bool                        isBeyondDefaultScale(const sf::Sprite &sprite) const;
 
         void                        lightUpKey(size_t index);
         void                        fadeKeyLight(size_t index);
@@ -74,8 +75,6 @@ class Button
 
     
     private:
-        sf::RenderWindow&           mWindow;
-
         sf::Font*                   mKeyCountersFont;
         std::vector<long>           mKeyCounters;
         std::vector<std::unique_ptr<sf::Text>> mButtonsText;
@@ -86,7 +85,6 @@ class Button
         std::vector<std::unique_ptr<sf::Sprite>> mButtonsSprite;
         std::vector<std::unique_ptr<sf::Sprite>> mAnimationSprite;
 
-        AnimationStyle              mAnimationStyle;
         std::vector<float>          mButtonsYOffset;
 
         std::vector<float>          mCurDefaultTextHeight;

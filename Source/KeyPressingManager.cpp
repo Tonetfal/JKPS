@@ -11,8 +11,10 @@ KeyPressingManager::KeyPressingManager()
 
 void KeyPressingManager::readClickedKeys()
 {
+    const unsigned keyAmt = Settings::Keys.size();
+    const unsigned btnAmt = Settings::MouseButtons.size();
     size_t i = 0;
-    for (; i < Settings::KeyAmount; i++)
+    for (; i < keyAmt; i++)
     {
         if (sf::Keyboard::isKeyPressed(Settings::Keys[i]) && !mNeedToBeReleased[i])
             ++mClickedKeys[i];
@@ -22,7 +24,7 @@ void KeyPressingManager::readClickedKeys()
         else
             mNeedToBeReleased[i] = false;
     }
-    for (size_t j = 0; j < Settings::MouseButtonAmount; j++, i++)
+    for (size_t j = 0; j < btnAmt; j++, i++)
     {
         if (sf::Mouse::isButtonPressed(Settings::MouseButtons[j]) && !mNeedToBeReleased[i])
             ++mClickedKeys[i];
@@ -34,7 +36,7 @@ void KeyPressingManager::readClickedKeys()
     }
 }
 
-void KeyPressingManager::handleEvent(sf::Event event)
+void KeyPressingManager::resize()
 {
     mClickedKeys.resize(Settings::ButtonAmount);
     mNeedToBeReleased.resize(Settings::ButtonAmount);

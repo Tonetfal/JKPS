@@ -1,21 +1,18 @@
 #pragma once
 
-#include <SFML/Window/Event.hpp>
-#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
 
 #include "StringHelper.hpp"
-#include "DefaultFiles.hpp"
 
 #include <vector>
-#include <fstream>
-#include <iostream>
 #include <string>
-#include <stdio.h>
-#include <climits>
+
+namespace sf
+{
+    class Event;
+    class RenderWindow;
+}
+
 
 class Settings
 {
@@ -30,8 +27,6 @@ class Settings
         void                        setChangeabilityPosition();
         bool                        wasButtonAmountChanged();
 
-        void                        saveSettings();
-
         static sf::Keyboard::Key    getButtonToChange();
         static int                  getButtonToChangeIndex();
 
@@ -40,26 +35,8 @@ class Settings
         void                        addKey();
         void                        removeKey();
         void                        changeKey(sf::Keyboard::Key newKey);
-        sf::Keyboard::Key           getDefaultKey(size_t index);
-        bool                        isThereSameKey(sf::Keyboard::Key key, size_t& whichOne, size_t indexToIgnore);
         bool                        isInRange(size_t index);
 
-
-    private:
-        std::string                 findParameter(std::string parameterName);
-
-        void                        setupColor(sf::Color& color, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        template <typename T>
-        void                        setupVector(T& vector, int limitMin, int limitMax, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        template <typename T>
-        void                        setupDigitParameter(T& parameter, int limitMin, int limitMax, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        void                        setupFilePathParameter(std::string& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        void                        setupKey(std::vector<sf::Keyboard::Key>& keys, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        void                        setupMouseButton(std::vector<sf::Mouse::Button>& mouseButtons, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-        void                        setupBoolParameter(bool& parameter, const std::string information, const std::string parameterName, std::ofstream& errorLog);
-
-        void                        createDefaultConfig();
-        void                        writeKeys(std::ofstream& ofConfig);
 
     public:
         const static std::size_t    mFramesPerSecond;
@@ -69,8 +46,6 @@ class Settings
         static std::vector<sf::Mouse::Button> MouseButtons;
 
         // Non config parameters
-        static std::size_t          KeyAmount;
-        static std::size_t          MouseButtonAmount;
         static std::size_t          ButtonAmount;
 
         // [Statistics text]
@@ -82,7 +57,9 @@ class Settings
         static bool                 StatisticsBold;
         static bool                 StatisticsItalic;
         static bool                 ShowStatisticsText;
+        static bool                 ShowKPS;
         static bool                 ShowMaxKPS;
+        static bool                 ShowTotal;
         static bool                 ShowBPMText;
 
         // [Button text]
@@ -134,10 +111,13 @@ class Settings
         // [KPS window]
         static bool                 KPSWindowEnabledFromStart;
         static sf::Vector2u         KPSWindowSize;
-        static float                KPSWindowDistanceTop;
+        static sf::Color            KPSBackgroundColor;
+        static sf::Color            KPSTextColor;
+        static sf::Color            KPSNumberColor;
+        static std::string          KPSWindowTextFontPath;
+        static std::string          KPSWindowNumberFontPath;
+        static float                KPSWindowTopPadding;
         static float                KPSWindowDistanceBetween;
-        static sf::Color            KPSWindowColor;
-        static std::string          KPSWindowFontPath;
         static unsigned             KPSTextSize;
         static unsigned             KPSNumberSize;
 
@@ -159,18 +139,10 @@ class Settings
         static sf::Keyboard::Key    KeyToClear;
         static sf::Keyboard::Key    KeyExit;
         static sf::Keyboard::Key    KeyToOpenKPSWindow;
+        static sf::Keyboard::Key    KeyToOpenMenuWindow;
 
 
     private:
-        const std::string           configPath;
-        const std::string           errorLogPath;
-        const std::string           tmpConfigPath;
-
-        const size_t                minimumKeys;
-        const size_t                maximumKeys;
-        const size_t                minimumMouseButtons;
-        const size_t                maximumMouseButtons;
-
         sf::RenderWindow*           mWindow;
 
         static bool                 mIsButtonSelected;

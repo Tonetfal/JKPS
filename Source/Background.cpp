@@ -1,37 +1,53 @@
 #include "../Headers/Background.hpp"
+#include "../Headers/ResourceHolder.hpp"
+#include "../Headers/Settings.hpp"
 
-Background::Background(sf::RenderWindow& window)
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Color.hpp>
+
+
+Background::Background(const TextureHolder& textureHolder, sf::RenderWindow& window)
 : mWindow(window)
 { 
-    mBackgroundSprite.setColor(Settings::BackgroundColor);
+    mBackgroundSprite.setTexture(textureHolder.get(Textures::Background));
+    setupTexture();
+}
+
+
+void Background::draw(sf::RenderTarget &target, sf::RenderStates states) const 
+{
+    target.draw(mBackgroundSprite, states);
 }
 
 // This is needed to rescale the background when the amount of keys is changed
-void Background::handleEvent(sf::Event event)
+void Background::resize()
+{
+    scale();
+}
+
+void Background::scale()
 {
     if (Settings::ScaleBackground)
-        scaleTexture();
+    {
+        sf::Vector2u windowSize = mWindow.getSize();
+        sf::Vector2f bgSize(mBackgroundSprite.getTexture()->getSize());
+        sf::Vector2f scale(
+            windowSize.x / (bgSize.x * mBackgroundSprite.getScale().x),
+            windowSize.y / (bgSize.y * mBackgroundSprite.getScale().y));
+
+        mBackgroundSprite.scale(scale);
+    }
+    else
+    {
+        mBackgroundSprite.setScale(1, 1);
+    }
 }
 
-void Background::draw()
+void Background::setupTexture()
 {
-    mWindow.draw(mBackgroundSprite);
-}
-
-void Background::loadTextures(TextureHolder& textureHolder)
-{
-    mBackgroundSprite.setTexture(textureHolder.get(Textures::Background));
-    if (Settings::ScaleBackground)
-        scaleTexture();
-}
-
-void Background::scaleTexture()
-{
-    sf::Vector2f windowSize(mWindow.getSize());
-    sf::Vector2f bgSize(mBackgroundSprite.getTexture()->getSize());
-    sf::Vector2f scale(
-        windowSize.x / (bgSize.x * mBackgroundSprite.getScale().x),
-        windowSize.y / (bgSize.y * mBackgroundSprite.getScale().y));
-
-    mBackgroundSprite.scale(scale);
+    mBackgroundSprite.setColor(Settings::BackgroundColor);
+    scale();
 }

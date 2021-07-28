@@ -3,19 +3,24 @@
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "Calculation.hpp"
-#include "Settings.hpp"
 #include "KeyPressingManager.hpp"
 #include "Statistics.hpp"
 #include "Button.hpp"
 #include "Background.hpp"
 #include "KPSWindow.hpp"
-#include "DefaultFiles.hpp"
+
+#include <SFML/System/Time.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+
+#include <memory>
+
+class Menu;
 
 
 class Application
 {
     public:
-                                    Application(Settings& settings);
+                                    Application(Menu &menu);
         void                        run();
 
 
@@ -27,6 +32,7 @@ class Application
 
         void                        loadAssets();
 
+        void                        openWindow();
         void                        moveWindow();
         unsigned int                getWindowWidth();
         unsigned int                getWindowHeight();
@@ -39,13 +45,14 @@ class Application
         TextureHolder               mTextures;
         FontHolder                  mFonts;
 
+        Menu&                       mMenu;
         Settings&                   mSettings;
         Calculation                 mCalculation;
         KeyPressingManager          mKeyPressingManager;
-        Statistics                  mStatistics;
-        Button                      mButtons;
-        Background                  mBackground;
-        KPSWindow                   mKPSWindow;
+        std::unique_ptr<Statistics> mStatistics;
+        std::unique_ptr<Button>     mButtons;
+        std::unique_ptr<Background> mBackground;
+        std::unique_ptr<KPSWindow>  mKPSWindow;
 
         sf::Vector2i                mLastMousePosition;
 };

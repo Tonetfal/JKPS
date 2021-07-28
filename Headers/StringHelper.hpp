@@ -3,9 +3,14 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 
-#include <iostream>
+#include <string>
 
-std::string convertKeyToString(sf::Keyboard::Key key, bool saveToCfg);
-sf::Keyboard::Key convertStringToKey(const std::string &str);
-std::string convertButtonToString(sf::Mouse::Button button);
-sf::Mouse::Button convertStringToButton(const std::string &str);
+unsigned readAmountOfParms(const std::string &str);
+std::string readValue(const std::string &str, unsigned n);
+void addChOnIdx(std::string &str, unsigned idx, int num);
+void rmChOnIdx(std::string &str, unsigned idx);
+
+std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg);
+sf::Keyboard::Key strToKey(const std::string &str);
+std::string btnToStr(sf::Mouse::Button button);
+sf::Mouse::Button strToBtn(const std::string &str);

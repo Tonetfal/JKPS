@@ -1,39 +1,38 @@
 #include "../Headers/Statistics.hpp"
+#include "../Headers/ResourceHolder.hpp"
+#include "../Headers/Menu.hpp"
 
-#define SET_TEXT_STRING(x) mTexts.get(x).setString((mStrings.get(x) + ": " \
-    + std::to_string(mLongs.get(x))).c_str());
+#include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 
 
-Statistics::Statistics(sf::RenderWindow& window)
-: mWindow(window)
-, mStatisticsFont()
-, mTexts()
-, mLongs()
-, mStrings()
-{
-    if (Settings::ShowStatisticsText)
-    {
-        setupLong(KPS);
-        setupLong(MaxKPS);
-        setupLong(TotalKeys);
-        
-        setupText(KPS);
-        setupText(MaxKPS);
-        setupText(TotalKeys);
+Statistics::Statistics(const FontHolder& fonts)
+: mStatisticsFont(&fonts.get(Fonts::Statistics))
+{    
+    setupLong(KPS);
+    setupLong(MaxKPS);
+    setupLong(TotalKeys);
+    setupLong(BPM);
+    
+    mTexts.build(KPS);
+    mTexts.build(MaxKPS);
+    mTexts.build(TotalKeys);
+    mTexts.build(BPM);
 
-        setupString(KPS, "KPS");
-        setupString(MaxKPS, "Max KPS");
-        setupString(TotalKeys, "Total");
+    setupText();
 
-        SET_TEXT_STRING(KPS);
-        SET_TEXT_STRING(MaxKPS);
-        SET_TEXT_STRING(TotalKeys);
+    setupString(KPS, "KPS");
+    setupString(MaxKPS, "Max KPS");
+    setupString(TotalKeys, "Total");
+    setupString(BPM, "BPM");
 
-        setupLong(BPM);
-        setupText(BPM);
-        setupString(BPM, "BPM");
-        SET_TEXT_STRING(BPM);
-    }
+    setTextString(KPS);
+    setTextString(MaxKPS);
+    setTextString(TotalKeys);
+    setTextString(BPM);
+
+    setFonts();
+    setTextPositions();
 }
 
 void Statistics::update(std::size_t KeyPerSecond, 
@@ -47,106 +46,100 @@ void Statistics::update(std::size_t KeyPerSecond,
         if (!Settings::ShowMaxKPS)
         {
             if (mLongs.get(KPS) == 0)
+            {
                 mLongs.get(KPS) = mLongs.get(MaxKPS);
+                mStrings.get(KPS) = "Max";
+            }
+            else
+            {
+                mStrings.get(KPS) = "KPS";
+            }
         }
 
         for (auto& element : clickedKeys)
             mLongs.get(TotalKeys) += element * Settings::ValueToMultiplyOnClick;
 
-        if (Settings::ShowBPMText)
-            mLongs.get(BPM) = BeatsPerMinute;
-    }
-
-
-    if (Settings::ShowStatisticsText)
-    {
-        SET_TEXT_STRING(KPS);
-        SET_TEXT_STRING(MaxKPS);
-        SET_TEXT_STRING(TotalKeys);
-        if (Settings::ShowBPMText)
-            SET_TEXT_STRING(BPM);
+        mLongs.get(BPM) = BeatsPerMinute;
+            
+        setTextString(KPS);
+        setTextString(MaxKPS);
+        setTextString(TotalKeys);
+        setTextString(BPM);
     }
 }
 
-void Statistics::handleEvent(sf::Event event)
+void Statistics::resize()
 {
     if (Settings::ShowStatisticsText)
     {
-        setupText(KPS);
-        setupText(MaxKPS);
-        setupText(TotalKeys);
+        if (Settings::ShowKPS)
+            setupText(KPS);
+        if (Settings::ShowMaxKPS)
+            setupText(MaxKPS);
+        if (Settings::ShowTotal)
+            setupText(TotalKeys);
         if (Settings::ShowBPMText)
-        {
             setupText(BPM);
-        }
         setFonts();
     }
 }
 
-void Statistics::draw()
+void Statistics::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     if (Settings::ShowStatisticsText)
     {
-        sf::Transform transform = sf::Transform::Identity;
-        transform.translate(getStatisticsWidth(), 
-            (int(mWindow.getSize().y) - int(Settings::WindowBonusSizeBottom) + 
-            int(Settings::WindowBonusSizeTop) - int(getTotalStatisticsHeight())) / 2);
+        states.transform.translate(getStatisticsWidth(), 
+            (Settings::ButtonTextureSize.y / 2.f + 
+            Settings::WindowBonusSizeTop - getTotalStatisticsHeight() / 2.f));
 
-        mWindow.draw(mTexts.get(KPS), transform);
+        if (Settings::ShowKPS)
+            target.draw(mTexts.get(KPS), states);
         if (Settings::ShowMaxKPS)
-            mWindow.draw(mTexts.get(MaxKPS), transform);
-        mWindow.draw(mTexts.get(TotalKeys), transform);
+            target.draw(mTexts.get(MaxKPS), states);
+        if (Settings::ShowTotal)
+            target.draw(mTexts.get(TotalKeys), states);
         if (Settings::ShowBPMText)
-            mWindow.draw(mTexts.get(BPM), transform);
+            target.draw(mTexts.get(BPM), states);
     }
-}
-
-void Statistics::loadFonts(FontHolder& font)
-{
-    mStatisticsFont = &font.get(Fonts::Statistics);
-    setFonts();
 }
 
 void Statistics::setFonts()
 {
-    if (Settings::ShowStatisticsText)
+    mTexts.get(KPS).setFont(*mStatisticsFont);
+    mTexts.get(MaxKPS).setFont(*mStatisticsFont);
+    mTexts.get(TotalKeys).setFont(*mStatisticsFont);
+    mTexts.get(BPM).setFont(*mStatisticsFont);
+}
+
+void Statistics::setTextPositions()
+{
+    unsigned skip = 0;
+    for (unsigned i = 0; i < StatisticsCounter; ++i)
     {
-        mTexts.get(KPS).setFont(*mStatisticsFont);
-        mTexts.get(MaxKPS).setFont(*mStatisticsFont);
-        mTexts.get(TotalKeys).setFont(*mStatisticsFont);
+        sf::Text &elem = mTexts.get(ID(i));
+        elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
 
-        mTexts.get(KPS).setOrigin(0, mTexts.get(KPS).getLocalBounds().height / 2.f);
-        mTexts.get(TotalKeys).setOrigin(0, mTexts.get(KPS).getLocalBounds().height / 2.f);
-        mTexts.get(MaxKPS).setOrigin(0, mTexts.get(KPS).getLocalBounds().height / 2.f);
-
-        if (Settings::ShowBPMText)
+        if ((ID(i) == KPS       && !Settings::ShowKPS)
+        ||  (ID(i) == MaxKPS    && !Settings::ShowMaxKPS)
+        ||  (ID(i) == TotalKeys && !Settings::ShowTotal)
+        ||  (ID(i) == BPM       && !Settings::ShowBPMText))
         {
-            mTexts.get(BPM).setFont(*mStatisticsFont);
-            mTexts.get(BPM).setOrigin(0, mTexts.get(KPS).getLocalBounds().height / 2.f);
+            ++skip;
+            continue;
         }
 
-        int skip = 0;
-        for (size_t i = 0; i < StatisticsCounter; ++i)
+        // Calculate statistics position by taking position of previous drawn element
+        if (i - skip > 0)
         {
-            if ((ID(i) == MaxKPS && !Settings::ShowMaxKPS)
-            ||  (ID(i) == BPM && !Settings::ShowBPMText))
-            {
-                ++skip;
-                continue;
-            }
-
-            sf::Text &elem = mTexts.get(ID(i));
-            elem.setOrigin(elem.getLocalBounds().left, elem.getLocalBounds().top);
-            // Calculate statistics position by taking position of previous drawn element
-            if (i > 0)
-            {
-                sf::Text &prev = mTexts.get(ID(i - 1 - skip));
-                elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
-            }
-            skip = 0;
+            sf::Text &prev = mTexts.get(ID(i - 1 - skip));
+            elem.setPosition(0, prev.getPosition().y + prev.getLocalBounds().height + Settings::StatisticsDistance);
         }
+        else
+            elem.setPosition(0, 0);
+        skip = 0;
     }
 }
+
 
 std::size_t Statistics::getKeyPerSecond()
 {
@@ -163,31 +156,6 @@ std::size_t Statistics::getTotalKeys()
     return mLongs.get(TotalKeys);
 }
 
-std::size_t Statistics::getTotalStatisticsHeight()
-{
-    static float height = 0;
-    
-    // Multiply by 2 because if there is no BPM line there will be only 2 spaces between 3 lines,
-    // but if BPM line is active the space will be added there
-    if (height == 0)
-    {
-        if (Settings::ShowStatisticsText)
-        {
-            height = getStatisticsHeight(MaxKPS) + mTexts.get(MaxKPS).getLocalBounds().height;
-            if (Settings::ShowMaxKPS)
-            {
-                height += mTexts.get(TotalKeys).getLocalBounds().height + Settings::StatisticsDistance;
-            }
-            if (Settings::ShowBPMText)
-            {
-                height += mTexts.get(TotalKeys).getLocalBounds().height + Settings::StatisticsDistance;
-            }
-        }
-    }
-
-    return height;
-}
-
 void Statistics::clear()
 {
     if (Settings::ShowStatisticsText)
@@ -195,14 +163,23 @@ void Statistics::clear()
         mLongs.get(KPS) = 0;
         mLongs.get(MaxKPS) = 0;
         mLongs.get(TotalKeys) = 0;
-        if (Settings::ShowBPMText)
-            mLongs.get(BPM) = 0;
+        mLongs.get(BPM) = 0;
     }
+}
+
+void Statistics::setupText()
+{
+    if (!Settings::ShowKPS)
+        int a = 5;
+    setupText(KPS);
+    setupText(MaxKPS);
+    setupText(TotalKeys);
+    setupText(BPM);
+    setTextPositions();
 }
 
 void Statistics::setupText(ID id)
 {
-    mTexts.build(id);
     mTexts.get(id).setCharacterSize(Settings::StatisticsTextCharacterSize);
     mTexts.get(id).setFillColor(Settings::StatisticsTextColor);
 
@@ -224,14 +201,19 @@ void Statistics::setupString(ID id, const std::string& name)
     mStrings.get(id) = name;
 }
 
-unsigned int Statistics::getStatisticsWidth()
+void Statistics::setTextString(ID id)
+{
+    mTexts.get(id).setString((mStrings.get(id) + ": " + std::to_string(mLongs.get(id))).c_str());
+}
+
+unsigned int Statistics::getStatisticsWidth() const
 {
     return Settings::ButtonAmount * Settings::ButtonTextureSize.x +
         (Settings::ButtonAmount - 1) * Settings::ButtonDistance +
         Settings::SpaceBetweenButtonsAndStatistics + Settings::WindowBonusSizeLeft;
 }
 
-unsigned int Statistics::getStatisticsHeight(ID id)
+unsigned int Statistics::getStatisticsHeight(ID id) const
 {
     unsigned int height = 0;
     for (size_t i = 0; i < id; ++i)
@@ -240,4 +222,57 @@ unsigned int Statistics::getStatisticsHeight(ID id)
     }
 
     return height;
+}
+
+std::size_t Statistics::getTotalStatisticsHeight() const
+{
+    float height = 0;
+    
+    unsigned show = 0;
+    if (Settings::ShowStatisticsText)
+    {        
+        if (Settings::ShowKPS)
+        {
+            height += mTexts.get(KPS).getLocalBounds().height;
+            ++show;
+        }
+        if (Settings::ShowMaxKPS)
+        {
+            height += mTexts.get(MaxKPS).getLocalBounds().height;
+            ++show;
+        }
+        if (Settings::ShowTotal)
+        {
+            height += mTexts.get(TotalKeys).getLocalBounds().height;
+            ++show;
+        }
+        if (Settings::ShowBPMText)
+        {
+            height += mTexts.get(BPM).getLocalBounds().height;
+            ++show;
+        }
+        if (height != 0)
+        {
+            height += Settings::StatisticsDistance * (show - 1);
+        }
+    }
+
+    return height;
+}
+
+bool Statistics::parameterIdMatches(LogicalParameter::ID id)
+{
+    return 
+        id == LogicalParameter::ID::StatTextDist ||
+        id == LogicalParameter::ID::SpaceBtwBtnAndStat ||
+        id == LogicalParameter::ID::StatTextFont ||
+        id == LogicalParameter::ID::StatTextClr ||
+        id == LogicalParameter::ID::StatTextChSz ||
+        id == LogicalParameter::ID::StatTextBold ||
+        id == LogicalParameter::ID::StatTextItal ||
+        id == LogicalParameter::ID::StatTextShow ||
+        id == LogicalParameter::ID::StatTextShowKPS ||
+        id == LogicalParameter::ID::StatTextShowMaxKPS ||
+        id == LogicalParameter::ID::StatTextShowTotal ||
+        id == LogicalParameter::ID::StatTextShowBPM;
 }
