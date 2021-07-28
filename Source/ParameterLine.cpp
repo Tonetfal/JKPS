@@ -109,7 +109,24 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 deselect();
             }
 
-            if (key == sf::Keyboard::Tab)
+            if (key == sf::Keyboard::Tab && sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+            {
+                if (isItSelectedLine(shared_from_this()))
+                {
+                    for (auto it = mParameterValues.begin(); it < mParameterValues.end(); ++it)
+                    {
+                        if (*it == mSelectedValue)
+                        {
+                            deselect(); 
+                            // isn't next element the end ? ... : ...
+                            select(it == mParameterValues.begin() ? mParameterValues.back() : *(it - 1));
+                            // return in order to avoid further tabulation and segmentation fault
+                            return;
+                        }
+                    }
+                }
+            }
+            else if (key == sf::Keyboard::Tab)
             {
                 if (isItSelectedLine(shared_from_this()))
                 {
