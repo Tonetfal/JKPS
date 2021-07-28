@@ -87,9 +87,9 @@ void readConfig(
     ifErrLog.open(errLogPath);
     if (ifErrLog.is_open())
     {
+        ifErrLog.close();
         if (ifErrLog.get() == EOF)
             remove(errLogPath.c_str());
-        ifErrLog.close();
     }
 }
 
