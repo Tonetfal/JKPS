@@ -93,11 +93,11 @@ float Settings::KPSWindowDistanceBetween(50.f);
 // [Theme developer]
 int Settings::ValueToMultiplyOnClick(1);
 
-unsigned char* Settings::StatisticsDefaultFont = DefaultFont;
-unsigned char* Settings::KeyCountersDefaultFont = DefaultFont;
-unsigned char* Settings::DefaultButtonTexture = DefaultButtonTextureHeader;
-unsigned char* Settings::DefaultAnimationTexture = DefaultAnimationTextureHeader;
-unsigned char* Settings::DefaultBackgroundTexture = DefaultBackgroundTextureHeaderArray;
+unsigned char* Settings::StatisticsDefaultFont = MainProgramFont;
+unsigned char* Settings::KeyCountersDefaultFont = MainProgramFont;
+unsigned char* Settings::DefaultButtonTexture = ButtonTexture;
+unsigned char* Settings::DefaultAnimationTexture = AnimationTexture;
+unsigned char* Settings::DefaultBackgroundTexture = BackgroundTexture;
 unsigned char* Settings::DefaultKPSWindowFont = KPSWindowDefaultFont;
 
 // Hot keys
