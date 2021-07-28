@@ -40,7 +40,7 @@ float Settings::KeyCountersHorizontalBounds(4.f);
 float Settings::KeyCountersVerticalBounds(4.f);
 bool Settings::KeyCountersBold(false);
 bool Settings::KeyCountersItalic(false);
-bool Settings::ShowSetKeysText(false);
+bool Settings::ShowSetKeysText(true);
 bool Settings::ShowKeyCountersText(true);
 
 // [Button graphics]
