@@ -138,12 +138,12 @@ std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::Enter: return "Enter";
         case sf::Keyboard::Backspace: return "Backspace";
         case sf::Keyboard::Tab: return "Tab";
-        case sf::Keyboard::PageUp: return (saveToCfg ? "PgUp" : "PageUp");
-        case sf::Keyboard::PageDown: return (saveToCfg ? "PgDn" : "PageDown");
+        case sf::Keyboard::PageUp: return (saveToCfg ? "PageUp" : "PgUp");
+        case sf::Keyboard::PageDown: return (saveToCfg ? "PageDown" : "PgDn");
         case sf::Keyboard::End: return "End";
         case sf::Keyboard::Home: return "Home";
-        case sf::Keyboard::Insert: return (saveToCfg ? "Ins" : "Insert");
-        case sf::Keyboard::Delete: return (saveToCfg ? "Del" : "Delete");
+        case sf::Keyboard::Insert: return (saveToCfg ? "Insert" : "Ins");
+        case sf::Keyboard::Delete: return (saveToCfg ? "Delete" : "Del");
         case sf::Keyboard::Add: return (saveToCfg ? "Add" : "+");
         case sf::Keyboard::Subtract: return (saveToCfg ? "Subtract" : "-");
         case sf::Keyboard::Multiply: return (saveToCfg ? "Multiply" : "*");
