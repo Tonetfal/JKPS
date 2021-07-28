@@ -90,13 +90,8 @@ void Button::resize()
 // User clicks a key
 void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager& container)
 {
-    if (Settings::ShowKeyCountersText)
-    {
-        for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
-        {
-            mKeyCounters[i] += container.mClickedKeys[i] * Settings::ValueToMultiplyOnClick;
-        }
-    }
+    for (size_t i = 0; i < container.mClickedKeys.size(); ++i)
+        mKeyCounters[i] += container.mClickedKeys[i] * Settings::ValueToMultiplyOnClick;
 }
 
 void Button::highlightKey(int buttonIndex)
