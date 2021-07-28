@@ -54,6 +54,7 @@ Ctrl (hold) - Show opposite button values
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with green screen just change the "Background color" to 0,177,64.
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
+- The palette will not adjust own color to the parameter one.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
