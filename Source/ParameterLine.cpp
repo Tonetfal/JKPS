@@ -547,13 +547,13 @@ void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine
             // gfxPar->mValText.setFillColor(gfxPar->mValText.getFillColor() == sf::Color::White ? 
             //     sf::Color::Red : sf::Color::White);
             gfxPar->mRect.setFillColor(gfxPar->mRect.getFillColor() != red ? red :
-                parLine->isSelectedValHere() ? GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
+                gfxPar == mSelectedValue ? GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
 
             mtx.unlock();
         }
     }
     mtx.lock();
-    gfxPar->mRect.setFillColor(parLine->isSelectedValHere() ? 
+    gfxPar->mRect.setFillColor(gfxPar == mSelectedValue ? 
         GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
     mtx.unlock();
 
