@@ -4,7 +4,7 @@ JKPS is a simple program that shows keystates, keys per second, total keys and c
 # Preview
 ![](Media/Preview-White-orange.gif)
 
-It supports up to 10 keyboard keys and 5 mouse buttons. Numerical parameters and keys and be changed in-program, but the textures and fonts only in the config.
+It supports up to 10 keyboard keys and 5 mouse buttons. Numerical parameters and keys are be changed in-program, but the textures and fonts only in the config.
 
 # Usage
 To add or remove a keyboard key press Ctrl + "+" or "-". 
@@ -16,13 +16,11 @@ These actions look like:
 
 To change how the program looks press Ctrl + A to open graphical menu.
 
-If you want to use other font or image for anything, then you have to provide it. 
+If you want to use other font or image for anything, then you have to provide it and its name in the config.
 
-If you want to change anything in the config, that is generated in the same directory where the program is, then you must put one space between colon and 
-the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a 
-texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
+The config is generated in the same directory where the program is.
 
-To know what keys and buttons can be written in the config check this [link](https://gist.github.com/JekiTheMonkey/c40b346907ca0e3e8127f4fb0b5af1d5).
+To change anything in the config you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
 
 Entire explanation of the config you can find [here](https://gist.github.com/JekiTheMonkey/06c7b7dc0401729c2574a04442b19225).
 
@@ -53,7 +51,7 @@ Ctrl (hold) - Show opposite button values
 # Notes
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with green screen just change the "Background color" to 0,177,64.
-- The palette will not adjust own color to the parameter one.
+- The palette in menu will not adjust own color to the parameter one.
 - If you change anything in the configuration, exit the program first.
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
 
