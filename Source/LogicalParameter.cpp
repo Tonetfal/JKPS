@@ -122,6 +122,7 @@ void LogicalParameter::setString(const std::string &str)
 {
     assert(mType == Type::String);
     *mVal.sP = str;
+    mValStr = str;
     mChanged = true;
 }
 
