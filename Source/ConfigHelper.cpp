@@ -187,6 +187,12 @@ void writeParameter(LogicalParameter &par)
         case LogicalParameter::Type::VectorF:  par.setVector(readVectorParameter(par, valStr)); break;
         default: break;
     }
+
+    if (par.mType == LogicalParameter::Type::String)
+    {
+        std::ifstream check(par.getString());
+        check.is_open() ? check.close() : par.setString(par.getDefValStr());
+    }
 }
 
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr)
