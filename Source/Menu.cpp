@@ -167,7 +167,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxOffset, new LogicalParameter(LogicalParameter::Type::Float, &Settings::AnimationOffset, "Animation offset", "3", -100, 100)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr, new LogicalParameter(LogicalParameter::Type::String, &Settings::BackgroundTexturePath, "Background texture", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::BackgroundColor, "Background color", "170,170,170")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::BackgroundColor, "Background color", "170,170,170,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ScaleBackground, "Scale background texture if it does not fit", "True")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTitleBar, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::WindowTitleBar, "Window title bar", "False")));
@@ -180,7 +180,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwSz, new LogicalParameter(LogicalParameter::Type::VectorU, &Settings::KPSWindowSize, "Window size", "300,300", 0, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KPSTextSize, "Text character size:", "130", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KPSNumberSize, "Number character size", "100", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwBgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSBackgroundColor, "KPS Background color", "0,177,64")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwBgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSBackgroundColor, "KPS Background color", "0,177,64,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSTextColor, "KPS text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSNumberColor, "KPS number color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtFont, new LogicalParameter(LogicalParameter::Type::String, &Settings::KPSWindowTextFontPath, "KPS window text font", "Default")));
@@ -188,7 +188,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherHighText, new LogicalParameter(LogicalParameter::Type::Color, &Settings::HighlightedKeyColor, "Highlighted text button color", "210,30,210")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherHighText, new LogicalParameter(LogicalParameter::Type::Color, &Settings::HighlightedKeyColor, "Highlighted text button color", "210,30,210,255")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::ThemeDevMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ValueToMultiplyOnClick, "Value to multiply on click", "1", 0, 1000000)));
 }
