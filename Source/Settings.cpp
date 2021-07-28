@@ -53,7 +53,7 @@ sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
 int Settings::AnimationStyle(1);
 std::string Settings::AnimationTexturePath("Default");
 std::size_t Settings::AnimationVelocity(5);
-sf::Vector2f Settings::AnimationScale(1.f, 1.f);
+sf::Vector2f Settings::AnimationScale(100.f, 100.f);
 sf::Color Settings::AnimationColor(sf::Color(250,180,0));
 float Settings::AnimationOffset(3.f);
 
