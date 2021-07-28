@@ -62,7 +62,6 @@ void Button::updateButtonText()
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
         mButtonsText[i]->setString(getButtonText(i));
-        mButtonsText[i]->setCharacterSize(Settings::KeyCountersTextCharacterSize);
 
         while ((mButtonsText[i]->getLocalBounds().width > getTextMaxWidth()
              || mButtonsText[i]->getLocalBounds().height > getTextMaxHeight())
@@ -142,6 +141,8 @@ void Button::setupTextures()
 
 void Button::clear()
 {
+    for (auto &elem : mButtonsText)
+        elem->setCharacterSize(Settings::KeyCountersTextCharacterSize);
     for (auto &elem : mKeyCounters)
         elem = 0;
 }
