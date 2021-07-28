@@ -303,3 +303,8 @@ void Menu::saveConfig()
 {
     ConfigHelper::saveConfig(mParameters, mParameterLines);
 }
+
+void Menu::requestFocus()
+{
+    mWindow.requestFocus();
+}

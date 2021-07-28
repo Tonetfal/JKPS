@@ -30,6 +30,7 @@ class Menu
         ChangedParametersQueue &getChangedParametersQueue();
 
         void saveConfig();
+        void requestFocus();
 
 
     private:
