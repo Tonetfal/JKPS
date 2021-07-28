@@ -151,7 +151,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVertBounds, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCountersVerticalBounds, "Buttons text vertical bounds", "4", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyCountersBold, "Buttons text bold", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyCountersItalic, "Buttons text italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKeys, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowSetKeysText, "Only show set keys", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKeys, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowSetKeysText, "Only show set keys", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKeyCtrs, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowKeyCountersText, "Show key counters", "True")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::ButtonDistance, "Button distance", "10", -500, 500)));
@@ -302,4 +302,9 @@ void Menu::returnViewInBounds()
 void Menu::saveConfig()
 {
     ConfigHelper::saveConfig(mParameters, mParameterLines);
+}
+
+void Menu::requestFocus()
+{
+    mWindow.requestFocus();
 }

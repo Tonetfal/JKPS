@@ -130,8 +130,12 @@ void Application::processInput()
         {
             openWindow();
         }
-        mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
-        mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
+        if (Application::parameterIdMatches(pair.first))
+        {
+            mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
+            mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
+            mMenu.requestFocus();
+        }
         mBackground->setupTexture();
     }
 
@@ -252,4 +256,15 @@ unsigned Application::getWindowHeight()
         Settings::WindowBonusSizeBottom;
     
     return height > 0 ? height : 1;
+}
+
+bool Application::parameterIdMatches(LogicalParameter::ID id)
+{
+    return
+        id == LogicalParameter::ID::BtnTextChSz ||
+        id == LogicalParameter::ID::BtnGfxDist  ||
+        id == LogicalParameter::ID::MainWndwTop ||
+        id == LogicalParameter::ID::MainWndwBot ||
+        id == LogicalParameter::ID::MainWndwLft ||
+        id == LogicalParameter::ID::MainWndwRght;
 }

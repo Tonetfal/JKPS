@@ -37,6 +37,8 @@ class Application
         unsigned int                getWindowWidth();
         unsigned int                getWindowHeight();
 
+        static bool                 parameterIdMatches(LogicalParameter::ID id);
+
 
     private:
         static const sf::Time       TimePerFrame;
