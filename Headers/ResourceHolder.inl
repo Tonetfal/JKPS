@@ -3,7 +3,7 @@ void ResourceHolder<Resource, Identifier>::loadFromFile(Identifier id, const std
 {
     std::unique_ptr<Resource> resource(new Resource());
     if (!resource->loadFromFile(path))
-        throw std::runtime_error("ResourceHolder::load - Failed to load " + path);
+        throw std::runtime_error("ResourceHolder::loadFromFile - Failed to load " + path);
     
     insertResource(id, std::move(resource));
 }
@@ -15,7 +15,7 @@ void ResourceHolder<Resource, Identifier>::loadFromMemory(Identifier id
 {
     std::unique_ptr<Resource> resource(new Resource());
     if (!resource->loadFromMemory(data, sizeInBytes))
-        throw std::runtime_error("ResourceHolder::load - Failed to load default resource");
+        throw std::runtime_error("ResourceHolder::loadFromMemory - Failed to load default resource");
     
     insertResource(id, std::move(resource));
 }
