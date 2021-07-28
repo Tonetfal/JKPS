@@ -14,7 +14,7 @@ These actions look like:
 
 ![](Media/modification-demo.gif)
 
-To change how the program looks you have to press Ctrl + A to open graphical menu.
+To change how the program looks press Ctrl + A to open graphical menu.
 
 If you want to use other font or image for anything, then you have to provide it. 
 
