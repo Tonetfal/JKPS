@@ -57,6 +57,8 @@ Ctrl (hold) - Show opposite button values
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
+![](Media/Preview-Dark-minimalistic2.gif)
+
 ![](Media/Preview-Medieval.gif)
 
 ![](Media/Preview-Modern-purple.gif)
