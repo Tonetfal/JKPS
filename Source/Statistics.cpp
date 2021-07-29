@@ -14,17 +14,15 @@ Statistics::Statistics(const FontHolder& fonts)
     setupLong(TotalKeys);
     setupLong(BPM);
     
-    mTexts.build(KPS);
-    mTexts.build(MaxKPS);
-    mTexts.build(TotalKeys);
-    mTexts.build(BPM);
-
-    setupText();
-
     setupString(KPS, "KPS");
     setupString(MaxKPS, "Max KPS");
     setupString(TotalKeys, "Total");
     setupString(BPM, "BPM");
+
+    mTexts.build(KPS);
+    mTexts.build(MaxKPS);
+    mTexts.build(TotalKeys);
+    mTexts.build(BPM);
 
     setTextString(KPS);
     setTextString(MaxKPS);
@@ -32,6 +30,7 @@ Statistics::Statistics(const FontHolder& fonts)
     setTextString(BPM);
 
     setFonts();
+    setupText();
     setTextPositions();
 }
 
