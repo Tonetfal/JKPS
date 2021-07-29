@@ -27,6 +27,7 @@ float readDigitParameter(const LogicalParameter &par, const std::string &valStr)
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr);
 bool readBoolParameter(const LogicalParameter &par, const std::string &valStr);
+void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 
 void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr);
 void readButtons(std::vector<sf::Mouse::Button> &keys, const std::string &valStr);

@@ -80,6 +80,8 @@ void readConfig(
     if (Settings::Keys.size() == 0 && Settings::MouseButtons.size() == 0)
         addDefaultKeys();
 
+    checkAssets(parameters);
+
 
     // Finish work with files on last method
     ifCfg.close();
@@ -89,9 +91,13 @@ void readConfig(
     ifErrLog.open(errLogPath);
     if (ifErrLog.is_open())
     {
-        ifErrLog.close();
         if (ifErrLog.get() == EOF)
+        {
+            ifErrLog.close();
             remove(errLogPath.c_str());
+        }
+        else
+            ifErrLog.close();
     }
 }
 
@@ -291,6 +297,61 @@ bool readBoolParameter(const LogicalParameter &par, const std::string &valStr)
     return par.getDefValStr().size() == 4;
 }
 
+// Check if passed assets are right
+void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
+{
+    sf::Texture texture;
+    sf::Font font;
+    const std::string defAssetName = "Default";
+
+    // Textures
+    if (Settings::ButtonTexturePath != defAssetName)
+        if (!texture.loadFromFile(Settings::ButtonTexturePath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second);
+            parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second->resetToDefaultValue();
+        }
+    if (Settings::AnimationTexturePath != defAssetName)
+        if (!texture.loadFromFile(Settings::AnimationTexturePath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second);
+            parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second->resetToDefaultValue();
+        }
+    if (Settings::BackgroundTexturePath != defAssetName)
+        if (!texture.loadFromFile(Settings::BackgroundTexturePath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BgTxtr)->second);
+            parameters.find(LogicalParameter::ID::BgTxtr)->second->resetToDefaultValue();
+        }
+
+    // Fonts
+    if (Settings::StatisticsFontPath != defAssetName)
+        if (!font.loadFromFile(Settings::ButtonTexturePath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::StatTextFont)->second);
+            parameters.find(LogicalParameter::ID::StatTextFont)->second->resetToDefaultValue();
+        }
+    if (Settings::KeyCountersFontPath != defAssetName)
+        if (!font.loadFromFile(Settings::KeyCountersFontPath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BtnTextFont)->second);
+            parameters.find(LogicalParameter::ID::BtnTextFont)->second->resetToDefaultValue();
+        }
+    if (Settings::KPSWindowTextFontPath != defAssetName)
+        if (!font.loadFromFile(Settings::KPSWindowTextFontPath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::KPSWndwTxtFont)->second);
+            parameters.find(LogicalParameter::ID::KPSWndwTxtFont)->second->resetToDefaultValue();
+        }
+    if (Settings::KPSWindowNumberFontPath != defAssetName)
+        if (!font.loadFromFile(Settings::KPSWindowNumberFontPath))
+        {
+            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::KPSWndwNumFont)->second);
+            parameters.find(LogicalParameter::ID::KPSWndwNumFont)->second->resetToDefaultValue();
+        }
+}
+
+
 void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr)
 {
     unsigned strIdx = 0;
@@ -477,3 +538,4 @@ void saveConfig(
 }
 
 } // !namespace ConfigHelper
+
