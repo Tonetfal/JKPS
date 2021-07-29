@@ -238,3 +238,47 @@ std::string LogicalParameter::getInverseBool(bool b)
 {
     return b ? "False" : "True";
 }
+
+void LogicalParameter::resetToDefaultValue()
+{
+    switch(mType)
+    {
+        case Type::Unsigned: 
+            setDigit<unsigned>(std::stoi(mDefValStr)); 
+            break;
+            
+        case Type::Int: 
+            setDigit<int>(std::stoi(mDefValStr)); 
+            break;
+
+        case Type::Bool: 
+            setBool(mDefValStr); 
+            break;
+
+        case Type::Float: 
+            setDigit<float>(std::stoi(mDefValStr)); 
+            break;
+
+        case Type::String: 
+            setString(mDefValStr); 
+            break;
+
+        case Type::Color: 
+            setColor(ConfigHelper::readColorParameter(*this, mDefValStr)); 
+            break;
+
+        case Type::VectorU: 
+            setVector(ConfigHelper::readVectorParameter(*this, mDefValStr)); 
+            break;
+
+        case Type::VectorI: 
+            setVector(ConfigHelper::readVectorParameter(*this, mDefValStr)); 
+            break;
+
+        case Type::VectorF: 
+            setVector(ConfigHelper::readVectorParameter(*this, mDefValStr)); 
+            break;
+
+        default: break; // Empty or Collection
+    }
+}

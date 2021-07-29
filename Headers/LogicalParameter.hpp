@@ -132,6 +132,7 @@ struct LogicalParameter
         T getVector() const;
 
         std::string getValPt(int pt) const;
+        void resetToDefaultValue();
 
 
         void setValStr(const std::string &str, unsigned idx = 0);
