@@ -326,7 +326,7 @@ void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter
 
     // Fonts
     if (Settings::StatisticsFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::ButtonTexturePath))
+        if (!font.loadFromFile(Settings::StatisticsFontPath))
         {
             ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::StatTextFont)->second);
             parameters.find(LogicalParameter::ID::StatTextFont)->second->resetToDefaultValue();
