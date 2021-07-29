@@ -17,81 +17,81 @@ std::size_t Settings::ButtonAmount(0);
 
 
 // [Statistics text]
-float Settings::StatisticsDistance(5.f);
-float Settings::SpaceBetweenButtonsAndStatistics(15.f);
-std::string Settings::StatisticsFontPath("Default");
-sf::Color Settings::StatisticsTextColor(sf::Color::White);
-std::size_t Settings::StatisticsTextCharacterSize(14);
-bool Settings::StatisticsBold(false);
-bool Settings::StatisticsItalic(false);
-bool Settings::ShowStatisticsText(true);
-bool Settings::ShowKPS(true);
-bool Settings::ShowMaxKPS(true);
-bool Settings::ShowTotal(true);
-bool Settings::ShowBPMText(true);
+float Settings::StatisticsDistance(-1.f);
+float Settings::SpaceBetweenButtonsAndStatistics(-1.f);
+std::string Settings::StatisticsFontPath("none");
+sf::Color Settings::StatisticsTextColor(sf::Color::Transparent);
+std::size_t Settings::StatisticsTextCharacterSize(0);
+bool Settings::StatisticsBold(-1);
+bool Settings::StatisticsItalic(-1);
+bool Settings::ShowStatisticsText(-1);
+bool Settings::ShowKPS(-1);
+bool Settings::ShowMaxKPS(-1);
+bool Settings::ShowTotal(-1);
+bool Settings::ShowBPMText(-1);
 
 // [Button text]
-std::string Settings::KeyCountersFontPath("Default");
-sf::Color Settings::KeyCountersTextColor(sf::Color::White);
-std::size_t Settings::KeyCountersTextCharacterSize(15);
-float Settings::KeyCounterWidth(0.f);
-float Settings::KeyCounterHeight(0.f);
-float Settings::KeyCountersHorizontalBounds(4.f);
-float Settings::KeyCountersVerticalBounds(4.f);
-bool Settings::KeyCountersBold(false);
-bool Settings::KeyCountersItalic(false);
-bool Settings::ShowSetKeysText(true);
-bool Settings::ShowKeyCountersText(true);
+std::string Settings::KeyCountersFontPath("none");
+sf::Color Settings::KeyCountersTextColor(sf::Color::Transparent);
+std::size_t Settings::KeyCountersTextCharacterSize(0);
+float Settings::KeyCounterWidth(-1.f);
+float Settings::KeyCounterHeight(-1.f);
+float Settings::KeyCountersHorizontalBounds(-1.f);
+float Settings::KeyCountersVerticalBounds(-1.f);
+bool Settings::KeyCountersBold(-1);
+bool Settings::KeyCountersItalic(-1);
+bool Settings::ShowSetKeysText(-1);
+bool Settings::ShowKeyCountersText(-1);
 
 // [Button graphics]
-float Settings::ButtonDistance(6.f);
-std::string Settings::ButtonTexturePath("Default");
-sf::Vector2u Settings::ButtonTextureSize(60, 60);
-sf::Color Settings::ButtonTextureColor(sf::Color(30,30,30));
+float Settings::ButtonDistance(-1.f);
+std::string Settings::ButtonTexturePath("none");
+sf::Vector2u Settings::ButtonTextureSize(0, 0);
+sf::Color Settings::ButtonTextureColor(sf::Color::Transparent);
 
 // [Animation graphics]
-int Settings::AnimationStyle(1);
-std::string Settings::AnimationTexturePath("Default");
-std::size_t Settings::AnimationVelocity(5);
-sf::Vector2f Settings::AnimationScale(100.f, 100.f);
-sf::Color Settings::AnimationColor(sf::Color(250,180,0));
-float Settings::AnimationOffset(3.f);
+int Settings::AnimationStyle(-1);
+std::string Settings::AnimationTexturePath("none");
+std::size_t Settings::AnimationVelocity(0);
+sf::Vector2f Settings::AnimationScale(-1.f, -1.f);
+sf::Color Settings::AnimationColor(sf::Color::Transparent);
+float Settings::AnimationOffset(-1.f);
 
 // Non config parameters
-sf::Color Settings::AnimationOnClickTransparency(sf::Color(0,0,0,150)); 
+sf::Color Settings::AnimationOnClickTransparency(sf::Color::Transparent); 
 sf::Vector2f Settings::ScaledAnimationScale(AnimationScale);
 
 
 // [Background]
-std::string Settings::BackgroundTexturePath("Default");
-sf::Color Settings::BackgroundColor(sf::Color(170,170,170));
-bool Settings::ScaleBackground(true);
+std::string Settings::BackgroundTexturePath("none");
+sf::Color Settings::BackgroundColor(sf::Color::Transparent);
+bool Settings::ScaleBackground(-1);
 
 // [Edit mode]
-sf::Color Settings::HighlightedKeyColor(sf::Color(210,30,210));
+sf::Color Settings::HighlightedKeyColor(sf::Color::Transparent);
 
 // [Main window]
-bool Settings::WindowTitleBar(false);
-unsigned Settings::WindowBonusSizeTop(6.f);
-unsigned Settings::WindowBonusSizeBottom(6.f);
-unsigned Settings::WindowBonusSizeLeft(6.f);
-unsigned Settings::WindowBonusSizeRight(130.f);
+bool Settings::WindowTitleBar(-1);
+unsigned Settings::WindowBonusSizeTop(0);
+unsigned Settings::WindowBonusSizeBottom(0);
+unsigned Settings::WindowBonusSizeLeft(0);
+unsigned Settings::WindowBonusSizeRight(0);
 
 // [KPS window]
-bool Settings::KPSWindowEnabledFromStart(false);
-sf::Vector2u Settings::KPSWindowSize(300U, 300U);
-sf::Color Settings::KPSBackgroundColor(sf::Color(0, 177, 64));
-sf::Color Settings::KPSTextColor(sf::Color::White);
-sf::Color Settings::KPSNumberColor(sf::Color::White);
-std::string Settings::KPSWindowTextFontPath("Default");
-std::string Settings::KPSWindowNumberFontPath("Default");
-unsigned Settings::KPSTextSize(130U);
-unsigned Settings::KPSNumberSize(100U);
-float Settings::KPSWindowTopPadding(20.f);
-float Settings::KPSWindowDistanceBetween(50.f);
+bool Settings::KPSWindowEnabledFromStart(-1);
+sf::Vector2u Settings::KPSWindowSize(0, 0);
+sf::Color Settings::KPSBackgroundColor(sf::Color::Transparent);
+sf::Color Settings::KPSTextColor(sf::Color::Transparent);
+sf::Color Settings::KPSNumberColor(sf::Color::Transparent);
+std::string Settings::KPSWindowTextFontPath("none");
+std::string Settings::KPSWindowNumberFontPath("none");
+unsigned Settings::KPSTextSize(0);
+unsigned Settings::KPSNumberSize(0);
+float Settings::KPSWindowTopPadding(-1.f);
+float Settings::KPSWindowDistanceBetween(-1.f);
 
 // [Theme developer]
-int Settings::ValueToMultiplyOnClick(1);
+int Settings::ValueToMultiplyOnClick(-1);
 
 unsigned char* Settings::StatisticsDefaultFont = MainProgramFont;
 unsigned char* Settings::KeyCountersDefaultFont = MainProgramFont;

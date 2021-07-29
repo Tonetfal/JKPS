@@ -1,4 +1,5 @@
 #include "../Headers/LogicalParameter.hpp"
+#include "../Headers/ConfigHelper.hpp"
 
 #include <string.h>
 #include <iostream>
@@ -20,15 +21,51 @@ LogicalParameter::LogicalParameter(Type type, void *valPtr, const std::string &p
     
     switch(type)
     {
-        case Type::Unsigned: mVal.uP = static_cast<unsigned*>(valPtr); break;
-        case Type::Int: mVal.iP = static_cast<int*>(valPtr); break;
-        case Type::Bool: mVal.bP = static_cast<bool*>(valPtr); break;
-        case Type::Float: mVal.fP = static_cast<float*>(valPtr); break;
-        case Type::String: mVal.sP = static_cast<std::string*>(valPtr); break;
-        case Type::Color: mVal.cP = static_cast<sf::Color*>(valPtr); break;
-        case Type::VectorU: mVal.vUp = static_cast<sf::Vector2u*>(valPtr); break;
-        case Type::VectorI: mVal.vIp = static_cast<sf::Vector2i*>(valPtr); break;
-        case Type::VectorF: mVal.vFp = static_cast<sf::Vector2f*>(valPtr); break;
+        case Type::Unsigned: 
+            mVal.uP = static_cast<unsigned*>(valPtr); 
+            setDigit<unsigned>(std::stoi(defVal)); 
+            break;
+            
+        case Type::Int: 
+            mVal.iP = static_cast<int*>(valPtr); 
+            setDigit<int>(std::stoi(defVal)); 
+            break;
+
+        case Type::Bool: 
+            mVal.bP = static_cast<bool*>(valPtr); 
+            setBool(defVal); 
+            break;
+
+        case Type::Float: 
+            mVal.fP = static_cast<float*>(valPtr); 
+            setDigit<float>(std::stoi(defVal)); 
+            break;
+
+        case Type::String: 
+            mVal.sP = static_cast<std::string*>(valPtr); 
+            setString(defVal); 
+            break;
+
+        case Type::Color: 
+            mVal.cP = static_cast<sf::Color*>(valPtr); 
+            setColor(ConfigHelper::readColorParameter(*this, defVal)); 
+            break;
+
+        case Type::VectorU: 
+            mVal.vUp = static_cast<sf::Vector2u*>(valPtr); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            break;
+
+        case Type::VectorI: 
+            mVal.vIp = static_cast<sf::Vector2i*>(valPtr); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            break;
+
+        case Type::VectorF: 
+            mVal.vFp = static_cast<sf::Vector2f*>(valPtr); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            break;
+
         default: break; // Empty or Collection
     }
 } 
