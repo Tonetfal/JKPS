@@ -169,8 +169,6 @@ void Statistics::clear()
 
 void Statistics::setupText()
 {
-    if (!Settings::ShowKPS)
-        int a = 5;
     setupText(KPS);
     setupText(MaxKPS);
     setupText(TotalKeys);
