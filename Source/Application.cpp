@@ -93,6 +93,13 @@ void Application::processInput()
             mSettings.handleEvent(event);
             mButtons->highlightKey(mSettings.getButtonToChangeIndex());
 
+            // If a button was changed, then reset text ch. size
+            static int prevIdx = -1;
+            if (mSettings.getButtonToChangeIndex() == -1 && prevIdx != -1)
+                mButtons->setupKeyCounterTextVec();
+            prevIdx = mSettings.getButtonToChangeIndex();
+
+
             if (mSettings.wasButtonAmountChanged())
             {
                 handleEvent(event);
