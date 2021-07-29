@@ -60,7 +60,7 @@ class Button : public sf::Drawable, public sf::Transformable
 
         void                        setupTextPosition(int index);
         void                        decreaseTextCharacterSize(int index);
-        std::string                 getButtonText(unsigned index) const;
+        std::string                 getButtonText(unsigned index);
 
         void                        resizeVectors();
         bool                        isBeyondDefaultScale(const sf::Sprite &sprite) const;

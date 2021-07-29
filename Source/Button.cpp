@@ -282,7 +282,7 @@ void Button::decreaseTextCharacterSize(int index)
         mButtonsText[index]->getCharacterSize() - 1);
 }
 
-std::string Button::getButtonText(unsigned index) const
+std::string Button::getButtonText(unsigned index)
 {
     const unsigned keyAmt = Settings::Keys.size();
     std::string str("");
@@ -313,6 +313,7 @@ std::string Button::getButtonText(unsigned index) const
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
     &&  !Settings::ShowSetKeysText)
     {
+        setupKeyCounterTextVec();
         if (mKeyCounters[index] == 0)
         {
             str = std::to_string(mKeyCounters[index]);
@@ -330,6 +331,7 @@ std::string Button::getButtonText(unsigned index) const
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl) 
     &&  Settings::ShowSetKeysText)
     {
+        setupKeyCounterTextVec();
         str = std::to_string(mKeyCounters[index]);
     }
 
