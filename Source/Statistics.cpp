@@ -176,6 +176,10 @@ void Statistics::setupText()
     setupText(TotalKeys);
     setupText(BPM);
     setTextPositions();
+
+    // If user switches ShowMaxKPS from false to true, then KPS line remains with "Max" string
+    if (Settings::ShowMaxKPS)
+        mStrings.get(KPS) = "KPS";
 }
 
 void Statistics::setupText(ID id)
