@@ -70,7 +70,9 @@ void readConfig(
 
     // Read all the config
     fillParameters(parameters);
+    Settings::Keys.clear();
     fillKeys(Settings::Keys);
+    Settings::MouseButtons.clear();
     fillButtons(Settings::MouseButtons);
 
     Settings::ButtonAmount = Settings::Keys.size() + Settings::MouseButtons.size();
@@ -292,7 +294,7 @@ bool readBoolParameter(const LogicalParameter &par, const std::string &valStr)
 void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr)
 {
     unsigned strIdx = 0;
-    for (unsigned i = 0; strIdx < valStr.size() && i < maxKeys; ++i)
+    for (unsigned i = keys.size(); strIdx < valStr.size() && i <= maxKeys; ++i)
     {
         // Read key separated by a comma
         std::string keyStr = valStr.substr(strIdx, valStr.substr(strIdx).find(','));
@@ -318,7 +320,7 @@ void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr)
 void readButtons(std::vector<sf::Mouse::Button> &buttons, const std::string &valStr)
 {
     unsigned strIdx = 0;
-    for (unsigned i = 0; strIdx < valStr.size() && i < maxButtons; ++i)
+    for (unsigned i = buttons.size(); strIdx < valStr.size() && i <= maxButtons; ++i)
     {
         // Read key separated by a comma
         std::string buttonStr = valStr.substr(strIdx, valStr.substr(strIdx).find(','));
