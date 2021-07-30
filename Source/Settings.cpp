@@ -9,11 +9,8 @@
 const std::size_t Settings::mFramesPerSecond = 60;
 
 // [Keys] [Mouse]
-std::vector<sf::Keyboard::Key> Settings::Keys;
-std::vector<sf::Mouse::Button> Settings::MouseButtons;
-
-std::vector<std::shared_ptr<LogicalKey>> Settings::LogicalKeys;
-std::vector<std::shared_ptr<LogicalButton>> Settings::LogicalButtons;
+std::vector<std::unique_ptr<LogicalKey>> Settings::LogicalKeys;
+std::vector<std::unique_ptr<LogicalButton>> Settings::LogicalButtons;
 
 // Non config parameters
 std::size_t Settings::ButtonAmount(0);
@@ -104,10 +101,12 @@ unsigned char* Settings::DefaultBackgroundTexture = BackgroundTexture;
 unsigned char* Settings::DefaultKPSWindowFont = KPSWindowDefaultFont;
 
 // Hot keys
-sf::Keyboard::Key Settings::KeyToIncrease(sf::Keyboard::Equal);
-sf::Keyboard::Key Settings::AltKeyToIncrease(sf::Keyboard::Add);
-sf::Keyboard::Key Settings::KeyToDecrease(sf::Keyboard::Dash);
-sf::Keyboard::Key Settings::AltKeyToDecrease(sf::Keyboard::Subtract);
+sf::Keyboard::Key Settings::KeyToIncreaseKeys(sf::Keyboard::Equal);
+sf::Keyboard::Key Settings::AltKeyToIncreaseKeys(sf::Keyboard::Add);
+sf::Keyboard::Key Settings::KeyToDecreaseKeys(sf::Keyboard::Dash);
+sf::Keyboard::Key Settings::AltKeyToDecreaseKeys(sf::Keyboard::Subtract);
+sf::Keyboard::Key Settings::KeyToIncreaseButtons(sf::Keyboard::Period);
+sf::Keyboard::Key Settings::KeyToDecreaseButtons(sf::Keyboard::Comma);
 sf::Keyboard::Key Settings::KeyToClear(sf::Keyboard::X);
 sf::Keyboard::Key Settings::KeyExit(sf::Keyboard::W);
 sf::Keyboard::Key Settings::KeyToOpenKPSWindow(sf::Keyboard::K);
@@ -160,21 +159,31 @@ void Settings::changeKeysAmount(sf::Keyboard::Key clickedKey)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
     {
-        if ((key == KeyToIncrease || key == AltKeyToIncrease) 
-        && Settings::Keys.size() < ConfigHelper::maxKeys)
+        if ((key == KeyToIncreaseKeys || key == AltKeyToIncreaseKeys) 
+        && Settings::LogicalKeys.size() < ConfigHelper::maxKeys)
         {
-            addKey();
+            addKeyboardKey();
             ++ButtonAmount;
         }
 
-        if ((key == KeyToDecrease || key == AltKeyToDecrease) 
-        && Settings::Keys.size() > ConfigHelper::minKeys + 1)
+        if ((key == KeyToDecreaseKeys || key == AltKeyToDecreaseKeys) 
+        && Settings::LogicalKeys.size() > ConfigHelper::minKeys)
         {
-            removeKey();
+            removeKeyboardKey();
             --ButtonAmount;
         }
 
-        // TODO keyToIncreaseMouseButtons 
+        if (key == KeyToIncreaseButtons && Settings::LogicalButtons.size() < ConfigHelper::maxButtons)
+        {
+            addMouseButton();
+            ++ButtonAmount;
+        }
+
+        if (key == KeyToDecreaseButtons && Settings::LogicalButtons.size() > ConfigHelper::minButtons)
+        {
+            removeMouseButton();
+            --ButtonAmount;
+        }
     }
 
     if (mIsButtonSelected)
@@ -205,29 +214,41 @@ void Settings::selectButton()
     }
 }
 
-void Settings::addKey()
+void Settings::addKeyboardKey()
 {
     mButtonAmountChanged = true;
-    Keys.emplace_back(ConfigHelper::getDefaultKey(Keys));
+    LogicalKeys.emplace_back(ConfigHelper::getDefaultLogicalKey(LogicalKeys));
 }
 
-void Settings::removeKey()
+void Settings::removeKeyboardKey()
 {
     mButtonAmountChanged = true;
-    Keys.pop_back();
+    LogicalKeys.pop_back();
 }
+
+void Settings::addMouseButton()
+{
+    mButtonAmountChanged = true;
+    LogicalButtons.emplace_back(ConfigHelper::getDefaultLogicalButton(LogicalButtons));
+}
+
+void Settings::removeMouseButton()
+{
+    mButtonAmountChanged = true;
+    LogicalButtons.pop_back();
+}
+
 
 void Settings::changeKey(sf::Keyboard::Key newKey)
 {
-    Keys[mButtonToChangeIndex] = newKey;
+    LogicalKey &lKey = *LogicalKeys[mButtonToChangeIndex];
+    lKey.key = newKey;
     if (newKey == sf::Keyboard::Unknown)
-        Keys[mButtonToChangeIndex] = sf::Keyboard::A;
+        lKey.key = sf::Keyboard::A;
 
     unsigned sameKeyIndex = 0;
-    while (ConfigHelper::isKeyAlreadyPresent(Keys, newKey, sameKeyIndex, mButtonToChangeIndex))
-    {
-        Keys[sameKeyIndex] = ConfigHelper::getDefaultKey(Keys);
-    }
+    while (ConfigHelper::isKeyAlreadyPresent(LogicalKeys, newKey, sameKeyIndex, mButtonToChangeIndex))
+        LogicalKeys[mButtonToChangeIndex] = ConfigHelper::getDefaultLogicalKey(LogicalKeys);
 
     mIsButtonSelected = false;
     mButtonToChangeIndex = -1;

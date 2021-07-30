@@ -36,8 +36,10 @@ class Settings
     private:
         void                        changeKeysAmount(sf::Keyboard::Key clickedKey);
         void                        selectButton();
-        void                        addKey();
-        void                        removeKey();
+        void                        addKeyboardKey();
+        void                        removeKeyboardKey();
+        void                        addMouseButton();
+        void                        removeMouseButton();
         void                        changeKey(sf::Keyboard::Key newKey);
         bool                        isPressPerformedOnButton(unsigned &buttonIndex);            
         bool                        isMouseInRange(unsigned index);
@@ -47,10 +49,8 @@ class Settings
         const static std::size_t    mFramesPerSecond;
 
         // [Keys] [Mouse]
-        static std::vector<sf::Keyboard::Key> Keys;
-        static std::vector<sf::Mouse::Button> MouseButtons;
-        static std::vector<std::shared_ptr<LogicalKey>> LogicalKeys;
-        static std::vector<std::shared_ptr<LogicalButton>> LogicalButtons;
+        static std::vector<std::unique_ptr<LogicalKey>> LogicalKeys;
+        static std::vector<std::unique_ptr<LogicalButton>> LogicalButtons;
 
         // Non config parameters
         static std::size_t          ButtonAmount;
@@ -139,10 +139,12 @@ class Settings
         static unsigned char*       DefaultKPSWindowFont;
 
         // Hot keys
-        static sf::Keyboard::Key    KeyToIncrease;
-        static sf::Keyboard::Key    AltKeyToIncrease;
-        static sf::Keyboard::Key    KeyToDecrease;
-        static sf::Keyboard::Key    AltKeyToDecrease;
+        static sf::Keyboard::Key    KeyToIncreaseKeys;
+        static sf::Keyboard::Key    AltKeyToIncreaseKeys;
+        static sf::Keyboard::Key    KeyToDecreaseKeys;
+        static sf::Keyboard::Key    AltKeyToDecreaseKeys;
+        static sf::Keyboard::Key    KeyToIncreaseButtons;
+        static sf::Keyboard::Key    KeyToDecreaseButtons;
         static sf::Keyboard::Key    KeyToClear;
         static sf::Keyboard::Key    KeyExit;
         static sf::Keyboard::Key    KeyToOpenKPSWindow;
