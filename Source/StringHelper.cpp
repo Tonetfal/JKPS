@@ -386,7 +386,7 @@ sf::Keyboard::Key strToKey(const std::string &str)
     if (str == "Pause")
         return sf::Keyboard::Key::Pause;
 
-    return sf::Keyboard::Key::A;
+    return sf::Keyboard::Key::Unknown;
 }
 
 std::string btnToStr(sf::Mouse::Button button)
