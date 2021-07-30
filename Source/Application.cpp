@@ -54,8 +54,41 @@ void Application::run()
 
 void Application::processInput()
 {
-    sf::Event event;
     mKeyPressingManager.readClickedKeys();
+    handleEvent();
+
+    if (!Settings::WindowTitleBar)
+        moveWindow();
+
+    if (mSettings.wasButtonAmountChanged())
+    {
+        resizeWindow();
+        mStatistics->resize();
+        mButtons->resize();
+        mKeyPressingManager.resize();
+        mBackground->resize();
+        mMenu.saveConfig();
+    }
+
+    if (mSettings.getButtonToChangeIndex() != -1)
+        mButtons->highlightKey(mSettings.getButtonToChangeIndex());
+    if (mSettings.wasButtonChanged())
+    {
+        mButtons->highlightKey(mSettings.getButtonToChangeIndex());
+        mButtons->setupKeyCounterTextVec();
+        mMenu.saveConfig();
+    }
+
+    unloadChangesQueue();
+    mKPSWindow->handleOwnEvent();
+    mMenu.handleOwnEvent();
+    mCalculation.handleInput(mKeyPressingManager);
+    mButtons->handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
+}
+
+void Application::handleEvent()
+{
+    sf::Event event;
     while (mWindow.pollEvent(event))
     {
         if (event.type == sf::Event::Closed)
@@ -65,56 +98,59 @@ void Application::processInput()
             return;
         }
         
-        if (mWindow.hasFocus())
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
         {
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            if (event.type == sf::Event::KeyPressed)
             {
-                if (event.type == sf::Event::KeyPressed)
+                if (event.key.code == Settings::KeyToClear)
                 {
-                    if (event.key.code == Settings::KeyToClear)
-                    {
-                        mButtons->clear();
-                        mStatistics->clear();
-                        mCalculation.clear();
-                        mKeyPressingManager.clear();
-                    }
+                    mButtons->clear();
+                    mStatistics->clear();
+                    mCalculation.clear();
+                    mKeyPressingManager.clear();
+                }
 
-                    if (event.key.code == Settings::KeyExit)
-                    {
-                        mMenu.saveConfig();
-                        mWindow.close();
-                        return;
-                    }
+                if (event.key.code == Settings::KeyExit)
+                {
+                    mMenu.saveConfig();
+                    mWindow.close();
+                    return;
                 }
             }
-
-            mMenu.handleEvent(event);
-            mKPSWindow->handleEvent(event);
-            mSettings.handleEvent(event);
-
-            // If a button was changed, then reset text ch. size
-            static int prevIdx = -1;
-            if (mSettings.getButtonToChangeIndex() == -1 && prevIdx != -1)
-                mButtons->setupKeyCounterTextVec();
-            prevIdx = mSettings.getButtonToChangeIndex();
-
-
-            if (mSettings.wasButtonAmountChanged())
-            {
-                handleEvent(event);
-                mStatistics->resize();
-                mButtons->resize();
-                mKeyPressingManager.resize();
-                mBackground->resize();
-            }
         }
-    }
-    mButtons->highlightKey(mSettings.getButtonToChangeIndex());
-    if (!Settings::WindowTitleBar)
-        moveWindow();
 
-    mKPSWindow->handleOwnEvent();
-    mMenu.handleOwnEvent();
+        mMenu.handleEvent(event);
+        mKPSWindow->handleEvent(event);
+        mSettings.handleEvent(event);
+    }
+}
+
+void Application::update(sf::Time dt)
+{
+    mCalculation.update();
+    mStatistics->update(mCalculation.getKeyPerSecond(), mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys);
+    mButtons->update(mKeyPressingManager.mNeedToBeReleased);
+    mMenu.update();
+    mKPSWindow->update(mCalculation.getKeyPerSecond());
+    mKeyPressingManager.clear();
+    mSettings.update();
+}
+
+void Application::render()
+{
+    mWindow.clear();
+
+    mWindow.draw(*mBackground);
+    mWindow.draw(*mStatistics);
+    mWindow.draw(*mButtons);
+    mMenu.render();
+    mKPSWindow->render();
+    
+    mWindow.display();
+}
+
+void Application::unloadChangesQueue()
+{
     ChangedParametersQueue &queue = mMenu.getChangedParametersQueue();
     while (!queue.isEmpty())
     {
@@ -145,42 +181,6 @@ void Application::processInput()
         }
         mBackground->setupTexture();
     }
-
-    mCalculation.handleInput(mKeyPressingManager);
-    mButtons->handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
-}
-
-void Application::update(sf::Time dt)
-{
-    mCalculation.update();
-    mStatistics->update(mCalculation.getKeyPerSecond(), mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys);
-    mButtons->update(mKeyPressingManager.mNeedToBeReleased);
-    mMenu.update();
-    mKPSWindow->update(mCalculation.getKeyPerSecond());
-    mKeyPressingManager.clear();
-    mSettings.update();
-}
-
-void Application::render()
-{
-    mWindow.clear();
-
-    mWindow.draw(*mBackground);
-    mWindow.draw(*mStatistics);
-    mWindow.draw(*mButtons);
-    mMenu.render();
-    mKPSWindow->render();
-    
-    mWindow.display();
-}
-
-void Application::handleEvent(sf::Event event)
-{
-    mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
-
-    sf::Vector2f windowSize(mWindow.getSize());
-    sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
-    mWindow.setView(view);
 }
 
 void Application::loadAssets()
@@ -237,6 +237,15 @@ void Application::openWindow()
     mWindow.setPosition(sf::Vector2i(desktop.width / 2 - mWindow.getSize().x / 2, desktop.height / 2 - mWindow.getSize().y / 2));
     mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
+}
+
+void Application::resizeWindow()
+{
+    mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
+
+    sf::Vector2f windowSize(mWindow.getSize());
+    sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
+    mWindow.setView(view);
 }
 
 void Application::moveWindow()
