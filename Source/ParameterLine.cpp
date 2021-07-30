@@ -97,15 +97,8 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 select(elem);
             }
 
-            if (key == sf::Keyboard::Escape || button == sf::Mouse::Right)
+            if (key == sf::Keyboard::Escape || button == sf::Mouse::Right || key == sf::Keyboard::Enter)
             {
-                // reset to previous
-                deselect();
-            }
-
-            if (key == sf::Keyboard::Enter)
-            {
-                // save
                 deselect();
             }
 
@@ -258,7 +251,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             else
             {
                 std::string prevVal = str;
-                addChOnIdx(str, mSelectedValueIndex, n);
+                addChOnIdx(str, mSelectedValueIndex, n + '0');
                 float check = stof(str); 
                 str = std::to_string(static_cast<int>(check));
 
@@ -377,10 +370,11 @@ void ParameterLine::draw(sf::RenderTarget &target, sf::RenderStates states) cons
 
 void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures)
 {
+    GraphicalParameter::mTextures = &textures;
     std::shared_ptr<GraphicalParameter> val = nullptr; 
     if (mType == LogicalParameter::Type::Bool)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), textures);
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0));
         val->setPosition(sf::Vector2f(mRectLine.getSize().x - 
             GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
         mParameterValues.emplace_back(std::move(val));
@@ -389,7 +383,7 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
 
     for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), fonts.get(Fonts::Value), i, textures);
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), fonts.get(Fonts::Value), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
             GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
@@ -436,7 +430,7 @@ void ParameterLine::deselect()
 
     assert(mSelectedValue != nullptr || mSelectedLine != nullptr);
 
-    mSelectedValue->mRect.setFillColor(sf::Color(120,120,120));
+    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
     mSelectedValue = nullptr;
     mSelectedLine = nullptr;
     mSelectedValueIndex = -1;
