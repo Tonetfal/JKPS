@@ -556,6 +556,7 @@ void saveConfig(
         ofCfg << "No";
     ofCfg << "\n\n";
 
+    bool commentsSection = false;
     auto parmPair = parameters.begin();
     auto parmLinePair = parameterLines.begin();
     while (parmPair != parameters.end() || parmLinePair != parameterLines.end())
@@ -585,11 +586,16 @@ void saveConfig(
             ++parmPair;
         }
 
+        if (commentsSection)
+            ofCfg << "# ";
         ofCfg << mainParP->mParName;
         if (mainParP->mType != LogicalParameter::Type::Empty 
         &&  mainParP->mType != LogicalParameter::Type::Collection)
             ofCfg << ": " << mainParP->getValStr();
         ofCfg << "\n";
+
+        if (parmLinePair->first == ParameterLine::ID::Info1)
+            commentsSection = true;
     }
 
     ofCfg.close();
