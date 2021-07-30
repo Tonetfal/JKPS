@@ -428,8 +428,6 @@ void ParameterLine::deselect()
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    assert(mSelectedValue != nullptr || mSelectedLine != nullptr);
-
     mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
     mSelectedValue = nullptr;
     mSelectedLine = nullptr;
