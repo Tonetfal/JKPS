@@ -59,6 +59,7 @@ class KeySelector
         void saveKey();
         void setCursorPos();
         void resetVisualKeyGfxButton(const std::string &str1, const std::string &str2);
+        bool isCharacter(sf::Keyboard::Key key) const;
         
 
     private:

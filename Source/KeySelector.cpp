@@ -84,7 +84,7 @@ void KeySelector::handleButtonModificationEvent(sf::Event event)
 
             if (!visualKeyChanged)
             {
-                mButtons[VisualKeyButton]->mValText.setString(mButtons[RealKeyButton]->mValText.getString());
+                mButtons[VisualKeyButton]->mValText.setString(key != sf::Keyboard::Unknown ? keyToStr(key) : "Unknown");
                 mButtons[VisualKeyButton]->setupValPos();
             }
             deselect();
@@ -135,10 +135,7 @@ void KeySelector::handleButtonModificationEvent(sf::Event event)
             mSelectedBtnTextIndex = str.size();
         }
 
-        if ((key >= sf::Keyboard::A         && key <= sf::Keyboard::Num9)
-        ||  (key >= sf::Keyboard::LBracket  && key <= sf::Keyboard::Space)
-        ||  (key >= sf::Keyboard::Add       && key <= sf::Keyboard::Divide)
-        ||  (key >= sf::Keyboard::Numpad0   && key <= sf::Keyboard::Numpad9))
+        if (isCharacter(key))
         {
             addChOnIdx(str, mSelectedBtnTextIndex, enumKeyToStr(key));
             ++mSelectedBtnTextIndex;
@@ -148,11 +145,12 @@ void KeySelector::handleButtonModificationEvent(sf::Event event)
         // If user starts to write anything, then change text color and delete the hint
         if (mButtons[VisualKeyButton]->mValText.getFillColor() == mDefaultVisualKeyColor && strChanged)
         {
-           mButtons[VisualKeyButton]->mValText.setFillColor(sf::Color::White);
-           mSelectedBtn->mValText.setString("");
-           str = "";
-           str += enumKeyToStr(key);
-           mSelectedBtnTextIndex = str.size();
+            mButtons[VisualKeyButton]->mValText.setFillColor(sf::Color::White);
+            mSelectedBtn->mValText.setString("");
+            str = "";
+            if (isCharacter(key))
+                str += enumKeyToStr(key);
+            mSelectedBtnTextIndex = str.size();
         }
         mSelectedBtn->mValText.setString(str);
         mSelectedBtn->setupValPos();
@@ -193,6 +191,11 @@ void KeySelector::handleButtonInteractionEvent(sf::Event event)
 
             if (button == sf::Mouse::Left && buttonBounds.contains(mousePos))
             {
+                if (elem == mButtons[VisualKeyButton] 
+                &&  mButtons[VisualKeyButton]->mValText.getFillColor() == mDefaultVisualKeyColor)
+                {
+                    mButtons[VisualKeyButton]->mValText.setString("");
+                }
                 if (elem == mButtons[AcceptButton])
                 {
                     saveKey();
@@ -320,7 +323,7 @@ void KeySelector::deselect()
     if (mSelectedBtn == mButtons[VisualKeyButton].get() 
     && mButtons[VisualKeyButton]->mValText.getString() == "")
     {
-        resetVisualKeyGfxButton("","");
+        resetVisualKeyGfxButton("", "");
     }
 
     mSelectedBtn->mRect.setFillColor(GraphicalParameter::defaultRectColor);
@@ -382,4 +385,13 @@ void KeySelector::resetVisualKeyGfxButton(const std::string &str1, const std::st
         mButtons[VisualKeyButton]->mValText.setString(mButtons[RealKeyButton]->mValText.getString());
     mButtons[VisualKeyButton]->mValText.setFillColor(mDefaultVisualKeyColor);
     mButtons[VisualKeyButton]->setupValPos();
+}
+
+bool KeySelector::isCharacter(sf::Keyboard::Key key) const
+{
+    return 
+        (key >= sf::Keyboard::A         && key <= sf::Keyboard::Num9)
+    ||  (key >= sf::Keyboard::LBracket  && key <= sf::Keyboard::Space)
+    ||  (key >= sf::Keyboard::Add       && key <= sf::Keyboard::Divide)
+    ||  (key >= sf::Keyboard::Numpad0   && key <= sf::Keyboard::Numpad9);
 }
