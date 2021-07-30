@@ -76,7 +76,7 @@ void Button::updateButtonText()
 void Button::resize()
 {
     resizeVectors();
-    if (sf::Keyboard::isKeyPressed(Settings::KeyToIncrease))
+    if (sf::Keyboard::isKeyPressed(Settings::KeyToIncreaseKeys))
         mKeyCounters.back() = 0;
     
     setupKeyCounterTextVec();
@@ -301,28 +301,28 @@ void Button::decreaseTextCharacterSize(sf::Text &text)
 std::string Button::getButtonText(sf::Text &text, unsigned idx)
 {
     const unsigned keyAmt = Settings::LogicalKeys.size();
-    const bool lCtrlPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl);
+    const bool lAltPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
     const bool changeKey = Settings::getButtonToChangeIndex() != -1;
     std::string str("");
 
-    if (( lCtrlPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
-    ||  ( lCtrlPressed && !changeKey && (Settings::ShowSetKeysText ||  Settings::ShowKeyCountersText)
+    if (( lAltPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
+    ||  ( lAltPressed && !changeKey && (Settings::ShowSetKeysText ||  Settings::ShowKeyCountersText)
     &&    mKeyCounters[idx] == 0)
-    ||  (!lCtrlPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
+    ||  (!lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
     &&  mKeyCounters[idx] > 0))
     {
         str = std::to_string(mKeyCounters[idx]);
     }
-    if (( lCtrlPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
+    if (( lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
     &&    mKeyCounters[idx] > 0)
-    ||  (!lCtrlPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
-    ||  (!lCtrlPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
+    ||  (!lAltPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
+    ||  (!lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
     &&    mKeyCounters[idx] == 0) 
     ||    changeKey)
     {
         str = getVisualStr(idx);
     }
-    if (lCtrlPressed && !changeKey && !Settings::ShowSetKeysText && !Settings::ShowKeyCountersText)
+    if (lAltPressed && !changeKey && !Settings::ShowSetKeysText && !Settings::ShowKeyCountersText)
     {
         str = getVisualStr(idx);
         std::string spaces = "";
