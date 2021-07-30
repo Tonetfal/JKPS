@@ -109,6 +109,9 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             Info2,
             Info3,
             Info4,
+            InfoMty,
+
+            HotkeyColl,
             HotKey1,
             HotKey2,
             HotKey3,
