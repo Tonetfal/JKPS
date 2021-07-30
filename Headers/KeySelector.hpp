@@ -58,7 +58,7 @@ class KeySelector
         void deselect();
         void saveKey();
         void setCursorPos();
-        void resetVisualKeyGfxButton();
+        void resetVisualKeyGfxButton(const std::string &str1, const std::string &str2);
         
 
     private:
