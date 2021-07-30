@@ -146,7 +146,7 @@ void Application::processInput()
         mBackground->setupTexture();
     }
 
-    mCalculation.handleInput(mKeyPressingManager, Settings::Keys);
+    mCalculation.handleInput(mKeyPressingManager);
     mButtons->handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
 }
 
