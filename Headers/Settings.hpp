@@ -25,9 +25,9 @@ class Settings
         void                        setWindowReference(sf::RenderWindow& window);
         void                        buildKeySelector();
 
-        void                        changeChangeability();
         void                        setChangeabilityPosition();
-        bool                        wasButtonAmountChanged();
+        static bool                 wasButtonChanged();
+        static bool                 wasButtonAmountChanged();
 
         static sf::Keyboard::Key    getButtonToChange();
         static int                  getButtonToChangeIndex();
@@ -40,7 +40,6 @@ class Settings
         void                        removeKeyboardKey();
         void                        addMouseButton();
         void                        removeMouseButton();
-        void                        changeKey(sf::Keyboard::Key newKey);
         bool                        isPressPerformedOnButton(unsigned &buttonIndex);            
         bool                        isMouseInRange(unsigned index);
 
@@ -159,4 +158,5 @@ class Settings
         static int                  mButtonToChangeIndex;
         static sf::Keyboard::Key    mButtonToChange;
         static bool                 mButtonAmountChanged;
+        static bool                 mKeyWasChanged;
 };

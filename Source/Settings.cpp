@@ -116,6 +116,7 @@ bool Settings::mIsButtonSelected(false);
 int Settings::mButtonToChangeIndex(-1);
 sf::Keyboard::Key Settings::mButtonToChange(sf::Keyboard::Unknown);
 bool Settings::mButtonAmountChanged(false);
+bool Settings::mKeyWasChanged(false);
 
 Settings::Settings()
 : mWindow(nullptr)
@@ -139,18 +140,21 @@ void Settings::handleEvent(sf::Event event)
 
 void Settings::update()
 {
-    mButtonAmountChanged = false;
+    mButtonAmountChanged = mKeyWasChanged = false;
+    static bool wasWindowOpenOnLastUpdate = false;
     if (mKeySelector->isOpen())
     {
         mKeySelector->handleOwnInput();
         mKeySelector->render();
     }
-    else
+    if (wasWindowOpenOnLastUpdate && !mKeySelector->isOpen())
     {
-        // deselect only when the gfx menu is closed
+        // deselect and save only after window closes
+        mKeyWasChanged = wasWindowOpenOnLastUpdate;
         mIsButtonSelected = false;
         mButtonToChangeIndex = -1;
     }
+    wasWindowOpenOnLastUpdate = mKeySelector->isOpen();
 }
 
 void Settings::changeKeysAmount(sf::Keyboard::Key clickedKey)
@@ -184,11 +188,6 @@ void Settings::changeKeysAmount(sf::Keyboard::Key clickedKey)
             removeMouseButton();
             --ButtonAmount;
         }
-    }
-
-    if (mIsButtonSelected)
-    {
-        changeKey(key);
     }
 }
 
@@ -238,22 +237,6 @@ void Settings::removeMouseButton()
     LogicalButtons.pop_back();
 }
 
-
-void Settings::changeKey(sf::Keyboard::Key newKey)
-{
-    LogicalKey &lKey = *LogicalKeys[mButtonToChangeIndex];
-    lKey.key = newKey;
-    if (newKey == sf::Keyboard::Unknown)
-        lKey.key = sf::Keyboard::A;
-
-    unsigned sameKeyIndex = 0;
-    while (ConfigHelper::isKeyAlreadyPresent(LogicalKeys, newKey, sameKeyIndex, mButtonToChangeIndex))
-        LogicalKeys[mButtonToChangeIndex] = ConfigHelper::getDefaultLogicalKey(LogicalKeys);
-
-    mIsButtonSelected = false;
-    mButtonToChangeIndex = -1;
-}
-
 bool Settings::isPressPerformedOnButton(unsigned &buttonIndex)
 {
     for (buttonIndex = 0; buttonIndex < Settings::ButtonAmount; ++buttonIndex)
@@ -289,6 +272,11 @@ void Settings::buildKeySelector()
 bool Settings::wasButtonAmountChanged()
 {
     return mButtonAmountChanged;
+}
+
+bool Settings::wasButtonChanged()
+{
+    return mKeyWasChanged;
 }
 
 sf::Keyboard::Key Settings::getButtonToChange()
