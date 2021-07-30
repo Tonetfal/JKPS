@@ -15,7 +15,7 @@ Button::Button(const TextureHolder& textureHolder, const FontHolder& fontHolder)
 , mKeyCountersFont(&fontHolder.get(Fonts::KeyCounters))
 { 
     assert(AnimationStyle(Settings::AnimationStyle) >= Light && AnimationStyle(Settings::AnimationStyle) <= Press);
-
+    
     resizeVectors();
     setupKeyCounterTextVec();
     setupTextures();
@@ -63,7 +63,7 @@ void Button::updateButtonText()
     {
         text->setString(getButtonText(*text, idx));
 
-        while (isTextTooBig(*text))
+        while (isTextTooBig(*text) && text->getCharacterSize() > 0)
         {
             decreaseTextCharacterSize(*text);
         }
