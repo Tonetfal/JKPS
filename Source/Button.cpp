@@ -32,7 +32,6 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
 {
     for (size_t i = 0; i < Settings::ButtonAmount; ++i)
     {
-        auto &elem = mAnimationSprite[i];
         // Velocity = frames to perform the animation
         const sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
         
@@ -43,6 +42,7 @@ void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
                     lightUpKey(i);
                 else
                 {
+                    auto &elem = mAnimationSprite[i];
                     fadeKeyLight(i);
                     if (elem->getColor().a != 0)
                         elem->setColor(elem->getColor() - animation);
