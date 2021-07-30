@@ -284,7 +284,8 @@ void KeySelector::openWindow()
 {
     if (!mWindow.isOpen())
     {
-        mWindow.create(sf::VideoMode(300, 150), "Key selector", sf::Style::Close);
+        std::string title = mKey ? "Keyboard key selector" : "Mouse button selector";
+        mWindow.create(sf::VideoMode(300, 150), title, sf::Style::Close);
         mWindow.setPosition(mMainWindow->getPosition());
     }
 }
