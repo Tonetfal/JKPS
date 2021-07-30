@@ -10,12 +10,12 @@
 
 sf::Color GraphicalParameter::defaultRectColor(sf::Color(120,120,120));
 sf::Color GraphicalParameter::defaultSelectedRectColor(sf::Color(200,200,200));
+const TextureHolder *GraphicalParameter::mTextures(nullptr);
 
 // All types, except Bool
-GraphicalParameter::GraphicalParameter(const std::string &str, const sf::Font &font, unsigned n, const TextureHolder &textures)
-: mTextures(textures) // redundant
+GraphicalParameter::GraphicalParameter(const std::string &str, const sf::Font &font, unsigned n, sf::Vector2f rectSize)
 {
-    mRect.setSize(sf::Vector2f(70, 25));
+    mRect.setSize(rectSize);
     mRect.setOrigin(mRect.getSize() / 2.f);
     mRect.setFillColor(defaultRectColor);
 
@@ -28,8 +28,7 @@ GraphicalParameter::GraphicalParameter(const std::string &str, const sf::Font &f
 }
 
 // Bool type
-GraphicalParameter::GraphicalParameter(const std::string &str, const TextureHolder &textures)
-: mTextures(textures)
+GraphicalParameter::GraphicalParameter(const std::string &str)
 {
     mValText.setString(str);
     setRightTexture();
@@ -81,9 +80,10 @@ void GraphicalParameter::setInverseMark()
 
 void GraphicalParameter::setRightTexture()
 {
+    assert(mTextures);
     std::string str = static_cast<std::string>(mValText.getString());
     if (str == "True" || str == "true" || str == "TRUE")
-        mSprite.setTexture(mTextures.get(Textures::vMark));
+        mSprite.setTexture(mTextures->get(Textures::vMark));
     else
-        mSprite.setTexture(mTextures.get(Textures::xMark));
+        mSprite.setTexture(mTextures->get(Textures::xMark));
 }
