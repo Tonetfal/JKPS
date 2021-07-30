@@ -14,3 +14,4 @@ std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg);
 sf::Keyboard::Key strToKey(const std::string &str);
 std::string btnToStr(sf::Mouse::Button button);
 sf::Mouse::Button strToBtn(const std::string &str);
+char enumKeyToStr(sf::Keyboard::Key key);
