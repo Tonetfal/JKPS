@@ -59,6 +59,7 @@ class Button : public sf::Drawable, public sf::Transformable
         sf::Vector2f                getCenterOriginText(const sf::Text &text) const;
 
         void                        setupTextPosition(sf::Text &text, unsigned idx);
+        void                        setupKeyCounterText(sf::Text &text, unsigned idx);
         bool                        isTextTooBig(const sf::Text &text) const;
         void                        decreaseTextCharacterSize(sf::Text &text);
         std::string                 getButtonText(sf::Text &text, unsigned idx);

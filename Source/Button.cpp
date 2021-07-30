@@ -15,7 +15,7 @@ Button::Button(const TextureHolder& textureHolder, const FontHolder& fontHolder)
 , mKeyCountersFont(&fontHolder.get(Fonts::KeyCounters))
 { 
     assert(AnimationStyle(Settings::AnimationStyle) >= Light && AnimationStyle(Settings::AnimationStyle) <= Press);
-    
+
     resizeVectors();
     setupKeyCounterTextVec();
     setupTextures();
@@ -61,7 +61,14 @@ void Button::updateButtonText()
     unsigned idx = 0;
     for (auto &text : mButtonsText)
     {
-        text->setString(getButtonText(*text, idx));
+        std::string newStr = getButtonText(*text, idx);
+        if (text->getString() != newStr)
+        {
+            text->setString(newStr);
+            // Since text on the buttons is decreased when it is too large, and it is not reset automatically,
+            // there it is reset because visual key can be less wide then the key counter
+            setupKeyCounterText(*text, idx);
+        }
 
         while (isTextTooBig(*text) && text->getCharacterSize() > 0)
         {
@@ -117,7 +124,7 @@ void Button::highlightKey(int buttonIndex)
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform.translate(Settings::WindowBonusSizeLeft, Settings::WindowBonusSizeTop);
-
+    
     for (auto& elem : mButtonsSprite)
         target.draw(*elem, states);
 
@@ -270,16 +277,22 @@ void Button::setupKeyCounterTextVec()
     unsigned idx = 0;
     for (auto &text : mButtonsText)
     {
-        text->setCharacterSize(Settings::KeyCountersTextCharacterSize);
-        text->setFillColor(Settings::KeyCountersTextColor);
-        sf::Text::Style style(static_cast<sf::Text::Style>(
-            (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
-            (Settings::KeyCountersItalic ? sf::Text::Italic : 0)));
-        text->setStyle(style);
-
-        setupTextPosition(*text, idx);
+        setupKeyCounterText(*text, idx);
         ++idx;
     }
+}
+
+void Button::setupKeyCounterText(sf::Text &text, unsigned idx)
+{
+    text.setCharacterSize(Settings::KeyCountersTextCharacterSize);
+    text.setFillColor(Settings::KeyCountersTextColor);
+    sf::Text::Style style(static_cast<sf::Text::Style>(
+        (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
+        (Settings::KeyCountersItalic ? sf::Text::Italic : 0)));
+    text.setStyle(style);
+
+    setupTextPosition(text, idx);
+    ++idx;
 }
 
 void Button::setupTextPosition(sf::Text &text, unsigned idx)
@@ -330,11 +343,6 @@ std::string Button::getButtonText(sf::Text &text, unsigned idx)
             spaces += " ";
         str += "\n" + spaces + std::to_string(mKeyCounters[idx]);
     }
-
-    // Since text on the buttons is decreased when it is too large, and it is not reset automatically,
-    // there it is reset because visual key can be less wide then the key counter
-    if (text.getString() != str)
-        setupKeyCounterTextVec();
 
     return str;
 }
