@@ -25,6 +25,8 @@ Menu::Menu()
     ConfigHelper::readConfig(mParameters, mParameterLines);
     buildParameterLines();
     saveConfig();
+
+    mSettings.buildKeySelector();
 }
 
 void Menu::handleEvent(sf::Event event)
