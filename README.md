@@ -50,7 +50,7 @@ Ctrl (hold) - Show opposite button values
 
 # Notes
 - Capture the program as a game in OBS, not as a window.
-- To make the program work with green screen just change the "Background color" to 0,177,64.
+- To make the program work with green screen just provide [greenscreen texture](https://i.imgur.com/8q4k9EZ.png) as "Background texture". Download the image, put it where the program is, open JKPS.cfg, find "Background texture" parameter, and write there the name of image with the extension (png, jpg).
 - The palette in menu will not adjust own color to the parameter one.
 - If you change anything in the configuration, exit the program first.
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
