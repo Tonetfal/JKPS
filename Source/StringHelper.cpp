@@ -404,15 +404,15 @@ std::string btnToStr(sf::Mouse::Button button)
 
 sf::Mouse::Button strToBtn(const std::string &str)
 {
-    if (str == "Left")
+    if (str == "M Left")
         return sf::Mouse::Left;
-    if (str == "Right")
+    if (str == "M Right")
         return sf::Mouse::Right;
-    if (str == "Middle")
+    if (str == "M Middle")
         return sf::Mouse::Middle;
-    if (str == "XButton1")
+    if (str == "M XButton1")
         return sf::Mouse::XButton1;
-    if (str == "XButton2")
+    if (str == "M XButton2")
         return sf::Mouse::XButton2;
 
     return sf::Mouse::Left;
