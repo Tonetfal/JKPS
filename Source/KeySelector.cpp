@@ -194,7 +194,7 @@ void KeySelector::handleButtonInteractionEvent(sf::Event event)
             {
                 if (elem == mButtons[AcceptButton])
                 {
-                    // save key
+                    saveKey();
                     mWindow.close();
                     return;
                 }
@@ -210,13 +210,13 @@ void KeySelector::handleButtonInteractionEvent(sf::Event event)
     }
     if (event.type == sf::Event::KeyPressed)
     {
-        if (key == sf::Keyboard::Escape || button == sf::Mouse::Right)
+        if (key == sf::Keyboard::Escape)
         {
             deselect();
         }
         if (mSelectedBtn != mButtons[RealKeyButton].get() && key == sf::Keyboard::Enter)
         {
-            // save key
+            saveKey();
             mWindow.close();
             return;
         }
@@ -330,6 +330,26 @@ void KeySelector::deselect()
     mSelectedBtn->mRect.setFillColor(GraphicalParameter::defaultRectColor);
     mSelectedBtn = nullptr;
     mSelectedBtnTextIndex = -1;
+}
+
+void KeySelector::saveKey()
+{
+    std::string realKeyStr(mButtons[RealKeyButton]->mValText.getString());
+    std::string visualKeyStr(mButtons[VisualKeyButton]->mValText.getString());
+    if (mKey)
+    {
+        mKey->realStr = realKeyStr;
+        mKey->visualStr = visualKeyStr;
+        mKey->key = strToKey(realKeyStr);
+        mKey = nullptr;
+    }
+    if (mButton)
+    {
+        mButton->realStr = realKeyStr;
+        mButton->visualStr = visualKeyStr;
+        mButton->button = strToBtn(realKeyStr);
+        mButton = nullptr;
+    }
 }
 
 void KeySelector::setCursorPos()

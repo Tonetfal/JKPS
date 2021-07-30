@@ -56,6 +56,7 @@ class KeySelector
 
         void select(GraphicalParameter *ptr);
         void deselect();
+        void saveKey();
         void setCursorPos();
         void resetVisualKeyGfxButton();
         
