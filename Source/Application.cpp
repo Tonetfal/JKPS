@@ -188,16 +188,17 @@ void Application::loadAssets()
     std::string defaultName = "Default";
 
     if (Settings::ButtonTexturePath == defaultName)
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 71200);
+        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 58700);
     else
         mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
+
     if (Settings::AnimationTexturePath == defaultName) 
-        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 100700);
+        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 60100);
     else
         mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
 
     if (Settings::BackgroundTexturePath == defaultName)
-        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 14600);
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 2700);
     else
         mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
     
