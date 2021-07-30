@@ -34,10 +34,13 @@ class Settings
 
 
     private:
+        void                        changeKeysAmount(sf::Keyboard::Key clickedKey);
+        void                        selectButton();
         void                        addKey();
         void                        removeKey();
         void                        changeKey(sf::Keyboard::Key newKey);
-        bool                        isInRange(size_t index);
+        bool                        isPressPerformedOnButton(unsigned &buttonIndex);            
+        bool                        isMouseInRange(unsigned index);
 
 
     public:

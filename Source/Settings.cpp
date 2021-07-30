@@ -121,90 +121,21 @@ bool Settings::mButtonAmountChanged(false);
 Settings::Settings()
 : mWindow(nullptr)
 { 
-    LogicalKeys.emplace_back(new LogicalKey("Z", "Z", sf::Keyboard::Z));
-    LogicalKeys.emplace_back(new LogicalKey("X", "X", sf::Keyboard::X));
+    LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::Z), keyToStr(sf::Keyboard::Z), sf::Keyboard::Z));
+    LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::X), keyToStr(sf::Keyboard::X), sf::Keyboard::X));
     LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Left), btnToStr(sf::Mouse::Left), sf::Mouse::Left));
     LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Right), btnToStr(sf::Mouse::Right), sf::Mouse::Right));
 }
 
 void Settings::handleEvent(sf::Event event)
 {
-    // Add/rm buttons and change one if it is selected
-    if (event.type == sf::Event::KeyPressed)
-    {
-        sf::Keyboard::Key key = event.key.code;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-        {
-            mKeySelector->setKey(nullptr, LogicalButtons[0].get());
-            mKeySelector->openWindow();
-        }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        {
-            mKeySelector->setKey(LogicalKeys[0].get(), nullptr);
-            mKeySelector->openWindow();
-        }
-
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-        {
-            if ((key == KeyToIncrease || key == AltKeyToIncrease) 
-            && Settings::Keys.size() < ConfigHelper::maxKeys)
-            {
-                addKey();
-                ++ButtonAmount;
-            }
-
-            if ((key == KeyToDecrease || key == AltKeyToDecrease) 
-            && Settings::Keys.size() > ConfigHelper::minKeys + 1)
-            {
-                removeKey();
-                --ButtonAmount;
-            }
-        }
-
-        if (mIsButtonSelected)
-        {
-            changeKey(key);
-        }
-    }
-
-    // Select a button
     if (event.type == sf::Event::MouseButtonPressed
     && (event.mouseButton.button == sf::Mouse::Right))
-    {
-        bool isInRangeB = false;
-        size_t i;
-        for (i = 0; i < Settings::Keys.size(); ++i)
-        {
-            if (isInRange(i))
-            {
-                isInRangeB = true;
-                break;
-            }
-        }
-        // TODO
-        // open new window with key selection
+        selectButton();
 
-        // If mouse click was performed AND the cursor is not on a button
-        // OR (it is on a button AND the selected button is the same one)
-        if (!isInRangeB || (isInRangeB && mButtonToChangeIndex == i))
-        {
-            mIsButtonSelected = false;
-            mButtonToChangeIndex = -1;
-        }
-        // If mouse click was performed AND the cursor is on a button 
-        // AND (before there was no selected button OR it is a different button)
-        else if (isInRangeB && (!mIsButtonSelected || mButtonToChangeIndex != i))
-        {
-            mIsButtonSelected = true;
-            mButtonToChangeIndex = i;
-        }
-    }
-    if (event.type == sf::Event::MouseButtonPressed
-    && (event.mouseButton.button == sf::Mouse::Left))
-    {
-        mIsButtonSelected = false;
-        mButtonToChangeIndex = -1;
-    }
+    // Add/rm buttons and change one if it is selected
+    if (event.type == sf::Event::KeyPressed)
+        changeKeysAmount(event.key.code);
 }
 
 void Settings::update()
@@ -214,6 +145,63 @@ void Settings::update()
     {
         mKeySelector->handleOwnInput();
         mKeySelector->render();
+    }
+    else
+    {
+        // deselect only when the gfx menu is closed
+        mIsButtonSelected = false;
+        mButtonToChangeIndex = -1;
+    }
+}
+
+void Settings::changeKeysAmount(sf::Keyboard::Key clickedKey)
+{
+    sf::Keyboard::Key key = clickedKey;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+    {
+        if ((key == KeyToIncrease || key == AltKeyToIncrease) 
+        && Settings::Keys.size() < ConfigHelper::maxKeys)
+        {
+            addKey();
+            ++ButtonAmount;
+        }
+
+        if ((key == KeyToDecrease || key == AltKeyToDecrease) 
+        && Settings::Keys.size() > ConfigHelper::minKeys + 1)
+        {
+            removeKey();
+            --ButtonAmount;
+        }
+
+        // TODO keyToIncreaseMouseButtons 
+    }
+
+    if (mIsButtonSelected)
+    {
+        changeKey(key);
+    }
+}
+
+void Settings::selectButton()
+{
+    unsigned i;
+    // If the cursor in on the button and there it isn't the selected one
+    if (isPressPerformedOnButton(i) && (!mIsButtonSelected || mButtonToChangeIndex != i))
+    {
+        mIsButtonSelected = true;
+        mButtonToChangeIndex = i;
+
+        if (mButtonToChangeIndex < LogicalKeys.size())
+        {
+            mKeySelector->setKey(LogicalKeys[mButtonToChangeIndex].get(), nullptr);
+            mKeySelector->openWindow();
+        }
+        else
+        {
+            mKeySelector->setKey(nullptr, LogicalButtons[mButtonToChangeIndex - LogicalKeys.size()].get());
+            mKeySelector->openWindow();
+        }
     }
 }
 
@@ -245,7 +233,17 @@ void Settings::changeKey(sf::Keyboard::Key newKey)
     mButtonToChangeIndex = -1;
 }
 
-bool Settings::isInRange(size_t index)
+bool Settings::isPressPerformedOnButton(unsigned &buttonIndex)
+{
+    for (buttonIndex = 0; buttonIndex < Settings::ButtonAmount; ++buttonIndex)
+    {
+        if (isMouseInRange(buttonIndex))
+            return true;
+    }
+    return false;
+}
+
+bool Settings::isMouseInRange(unsigned index)
 {
     sf::Vector2i mousePosition(sf::Mouse::getPosition(*mWindow));
 
