@@ -58,6 +58,13 @@ void Application::processInput()
     mKeyPressingManager.readClickedKeys();
     while (mWindow.pollEvent(event))
     {
+        if (event.type == sf::Event::Closed)
+        {
+            mMenu.saveConfig();
+            mWindow.close();
+            return;
+        }
+        
         if (mWindow.hasFocus())
         {
             if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
@@ -83,13 +90,6 @@ void Application::processInput()
 
             mMenu.handleEvent(event);
             mKPSWindow->handleEvent(event);
-            if (event.type == sf::Event::Closed)
-            {
-                mMenu.saveConfig();
-                mWindow.close();
-                return;
-            }
-
             mSettings.handleEvent(event);
             mButtons->highlightKey(mSettings.getButtonToChangeIndex());
 
@@ -268,6 +268,7 @@ unsigned Application::getWindowHeight()
 bool Application::parameterIdMatches(LogicalParameter::ID id)
 {
     return
+        id == LogicalParameter::ID::BtnGfxTxtrSz ||  
         id == LogicalParameter::ID::BtnTextChSz ||
         id == LogicalParameter::ID::BtnGfxDist  ||
         id == LogicalParameter::ID::MainWndwTop ||
