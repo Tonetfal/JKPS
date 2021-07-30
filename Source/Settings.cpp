@@ -9,8 +9,11 @@
 const std::size_t Settings::mFramesPerSecond = 60;
 
 // [Keys] [Mouse]
-std::vector<sf::Keyboard::Key> Settings::Keys({ });
-std::vector<sf::Mouse::Button> Settings::MouseButtons({ });
+std::vector<sf::Keyboard::Key> Settings::Keys;
+std::vector<sf::Mouse::Button> Settings::MouseButtons;
+
+std::vector<std::shared_ptr<LogicalKey>> Settings::LogicalKeys;
+std::vector<std::shared_ptr<LogicalButton>> Settings::LogicalButtons;
 
 // Non config parameters
 std::size_t Settings::ButtonAmount(0);
@@ -117,7 +120,12 @@ bool Settings::mButtonAmountChanged(false);
 
 Settings::Settings()
 : mWindow(nullptr)
-{ }
+{ 
+    LogicalKeys.emplace_back(new LogicalKey("Z", "Z", sf::Keyboard::Z));
+    LogicalKeys.emplace_back(new LogicalKey("X", "X", sf::Keyboard::X));
+    LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Left), btnToStr(sf::Mouse::Left), sf::Mouse::Left));
+    LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Right), btnToStr(sf::Mouse::Right), sf::Mouse::Right));
+}
 
 void Settings::handleEvent(sf::Event event)
 {
@@ -125,6 +133,17 @@ void Settings::handleEvent(sf::Event event)
     if (event.type == sf::Event::KeyPressed)
     {
         sf::Keyboard::Key key = event.key.code;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+        {
+            mKeySelector->setKey(nullptr, LogicalButtons[0].get());
+            mKeySelector->openWindow();
+        }
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        {
+            mKeySelector->setKey(LogicalKeys[0].get(), nullptr);
+            mKeySelector->openWindow();
+        }
+
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
         {
             if ((key == KeyToIncrease || key == AltKeyToIncrease) 
@@ -162,6 +181,8 @@ void Settings::handleEvent(sf::Event event)
                 break;
             }
         }
+        // TODO
+        // open new window with key selection
 
         // If mouse click was performed AND the cursor is not on a button
         // OR (it is on a button AND the selected button is the same one)
@@ -189,6 +210,11 @@ void Settings::handleEvent(sf::Event event)
 void Settings::update()
 {
     mButtonAmountChanged = false;
+    if (mKeySelector->isOpen())
+    {
+        mKeySelector->handleOwnInput();
+        mKeySelector->render();
+    }
 }
 
 void Settings::addKey()
@@ -232,6 +258,13 @@ bool Settings::isInRange(size_t index)
 void Settings::setWindowReference(sf::RenderWindow& window)
 {
     mWindow = &window;
+    mKeySelector->setMainWindowPointer(mWindow);
+}
+
+void Settings::buildKeySelector()
+{
+    std::unique_ptr<KeySelector> keySelector(new KeySelector);
+    mKeySelector = std::move(keySelector);
 }
 
 bool Settings::wasButtonAmountChanged()

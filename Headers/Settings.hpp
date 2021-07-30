@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Color.hpp>
 
 #include "StringHelper.hpp"
+#include "KeySelector.hpp"
 
 #include <vector>
 #include <string>
@@ -22,6 +23,7 @@ class Settings
         void                        update();
 
         void                        setWindowReference(sf::RenderWindow& window);
+        void                        buildKeySelector();
 
         void                        changeChangeability();
         void                        setChangeabilityPosition();
@@ -44,6 +46,8 @@ class Settings
         // [Keys] [Mouse]
         static std::vector<sf::Keyboard::Key> Keys;
         static std::vector<sf::Mouse::Button> MouseButtons;
+        static std::vector<std::shared_ptr<LogicalKey>> LogicalKeys;
+        static std::vector<std::shared_ptr<LogicalButton>> LogicalButtons;
 
         // Non config parameters
         static std::size_t          ButtonAmount;
@@ -144,6 +148,7 @@ class Settings
 
     private:
         sf::RenderWindow*           mWindow;
+        std::unique_ptr<KeySelector> mKeySelector;
 
         static bool                 mIsButtonSelected;
         static int                  mButtonToChangeIndex;
