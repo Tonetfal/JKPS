@@ -91,7 +91,6 @@ void Application::processInput()
             mMenu.handleEvent(event);
             mKPSWindow->handleEvent(event);
             mSettings.handleEvent(event);
-            mButtons->highlightKey(mSettings.getButtonToChangeIndex());
 
             // If a button was changed, then reset text ch. size
             static int prevIdx = -1;
@@ -110,6 +109,7 @@ void Application::processInput()
             }
         }
     }
+    mButtons->highlightKey(mSettings.getButtonToChangeIndex());
     if (!Settings::WindowTitleBar)
         moveWindow();
 
