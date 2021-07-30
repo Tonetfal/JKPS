@@ -56,22 +56,24 @@ class Button : public sf::Drawable, public sf::Transformable
         sf::Vector2f                getScaleAmountPerFrame() const;
         float                       getTextMaxWidth() const;
         float                       getTextMaxHeight() const;
-        sf::Vector2f                getCenterOriginText(unsigned idx) const;
+        sf::Vector2f                getCenterOriginText(const sf::Text &text) const;
 
-        void                        setupTextPosition(int index);
-        void                        decreaseTextCharacterSize(int index);
-        std::string                 getButtonText(unsigned index);
+        void                        setupTextPosition(sf::Text &text, unsigned idx);
+        bool                        isTextTooBig(const sf::Text &text) const;
+        void                        decreaseTextCharacterSize(sf::Text &text);
+        std::string                 getButtonText(sf::Text &text, unsigned idx);
+        std::string                 getVisualStr(unsigned idx);
 
         void                        resizeVectors();
         bool                        isBeyondDefaultScale(const sf::Sprite &sprite) const;
 
-        void                        lightUpKey(size_t index);
-        void                        fadeKeyLight(size_t index);
-        void                        raiseKey(size_t index);
-        void                        lowerKey(size_t index);
+        void                        lightUpKey(unsigned idx);
+        void                        fadeKeyLight(unsigned idx);
+        void                        raiseKey(unsigned idx);
+        void                        lowerKey(unsigned idx);
 
-        unsigned int                getKeyCountersWidth(size_t index) const;
-        unsigned int                getKeyCountersHeight(size_t index) const;
+        unsigned                    getKeyCountersWidth(const sf::Text &text, unsigned idx) const;
+        unsigned                    getKeyCountersHeight(const sf::Text &text) const;
 
     
     private:
