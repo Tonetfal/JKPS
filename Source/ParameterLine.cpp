@@ -284,26 +284,33 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                     deselect();
                     return;
                 }
-                if (mType == LogicalParameter::Type::String)
+                // Refresh button has 0x0 rectangle shape 
+                if (mType == LogicalParameter::Type::String && elem->mRect.getSize().x == 0)
                 {
-                    // Refresh button has 0x0 rectangle shape 
-                    if (elem->mRect.getSize().x == 0)
-                    {
-                        Settings::requestToReloadAssets();
-                        deselect();
-                        // return in order to don't select button
-                        return; 
-                    }
+                    Settings::requestToReloadAssets();
+                    deselect();
+                    // return in order to don't select button
+                    return; 
                 }
                 if (mType != LogicalParameter::Type::Color && mPalette.isWindowOpen())
                     mPalette.closeWindow();
                 deselect();
                 select(elem);
             }
+            if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Enter)
+            {
+                // Refresh button has 0x0 rectangle shape 
+                if (mType == LogicalParameter::Type::String && elem->mRect.getSize().x == 0)
+                {
+                    Settings::requestToReloadAssets();
+                    deselect();
+                    // return in order to don't select button
+                    return; 
+                }
+            }
 
             if ((event.type == sf::Event::KeyPressed && key == sf::Keyboard::Escape) 
-            ||  (event.type == sf::Event::MouseButtonPressed 
-            &&   (button == sf::Mouse::Right || key == sf::Keyboard::Enter)))
+            ||  (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Right))
             {
                 deselect();
             }
