@@ -1,10 +1,12 @@
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <memory>
 #include <map>
 #include <stdexcept>
 #include <cassert>
+
 
 template <typename Resource, typename Identifier>
 class ResourceHolder
@@ -14,11 +16,13 @@ class ResourceHolder
 
 
     public:
-        void                        loadFromFile(Identifier id, const std::string& path);
+        bool                        loadFromFile(Identifier id, const std::string& path);
         void                        loadFromMemory(Identifier id
                                                 , const void* data
                                                 , std::size_t sizeInBytes);
         Resource&                   get(Identifier id) const;
+
+        void                        clear();
 
     
     private:

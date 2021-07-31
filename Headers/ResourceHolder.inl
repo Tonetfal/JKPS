@@ -1,11 +1,21 @@
 template <typename Resource, typename Identifier>
-void ResourceHolder<Resource, Identifier>::loadFromFile(Identifier id, const std::string& path)
+bool ResourceHolder<Resource, Identifier>::loadFromFile(Identifier id, const std::string& path)
 {
+    if (path == "Default")
+        return false;
+        
     std::unique_ptr<Resource> resource(new Resource());
+    // if (!resource->loadFromFile(path))
+    //     throw std::runtime_error("ResourceHolder::loadFromFile - Failed to load " + path);
+
     if (!resource->loadFromFile(path))
-        throw std::runtime_error("ResourceHolder::loadFromFile - Failed to load " + path);
+    {
+        std::cerr << "Failed to load resource - \"" + path + "\"\n";
+        return false;
+    }
     
     insertResource(id, std::move(resource));
+    return true;
 }
 
 template <typename Resource, typename Identifier>
@@ -27,6 +37,12 @@ Resource& ResourceHolder<Resource, Identifier>::get(Identifier id) const
     assert(found != mResourceMap.end());
 
     return *found->second;
+}
+
+template <typename Resource, typename Identifier>
+void ResourceHolder<Resource, Identifier>::clear()
+{
+    mResourceMap.clear();
 }
 
 template <typename Resource, typename Identifier>
