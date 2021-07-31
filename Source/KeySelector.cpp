@@ -77,7 +77,7 @@ void KeySelector::handleButtonModificationEvent(sf::Event event)
         if (mSelectedBtn == mButtons[RealKeyButton].get())
         {
             bool visualKeyChanged = mButtons[VisualKeyButton]->mValText.getString() != 
-                mButtons[RealKeyButton]->mValText.getString();
+                keyToStr(strToKey(std::string(mButtons[RealKeyButton]->mValText.getString())));
 
             mButtons[RealKeyButton]->mValText.setString(key != sf::Keyboard::Unknown ? keyToStr(key, true) : "Unknown");
             mButtons[RealKeyButton]->setupValPos();
@@ -180,10 +180,9 @@ void KeySelector::handleButtonModificationEvent(sf::Event event)
 
 void KeySelector::handleButtonInteractionEvent(sf::Event event)
 {
-    sf::Mouse::Button button = event.mouseButton.button;
-    sf::Keyboard::Key key = event.key.code;
     if (event.type == sf::Event::MouseButtonPressed)
     {
+        sf::Mouse::Button button = event.mouseButton.button;
         for (auto &elem : mButtons)
         {
             sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
@@ -214,6 +213,7 @@ void KeySelector::handleButtonInteractionEvent(sf::Event event)
     }
     if (event.type == sf::Event::KeyPressed)
     {
+        sf::Keyboard::Key key = event.key.code;
         if (key == sf::Keyboard::Escape)
         {
             deselect();
@@ -250,6 +250,7 @@ void KeySelector::setKey(LogicalKey *key, LogicalButton *button)
 
     if (key)
     {
+        assert(strToKey(key->realStr) != sf::Keyboard::Unknown);
         mKey = key;
         mKeyType = Keyboard;
     }
@@ -382,7 +383,12 @@ void KeySelector::setCursorPos()
 void KeySelector::resetVisualKeyGfxButton(const std::string &str1, const std::string &str2)
 {
     if (str1 == str2)
-        mButtons[VisualKeyButton]->mValText.setString(mButtons[RealKeyButton]->mValText.getString());
+    {
+        if (mKey)
+            mButtons[VisualKeyButton]->mValText.setString(keyToStr(strToKey(std::string(mButtons[RealKeyButton]->mValText.getString()))));
+        else
+            mButtons[VisualKeyButton]->mValText.setString(mButtons[RealKeyButton]->mValText.getString());
+    }
     mButtons[VisualKeyButton]->mValText.setFillColor(mDefaultVisualKeyColor);
     mButtons[VisualKeyButton]->setupValPos();
 }
