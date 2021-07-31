@@ -46,13 +46,12 @@ void Menu::handleEvent(sf::Event event)
         if (!mWindow.isOpen())
         {
             sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-            mWindow.create(sf::VideoMode(812, 600), "Menu", sf::Style::Close);
+            mWindow.create(sf::VideoMode(812, 600), "JKPS Menu", sf::Style::Close);
             mWindow.setPosition(sf::Vector2i(
                 desktop.width  / 2 - mWindow.getSize().x / 2, 
                 desktop.height / 2 - mWindow.getSize().y / 2));
             mView = mWindow.getView();
             mView.setCenter(mView.getCenter().x, 0);
-            // mHighViewBounds = mWindow.getSize().y / 2;
         }
         else
         {
@@ -169,6 +168,8 @@ void Menu::render()
         mWindow.draw(*pair.second);
     mWindow.setView(mWindow.getDefaultView());
     mWindow.draw(mSliderBar);
+
+    mWindow.setView(mView);
 
     mWindow.display();
 }
