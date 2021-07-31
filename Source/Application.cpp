@@ -79,6 +79,16 @@ void Application::processInput()
         mMenu.saveConfig();
     }
 
+    if (mSettings.resetReloadAssetsRequest())
+    {
+        mFonts.clear();
+        mTextures.clear();
+        loadAssets();
+        mButtons->setupAssets(true);
+        mStatistics->setupText();
+        mBackground->setupTexture();
+        mMenu.saveConfig();
+    }
     unloadChangesQueue();
     mKPSWindow->handleOwnEvent();
     mMenu.handleOwnEvent();
@@ -161,7 +171,7 @@ void Application::unloadChangesQueue()
         }
         if (Button::parameterIdMatches(pair.first))
         {
-            mButtons->setupTextures();
+            mButtons->setupAssets(false);
             mButtons->setupKeyCounterTextVec();
             mButtons->highlightKey(mSettings.getButtonToChangeIndex());
         }
@@ -185,43 +195,27 @@ void Application::unloadChangesQueue()
 
 void Application::loadAssets()
 {
-    std::string defaultName = "Default";
-
-    if (Settings::ButtonTexturePath == defaultName)
+    if (!mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath))
         mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 58700);
-    else
-        mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath);
 
-    if (Settings::AnimationTexturePath == defaultName) 
+    if (!mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath))
         mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 60100);
-    else
-        mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath);
 
-    if (Settings::BackgroundTexturePath == defaultName)
+    if (!mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath))
         mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 2700);
-    else
-        mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath);
     
     
-    if (Settings::KeyCountersFontPath == defaultName)
+    if (!mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath))
         mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 446100);
-    else
-        mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath);
 
-    if (Settings::StatisticsFontPath == defaultName)
+    if (!mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath))
         mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
-    else
-        mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath);
 
-    if (Settings::KPSWindowTextFontPath == defaultName)
+    if (!mFonts.loadFromFile(Fonts::KPSText, Settings::KPSWindowTextFontPath))
         mFonts.loadFromMemory(Fonts::KPSText, Settings::DefaultKPSWindowFont, 459300);
-    else
-        mFonts.loadFromFile(Fonts::KPSText, Settings::KPSWindowTextFontPath);
 
-    if (Settings::KPSWindowNumberFontPath == defaultName)
+    if (!mFonts.loadFromFile(Fonts::KPSNumber, Settings::KPSWindowNumberFontPath))
         mFonts.loadFromMemory(Fonts::KPSNumber, Settings::DefaultKPSWindowFont, 459300);
-    else
-        mFonts.loadFromFile(Fonts::KPSNumber, Settings::KPSWindowNumberFontPath);
 
     sf::Image icon;
     icon.loadFromMemory(IconTexture, 53200);
