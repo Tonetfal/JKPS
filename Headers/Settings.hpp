@@ -32,6 +32,9 @@ class Settings
         static sf::Keyboard::Key    getButtonToChange();
         static int                  getButtonToChangeIndex();
 
+        static void                 requestToReloadAssets();
+        bool                        resetReloadAssetsRequest() const;
+
 
     private:
         void                        changeKeysAmount(sf::Keyboard::Key clickedKey);
@@ -159,4 +162,5 @@ class Settings
         static sf::Keyboard::Key    mButtonToChange;
         static bool                 mButtonAmountChanged;
         static bool                 mKeyWasChanged;
+        static bool                 mReloadAssetsRequest;
 };

@@ -117,6 +117,7 @@ int Settings::mButtonToChangeIndex(-1);
 sf::Keyboard::Key Settings::mButtonToChange(sf::Keyboard::Unknown);
 bool Settings::mButtonAmountChanged(false);
 bool Settings::mKeyWasChanged(false);
+bool Settings::mReloadAssetsRequest(false);
 
 Settings::Settings()
 : mWindow(nullptr)
@@ -287,4 +288,14 @@ sf::Keyboard::Key Settings::getButtonToChange()
 int Settings::getButtonToChangeIndex()
 {
     return mButtonToChangeIndex;
+}
+
+void Settings::requestToReloadAssets()
+{
+    mReloadAssetsRequest = true;
+}
+
+bool Settings::resetReloadAssetsRequest() const
+{
+    return mReloadAssetsRequest && !(mReloadAssetsRequest = false);
 }
