@@ -3,6 +3,7 @@
 #include "../Headers/Default media/Textures/vMark.hpp"
 #include "../Headers/Default media/Textures/xMark.hpp"
 #include "../Headers/Default media/Textures/RGB-Circle.hpp"
+#include "../Headers/Default media/Textures/RefreshTexture.hpp"
 #include "../Headers/Default media/Fonts/arial_monospaced.hpp"
 #include "../Headers/Default media/Fonts/RobotoMono.hpp"
 
@@ -42,7 +43,10 @@ void Menu::handleEvent(sf::Event event)
             mHighViewBounds = mWindow.getSize().y / 2;
         }
         else
+        {
             mWindow.close();
+            ParameterLine::deselectValue();
+        }
     }
 }
 
@@ -127,6 +131,7 @@ void Menu::loadTextures()
     mTextures.loadFromMemory(Textures::rgbCircle, RGB_Circle, 10700);
     mTextures.loadFromMemory(Textures::vMark, vMark, 6000);
     mTextures.loadFromMemory(Textures::xMark, xMark, 6100);
+    mTextures.loadFromMemory(Textures::Refresh, RefreshTexture, 6000);
 }
 
 void Menu::buildParametersMap()
@@ -197,15 +202,8 @@ void Menu::buildParametersMap()
 
 void Menu::buildParameterLines()
 {
-    unsigned additionalLine = 0;
     for (auto &pair : mParameters)
     {
-        if (pair.second->mType == LogicalParameter::Type::String)
-        {
-            ++additionalLine;
-            continue;
-        }
-
         mParameterLines.emplace(std::make_pair(ParameterLine::parIdToParLineId(pair.first), 
             new ParameterLine(pair.second, mFonts, mTextures, mWindow)));
     }
@@ -238,7 +236,7 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::MainWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::MainWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[KPS window]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Extra KPS window]"));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
@@ -304,7 +302,7 @@ void Menu::buildParameterLines()
         ++i;
     }
 
-    mLowViewBounds = distance * mParameterLines.size() - mHighViewBounds - distance * (additionalLine - 1);
+    mLowViewBounds = distance * mParameterLines.size() - mHighViewBounds;
 }
 
 void Menu::returnViewInBounds()
