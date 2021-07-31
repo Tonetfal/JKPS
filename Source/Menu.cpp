@@ -12,22 +12,29 @@
 
 #include <exception>
 
-std::string Menu::mProgramVersion("v0.8-alpha");
 
+std::string Menu::mProgramVersion("v0.8-alpha");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
+, mScrollCursor(sf::Vector2f(10, 200))
+, mScrollCursorDefaultColor(sf::Color(103,103,103))
+, mScrollCursorAimedColor(sf::Color(123,123,123))
+, mScrollCursorPressedColor(sf::Color(161,161,161))
 {
-    mWindow.setKeyRepeatEnabled(false);
-
     loadFonts();
     loadTextures();
+
     buildParametersMap();
     ConfigHelper::readConfig(mParameters, mParameterLines);
     buildParameterLines();
     saveConfig();
 
     mSettings.buildKeySelector();
+
+    mScrollCursor.setOrigin(mScrollCursor.getSize() / 2.f);
+    mScrollCursor.setPosition(806, 100);
+    mScrollCursor.setFillColor(mScrollCursorDefaultColor);
 }
 
 void Menu::handleEvent(sf::Event event)
@@ -38,9 +45,14 @@ void Menu::handleEvent(sf::Event event)
     {
         if (!mWindow.isOpen())
         {
-            mWindow.create(sf::VideoMode(800, 600), "Menu", sf::Style::Close);
+            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+            mWindow.create(sf::VideoMode(812, 600), "Menu", sf::Style::Close);
+            mWindow.setPosition(sf::Vector2i(
+                desktop.width  / 2 - mWindow.getSize().x / 2, 
+                desktop.height / 2 - mWindow.getSize().y / 2));
             mView = mWindow.getView();
-            mHighViewBounds = mWindow.getSize().y / 2;
+            mView.setCenter(mView.getCenter().x, 0);
+            // mHighViewBounds = mWindow.getSize().y / 2;
         }
         else
         {
@@ -53,16 +65,60 @@ void Menu::handleEvent(sf::Event event)
 void Menu::handleOwnEvent()
 {
     sf::Event event;
+    static bool scrollCursorClicked;
     while (mWindow.pollEvent(event))
     { 
         for (auto &pair : mParameterLines)
             pair.second->handleEvent(event);
 
-        if (event.type == sf::Event::MouseWheelScrolled)
+        if (event.type == sf::Event::MouseWheelScrolled || event.type == sf::Event::KeyPressed)
         {
-            mView.setCenter(mView.getCenter() - sf::Vector2f(0, 
-                mScrollSpeed * event.mouseWheelScroll.delta));
+            const sf::Vector2f viewCenter = mView.getCenter();
+            float offset = 0.f;
+
+            if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                offset = -mScrollSpeed * event.mouseWheelScroll.delta;
+            }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                sf::Keyboard::Key key = event.key.code;
+                const sf::Vector2f viewSize = mView.getSize();
+                if (key == sf::Keyboard::PageUp)
+                    offset = -viewSize.y;
+                if (key == sf::Keyboard::PageDown)
+                    offset = viewSize.y;
+            }
+
+            moveScrollCursorButtons(offset);
             returnViewInBounds();
+        }
+        if (event.type == sf::Event::MouseButtonPressed 
+        ||  event.type == sf::Event::MouseButtonReleased
+        ||  event.type == sf::Event::MouseMoved)
+        {
+            sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow));
+            sf::Color colorToSet = mScrollCursorDefaultColor;
+            if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
+                scrollCursorClicked = false;
+            if (mScrollCursor.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+            {
+                colorToSet = mScrollCursorAimedColor;
+                scrollCursorClicked = sf::Mouse::isButtonPressed(sf::Mouse::Left);
+            }
+            if (scrollCursorClicked)
+                colorToSet = mScrollCursorPressedColor;
+
+            mScrollCursor.setFillColor(colorToSet);
+            if (event.type == sf::Event::MouseMoved)
+            {
+                mousePos.x = event.mouseMove.x;
+                mousePos.y = event.mouseMove.y;
+            }
+            if (scrollCursorClicked)
+            {
+                moveScrollCursorMouse(mousePos);
+            }
         }
 
         if (event.type == sf::Event::Closed
@@ -72,6 +128,16 @@ void Menu::handleOwnEvent()
         {
             mWindow.close();
         }
+    }
+    if (!ParameterLine::isValueSelected())
+    {
+        float offset = 0.f;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+            offset = -mScrollSpeed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+            offset = mScrollSpeed;
+        moveScrollCursorButtons(offset);
+        returnViewInBounds();
     }
 
     for (auto &pair : mParameterLines)
@@ -98,6 +164,8 @@ void Menu::render()
 
     for (auto &pair : mParameterLines)
         mWindow.draw(*pair.second);
+    mWindow.setView(mWindow.getDefaultView());
+    mWindow.draw(mScrollCursor);
 
     mWindow.display();
 }
@@ -295,14 +363,67 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     float distance = 50;
-    unsigned i = 0;
+    unsigned i = 0, halfWindowSize = 300;
     for (auto &pair : mParameterLines)
     {
-        pair.second->setPosition(0, distance * i);
+        pair.second->setPosition(0, distance * i - halfWindowSize);
         ++i;
     }
 
-    mLowViewBounds = distance * mParameterLines.size() - mHighViewBounds;
+    mLowViewBounds = distance * mParameterLines.size() - halfWindowSize * 2;
+}
+
+
+// The distance parameter contains offset of the view, but the cursor is relative to the window,
+// so it's neccessary to normilize both offset and cursor Y position, and then project the sum
+// on the window
+void Menu::moveScrollCursorButtons(float offset)
+{
+    const sf::Vector2f cursorSize = mScrollCursor.getSize();
+    const sf::Vector2f cursorPosition = mScrollCursor.getPosition();
+    const sf::Vector2u windowSize = mWindow.getSize();
+    const float highBounds = cursorSize.y / 2;
+    const float lowBounds = mWindow.getSize().y - cursorSize.y / 2;
+
+    const float normilizedOffset = offset / mLowViewBounds / 1.5f;
+    const float normilizedCursorPosition = cursorPosition.y / windowSize.y;
+    float projectedCursorPositionY = windowSize.y * (normilizedCursorPosition + normilizedOffset);
+
+    if (projectedCursorPositionY < highBounds)
+        projectedCursorPositionY = highBounds;
+    if (projectedCursorPositionY > lowBounds)
+        projectedCursorPositionY = lowBounds;
+
+    const float cursorX = cursorPosition.x;
+    const float cursorY = projectedCursorPositionY;
+
+    mScrollCursor.setPosition(cursorX, cursorY);
+    mView.setCenter(mView.getCenter().x, mView.getCenter().y + offset);
+}
+
+// Real window height - 600, cursor height - 200
+// Virtual window should be 400, since the whole cursor must be in the window
+// Quick scatch - https://i.imgur.com/xBXP6II.png
+// Red - cursor, dark green - virtual window height, lime - real window 
+// The cursor height has to be normilized and projected on the real window
+void Menu::moveScrollCursorMouse(sf::Vector2i mousePos)
+{
+    const sf::Vector2f cursorSize = mScrollCursor.getSize();
+    const float highBounds = cursorSize.y / 2;
+    const float lowBounds = mWindow.getSize().y - cursorSize.y / 2;
+    if (mousePos.y < highBounds)
+        mousePos.y = highBounds;
+    if (mousePos.y > lowBounds)
+        mousePos.y = lowBounds;
+
+    const float cursorX = mScrollCursor.getPosition().x;
+    const float cursorY = mousePos.y;
+    const float virtualWindowHeight = mWindow.getSize().y - cursorSize.y;
+    const float virtualCursorPositionY = cursorY - cursorSize.y / 2.f;
+    const float normilizedViewHeight = virtualCursorPositionY / virtualWindowHeight;
+
+    mScrollCursor.setPosition(cursorX, cursorY);
+    mView.setCenter(mView.getCenter().x, mLowViewBounds * normilizedViewHeight);
 }
 
 void Menu::returnViewInBounds()

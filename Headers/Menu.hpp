@@ -10,6 +10,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include <vector>
 
@@ -39,6 +40,8 @@ class Menu
         void buildParametersMap();
         void buildParameterLines();
 
+        void moveScrollCursorButtons(float offset);
+        void moveScrollCursorMouse(sf::Vector2i mousePos);
         void returnViewInBounds();
 
 
@@ -53,6 +56,11 @@ class Menu
         float mHighViewBounds, mLowViewBounds;
 
         Settings mSettings;
+
+        sf::RectangleShape mScrollCursor;
+        const sf::Color mScrollCursorDefaultColor;
+        const sf::Color mScrollCursorAimedColor;
+        const sf::Color mScrollCursorPressedColor;
 
         std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> mParameters;
         std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> mParameterLines;
