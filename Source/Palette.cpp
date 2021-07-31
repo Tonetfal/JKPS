@@ -93,15 +93,23 @@ void Palette::moveLineIndicator()
 
     if (wasButtonPressedOnLine)
     {
+        // Make line indicator move even if cursor is outside the line
+        if (mousePos.y < 0)
+            mousePos.y = 0;
+
+        if (mousePos.y > mLine[mLineSize - 1].position.y)
+            mousePos.y = mLine[mLineSize - 1].position.y;
+
         if (mousePos.y >= 0 && mousePos.y <= mLine[mLineSize - 1].position.y)
             mLineElemIdx = positionToNumber(mousePos);
+
+        mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         goUp();
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         goDown();
 
-    mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
 }
 
 void Palette::goUp()
