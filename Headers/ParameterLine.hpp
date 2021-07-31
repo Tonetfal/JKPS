@@ -1,5 +1,8 @@
 #pragma once
 
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+
 #include "GraphicalParameter.hpp"
 #include "LogicalParameter.hpp"
 #include "ResourceIdentifiers.hpp"
@@ -147,14 +150,18 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         bool resetState();
         static void setColor(sf::Color color);
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
+        static void deselectValue();
 
         LogicalParameter::Type getType() const;
 
 
     private:
-        void handleButtonsInteractionEvent(sf::Event event);
         // Clicks with keyboard to modify value of buttons
         void handleValueModEvent(sf::Event event);
+        void handleButtonsInteractionEvent(sf::Event event);
+
+        bool tabulation(sf::Keyboard::Key key);
+        void selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos);
 
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
         void buildLimits(const FontHolder &fonts);
