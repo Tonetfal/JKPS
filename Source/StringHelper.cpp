@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+
 unsigned readAmountOfParms(const std::string &str)
 {
     unsigned amt = 0;
@@ -54,7 +55,7 @@ static void modifyNumOnIdx(std::string &str, unsigned idx, bool add, char num = 
     }
 }
 
-void addChOnIdx(std::string &str, unsigned idx, int ch)
+void addChOnIdx(std::string &str, unsigned idx, char ch)
 {
     modifyNumOnIdx(str, idx, true, ch);
 }

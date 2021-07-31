@@ -5,9 +5,10 @@
 
 #include <string>
 
+
 unsigned readAmountOfParms(const std::string &str);
 std::string readValue(const std::string &str, unsigned n);
-void addChOnIdx(std::string &str, unsigned idx, int num);
+void addChOnIdx(std::string &str, unsigned idx, char ch);
 void rmChOnIdx(std::string &str, unsigned idx);
 
 std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg = false);
