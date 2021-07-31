@@ -11,15 +11,18 @@
 sf::Color GraphicalParameter::defaultRectColor(sf::Color(120,120,120));
 sf::Color GraphicalParameter::defaultSelectedRectColor(sf::Color(200,200,200));
 const TextureHolder *GraphicalParameter::mTextures(nullptr);
+const FontHolder *GraphicalParameter::mFonts(nullptr);
 
 // All types, except Bool
-GraphicalParameter::GraphicalParameter(const std::string &str, const sf::Font &font, unsigned n, sf::Vector2f rectSize)
+GraphicalParameter::GraphicalParameter(const std::string &str, unsigned n, sf::Vector2f rectSize)
 {
+    assert(mTextures && mFonts);
+
     mRect.setSize(rectSize);
     mRect.setOrigin(mRect.getSize() / 2.f);
     mRect.setFillColor(defaultRectColor);
 
-    mValText.setFont(font);
+    mValText.setFont(mFonts->get(Fonts::Value));
     mValText.setString(str);
     setupValPos();
 
@@ -32,6 +35,12 @@ GraphicalParameter::GraphicalParameter(const std::string &str)
 {
     mValText.setString(str);
     setRightTexture();
+    mSprite.setOrigin(static_cast<sf::Vector2f>(mSprite.getTexture()->getSize()) / 2.f);
+}
+
+GraphicalParameter::GraphicalParameter(unsigned)
+{
+    mSprite.setTexture(mTextures->get(Textures::Refresh));
     mSprite.setOrigin(static_cast<sf::Vector2f>(mSprite.getTexture()->getSize()) / 2.f);
 }
 

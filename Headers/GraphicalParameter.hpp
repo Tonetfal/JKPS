@@ -16,8 +16,9 @@
 struct GraphicalParameter : public sf::Drawable, public sf::Transformable
 {
     public:
-        GraphicalParameter(const std::string &str, const sf::Font &font, unsigned n = 0, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
+        GraphicalParameter(const std::string &str, unsigned n, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
         GraphicalParameter(const std::string &str);
+        GraphicalParameter(unsigned);
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -32,6 +33,7 @@ struct GraphicalParameter : public sf::Drawable, public sf::Transformable
 
     public:
         static const TextureHolder *mTextures;
+        static const FontHolder *mFonts;
 
         sf::Sprite mSprite;
         sf::RectangleShape mRect;
