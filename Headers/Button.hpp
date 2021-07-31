@@ -33,7 +33,7 @@ class Button : public sf::Drawable, public sf::Transformable
         virtual void                draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void                        setFonts();
-        void                        setupTextures(); 
+        void                        setupAssets(bool newTexture); 
         void                        setupKeyCounterTextVec();
 
         void                        resize();
@@ -78,12 +78,11 @@ class Button : public sf::Drawable, public sf::Transformable
 
     
     private:
-        sf::Font*                   mKeyCountersFont;
+        const TextureHolder         &mTextures;
+        const FontHolder            &mFonts;
+
         std::vector<long>           mKeyCounters;
         std::vector<std::unique_ptr<sf::Text>> mButtonsText;
-
-        sf::Texture*                mButtonTexture;
-        sf::Texture*                mAnimationTexture;
 
         std::vector<std::unique_ptr<sf::Sprite>> mButtonsSprite;
         std::vector<std::unique_ptr<sf::Sprite>> mAnimationSprite;
@@ -92,4 +91,7 @@ class Button : public sf::Drawable, public sf::Transformable
 
         std::vector<float>          mCurDefaultTextHeight;
         std::vector<unsigned>       mKeyCounterDigits;
+
+        unsigned                    mButtonTextureWidth;
+        unsigned                    mButtonTextureHeight;
 };
