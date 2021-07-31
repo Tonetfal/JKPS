@@ -369,7 +369,7 @@ void readKeys(std::vector<std::unique_ptr<LogicalKey>> &keys, const std::string 
 
         sf::Keyboard::Key key = strToKey(keyStr);
 
-        checkStr = keyToStr(key);
+        checkStr = keyToStr(key, true);
         unsigned maxLength = 20;
         if (visualKeyStr.size() > maxLength || visualKeyStr.size() == 0)
             visualKeyStr = checkStr;
