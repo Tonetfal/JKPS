@@ -720,3 +720,8 @@ void ParameterLine::deselectValue()
     mSelectedLine = nullptr;
     mSelectedValueIndex = -1;
 }
+
+bool ParameterLine::isValueSelected()
+{
+    return mSelectedValue.get();
+}

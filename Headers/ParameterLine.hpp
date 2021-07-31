@@ -151,6 +151,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         static void setColor(sf::Color color);
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
         static void deselectValue();
+        static bool isValueSelected();
 
         LogicalParameter::Type getType() const;
 
