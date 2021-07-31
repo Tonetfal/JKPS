@@ -201,8 +201,15 @@ void Application::loadAssets()
     if (!mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath))
         mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 60100);
 
-    if (!mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath))
-        mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 2700);
+
+    Settings::isGreenscreenSet = Settings::BackgroundTexturePath == "GreenscreenBG.png";
+    if (Settings::isGreenscreenSet)
+        mTextures.loadFromMemory(Textures::Background, Settings::DefaultGreenscreenBackgroundTexture, 596);
+    else
+    {
+        if (!mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath))
+            mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 2700);
+    }
     
     
     if (!mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath))

@@ -67,6 +67,11 @@ std::string Settings::BackgroundTexturePath("none");
 sf::Color Settings::BackgroundColor(sf::Color::Transparent);
 bool Settings::ScaleBackground(-1);
 
+// Non config parameters
+
+bool Settings::isGreenscreenSet(false);
+
+
 // [Edit mode]
 sf::Color Settings::HighlightedKeyColor(sf::Color::Transparent);
 
@@ -98,7 +103,9 @@ unsigned char* Settings::KeyCountersDefaultFont = MainProgramFont;
 unsigned char* Settings::DefaultButtonTexture = ButtonTexture;
 unsigned char* Settings::DefaultAnimationTexture = AnimationTexture;
 unsigned char* Settings::DefaultBackgroundTexture = BackgroundTexture;
+unsigned char* Settings::DefaultGreenscreenBackgroundTexture = GreenscreenTexture;
 unsigned char* Settings::DefaultKPSWindowFont = KPSWindowDefaultFont;
+
 
 // Hot keys
 sf::Keyboard::Key Settings::KeyToIncreaseKeys(sf::Keyboard::Equal);
@@ -122,10 +129,6 @@ bool Settings::mReloadAssetsRequest(false);
 Settings::Settings()
 : mWindow(nullptr)
 { 
-    LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::Z), keyToStr(sf::Keyboard::Z), sf::Keyboard::Z));
-    LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::X), keyToStr(sf::Keyboard::X), sf::Keyboard::X));
-    LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Left), btnToStr(sf::Mouse::Left), sf::Mouse::Left));
-    LogicalButtons.emplace_back(new LogicalButton(btnToStr(sf::Mouse::Right), btnToStr(sf::Mouse::Right), sf::Mouse::Right));
 }
 
 void Settings::handleEvent(sf::Event event)

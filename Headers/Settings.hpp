@@ -107,6 +107,9 @@ class Settings
         static sf::Color            BackgroundColor;
         static bool                 ScaleBackground;
 
+        // Non config parameters
+        static bool                 isGreenscreenSet;
+
         // [Edit mode]
         static sf::Color            HighlightedKeyColor;
 
@@ -138,6 +141,7 @@ class Settings
         static unsigned char*       DefaultButtonTexture;
         static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
+        static unsigned char*       DefaultGreenscreenBackgroundTexture;
         static unsigned char*       DefaultKPSWindowFont;
 
         // Hot keys

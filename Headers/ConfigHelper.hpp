@@ -29,7 +29,7 @@ float readDigitParameter(const LogicalParameter &par, const std::string &valStr)
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr);
 bool readBoolParameter(const LogicalParameter &par, const std::string &valStr);
-void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
+void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 
 void readKeys(std::vector<std::unique_ptr<LogicalKey>> &keys, const std::string &keysStr, const std::string &visualKeysStr);
 bool isKeyAlreadyPresent(const std::vector<std::unique_ptr<LogicalKey>> &keys, sf::Keyboard::Key key, unsigned &cpyIdx, unsigned ignIdx);

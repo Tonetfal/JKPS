@@ -76,11 +76,8 @@ void readConfig(
     fillButtons(Settings::LogicalButtons);
 
     Settings::ButtonAmount = Settings::LogicalKeys.size() + Settings::LogicalButtons.size();
-    // If there are no keys - set 2 defaults
-    if (Settings::LogicalKeys.size() == 0 && Settings::LogicalButtons.size() == 0)
-        addDefaultKeys();
 
-    checkAssets(parameters);
+    controlAssets(parameters);
 
 
     // Finish work with files on last method
@@ -202,6 +199,10 @@ void writeParameter(LogicalParameter &par)
 
     if (par.mType == LogicalParameter::Type::String)
     {
+        if (par.mType == LogicalParameter::Type::String 
+        &&  Settings::BackgroundTexturePath == "GreenscreenBG.png")
+            return;
+            
         std::ifstream check(par.getString());
         check.is_open() ? check.close() : par.setString(par.getDefValStr());
     }
@@ -302,7 +303,7 @@ bool readBoolParameter(const LogicalParameter &par, const std::string &valStr)
 }
 
 // Check if passed assets are right
-void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
+void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
 {
     sf::Texture texture;
     sf::Font font;
@@ -322,11 +323,14 @@ void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter
             parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second->resetToDefaultValue();
         }
     if (Settings::BackgroundTexturePath != defAssetName)
+    {
+        if (Settings::BackgroundTexturePath != "GreenscreenBG.png")
         if (!texture.loadFromFile(Settings::BackgroundTexturePath))
         {
             ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BgTxtr)->second);
             parameters.find(LogicalParameter::ID::BgTxtr)->second->resetToDefaultValue();
         }
+    }
 
     // Fonts
     if (Settings::StatisticsFontPath != defAssetName)
