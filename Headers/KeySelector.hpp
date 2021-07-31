@@ -47,6 +47,8 @@ class KeySelector
         bool isOpen();
 
         void setMainWindowPointer(sf::RenderWindow *mainWindow);
+        
+        static bool isCharacter(sf::Keyboard::Key key);
 
 
     private:
@@ -59,7 +61,6 @@ class KeySelector
         void saveKey();
         void setCursorPos();
         void resetVisualKeyGfxButton(const std::string &str1, const std::string &str2);
-        bool isCharacter(sf::Keyboard::Key key) const;
         
 
     private:

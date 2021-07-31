@@ -24,11 +24,11 @@ KeySelector::KeySelector()
     if (!mFont.loadFromMemory(RobotoMono, 1100000))
         throw std::runtime_error("KeySelector::KeySelector - Failed to load default font");
 
-    std::unique_ptr<GraphicalParameter> realKeyGfx(new GraphicalParameter("Key", mFont, 0, sf::Vector2f(150, 25)));
+    std::unique_ptr<GraphicalParameter> realKeyGfx(new GraphicalParameter("Key", 0, sf::Vector2f(150, 25)));
     realKeyGfx->setPosition(mWindowSize.x / 2, 25);
     mButtons[RealKeyButton] = std::move(realKeyGfx);
     
-    std::unique_ptr<GraphicalParameter> visualKeyGfx(new GraphicalParameter("Visual key", mFont, 0, sf::Vector2f(250, 25)));
+    std::unique_ptr<GraphicalParameter> visualKeyGfx(new GraphicalParameter("Visual key", 0, sf::Vector2f(250, 25)));
     visualKeyGfx->setPosition(mWindowSize.x / 2, 75);
     // Make the text gray in order to show that it is a hint, not an actual text
     visualKeyGfx->mValText.setFillColor(mDefaultVisualKeyColor);
@@ -384,16 +384,19 @@ void KeySelector::resetVisualKeyGfxButton(const std::string &str1, const std::st
 {
     if (str1 == str2)
     {
+        std::string strToStr;
         if (mKey)
-            mButtons[VisualKeyButton]->mValText.setString(keyToStr(strToKey(std::string(mButtons[RealKeyButton]->mValText.getString()))));
+            strToStr = keyToStr(strToKey(std::string(mButtons[RealKeyButton]->mValText.getString())));
         else
-            mButtons[VisualKeyButton]->mValText.setString(mButtons[RealKeyButton]->mValText.getString());
+            strToStr = mButtons[RealKeyButton]->mValText.getString();
+
+        mButtons[VisualKeyButton]->mValText.setString(strToStr);
     }
     mButtons[VisualKeyButton]->mValText.setFillColor(mDefaultVisualKeyColor);
     mButtons[VisualKeyButton]->setupValPos();
 }
 
-bool KeySelector::isCharacter(sf::Keyboard::Key key) const
+bool KeySelector::isCharacter(sf::Keyboard::Key key)
 {
     return 
         (key >= sf::Keyboard::A         && key <= sf::Keyboard::Num9)
