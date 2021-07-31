@@ -11,8 +11,9 @@
 
 Background::Background(const TextureHolder& textureHolder, sf::RenderWindow& window)
 : mWindow(window)
+, mTextures(textureHolder)
 { 
-    mBackgroundSprite.setTexture(textureHolder.get(Textures::Background));
+    mBackgroundSprite.setTexture(mTextures.get(Textures::Background));
     setupTexture();
 }
 
@@ -48,6 +49,7 @@ void Background::scale()
 
 void Background::setupTexture()
 {
+    mBackgroundSprite.setTexture(mTextures.get(Textures::Background));
     mBackgroundSprite.setColor(Settings::BackgroundColor);
     scale();
 }
