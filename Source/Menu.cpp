@@ -136,8 +136,11 @@ void Menu::handleOwnEvent()
             offset = -mScrollSpeed;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
             offset = mScrollSpeed;
-        moveSliderBarButtons(offset);
-        returnViewInBounds();
+        if (offset != 0.f)
+        {
+            moveSliderBarButtons(offset);
+            returnViewInBounds();
+        }
     }
 
     for (auto &pair : mParameterLines)
