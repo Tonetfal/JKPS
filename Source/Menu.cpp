@@ -17,10 +17,10 @@ std::string Menu::mProgramVersion("v0.8-alpha");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
-, mScrollCursor(sf::Vector2f(10, 200))
-, mScrollCursorDefaultColor(sf::Color(103,103,103))
-, mScrollCursorAimedColor(sf::Color(123,123,123))
-, mScrollCursorPressedColor(sf::Color(161,161,161))
+, mSliderBar(sf::Vector2f(10, 200))
+, mSliderBarDefaultColor(sf::Color(103,103,103))
+, mSliderBarAimedColor(sf::Color(123,123,123))
+, mSliderBarPressedColor(sf::Color(161,161,161))
 {
     loadFonts();
     loadTextures();
@@ -32,9 +32,9 @@ Menu::Menu()
 
     mSettings.buildKeySelector();
 
-    mScrollCursor.setOrigin(mScrollCursor.getSize() / 2.f);
-    mScrollCursor.setPosition(806, 100);
-    mScrollCursor.setFillColor(mScrollCursorDefaultColor);
+    mSliderBar.setOrigin(mSliderBar.getSize() / 2.f);
+    mSliderBar.setPosition(806, 100);
+    mSliderBar.setFillColor(mSliderBarDefaultColor);
 }
 
 void Menu::handleEvent(sf::Event event)
@@ -90,7 +90,7 @@ void Menu::handleOwnEvent()
                     offset = viewSize.y;
             }
 
-            moveScrollCursorButtons(offset);
+            moveSliderBarButtons(offset);
             returnViewInBounds();
         }
         if (event.type == sf::Event::MouseButtonPressed 
@@ -98,18 +98,18 @@ void Menu::handleOwnEvent()
         ||  event.type == sf::Event::MouseMoved)
         {
             sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow));
-            sf::Color colorToSet = mScrollCursorDefaultColor;
+            sf::Color colorToSet = mSliderBarDefaultColor;
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
                 scrollCursorClicked = false;
-            if (mScrollCursor.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
+            if (mSliderBar.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
             {
-                colorToSet = mScrollCursorAimedColor;
+                colorToSet = mSliderBarAimedColor;
                 scrollCursorClicked = sf::Mouse::isButtonPressed(sf::Mouse::Left);
             }
             if (scrollCursorClicked)
-                colorToSet = mScrollCursorPressedColor;
+                colorToSet = mSliderBarPressedColor;
 
-            mScrollCursor.setFillColor(colorToSet);
+            mSliderBar.setFillColor(colorToSet);
             if (event.type == sf::Event::MouseMoved)
             {
                 mousePos.x = event.mouseMove.x;
@@ -117,7 +117,7 @@ void Menu::handleOwnEvent()
             }
             if (scrollCursorClicked)
             {
-                moveScrollCursorMouse(mousePos);
+                moveSliderBarMouse(mousePos);
             }
         }
 
@@ -136,7 +136,7 @@ void Menu::handleOwnEvent()
             offset = -mScrollSpeed;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
             offset = mScrollSpeed;
-        moveScrollCursorButtons(offset);
+        moveSliderBarButtons(offset);
         returnViewInBounds();
     }
 
@@ -165,7 +165,7 @@ void Menu::render()
     for (auto &pair : mParameterLines)
         mWindow.draw(*pair.second);
     mWindow.setView(mWindow.getDefaultView());
-    mWindow.draw(mScrollCursor);
+    mWindow.draw(mSliderBar);
 
     mWindow.display();
 }
@@ -373,56 +373,56 @@ void Menu::buildParameterLines()
     mLowViewBounds = distance * mParameterLines.size() - halfWindowSize * 2;
 }
 
-
-// The distance parameter contains offset of the view, but the cursor is relative to the window,
-// so it's neccessary to normilize both offset and cursor Y position, and then project the sum
-// on the window
-void Menu::moveScrollCursorButtons(float offset)
+// The distance parameter contains offset of the view, 
+// but the sliderbar is relative to the window,
+// so it's neccessary to normilize both offset and cursor Y position,
+// and then project the sum on the window
+void Menu::moveSliderBarButtons(float offset)
 {
-    const sf::Vector2f cursorSize = mScrollCursor.getSize();
-    const sf::Vector2f cursorPosition = mScrollCursor.getPosition();
+    const sf::Vector2f sliderbarSize = mSliderBar.getSize();
+    const sf::Vector2f sliberbarPosition = mSliderBar.getPosition();
     const sf::Vector2u windowSize = mWindow.getSize();
-    const float highBounds = cursorSize.y / 2;
-    const float lowBounds = mWindow.getSize().y - cursorSize.y / 2;
+    const float highBounds = sliderbarSize.y / 2;
+    const float lowBounds = mWindow.getSize().y - sliderbarSize.y / 2;
 
     const float normilizedOffset = offset / mLowViewBounds / 1.5f;
-    const float normilizedCursorPosition = cursorPosition.y / windowSize.y;
-    float projectedCursorPositionY = windowSize.y * (normilizedCursorPosition + normilizedOffset);
+    const float normilizedCursorPosition = sliberbarPosition.y / windowSize.y;
+    float projectedSliderbarPositionY = windowSize.y * (normilizedCursorPosition + normilizedOffset);
 
-    if (projectedCursorPositionY < highBounds)
-        projectedCursorPositionY = highBounds;
-    if (projectedCursorPositionY > lowBounds)
-        projectedCursorPositionY = lowBounds;
+    if (projectedSliderbarPositionY < highBounds)
+        projectedSliderbarPositionY = highBounds;
+    if (projectedSliderbarPositionY > lowBounds)
+        projectedSliderbarPositionY = lowBounds;
 
-    const float cursorX = cursorPosition.x;
-    const float cursorY = projectedCursorPositionY;
+    const float sliderbarX = sliberbarPosition.x;
+    const float sliderbarY = projectedSliderbarPositionY;
 
-    mScrollCursor.setPosition(cursorX, cursorY);
+    mSliderBar.setPosition(sliderbarX, sliderbarY);
     mView.setCenter(mView.getCenter().x, mView.getCenter().y + offset);
 }
 
-// Real window height - 600, cursor height - 200
-// Virtual window should be 400, since the whole cursor must be in the window
+// Real window height - 600, sliderbar height - 200
+// Virtual window should be 400, since the whole sliderbar must be in the window
 // Quick scatch - https://i.imgur.com/xBXP6II.png
-// Red - cursor, dark green - virtual window height, lime - real window 
-// The cursor height has to be normilized and projected on the real window
-void Menu::moveScrollCursorMouse(sf::Vector2i mousePos)
+// Red - sliderbar, dark green - virtual window height, lime - real window 
+// The sliderbar height has to be normilized and projected on the real window
+void Menu::moveSliderBarMouse(sf::Vector2i mousePos)
 {
-    const sf::Vector2f cursorSize = mScrollCursor.getSize();
-    const float highBounds = cursorSize.y / 2;
-    const float lowBounds = mWindow.getSize().y - cursorSize.y / 2;
+    const sf::Vector2f sliderbarSize = mSliderBar.getSize();
+    const float highBounds = sliderbarSize.y / 2;
+    const float lowBounds = mWindow.getSize().y - sliderbarSize.y / 2;
     if (mousePos.y < highBounds)
         mousePos.y = highBounds;
     if (mousePos.y > lowBounds)
         mousePos.y = lowBounds;
 
-    const float cursorX = mScrollCursor.getPosition().x;
-    const float cursorY = mousePos.y;
-    const float virtualWindowHeight = mWindow.getSize().y - cursorSize.y;
-    const float virtualCursorPositionY = cursorY - cursorSize.y / 2.f;
+    const float sliderbarX = mSliderBar.getPosition().x;
+    const float sliderbarY = mousePos.y;
+    const float virtualWindowHeight = mWindow.getSize().y - sliderbarSize.y;
+    const float virtualCursorPositionY = sliderbarY - sliderbarSize.y / 2.f;
     const float normilizedViewHeight = virtualCursorPositionY / virtualWindowHeight;
 
-    mScrollCursor.setPosition(cursorX, cursorY);
+    mSliderBar.setPosition(sliderbarX, sliderbarY);
     mView.setCenter(mView.getCenter().x, mLowViewBounds * normilizedViewHeight);
 }
 

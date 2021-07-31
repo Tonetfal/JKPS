@@ -40,8 +40,8 @@ class Menu
         void buildParametersMap();
         void buildParameterLines();
 
-        void moveScrollCursorButtons(float offset);
-        void moveScrollCursorMouse(sf::Vector2i mousePos);
+        void moveSliderBarButtons(float offset);
+        void moveSliderBarMouse(sf::Vector2i mousePos);
         void returnViewInBounds();
 
 
@@ -57,10 +57,10 @@ class Menu
 
         Settings mSettings;
 
-        sf::RectangleShape mScrollCursor;
-        const sf::Color mScrollCursorDefaultColor;
-        const sf::Color mScrollCursorAimedColor;
-        const sf::Color mScrollCursorPressedColor;
+        sf::RectangleShape mSliderBar;
+        const sf::Color mSliderBarDefaultColor;
+        const sf::Color mSliderBarAimedColor;
+        const sf::Color mSliderBarPressedColor;
 
         std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> mParameters;
         std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> mParameterLines;
