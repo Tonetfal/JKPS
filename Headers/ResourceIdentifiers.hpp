@@ -10,6 +10,7 @@ namespace Textures
         rgbCircle,
         vMark,
         xMark,
+        Refresh,
     };
 }
 
