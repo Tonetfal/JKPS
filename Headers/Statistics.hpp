@@ -32,7 +32,6 @@ class Statistics : public sf::Drawable, public sf::Transformable
                                     Statistics(const FontHolder& fonts);
 
         void                        update(size_t KeyPerSecond, size_t BeatsPerMinute, std::vector<int>& clickedKeys);
-        void                        resize();
         virtual void                draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void                        setupText();
@@ -43,6 +42,7 @@ class Statistics : public sf::Drawable, public sf::Transformable
 
         std::size_t                 getTotalStatisticsHeight() const;
 
+        void                        resize();
         void                        clear();
 
         static bool                 parameterIdMatches(LogicalParameter::ID id);
@@ -61,7 +61,7 @@ class Statistics : public sf::Drawable, public sf::Transformable
 
 
     private:
-        sf::Font*                   mStatisticsFont;
+        const FontHolder            &mFonts;
 
         DataHolder<sf::Text, ID>    mTexts;
         DataHolder<long, ID>        mLongs;
