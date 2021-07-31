@@ -91,7 +91,4 @@ class Button : public sf::Drawable, public sf::Transformable
 
         std::vector<float>          mCurDefaultTextHeight;
         std::vector<unsigned>       mKeyCounterDigits;
-
-        unsigned                    mButtonTextureWidth;
-        unsigned                    mButtonTextureHeight;
 };

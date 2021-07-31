@@ -12,8 +12,6 @@
 Button::Button(const TextureHolder& textureHolder, const FontHolder& fontHolder)
 : mTextures(textureHolder)
 , mFonts(fontHolder)
-, mButtonTextureWidth(0)
-, mButtonTextureHeight(0)
 { 
     assert(AnimationStyle(Settings::AnimationStyle) >= Light && AnimationStyle(Settings::AnimationStyle) <= Press); 
 
@@ -144,13 +142,6 @@ void Button::setFonts()
 
 void Button::setupAssets(bool newTexture)
 {
-    if (newTexture)
-    {
-        const sf::Texture &texture = mTextures.get(Textures::KeyButton);
-        mButtonTextureWidth = texture.getSize().x;
-        mButtonTextureHeight = texture.getSize().y;
-    }
-
     resizeVectors();
     setFonts();
 
@@ -238,9 +229,10 @@ void Button::setButtonPositions(std::vector<std::unique_ptr<sf::Sprite>>& vector
 
 sf::Vector2f Button::getDefaultScale() const
 {
+    const sf::Vector2u textureSize = mTextures.get(Textures::KeyButton).getSize();
     sf::Vector2f scale(
-        Settings::ButtonTextureSize.x / static_cast<float>(mButtonTextureWidth), 
-        Settings::ButtonTextureSize.y / static_cast<float>(mButtonTextureHeight));
+        Settings::ButtonTextureSize.x / static_cast<float>(textureSize.x), 
+        Settings::ButtonTextureSize.y / static_cast<float>(textureSize.y));
 
     Settings::ScaledAnimationScale = sf::Vector2f(
         scale.x - scale.x * (1.f - Settings::AnimationScale.x / 100),
