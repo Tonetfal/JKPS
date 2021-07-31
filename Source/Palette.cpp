@@ -78,7 +78,7 @@ void Palette::processInput()
         ||  sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             moveLineIndicator();
-            if (wasButtonPressedOnCanvas)
+            if (wasButtonPressedOnCanvas && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 moveCanvasIndicator();
             setColor();
         }
@@ -125,13 +125,23 @@ void Palette::moveCanvasIndicator()
     sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
         static_cast<sf::Vector2i>(mWindowOffset));
 
-    if (!(sf::Mouse::isButtonPressed(sf::Mouse::Left) 
-    &&  mCanvasRect.contains(sf::Vector2f(mousePos))))
-        return;
+    // Make canvas indicator move even if cursor is outside the palette
+    if (mousePos.x < mCanvasRect.left)
+        mousePos.x = mCanvasRect.left;
+
+    if (mousePos.x > mCanvasRect.width + mCanvasRect.left)
+        mousePos.x = mCanvasRect.width + mCanvasRect.left;
+
+    if (mousePos.y < mCanvasRect.top)
+        mousePos.y = mCanvasRect.top;
+
+    if (mousePos.y > mCanvasRect.height)
+        mousePos.y = mCanvasRect.height;
 
     mNormilizedMouseVec = sf::Vector2f(
         (mousePos.x - mCanvasRect.left) / mCanvasRect.width, 
         (mousePos.y - mCanvasRect.top) / mCanvasRect.height);
+    
     mCanvasIndicator.setPosition(sf::Vector2f(mousePos));
 }
 
@@ -204,7 +214,7 @@ void Palette::render()
 
 void Palette::setColorOnPalette(sf::Color color)
 {
-    
+    // set cursor on the palette
 }
 
 void Palette::openWindow()
