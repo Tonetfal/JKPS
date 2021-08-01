@@ -20,7 +20,6 @@ Palette::Palette(int)
 
     sf::Color color(sf::Color::Red);
     float colorStep = mLineSize / 2, leftSide = 10.f, rightSide = 50.f;
-    int s = 0;
     for (unsigned i = 0; i < mLineSize; i += 2)
     {
         float y = mDistance * i / 2;
@@ -83,7 +82,6 @@ void Palette::processInput()
             setColor();
         }
     }
-
 }
 
 void Palette::moveLineIndicator()
@@ -185,7 +183,7 @@ void Palette::processOwnEvents()
             setColor();
         }
 
-        // Don't move the indicator of something if the left mouse button wasn't pressed on that area
+        // Don't move the indicator of anything if the left mouse button wasn't pressed on that area
         if (event.type == sf::Event::MouseButtonPressed)
         {
             sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
