@@ -98,7 +98,7 @@ class Settings
         static sf::Color            ButtonTextureColor;
 
         // [Animation graphics]
-        static int                  AnimationStyle;
+        static unsigned             AnimationStyle;
         static std::string          AnimationTexturePath;
         static std::size_t          AnimationVelocity;
         static sf::Vector2f         AnimationScale;

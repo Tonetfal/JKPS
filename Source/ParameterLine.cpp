@@ -74,6 +74,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             return;
 
         std::string str(mSelectedValue->mValText.getString());
+        sf::Keyboard::Key key = event.key.code;
         bool isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
         int btnIdx = 0;
         if (mType == LogicalParameter::Type::Color
@@ -93,8 +94,6 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             assert(btnIdx != -1);
             str = mParameter->getValPt(btnIdx);
         }
-        sf::Keyboard::Key key = event.key.code;
-        
 
         if (!isStrType
         && ((key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
@@ -156,8 +155,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
 
         if (!isStrType && key == sf::Keyboard::Hyphen)
         {
-            if (mType != LogicalParameter::Type::Unsigned && mType != LogicalParameter::Type::Color
-            &&  mParameter->mLowLimits >= 0)
+            if (mType == LogicalParameter::Type::Unsigned || mType == LogicalParameter::Type::Color)
                 return;
 
             if (str[0] != '-')
@@ -315,7 +313,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 }
             }
 
-            if ((event.type == sf::Event::KeyPressed && key == sf::Keyboard::Escape) 
+            if ((event.type == sf::Event::KeyPressed && (key == sf::Keyboard::Escape || key == sf::Keyboard::Enter)) 
             ||  (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Right))
             {
                 deselect();

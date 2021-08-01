@@ -55,7 +55,7 @@ sf::Vector2u Settings::ButtonTextureSize(0, 0);
 sf::Color Settings::ButtonTextureColor(sf::Color::Transparent);
 
 // [Animation graphics]
-int Settings::AnimationStyle(-1);
+unsigned Settings::AnimationStyle(0);
 std::string Settings::AnimationTexturePath("none");
 std::size_t Settings::AnimationVelocity(0);
 sf::Vector2f Settings::AnimationScale(-1.f, -1.f);
