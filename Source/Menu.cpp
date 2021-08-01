@@ -10,8 +10,6 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
 
-#include <exception>
-
 
 std::string Menu::mProgramVersion("v0.8-alpha");
 
@@ -166,10 +164,11 @@ void Menu::render()
 
     for (auto &pair : mParameterLines)
         mWindow.draw(*pair.second);
+
     mWindow.setView(mWindow.getDefaultView());
     mWindow.draw(mSliderBar);
-
     mWindow.setView(mView);
+
 
     mWindow.display();
 }
@@ -210,7 +209,7 @@ void Menu::buildParametersMap()
 {
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::StatisticsDistance, "Statistics text distance", "5", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SpaceBtwBtnAndStat, new LogicalParameter(LogicalParameter::Type::Float, &Settings::SpaceBetweenButtonsAndStatistics, "Space between buttons and statistics", "15", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsFontPath, "Statistics text font", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::StatisticsFontPath, "Statistics text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColor, "Statistics text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSize, "Statistics text character size", "14", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsBold, "Statistics text bold", "False")));
@@ -220,8 +219,13 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowMaxKPS, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowMaxKPS, "Show max KPS on separate line", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowTotal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowTotal, "Show total", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowBPM, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowBPMText, "Show BPM", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPSText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsKPSText, "KPS text", "KPS")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPS2Text, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsKPS2Text, "KPS text when it is 0 and Max KPS is disabled", "Max")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextMaxKPSText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsMaxKPSText, "Max KPS text", "Max KPS")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextTotalText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsTotalText, "Total text", "Total")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBPMText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsBPMText, "BPM text", "BPM")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::String, &Settings::KeyCountersFontPath, "Buttons text font", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KeyCountersFontPath, "Buttons text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyCountersTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KeyCountersTextCharacterSize, "Buttons text character size", "14", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextWidth, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCounterWidth, "Buttons text width", "0", -500, 500)));
@@ -234,18 +238,18 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKeyCtrs, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowKeyCountersText, "Show key counters", "True")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::ButtonDistance, "Button distance", "10", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtr, new LogicalParameter(LogicalParameter::Type::String, &Settings::ButtonTexturePath, "Button texture", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::ButtonTexturePath, "Button texture", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrSz, new LogicalParameter(LogicalParameter::Type::VectorU, &Settings::ButtonTextureSize, "Button texture size", "60,60", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextureColor, "Button texture color", "30,30,30,255")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxStl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::AnimationStyle, "Animation style", "1", 1, 2)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxTxtr, new LogicalParameter(LogicalParameter::Type::String, &Settings::AnimationTexturePath, "Animation texture", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::AnimationTexturePath, "Animation texture", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxVel, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::AnimationVelocity, "Animation velocity", "5", 1, 120)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxScl, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::AnimationScale, "Animation scale on click (%)", "100,100", 0, 200)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::AnimationColor, "Animation color", "255,180,0,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxOffset, new LogicalParameter(LogicalParameter::Type::Float, &Settings::AnimationOffset, "Animation offset", "3", -100, 100)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr, new LogicalParameter(LogicalParameter::Type::String, &Settings::BackgroundTexturePath, "Background texture", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::BackgroundTexturePath, "Background texture", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::BackgroundColor, "Background color", "170,170,170,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ScaleBackground, "Scale background texture if it does not fit", "True")));
 
@@ -262,8 +266,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwBgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSBackgroundColor, "KPS Background color", "0,177,64,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSTextColor, "KPS text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSNumberColor, "KPS number color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtFont, new LogicalParameter(LogicalParameter::Type::String, &Settings::KPSWindowTextFontPath, "KPS window text font", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumFont, new LogicalParameter(LogicalParameter::Type::String, &Settings::KPSWindowNumberFontPath, "KPS window number font", "Default", -50)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KPSWindowTextFontPath, "KPS window text font", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KPSWindowNumberFontPath, "KPS window number font", "Default", -50)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
