@@ -14,10 +14,10 @@ Statistics::Statistics(const FontHolder& fonts)
     setupLong(TotalKeys);
     setupLong(BPM);
     
-    setupString(KPS, "KPS");
-    setupString(MaxKPS, "Max KPS");
-    setupString(TotalKeys, "Total");
-    setupString(BPM, "BPM");
+    setupString(KPS, Settings::StatisticsKPSText);
+    setupString(MaxKPS, Settings::StatisticsMaxKPSText);
+    setupString(TotalKeys, Settings::StatisticsTotalText);
+    setupString(BPM, Settings::StatisticsBPMText);
 
     mTexts.build(KPS);
     mTexts.build(MaxKPS);
@@ -46,11 +46,11 @@ void Statistics::update(std::size_t KeyPerSecond,
             if (mLongs.get(KPS) == 0)
             {
                 mLongs.get(KPS) = mLongs.get(MaxKPS);
-                mStrings.get(KPS) = "Max";
+                mStrings.get(KPS) = Settings::StatisticsKPS2Text;
             }
             else
             {
-                mStrings.get(KPS) = "KPS";
+                mStrings.get(KPS) = Settings::StatisticsKPSText;
             }
         }
 
@@ -88,15 +88,17 @@ void Statistics::draw(sf::RenderTarget &target, sf::RenderStates states) const
 void Statistics::setupText()
 {
     setFonts();
+
+    mStrings.get(KPS) = Settings::ShowMaxKPS ? Settings::StatisticsKPSText : Settings::StatisticsKPS2Text;
+    mStrings.get(MaxKPS) = Settings::StatisticsMaxKPSText;
+    mStrings.get(TotalKeys) = Settings::StatisticsTotalText;
+    mStrings.get(BPM) = Settings::StatisticsBPMText;
+
     setupText(KPS);
     setupText(MaxKPS);
     setupText(TotalKeys);
     setupText(BPM);
     setTextPositions();
-
-    // If user switches ShowMaxKPS from false to true, then KPS line remains with "Max" string
-    if (Settings::ShowMaxKPS)
-        mStrings.get(KPS) = "KPS";
 }
 
 void Statistics::setFonts()
@@ -206,7 +208,7 @@ void Statistics::setupString(ID id, const std::string& name)
 
 void Statistics::setTextString(ID id)
 {
-    mTexts.get(id).setString((mStrings.get(id) + ": " + std::to_string(mLongs.get(id))).c_str());
+    mTexts.get(id).setString((mStrings.get(id) + std::to_string(mLongs.get(id))).c_str());
 }
 
 unsigned int Statistics::getStatisticsWidth() const
@@ -277,5 +279,10 @@ bool Statistics::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextShowKPS ||
         id == LogicalParameter::ID::StatTextShowMaxKPS ||
         id == LogicalParameter::ID::StatTextShowTotal ||
-        id == LogicalParameter::ID::StatTextShowBPM;
+        id == LogicalParameter::ID::StatTextShowBPM ||
+        id == LogicalParameter::ID::StatTextKPSText ||
+        id == LogicalParameter::ID::StatTextKPS2Text ||
+        id == LogicalParameter::ID::StatTextMaxKPSText ||
+        id == LogicalParameter::ID::StatTextTotalText ||
+        id == LogicalParameter::ID::StatTextBPMText;
 }
