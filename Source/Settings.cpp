@@ -29,6 +29,11 @@ bool Settings::ShowKPS(-1);
 bool Settings::ShowMaxKPS(-1);
 bool Settings::ShowTotal(-1);
 bool Settings::ShowBPMText(-1);
+std::string Settings::StatisticsKPSText("none");
+std::string Settings::StatisticsKPS2Text("none");
+std::string Settings::StatisticsMaxKPSText("none");
+std::string Settings::StatisticsTotalText("none");
+std::string Settings::StatisticsBPMText("none");
 
 // [Button text]
 std::string Settings::KeyCountersFontPath("none");

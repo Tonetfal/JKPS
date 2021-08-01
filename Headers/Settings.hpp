@@ -70,6 +70,11 @@ class Settings
         static bool                 ShowMaxKPS;
         static bool                 ShowTotal;
         static bool                 ShowBPMText;
+        static std::string          StatisticsKPSText;
+        static std::string          StatisticsKPS2Text;
+        static std::string          StatisticsMaxKPSText;
+        static std::string          StatisticsTotalText;
+        static std::string          StatisticsBPMText;
 
         // [Button text]
         static std::string          KeyCountersFontPath;
