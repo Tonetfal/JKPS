@@ -29,6 +29,7 @@ Application::Application(Menu &menu)
     mKPSWindow = std::move(kpsWindow);
 
     mSettings.setWindowReference(mWindow);
+    mSettings.setButtonsReference(*mButtons);
 }
 
 void Application::run()
@@ -235,7 +236,9 @@ void Application::openWindow()
 
     mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), 
         "JKPS", Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None);
-    mWindow.setPosition(sf::Vector2i(desktop.width / 2 - mWindow.getSize().x / 2, desktop.height / 2 - mWindow.getSize().y / 2));
+    mWindow.setPosition(sf::Vector2i(
+        desktop.width / 2  - mWindow.getSize().x / 2, 
+        desktop.height / 2 - mWindow.getSize().y / 2));
     mWindow.setKeyRepeatEnabled(false);
     mWindow.setFramerateLimit(60);
 }
