@@ -50,6 +50,7 @@ void Menu::handleEvent(sf::Event event)
                 desktop.height / 2 - mWindow.getSize().y / 2));
             mView = mWindow.getView();
             mView.setCenter(mView.getCenter().x, 0);
+            mSliderBar.setPosition(mSliderBar.getPosition().x, mSliderBar.getSize().y / 2);
         }
         else
         {
@@ -136,7 +137,7 @@ void Menu::handleOwnEvent()
             offset = mScrollSpeed;
         if (offset != 0.f)
         {
-            moveSliderBarButtons(offset);
+            moveSliderBarButtons(offset / 3);
             returnViewInBounds();
         }
     }
