@@ -176,7 +176,7 @@ std::string readParameter(const std::string &parName)
 void writeParameter(LogicalParameter &par)
 {
     std::string valStr = readParameter(par.mParName);
-    if (valStr == "")
+    if (valStr == "" && par.mType != LogicalParameter::Type::String)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par);
