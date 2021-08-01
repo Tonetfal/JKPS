@@ -24,6 +24,7 @@ class KPSWindow
     private:
         void                    moveWindow();
         void                    calculateWidthCenter(unsigned idx) const;
+        void                    openWindow();
 
 
     private:
