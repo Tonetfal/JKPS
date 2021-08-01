@@ -11,7 +11,7 @@
 #include <SFML/System/Clock.hpp>
 
 
-std::string Menu::mProgramVersion("v0.8-alpha");
+std::string Menu::mProgramVersion("v0.8-alpha-hotfix");
 
 Menu::Menu()
 : mScrollSpeed(40.f)

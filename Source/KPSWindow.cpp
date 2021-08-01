@@ -18,8 +18,7 @@ KPSWindow::KPSWindow(const FontHolder &fonts)
     mKPSNumber.setString("0");
     if (Settings::KPSWindowEnabledFromStart)
     {
-        mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
-            Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
+        openWindow();
     }
 
     setupText();
@@ -34,8 +33,7 @@ void KPSWindow::handleEvent(sf::Event event)
     {
         if (!mWindow.isOpen())
         {
-            mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
-                Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
+            openWindow();
         }
         else
         {
@@ -116,4 +114,15 @@ bool KPSWindow::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::KPSWndwNumClr ||
         id == LogicalParameter::ID::KPSWndwTopPadding ||
         id == LogicalParameter::ID::KPSWndwDistBtw;
+}
+
+void KPSWindow::openWindow()
+{
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+
+    mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
+        Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
+    mWindow.setPosition(sf::Vector2i(
+        desktop.width / 1.5  - mWindow.getSize().x / 2, 
+        desktop.height / 2 - mWindow.getSize().y / 2));
 }

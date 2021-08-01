@@ -1,6 +1,7 @@
 #include "../Headers/Settings.hpp"
 #include "../Headers/ConfigHelper.hpp"
 #include "../Headers/DefaultFiles.hpp"
+#include "../Headers/Button.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -54,7 +55,7 @@ sf::Vector2u Settings::ButtonTextureSize(0, 0);
 sf::Color Settings::ButtonTextureColor(sf::Color::Transparent);
 
 // [Animation graphics]
-int Settings::AnimationStyle(-1);
+unsigned Settings::AnimationStyle(0);
 std::string Settings::AnimationTexturePath("none");
 std::size_t Settings::AnimationVelocity(0);
 sf::Vector2f Settings::AnimationScale(-1.f, -1.f);
@@ -132,6 +133,7 @@ bool Settings::mReloadAssetsRequest(false);
 
 Settings::Settings()
 : mWindow(nullptr)
+, mButton(nullptr)
 { 
 }
 
@@ -257,18 +259,23 @@ bool Settings::isPressPerformedOnButton(unsigned &buttonIndex)
 
 bool Settings::isMouseInRange(unsigned index)
 {
-    sf::Vector2i mousePosition(sf::Mouse::getPosition(*mWindow));
+    const sf::Vector2i mousePosition(sf::Mouse::getPosition(*mWindow));
+    const sf::Vector2f textureSize = static_cast<sf::Vector2f>(Settings::ButtonTextureSize);
+    const sf::Vector2f buttonPosition = mButton->getButtonPosition(index) - textureSize / 2.f;
+    const sf::FloatRect buttonRectangle(buttonPosition, textureSize);
 
-    return  mousePosition.x > ButtonDistance * (index + 1) + ButtonTextureSize.x * index
-        &&  mousePosition.x < ButtonDistance * (index + 1) + ButtonTextureSize.x * (index + 1)
-        &&  mousePosition.y > ButtonDistance
-        &&  mousePosition.y < ButtonDistance + ButtonTextureSize.y;
+    return buttonRectangle.contains(static_cast<sf::Vector2f>(mousePosition));
 }
 
 void Settings::setWindowReference(sf::RenderWindow& window)
 {
     mWindow = &window;
     mKeySelector->setMainWindowPointer(mWindow);
+}
+
+void Settings::setButtonsReference(Button &button)
+{
+    mButton = &button;
 }
 
 void Settings::buildKeySelector()
