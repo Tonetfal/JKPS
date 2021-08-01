@@ -7,17 +7,17 @@
 
 
 Statistics::Statistics(const FontHolder& fonts)
-: mStatisticsFont(&fonts.get(Fonts::Statistics))
-{    
+: mFonts(fonts)
+{
     setupLong(KPS);
     setupLong(MaxKPS);
     setupLong(TotalKeys);
     setupLong(BPM);
     
-    setupString(KPS, "KPS");
-    setupString(MaxKPS, "Max KPS");
-    setupString(TotalKeys, "Total");
-    setupString(BPM, "BPM");
+    setupString(KPS, Settings::StatisticsKPSText);
+    setupString(MaxKPS, Settings::StatisticsMaxKPSText);
+    setupString(TotalKeys, Settings::StatisticsTotalText);
+    setupString(BPM, Settings::StatisticsBPMText);
 
     mTexts.build(KPS);
     mTexts.build(MaxKPS);
@@ -29,7 +29,6 @@ Statistics::Statistics(const FontHolder& fonts)
     setTextString(TotalKeys);
     setTextString(BPM);
 
-    setFonts();
     setupText();
     setTextPositions();
 }
@@ -47,11 +46,11 @@ void Statistics::update(std::size_t KeyPerSecond,
             if (mLongs.get(KPS) == 0)
             {
                 mLongs.get(KPS) = mLongs.get(MaxKPS);
-                mStrings.get(KPS) = "Max";
+                mStrings.get(KPS) = Settings::StatisticsKPS2Text;
             }
             else
             {
-                mStrings.get(KPS) = "KPS";
+                mStrings.get(KPS) = Settings::StatisticsKPSText;
             }
         }
 
@@ -64,22 +63,6 @@ void Statistics::update(std::size_t KeyPerSecond,
         setTextString(MaxKPS);
         setTextString(TotalKeys);
         setTextString(BPM);
-    }
-}
-
-void Statistics::resize()
-{
-    if (Settings::ShowStatisticsText)
-    {
-        if (Settings::ShowKPS)
-            setupText(KPS);
-        if (Settings::ShowMaxKPS)
-            setupText(MaxKPS);
-        if (Settings::ShowTotal)
-            setupText(TotalKeys);
-        if (Settings::ShowBPMText)
-            setupText(BPM);
-        setFonts();
     }
 }
 
@@ -102,12 +85,41 @@ void Statistics::draw(sf::RenderTarget &target, sf::RenderStates states) const
     }
 }
 
+void Statistics::setupText()
+{
+    setFonts();
+
+    mStrings.get(KPS) = Settings::ShowMaxKPS ? Settings::StatisticsKPSText : Settings::StatisticsKPS2Text;
+    mStrings.get(MaxKPS) = Settings::StatisticsMaxKPSText;
+    mStrings.get(TotalKeys) = Settings::StatisticsTotalText;
+    mStrings.get(BPM) = Settings::StatisticsBPMText;
+
+    setupText(KPS);
+    setupText(MaxKPS);
+    setupText(TotalKeys);
+    setupText(BPM);
+    setTextPositions();
+}
+
 void Statistics::setFonts()
 {
-    mTexts.get(KPS).setFont(*mStatisticsFont);
-    mTexts.get(MaxKPS).setFont(*mStatisticsFont);
-    mTexts.get(TotalKeys).setFont(*mStatisticsFont);
-    mTexts.get(BPM).setFont(*mStatisticsFont);
+    const sf::Font &font = mFonts.get(Fonts::Statistics);
+
+    mTexts.get(KPS).setFont(font);
+    mTexts.get(MaxKPS).setFont(font);
+    mTexts.get(TotalKeys).setFont(font);
+    mTexts.get(BPM).setFont(font);
+}
+
+void Statistics::setupText(ID id)
+{
+    mTexts.get(id).setCharacterSize(Settings::StatisticsTextCharacterSize);
+    mTexts.get(id).setFillColor(Settings::StatisticsTextColor);
+
+    sf::Text::Style style(static_cast<sf::Text::Style>(
+        (Settings::StatisticsBold ? sf::Text::Bold : 0) | 
+        (Settings::StatisticsItalic ? sf::Text::Italic : 0)));
+    mTexts.get(id).setStyle(style);
 }
 
 void Statistics::setTextPositions()
@@ -155,6 +167,22 @@ std::size_t Statistics::getTotalKeys()
     return mLongs.get(TotalKeys);
 }
 
+void Statistics::resize()
+{
+    if (Settings::ShowStatisticsText)
+    {
+        if (Settings::ShowKPS)
+            setupText(KPS);
+        if (Settings::ShowMaxKPS)
+            setupText(MaxKPS);
+        if (Settings::ShowTotal)
+            setupText(TotalKeys);
+        if (Settings::ShowBPMText)
+            setupText(BPM);
+        setFonts();
+    }
+}
+
 void Statistics::clear()
 {
     if (Settings::ShowStatisticsText)
@@ -164,30 +192,6 @@ void Statistics::clear()
         mLongs.get(TotalKeys) = 0;
         mLongs.get(BPM) = 0;
     }
-}
-
-void Statistics::setupText()
-{
-    setupText(KPS);
-    setupText(MaxKPS);
-    setupText(TotalKeys);
-    setupText(BPM);
-    setTextPositions();
-
-    // If user switches ShowMaxKPS from false to true, then KPS line remains with "Max" string
-    if (Settings::ShowMaxKPS)
-        mStrings.get(KPS) = "KPS";
-}
-
-void Statistics::setupText(ID id)
-{
-    mTexts.get(id).setCharacterSize(Settings::StatisticsTextCharacterSize);
-    mTexts.get(id).setFillColor(Settings::StatisticsTextColor);
-
-    sf::Text::Style style(static_cast<sf::Text::Style>(
-        (Settings::StatisticsBold ? sf::Text::Bold : 0) | 
-        (Settings::StatisticsItalic ? sf::Text::Italic : 0)));
-    mTexts.get(id).setStyle(style);
 }
 
 void Statistics::setupLong(ID id)
@@ -204,7 +208,7 @@ void Statistics::setupString(ID id, const std::string& name)
 
 void Statistics::setTextString(ID id)
 {
-    mTexts.get(id).setString((mStrings.get(id) + ": " + std::to_string(mLongs.get(id))).c_str());
+    mTexts.get(id).setString((mStrings.get(id) + std::to_string(mLongs.get(id))).c_str());
 }
 
 unsigned int Statistics::getStatisticsWidth() const
@@ -275,5 +279,10 @@ bool Statistics::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextShowKPS ||
         id == LogicalParameter::ID::StatTextShowMaxKPS ||
         id == LogicalParameter::ID::StatTextShowTotal ||
-        id == LogicalParameter::ID::StatTextShowBPM;
+        id == LogicalParameter::ID::StatTextShowBPM ||
+        id == LogicalParameter::ID::StatTextKPSText ||
+        id == LogicalParameter::ID::StatTextKPS2Text ||
+        id == LogicalParameter::ID::StatTextMaxKPSText ||
+        id == LogicalParameter::ID::StatTextTotalText ||
+        id == LogicalParameter::ID::StatTextBPMText;
 }

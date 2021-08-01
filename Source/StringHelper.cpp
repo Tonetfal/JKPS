@@ -2,6 +2,7 @@
 
 #include <cassert>
 
+
 unsigned readAmountOfParms(const std::string &str)
 {
     unsigned amt = 0;
@@ -54,10 +55,9 @@ static void modifyNumOnIdx(std::string &str, unsigned idx, bool add, char num = 
     }
 }
 
-void addChOnIdx(std::string &str, unsigned idx, int num)
+void addChOnIdx(std::string &str, unsigned idx, char ch)
 {
-    assert((0 <= num && 9 >= num) || num == '-');
-    modifyNumOnIdx(str, idx, true, num < 10 ? num + '0' : num);
+    modifyNumOnIdx(str, idx, true, ch);
 }
 
 void rmChOnIdx(std::string &str, unsigned idx)
@@ -387,7 +387,7 @@ sf::Keyboard::Key strToKey(const std::string &str)
     if (str == "Pause")
         return sf::Keyboard::Key::Pause;
 
-    return sf::Keyboard::Key::A;
+    return sf::Keyboard::Key::Unknown;
 }
 
 std::string btnToStr(sf::Mouse::Button button)
@@ -405,16 +405,157 @@ std::string btnToStr(sf::Mouse::Button button)
 
 sf::Mouse::Button strToBtn(const std::string &str)
 {
-    if (str == "Left")
+    if (str == "M Left")
         return sf::Mouse::Left;
-    if (str == "Right")
+    if (str == "M Right")
         return sf::Mouse::Right;
-    if (str == "Middle")
+    if (str == "M Middle")
         return sf::Mouse::Middle;
-    if (str == "XButton1")
+    if (str == "M XButton1")
         return sf::Mouse::XButton1;
-    if (str == "XButton2")
+    if (str == "M XButton2")
         return sf::Mouse::XButton2;
 
     return sf::Mouse::Left;
+}
+
+char enumKeyToStr(sf::Keyboard::Key key)
+{
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift) 
+    ||  sf::Keyboard::isKeyPressed(sf::Keyboard::RShift))
+    {
+        switch (key)
+        {
+            case sf::Keyboard::A: return 'A';
+            case sf::Keyboard::B: return 'B';
+            case sf::Keyboard::C: return 'C';
+            case sf::Keyboard::D: return 'D';
+            case sf::Keyboard::E: return 'E';
+            case sf::Keyboard::F: return 'F';
+            case sf::Keyboard::G: return 'G';
+            case sf::Keyboard::H: return 'H';
+            case sf::Keyboard::I: return 'I';
+            case sf::Keyboard::J: return 'J';
+            case sf::Keyboard::K: return 'K';
+            case sf::Keyboard::L: return 'L';
+            case sf::Keyboard::M: return 'M';
+            case sf::Keyboard::N: return 'N';
+            case sf::Keyboard::O: return 'O';
+            case sf::Keyboard::P: return 'P';
+            case sf::Keyboard::Q: return 'Q';
+            case sf::Keyboard::R: return 'R';
+            case sf::Keyboard::S: return 'S';
+            case sf::Keyboard::T: return 'T';
+            case sf::Keyboard::U: return 'U';
+            case sf::Keyboard::V: return 'V';
+            case sf::Keyboard::W: return 'W';
+            case sf::Keyboard::X: return 'X';
+            case sf::Keyboard::Y: return 'Y';
+            case sf::Keyboard::Z: return 'Z';
+            case sf::Keyboard::Numpad0:
+            case sf::Keyboard::Num0: return ')';
+            case sf::Keyboard::Numpad1:
+            case sf::Keyboard::Num1: return '!';
+            case sf::Keyboard::Numpad2:
+            case sf::Keyboard::Num2: return '@';
+            case sf::Keyboard::Numpad3:
+            case sf::Keyboard::Num3: return '#';
+            case sf::Keyboard::Numpad4:
+            case sf::Keyboard::Num4: return '$';
+            case sf::Keyboard::Numpad5:
+            case sf::Keyboard::Num5: return '%';
+            case sf::Keyboard::Numpad6:
+            case sf::Keyboard::Num6: return '^';
+            case sf::Keyboard::Numpad7:
+            case sf::Keyboard::Num7: return '&';
+            case sf::Keyboard::Numpad8:
+            case sf::Keyboard::Num8: return '*';
+            case sf::Keyboard::Numpad9:
+            case sf::Keyboard::Num9: return '(';
+            case sf::Keyboard::LBracket: return '{';
+            case sf::Keyboard::RBracket: return '}';
+            case sf::Keyboard::Semicolon: return ':';
+            case sf::Keyboard::Comma: return '<';
+            case sf::Keyboard::Period: return '>';
+            case sf::Keyboard::Quote: return '"';
+            case sf::Keyboard::Slash: return '?';
+            case sf::Keyboard::Tilde: return '~';
+            case sf::Keyboard::Equal: return '+';
+            case sf::Keyboard::Hyphen: return '_';
+            case sf::Keyboard::Space: return ' ';
+            case sf::Keyboard::Add: return '+';
+            case sf::Keyboard::Subtract: return '-';
+            case sf::Keyboard::Multiply: return '*';
+            case sf::Keyboard::Divide: return '/';
+            default: return 'a';
+        }
+    }
+    else
+    {
+        switch (key)
+        {
+            case sf::Keyboard::A: return 'a';
+            case sf::Keyboard::B: return 'b';
+            case sf::Keyboard::C: return 'c';
+            case sf::Keyboard::D: return 'd';
+            case sf::Keyboard::E: return 'e';
+            case sf::Keyboard::F: return 'f';
+            case sf::Keyboard::G: return 'g';
+            case sf::Keyboard::H: return 'h';
+            case sf::Keyboard::I: return 'i';
+            case sf::Keyboard::J: return 'j';
+            case sf::Keyboard::K: return 'k';
+            case sf::Keyboard::L: return 'l';
+            case sf::Keyboard::M: return 'm';
+            case sf::Keyboard::N: return 'n';
+            case sf::Keyboard::O: return 'o';
+            case sf::Keyboard::P: return 'p';
+            case sf::Keyboard::Q: return 'q';
+            case sf::Keyboard::R: return 'r';
+            case sf::Keyboard::S: return 's';
+            case sf::Keyboard::T: return 't';
+            case sf::Keyboard::U: return 'u';
+            case sf::Keyboard::V: return 'v';
+            case sf::Keyboard::W: return 'w';
+            case sf::Keyboard::X: return 'x';
+            case sf::Keyboard::Y: return 'y';
+            case sf::Keyboard::Z: return 'z';
+            case sf::Keyboard::Numpad0:
+            case sf::Keyboard::Num0: return '0';
+            case sf::Keyboard::Numpad1:
+            case sf::Keyboard::Num1: return '1';
+            case sf::Keyboard::Numpad2:
+            case sf::Keyboard::Num2: return '2';
+            case sf::Keyboard::Numpad3:
+            case sf::Keyboard::Num3: return '3';
+            case sf::Keyboard::Numpad4:
+            case sf::Keyboard::Num4: return '4';
+            case sf::Keyboard::Numpad5:
+            case sf::Keyboard::Num5: return '5';
+            case sf::Keyboard::Numpad6:
+            case sf::Keyboard::Num6: return '6';
+            case sf::Keyboard::Numpad7:
+            case sf::Keyboard::Num7: return '7';
+            case sf::Keyboard::Numpad8:
+            case sf::Keyboard::Num8: return '8';
+            case sf::Keyboard::Numpad9:
+            case sf::Keyboard::Num9: return '9';
+            case sf::Keyboard::LBracket: return '[';
+            case sf::Keyboard::RBracket: return ']';
+            case sf::Keyboard::Semicolon: return ';';
+            case sf::Keyboard::Comma: return ',';
+            case sf::Keyboard::Period: return '.';
+            case sf::Keyboard::Quote: return '\'';
+            case sf::Keyboard::Slash: return '/';
+            case sf::Keyboard::Tilde: return '`';
+            case sf::Keyboard::Equal: return '=';
+            case sf::Keyboard::Hyphen: return '-';
+            case sf::Keyboard::Space: return ' ';
+            case sf::Keyboard::Add: return '+';
+            case sf::Keyboard::Subtract: return '-';
+            case sf::Keyboard::Multiply: return '*';
+            case sf::Keyboard::Divide: return '/';
+            default: return 'a';
+        }
+    }
 }

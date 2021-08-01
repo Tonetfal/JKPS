@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Color.hpp>
 
 #include "StringHelper.hpp"
+#include "KeySelector.hpp"
 
 #include <vector>
 #include <string>
@@ -22,28 +23,36 @@ class Settings
         void                        update();
 
         void                        setWindowReference(sf::RenderWindow& window);
+        void                        buildKeySelector();
 
-        void                        changeChangeability();
         void                        setChangeabilityPosition();
-        bool                        wasButtonAmountChanged();
+        static bool                 wasButtonChanged();
+        static bool                 wasButtonAmountChanged();
 
         static sf::Keyboard::Key    getButtonToChange();
         static int                  getButtonToChangeIndex();
 
+        static void                 requestToReloadAssets();
+        bool                        resetReloadAssetsRequest() const;
+
 
     private:
-        void                        addKey();
-        void                        removeKey();
-        void                        changeKey(sf::Keyboard::Key newKey);
-        bool                        isInRange(size_t index);
+        void                        changeKeysAmount(sf::Keyboard::Key clickedKey);
+        void                        selectButton();
+        void                        addKeyboardKey();
+        void                        removeKeyboardKey();
+        void                        addMouseButton();
+        void                        removeMouseButton();
+        bool                        isPressPerformedOnButton(unsigned &buttonIndex);            
+        bool                        isMouseInRange(unsigned index);
 
 
     public:
         const static std::size_t    mFramesPerSecond;
 
         // [Keys] [Mouse]
-        static std::vector<sf::Keyboard::Key> Keys;
-        static std::vector<sf::Mouse::Button> MouseButtons;
+        static std::vector<std::unique_ptr<LogicalKey>> LogicalKeys;
+        static std::vector<std::unique_ptr<LogicalButton>> LogicalButtons;
 
         // Non config parameters
         static std::size_t          ButtonAmount;
@@ -61,13 +70,17 @@ class Settings
         static bool                 ShowMaxKPS;
         static bool                 ShowTotal;
         static bool                 ShowBPMText;
+        static std::string          StatisticsKPSText;
+        static std::string          StatisticsKPS2Text;
+        static std::string          StatisticsMaxKPSText;
+        static std::string          StatisticsTotalText;
+        static std::string          StatisticsBPMText;
 
         // [Button text]
         static std::string          KeyCountersFontPath;
         static sf::Color            KeyCountersTextColor;
         static std::size_t          KeyCountersTextCharacterSize;
-        static float                KeyCounterWidth;
-        static float                KeyCounterHeight;
+        static sf::Vector2f         KeyCounterPosition;
         static float                KeyCountersHorizontalBounds;
         static float                KeyCountersVerticalBounds;
         static bool                 KeyCountersBold;
@@ -97,6 +110,9 @@ class Settings
         static std::string          BackgroundTexturePath;
         static sf::Color            BackgroundColor;
         static bool                 ScaleBackground;
+
+        // Non config parameters
+        static bool                 isGreenscreenSet;
 
         // [Edit mode]
         static sf::Color            HighlightedKeyColor;
@@ -129,13 +145,16 @@ class Settings
         static unsigned char*       DefaultButtonTexture;
         static unsigned char*       DefaultAnimationTexture;
         static unsigned char*       DefaultBackgroundTexture;
+        static unsigned char*       DefaultGreenscreenBackgroundTexture;
         static unsigned char*       DefaultKPSWindowFont;
 
         // Hot keys
-        static sf::Keyboard::Key    KeyToIncrease;
-        static sf::Keyboard::Key    AltKeyToIncrease;
-        static sf::Keyboard::Key    KeyToDecrease;
-        static sf::Keyboard::Key    AltKeyToDecrease;
+        static sf::Keyboard::Key    KeyToIncreaseKeys;
+        static sf::Keyboard::Key    AltKeyToIncreaseKeys;
+        static sf::Keyboard::Key    KeyToDecreaseKeys;
+        static sf::Keyboard::Key    AltKeyToDecreaseKeys;
+        static sf::Keyboard::Key    KeyToIncreaseButtons;
+        static sf::Keyboard::Key    KeyToDecreaseButtons;
         static sf::Keyboard::Key    KeyToClear;
         static sf::Keyboard::Key    KeyExit;
         static sf::Keyboard::Key    KeyToOpenKPSWindow;
@@ -144,9 +163,12 @@ class Settings
 
     private:
         sf::RenderWindow*           mWindow;
+        std::unique_ptr<KeySelector> mKeySelector;
 
         static bool                 mIsButtonSelected;
         static int                  mButtonToChangeIndex;
         static sf::Keyboard::Key    mButtonToChange;
         static bool                 mButtonAmountChanged;
+        static bool                 mKeyWasChanged;
+        static bool                 mReloadAssetsRequest;
 };

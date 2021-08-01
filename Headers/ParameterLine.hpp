@@ -1,5 +1,8 @@
 #pragma once
 
+#include <SFML/Window/Keyboard.hpp>
+#include <SFML/Window/Mouse.hpp>
+
 #include "GraphicalParameter.hpp"
 #include "LogicalParameter.hpp"
 #include "ResourceIdentifiers.hpp"
@@ -37,6 +40,11 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             StatTextShowMaxKPS,
             StatTextShowTotal,
             StatTextShowBPM,
+            StatTextKPSText,
+            StatTextKPS2Text,
+            StatTextMaxKPSText,
+            StatTextTotalText,
+            StatTextBPMText,
             StatTextMty,
 
             BtnTextColl,
@@ -109,6 +117,9 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             Info2,
             Info3,
             Info4,
+            InfoMty,
+
+            HotkeyColl,
             HotKey1,
             HotKey2,
             HotKey3,
@@ -144,14 +155,19 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         bool resetState();
         static void setColor(sf::Color color);
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
+        static void deselectValue();
+        static bool isValueSelected();
 
         LogicalParameter::Type getType() const;
 
 
     private:
-        void handleButtonsInteractionEvent(sf::Event event);
         // Clicks with keyboard to modify value of buttons
         void handleValueModEvent(sf::Event event);
+        void handleButtonsInteractionEvent(sf::Event event);
+
+        bool tabulation(sf::Keyboard::Key key);
+        void selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos);
 
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
         void buildLimits(const FontHolder &fonts);

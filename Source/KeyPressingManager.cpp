@@ -11,25 +11,25 @@ KeyPressingManager::KeyPressingManager()
 
 void KeyPressingManager::readClickedKeys()
 {
-    const unsigned keyAmt = Settings::Keys.size();
-    const unsigned btnAmt = Settings::MouseButtons.size();
-    size_t i = 0;
+    const unsigned keyAmt = Settings::LogicalKeys.size();
+    const unsigned btnAmt = Settings::LogicalButtons.size();
+    unsigned i = 0;
     for (; i < keyAmt; i++)
     {
-        if (sf::Keyboard::isKeyPressed(Settings::Keys[i]) && !mNeedToBeReleased[i])
+        if (sf::Keyboard::isKeyPressed(Settings::LogicalKeys[i]->key) && !mNeedToBeReleased[i])
             ++mClickedKeys[i];
             
-        if(sf::Keyboard::isKeyPressed(Settings::Keys[i]))
+        if(sf::Keyboard::isKeyPressed(Settings::LogicalKeys[i]->key))
             mNeedToBeReleased[i] = true;
         else
             mNeedToBeReleased[i] = false;
     }
-    for (size_t j = 0; j < btnAmt; j++, i++)
+    for (unsigned j = 0; j < btnAmt; j++, i++)
     {
-        if (sf::Mouse::isButtonPressed(Settings::MouseButtons[j]) && !mNeedToBeReleased[i])
+        if (sf::Mouse::isButtonPressed(Settings::LogicalButtons[j]->button) && !mNeedToBeReleased[i])
             ++mClickedKeys[i];
             
-        if(sf::Mouse::isButtonPressed(Settings::MouseButtons[j]))
+        if(sf::Mouse::isButtonPressed(Settings::LogicalButtons[j]->button))
             mNeedToBeReleased[i] = true;
         else
             mNeedToBeReleased[i] = false;

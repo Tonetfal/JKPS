@@ -11,7 +11,7 @@ class Calculation
     public:
                                     Calculation();
 
-        void                        handleInput(KeyPressingManager& container, std::vector<sf::Keyboard::Key>& keys);
+        void                        handleInput(KeyPressingManager& container);
         void                        update();
 
         std::size_t                 getKeyPerSecond();

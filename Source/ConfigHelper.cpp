@@ -39,9 +39,9 @@ const unsigned maxButtons(5);
 
 void addDefaultKeys()
 {
-    Settings::Keys.emplace_back(sf::Keyboard::Z);
-    Settings::Keys.emplace_back(sf::Keyboard::X);
-    Settings::ButtonAmount = Settings::Keys.size();
+    Settings::LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::Z), keyToStr(sf::Keyboard::Z), sf::Keyboard::Z));
+    Settings::LogicalKeys.emplace_back(new LogicalKey(keyToStr(sf::Keyboard::X), keyToStr(sf::Keyboard::X), sf::Keyboard::X));
+    Settings::ButtonAmount = Settings::LogicalKeys.size();
 }
 
 void readConfig(
@@ -70,17 +70,14 @@ void readConfig(
 
     // Read all the config
     fillParameters(parameters);
-    Settings::Keys.clear();
-    fillKeys(Settings::Keys);
-    Settings::MouseButtons.clear();
-    fillButtons(Settings::MouseButtons);
+    Settings::LogicalKeys.clear();
+    fillKeys(Settings::LogicalKeys);
+    Settings::LogicalButtons.clear();
+    fillButtons(Settings::LogicalButtons);
 
-    Settings::ButtonAmount = Settings::Keys.size() + Settings::MouseButtons.size();
-    // If there are no keys - set 2 defaults
-    if (Settings::Keys.size() == 0 && Settings::MouseButtons.size() == 0)
-        addDefaultKeys();
+    Settings::ButtonAmount = Settings::LogicalKeys.size() + Settings::LogicalButtons.size();
 
-    checkAssets(parameters);
+    controlAssets(parameters);
 
 
     // Finish work with files on last method
@@ -113,26 +110,30 @@ void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParame
     }
 }
 
-void fillKeys(std::vector<sf::Keyboard::Key> &keys)
+void fillKeys(std::vector<std::unique_ptr<LogicalKey>> &keys)
 {
-    static const std::string parName = "Keys";
-    std::string keysStr = readParameter(parName);
+    static const std::string parName1 = "Keys";
+    static const std::string parName2 = "Visual keys";
+    std::string keysStr = readParameter(parName1);
+    std::string visualKeysStr = readParameter(parName2);
 
     if (keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return;
 
-    readKeys(keys, keysStr);
+    readKeys(keys, keysStr, visualKeysStr);
 }
 
-void fillButtons(std::vector<sf::Mouse::Button> &buttons)
+void fillButtons(std::vector<std::unique_ptr<LogicalButton>> &buttons)
 {
-    static const std::string parName = "Mouse buttons";
-    std::string buttonsStr = readParameter(parName);
+    static const std::string parName1 = "Mouse buttons";
+    static const std::string parName2 = "Visual buttons";
+    std::string buttonsStr = readParameter(parName1);
+    std::string visualButtonsStr = readParameter(parName2);
 
     if (buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
         return;
 
-    readButtons(buttons, buttonsStr);
+    readButtons(buttons, buttonsStr, visualButtonsStr);
 }
 
 // Finds the parameter and returns everything after its name and ": ", 
@@ -156,6 +157,8 @@ std::string readParameter(const std::string &parName)
                 break;
             }
         }
+        if (line[i] != ':')
+            i = 0;
     }
 
     cfg.close();
@@ -189,6 +192,7 @@ void writeParameter(LogicalParameter &par)
         case LogicalParameter::Type::Bool:     par.setBool(readBoolParameter(par, valStr));  break;
         case LogicalParameter::Type::Float:    par.setDigit(readDigitParameter(par, valStr)); break;
         case LogicalParameter::Type::String:   par.setString(valStr); break;
+        case LogicalParameter::Type::StringPath: par.setString(valStr); break;
         case LogicalParameter::Type::Color:    par.setColor(readColorParameter(par, valStr)); break;
         case LogicalParameter::Type::VectorU: 
         case LogicalParameter::Type::VectorI: 
@@ -196,8 +200,12 @@ void writeParameter(LogicalParameter &par)
         default: break;
     }
 
-    if (par.mType == LogicalParameter::Type::String)
+    if (par.mType == LogicalParameter::Type::StringPath)
     {
+        if (par.mType == LogicalParameter::Type::StringPath 
+        &&  Settings::BackgroundTexturePath == "GreenscreenBG.png")
+            return;
+            
         std::ifstream check(par.getString());
         check.is_open() ? check.close() : par.setString(par.getDefValStr());
     }
@@ -298,7 +306,7 @@ bool readBoolParameter(const LogicalParameter &par, const std::string &valStr)
 }
 
 // Check if passed assets are right
-void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
+void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
 {
     sf::Texture texture;
     sf::Font font;
@@ -318,11 +326,14 @@ void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter
             parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second->resetToDefaultValue();
         }
     if (Settings::BackgroundTexturePath != defAssetName)
+    {
+        if (Settings::BackgroundTexturePath != "GreenscreenBG.png")
         if (!texture.loadFromFile(Settings::BackgroundTexturePath))
         {
             ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BgTxtr)->second);
             parameters.find(LogicalParameter::ID::BgTxtr)->second->resetToDefaultValue();
         }
+    }
 
     // Fonts
     if (Settings::StatisticsFontPath != defAssetName)
@@ -352,78 +363,73 @@ void checkAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter
 }
 
 
-void readKeys(std::vector<sf::Keyboard::Key> &keys, const std::string &valStr)
+void readKeys(std::vector<std::unique_ptr<LogicalKey>> &keys, const std::string &keysStr, const std::string &visualKeysStr)
 {
-    unsigned strIdx = 0;
-    for (unsigned i = keys.size(); strIdx < valStr.size() && i <= maxKeys; ++i)
+    unsigned strIdx1 = 0, strIdx2 = 0;
+    for (unsigned i = 0; strIdx1 < keysStr.size() && i < maxKeys; ++i)
     {
-        // Read key separated by a comma
-        std::string keyStr = valStr.substr(strIdx, valStr.substr(strIdx).find(','));
+        std::string keyStr = keysStr.substr(strIdx1, keysStr.substr(strIdx1).find(','));
+        std::string visualKeyStr = "";
+        std::string checkStr;
+        if (strIdx2 < visualKeysStr.size())
+            visualKeyStr = visualKeysStr.substr(strIdx2, visualKeysStr.substr(strIdx2).find(','));
+
         sf::Keyboard::Key key = strToKey(keyStr);
-        keys.emplace_back(key);
 
-        // If there is a copy - find a free key for the new one
-        unsigned cpyIdx; // redundant here, since new key is swapped, not the old one
-        while (isKeyAlreadyPresent(keys, keys.back(), cpyIdx, i))
-        {
-            keys.back() = getDefaultKey(keys);
-        }
+        checkStr = keyToStr(key, true);
+        unsigned maxLength = 20;
+        if (visualKeyStr.size() > maxLength || visualKeyStr.size() == 0)
+            visualKeyStr = checkStr;
+
+        keys.emplace_back(new LogicalKey(keyStr, visualKeyStr, key));
+        keys.back()->realStr = checkStr == keyStr ? keyStr : checkStr;
+
+        // // If there is a copy - find a free key for the new one
+        // unsigned cpyIdx; // redundant here, since new key is swapped, not the old one
+        // while (isKeyAlreadyPresent(keys, keys.back()->key, cpyIdx, i))
+        //     keys.back() = getDefaultLogicalKey(keys);
 
         // If there is no data to read - break
-        if (valStr.find(',', strIdx) == std::string::npos)
+        if (keysStr.find(',', strIdx1) == std::string::npos)
             break;
 
         // Move index to the beggining of the next key
-        strIdx = valStr.find(',', strIdx) + 1;
+        strIdx1 = keysStr.find(',', strIdx1) + 1;
+        strIdx2 = visualKeysStr.find(',', strIdx2) + 1;
     }
 }
 
-void readButtons(std::vector<sf::Mouse::Button> &buttons, const std::string &valStr)
-{
-    unsigned strIdx = 0;
-    for (unsigned i = buttons.size(); strIdx < valStr.size() && i <= maxButtons; ++i)
-    {
-        // Read key separated by a comma
-        std::string buttonStr = valStr.substr(strIdx, valStr.substr(strIdx).find(','));
-        sf::Mouse::Button button = strToBtn(buttonStr);
-        buttons.emplace_back(button);
 
-        // If there is a copy - find a free key for the new one
-        unsigned cpyIdx; // redundant here, since new key is swapped, not the old one
-        while (isButtonAlreadyPresent(buttons, buttons.back(), cpyIdx, i))
-        {
-            buttons.back() = getDefaultButton(buttons);
-        }
-
-        // If there is no data to read - break
-        if (valStr.find(',', strIdx) == std::string::npos)
-            break;
-
-        // Move index to the beggining of the next key
-        strIdx = valStr.find(',', strIdx) + 1;
-    }
-}
-
-bool isKeyAlreadyPresent(const std::vector<sf::Keyboard::Key> &keys, sf::Keyboard::Key key, unsigned &cpyIdx, unsigned ignIdx)
+bool isKeyAlreadyPresent(const std::vector<std::unique_ptr<LogicalKey>> &keys, sf::Keyboard::Key key, unsigned &cpyIdx, unsigned ignIdx)
 {
     cpyIdx = 0;
     for (const auto &elem : keys)
     {
-        if (elem == key && cpyIdx != ignIdx)
+        if (elem->key == key && cpyIdx != ignIdx)
             return true;
         ++cpyIdx;
     }
     return false;
 }
 
-sf::Keyboard::Key getDefaultKey(const std::vector<sf::Keyboard::Key> &keys)
+std::unique_ptr<LogicalKey> getDefaultLogicalKey(const std::vector<std::unique_ptr<LogicalKey>> &keys)
+{
+    sf::Keyboard::Key key = getDefaultKey(keys);
+    std::string lKeyStr = keyToStr(key);
+    std::unique_ptr<LogicalKey> lKey(new LogicalKey(lKeyStr, lKeyStr, key));
+
+    return std::move(lKey);
+}
+
+sf::Keyboard::Key getDefaultKey(const std::vector<std::unique_ptr<LogicalKey>> &keys)
 {
     unsigned key = sf::Keyboard::A;
-    for (unsigned i = 0; i < keys.size(); ++i)
+
+    for (auto it = keys.begin(); it != keys.end(); ++it)
     {
-        if (keys[i] == key)
+        if (it->get()->key == key)
         {
-            i = -1;
+            it = keys.begin() - 1;
             ++key;
         }
     }
@@ -431,26 +437,72 @@ sf::Keyboard::Key getDefaultKey(const std::vector<sf::Keyboard::Key> &keys)
     return static_cast<sf::Keyboard::Key>(key);
 }
 
-bool isButtonAlreadyPresent(const std::vector<sf::Mouse::Button> &buttons, sf::Mouse::Button button, unsigned &cpyIdx, unsigned ignIdx)
+void readButtons(std::vector<std::unique_ptr<LogicalButton>> &buttons, const std::string &buttonsStr, const std::string &visualButtonsStr)
+{
+    unsigned strIdx1 = 0, strIdx2 = 0;
+    for (unsigned i = 0; strIdx1 < buttonsStr.size() && i < maxButtons; ++i)
+    {
+        std::string buttonStr = buttonsStr.substr(strIdx1, buttonsStr.substr(strIdx1).find(','));
+        std::string visualButtonStr = "";
+        std::string checkStr;
+        if (strIdx2 < visualButtonsStr.size())
+            visualButtonStr = visualButtonsStr.substr(strIdx2, visualButtonsStr.substr(strIdx2).find(','));
+
+        sf::Mouse::Button button = strToBtn(buttonStr);
+
+        checkStr = btnToStr(button);
+        unsigned maxLength = 20;
+        if (visualButtonStr.size() > maxLength || visualButtonStr.size() == 0)
+            visualButtonStr = checkStr;
+
+        buttons.emplace_back(new LogicalButton(buttonStr, visualButtonStr, button));
+        buttons.back()->realStr = checkStr == buttonStr ? buttonStr : checkStr;
+
+        // // If there is a copy - find a free button for the new one
+        // unsigned cpyIdx; // redundant here, since new button is swapped, not the old one
+        // while (isButtonAlreadyPresent(buttons, buttons.back()->button, cpyIdx, i))
+        //     buttons.back() = getDefaultLogicalButton(buttons);
+
+        // If there is no data to read - break
+        if (buttonsStr.find(',', strIdx1) == std::string::npos)
+            break;
+
+        // Move index to the beggining of the next key
+        strIdx1 = buttonsStr.find(',', strIdx1) + 1;
+        strIdx2 = visualButtonsStr.find(',', strIdx2) + 1;
+    }
+}
+
+bool isButtonAlreadyPresent(const std::vector<std::unique_ptr<LogicalButton>> &buttons, sf::Mouse::Button button, unsigned &cpyIdx, unsigned ignIdx)
 {
     cpyIdx = 0;
     for (const auto &elem : buttons)
     {
-        if (elem == button && cpyIdx != ignIdx)
+        if (elem->button == button && cpyIdx != ignIdx)
             return true;
         ++cpyIdx;
     }
     return false;
 }
 
-sf::Mouse::Button getDefaultButton(const std::vector<sf::Mouse::Button> &buttons)
+std::unique_ptr<LogicalButton> getDefaultLogicalButton(const std::vector<std::unique_ptr<LogicalButton>> &buttons)
+{
+    sf::Mouse::Button button = getDefaultButton(buttons);
+    std::string lKeyStr = btnToStr(button);
+    std::unique_ptr<LogicalButton> lButton(new LogicalButton(lKeyStr, lKeyStr, button));
+
+    return std::move(lButton);
+}
+
+sf::Mouse::Button getDefaultButton(const std::vector<std::unique_ptr<LogicalButton>> &buttons)
 {
     unsigned button = sf::Mouse::Left;
-    for (unsigned i = 0; i < buttons.size(); ++i)
+
+    for (auto it = buttons.begin(); it != buttons.end(); ++it)
     {
-        if (buttons[i] == button)
+        if (it->get()->button == button)
         {
-            i = -1;
+            it = buttons.begin() - 1;
             ++button;
         }
     }
@@ -468,27 +520,50 @@ void saveConfig(
     ofCfg << "\n";
 
     ofCfg << "[Keys]\nKeys: ";
-    for (auto key : Settings::Keys)
+    for (const auto &key : Settings::LogicalKeys)
     {
-        ofCfg << keyToStr(key, true);
-        if (key != Settings::Keys.back())
+        ofCfg << key->realStr;
+        if (key != Settings::LogicalKeys.back())
             ofCfg << ",";
     }
-    if (Settings::Keys.size() == 0)
+    if (Settings::LogicalKeys.size() == 0)
+        ofCfg << "No";
+    ofCfg << "\n\n";
+
+    ofCfg << "[Visual keys]\nVisual keys: ";
+    for (const auto &key : Settings::LogicalKeys)
+    {
+        ofCfg << key->visualStr;
+        if (key != Settings::LogicalKeys.back())
+            ofCfg << ",";
+    }
+    if (Settings::LogicalKeys.size() == 0)
         ofCfg << "No";
     ofCfg << "\n\n";
 
     ofCfg << "[Mouse buttons]\nMouse buttons: ";
-    for (auto button : Settings::MouseButtons)
+    for (const auto &button : Settings::LogicalButtons)
     {
-        ofCfg << btnToStr(button);
-        if (button != Settings::MouseButtons.back())
+        ofCfg << button->realStr;
+        if (button != Settings::LogicalButtons.back())
             ofCfg << ",";
     }
-    if (Settings::MouseButtons.size() == 0)
+    if (Settings::LogicalButtons.size() == 0)
         ofCfg << "No";
     ofCfg << "\n\n";
 
+    ofCfg << "[Visual buttons]\nVisual buttons: ";
+    for (const auto &button : Settings::LogicalButtons)
+    {
+        ofCfg << button->visualStr;
+        if (button != Settings::LogicalButtons.back())
+            ofCfg << ",";
+    }
+    if (Settings::LogicalButtons.size() == 0)
+        ofCfg << "No";
+    ofCfg << "\n\n";
+
+    bool commentsSection = false;
     auto parmPair = parameters.begin();
     auto parmLinePair = parameterLines.begin();
     while (parmPair != parameters.end() || parmLinePair != parameterLines.end())
@@ -518,11 +593,16 @@ void saveConfig(
             ++parmPair;
         }
 
+        if (commentsSection)
+            ofCfg << "# ";
         ofCfg << mainParP->mParName;
         if (mainParP->mType != LogicalParameter::Type::Empty 
         &&  mainParP->mType != LogicalParameter::Type::Collection)
             ofCfg << ": " << mainParP->getValStr();
         ofCfg << "\n";
+
+        if (parmLinePair->first == ParameterLine::ID::Info1)
+            commentsSection = true;
     }
 
     ofCfg.close();

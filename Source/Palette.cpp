@@ -20,7 +20,6 @@ Palette::Palette(int)
 
     sf::Color color(sf::Color::Red);
     float colorStep = mLineSize / 2, leftSide = 10.f, rightSide = 50.f;
-    int s = 0;
     for (unsigned i = 0; i < mLineSize; i += 2)
     {
         float y = mDistance * i / 2;
@@ -78,12 +77,11 @@ void Palette::processInput()
         ||  sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         {
             moveLineIndicator();
-            if (wasButtonPressedOnCanvas)
+            if (wasButtonPressedOnCanvas && sf::Mouse::isButtonPressed(sf::Mouse::Left))
                 moveCanvasIndicator();
             setColor();
         }
     }
-
 }
 
 void Palette::moveLineIndicator()
@@ -93,15 +91,23 @@ void Palette::moveLineIndicator()
 
     if (wasButtonPressedOnLine)
     {
+        // Make line indicator move even if cursor is outside the line
+        if (mousePos.y < 0)
+            mousePos.y = 0;
+
+        if (mousePos.y > mLine[mLineSize - 1].position.y)
+            mousePos.y = mLine[mLineSize - 1].position.y;
+
         if (mousePos.y >= 0 && mousePos.y <= mLine[mLineSize - 1].position.y)
             mLineElemIdx = positionToNumber(mousePos);
+
+        mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
     }
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
         goUp();
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
         goDown();
 
-    mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
 }
 
 void Palette::goUp()
@@ -125,13 +131,23 @@ void Palette::moveCanvasIndicator()
     sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
         static_cast<sf::Vector2i>(mWindowOffset));
 
-    if (!(sf::Mouse::isButtonPressed(sf::Mouse::Left) 
-    &&  mCanvasRect.contains(sf::Vector2f(mousePos))))
-        return;
+    // Make canvas indicator move even if cursor is outside the palette
+    if (mousePos.x < mCanvasRect.left)
+        mousePos.x = mCanvasRect.left;
+
+    if (mousePos.x > mCanvasRect.width + mCanvasRect.left)
+        mousePos.x = mCanvasRect.width + mCanvasRect.left;
+
+    if (mousePos.y < mCanvasRect.top)
+        mousePos.y = mCanvasRect.top;
+
+    if (mousePos.y > mCanvasRect.height)
+        mousePos.y = mCanvasRect.height;
 
     mNormilizedMouseVec = sf::Vector2f(
         (mousePos.x - mCanvasRect.left) / mCanvasRect.width, 
         (mousePos.y - mCanvasRect.top) / mCanvasRect.height);
+    
     mCanvasIndicator.setPosition(sf::Vector2f(mousePos));
 }
 
@@ -167,7 +183,7 @@ void Palette::processOwnEvents()
             setColor();
         }
 
-        // Don't move the indicator of something if the left mouse button wasn't pressed on that area
+        // Don't move the indicator of anything if the left mouse button wasn't pressed on that area
         if (event.type == sf::Event::MouseButtonPressed)
         {
             sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
@@ -204,10 +220,10 @@ void Palette::render()
 
 void Palette::setColorOnPalette(sf::Color color)
 {
-    
+    // set cursor on the palette
 }
 
-void Palette::openWindow()
+void Palette::openWindow(sf::Vector2i position)
 {
     if (!mWindow.isOpen())
     {
@@ -215,6 +231,7 @@ void Palette::openWindow()
         float height = mDistance * (mLineSize - 1) / 2 + mWindowOffset.y * 2;
 
         mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", sf::Style::Close);
+        mWindow.setPosition(position - static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
         mWindow.setKeyRepeatEnabled(false);
     }
 }

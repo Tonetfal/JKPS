@@ -26,14 +26,18 @@ class Application
 
     private:
         void					    processInput();
-        void                        handleEvent(sf::Event event);
+        void                        handleEvent();
 		void					    update(sf::Time dt);
 		void					    render();
+
+        void                        unloadChangesQueue();
 
         void                        loadAssets();
 
         void                        openWindow();
+        void                        resizeWindow();
         void                        moveWindow();
+
         unsigned int                getWindowWidth();
         unsigned int                getWindowHeight();
 

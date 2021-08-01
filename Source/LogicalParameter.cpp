@@ -42,6 +42,7 @@ LogicalParameter::LogicalParameter(Type type, void *valPtr, const std::string &p
             break;
 
         case Type::String: 
+        case Type::StringPath:
             mVal.sP = static_cast<std::string*>(valPtr); 
             setString(defVal); 
             break;
@@ -157,7 +158,7 @@ void LogicalParameter::setBool(bool b)
 
 void LogicalParameter::setString(const std::string &str)
 {
-    assert(mType == Type::String);
+    assert(mType == Type::String || mType == Type::StringPath);
     *mVal.sP = str;
     mValStr = str;
     mChanged = true;
@@ -171,7 +172,7 @@ bool LogicalParameter::getBool() const
 
 std::string LogicalParameter::getString() const
 {
-    assert(mType == Type::String);
+    assert(mType == Type::String || mType == Type::StringPath);
     return *mVal.sP;
 }
 
@@ -209,7 +210,8 @@ void LogicalParameter::setValStr(const std::string &str, unsigned idx)
         case LogicalParameter::Type::Int: setDigit(std::stoi(str)); break;
         case LogicalParameter::Type::Bool: setBool(str); break;
         case LogicalParameter::Type::Float: setDigit(std::stoi(str)); break;
-        case LogicalParameter::Type::String: setString(str); break;
+        case LogicalParameter::Type::String:
+        case LogicalParameter::Type::StringPath: setString(str); break;
         case LogicalParameter::Type::Color: setColor(str, idx); break;
         case LogicalParameter::Type::VectorU:
         case LogicalParameter::Type::VectorI:
@@ -260,6 +262,7 @@ void LogicalParameter::resetToDefaultValue()
             break;
 
         case Type::String: 
+        case Type::StringPath:
             setString(mDefValStr); 
             break;
 

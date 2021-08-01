@@ -2,6 +2,8 @@
 #include "../Headers/ResourceHolder.hpp"
 #include "../Headers/ResourceIdentifiers.hpp"
 #include "../Headers/StringHelper.hpp"
+#include "../Headers/KeySelector.hpp"
+#include "../Headers/Settings.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -63,112 +65,6 @@ void ParameterLine::handleEvent(sf::Event event)
     handleValueModEvent(event);
 }
 
-void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
-{
-    // Mouse/keyboard events to control buttons selection/deselection
-    if (event.type == sf::Event::MouseButtonPressed 
-    ||  event.type == sf::Event::KeyPressed)
-    {
-        float viewOffsetY = mWindow.getView().getCenter().y - mWindow.getSize().y / 2;
-        sf::Vector2f mousePos(static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)));
-        mousePos.y += viewOffsetY;
-        sf::Mouse::Button button = event.mouseButton.button;
-        sf::Keyboard::Key key = event.key.code;
-
-        // Check click on buttons
-        for (const auto &elem : mParameterValues)
-        {
-            sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
-            buttonBounds.top += getPosition().y;
-
-            if (button == sf::Mouse::Left && buttonBounds.contains(mousePos))
-            {
-                if (mType == LogicalParameter::Type::Bool)
-                {
-                    mParameter->setValStr(LogicalParameter::getInverseBool(mParameter->getBool()));
-                    elem->mValText.setString(mParameter->getValStr());
-                    elem->setInverseMark();
-                    deselect();
-                    return;
-                }
-                if (mType != LogicalParameter::Type::Color && mPalette.isWindowOpen())
-                    mPalette.closeWindow();
-                deselect();
-                select(elem);
-            }
-
-            if (key == sf::Keyboard::Escape || button == sf::Mouse::Right)
-            {
-                // reset to previous
-                deselect();
-            }
-
-            if (key == sf::Keyboard::Enter)
-            {
-                // save
-                deselect();
-            }
-
-            if (key == sf::Keyboard::Tab && sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-            {
-                if (isItSelectedLine(shared_from_this()))
-                {
-                    for (auto it = mParameterValues.begin(); it < mParameterValues.end(); ++it)
-                    {
-                        if (*it == mSelectedValue)
-                        {
-                            deselect(); 
-                            // is the previous element the first one ? ... : ...
-                            select(it == mParameterValues.begin() ? mParameterValues.back() : *(it - 1));
-                            // return in order to avoid further tabulation and segmentation fault
-                            return;
-                        }
-                    }
-                }
-            }
-            else if (key == sf::Keyboard::Tab)
-            {
-                if (isItSelectedLine(shared_from_this()))
-                {
-                    for (auto it = mParameterValues.begin(); it < mParameterValues.end(); ++it)
-                    {
-                        if (*it == mSelectedValue)
-                        {
-                            deselect(); 
-                            // isn't next element the end ? ... : ...
-                            select(it + 1 != mParameterValues.end() ? *(it + 1) : mParameterValues[0]);
-                            // return in order to avoid further tabulation and segmentation fault
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Check click on RGB circle
-        if (mType == LogicalParameter::Type::Color)
-        {
-            sf::FloatRect rgbCircleBounds = mColorButtonP->getTransform().transformRect(
-                mColorButtonP->rgbCircleSprite.getGlobalBounds());
-            rgbCircleBounds.top += getPosition().y;
-
-            if (button == sf::Mouse::Left
-            &&  rgbCircleBounds.contains(mousePos))
-            {
-                // If there is already selected line, but it isn't this one
-                if (mSelectedLine && !isItSelectedLine(shared_from_this()))
-                    deselect();
-                // If nothing is selected
-                if (!mSelectedLine)
-                    select(mParameterValues[0]);
-
-                // mPalette.setColorOnPalette(lineToColor(mSelectedLine));
-                mPalette.openWindow();
-            }
-        }
-    }
-}
-
 // Keyboard events which modify values
 void ParameterLine::handleValueModEvent(sf::Event event)
 {
@@ -178,6 +74,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             return;
 
         std::string str(mSelectedValue->mValText.getString());
+        bool isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
         int btnIdx = 0;
         if (mType == LogicalParameter::Type::Color
         ||  mType == LogicalParameter::Type::VectorU
@@ -196,53 +93,10 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             assert(btnIdx != -1);
             str = mParameter->getValPt(btnIdx);
         }
-        assert(!str.empty());
         sf::Keyboard::Key key = event.key.code;
         
 
-        if (key == sf::Keyboard::Backspace)
-        {
-            if (mSelectedValueIndex != 0)
-            {
-                if (str.size() == 1 
-                || (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 2))
-                {
-                    str.resize(str.size() - 1);
-                    str.append(mParameter->mLowLimits <= 0 ? "0" : std::to_string(static_cast<int>(mParameter->mLowLimits)));
-                    mSelectedValueIndex = str.size() + 1;
-                }
-                else
-                {
-                    rmChOnIdx(str, mSelectedValueIndex - 1);
-                    // ex.: -500, remove 5, result "-0"
-                    if (std::stoi(str) == 0)
-                        str = std::string(str[0] == '-' ? "-" : "") + "0";
-                }
-
-                --mSelectedValueIndex;
-            }
-        }
-        
-        if (key == sf::Keyboard::Delete)
-        {
-            if (str.size() > mSelectedValueIndex)
-            {
-                if (str.size() == 1 
-                || (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 1))
-                {
-                    str[str.size() - 1] = '0';
-                }
-                else
-                {
-                    rmChOnIdx(str, mSelectedValueIndex);
-                    // ex.: -500, remove 5, result "-0"
-                    if (std::stoi(str) == 0)
-                        str = std::string(str[0] == '-' ? "-" : "") + "0";
-                }
-            }
-        }
-        
-        if (key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
+        if (!isStrType && key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
         {
             int n = (key - sf::Keyboard::Num0);
 
@@ -258,7 +112,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             else
             {
                 std::string prevVal = str;
-                addChOnIdx(str, mSelectedValueIndex, n);
+                addChOnIdx(str, mSelectedValueIndex, n + '0');
                 float check = stof(str); 
                 str = std::to_string(static_cast<int>(check));
 
@@ -272,7 +126,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             ++mSelectedValueIndex;
         }
 
-        if (key == sf::Keyboard::Up)
+        if (!isStrType && key == sf::Keyboard::Up)
         {
             std::string prevVal = str;
             float check = stof(str) + 1; 
@@ -283,7 +137,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex += str.length() == prevVal.length() ? 0 : str.length() > prevVal.length() ? 1 : -1;
         }
 
-        if (key == sf::Keyboard::Down)
+        if (!isStrType && key == sf::Keyboard::Down)
         {
             std::string prevVal = str;
             float check = stof(str) - 1; 
@@ -294,7 +148,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex += str.length() == prevVal.length() ? 0 : str.length() > prevVal.length() ? 1 : -1;
         }
 
-        if (key == sf::Keyboard::Hyphen)
+        if (!isStrType && key == sf::Keyboard::Hyphen)
         {
             if (mType != LogicalParameter::Type::Unsigned && mType != LogicalParameter::Type::Color
             &&  mParameter->mLowLimits >= 0)
@@ -309,6 +163,48 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             {
                 rmChOnIdx(str, 0);
                 --mSelectedValueIndex;
+            }
+        }
+
+        if (key == sf::Keyboard::Backspace)
+        {
+            if (mSelectedValueIndex != 0)
+            {
+                if (!isStrType && (str.size() == 1 
+                || (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 2)))
+                {
+                    str.resize(str.size() - 1);
+                    str.append(mParameter->mLowLimits <= 0 ? "0" : std::to_string(static_cast<int>(mParameter->mLowLimits)));
+                    mSelectedValueIndex = str.size() + 1;
+                }
+                else
+                {
+                    rmChOnIdx(str, mSelectedValueIndex - 1);
+                    // ex.: -500, remove 5, result "-0"
+                    if (!isStrType && std::stoi(str) == 0)
+                        str = std::string(str[0] == '-' ? "-" : "") + "0";
+                }
+
+                --mSelectedValueIndex;
+            }
+        }
+        
+        if (key == sf::Keyboard::Delete)
+        {
+            if (str.size() > mSelectedValueIndex)
+            {
+                if (!isStrType && (str.size() == 1 
+                || (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 1)))
+                {
+                    str[str.size() - 1] = '0';
+                }
+                else
+                {
+                    rmChOnIdx(str, mSelectedValueIndex);
+                    // ex.: -500, remove 5, result "-0"
+                    if (!isStrType && std::stoi(str) == 0)
+                        str = std::string(str[0] == '-' ? "-" : "") + "0";
+                }
             }
         }
 
@@ -334,6 +230,16 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex = str.size();
         }
 
+        if (isStrType && KeySelector::isCharacter(key))
+        {
+            unsigned maxLength = 50;
+            if (str.size() < maxLength)
+            {
+                addChOnIdx(str, mSelectedValueIndex, enumKeyToStr(key));
+                ++mSelectedValueIndex;
+            }
+        }
+
         mParameter->setValStr(str, btnIdx);
         mSelectedValue->mValText.setString(str);
         paramValWasChanged = true;
@@ -345,6 +251,129 @@ void ParameterLine::handleValueModEvent(sf::Event event)
         // If values were changed in menu, then they must be also changed on palette
         // if (mPalette.isWindowOpen())
         //     mPalette.setColorOnPalette(lineToColor(mSelectedLine));
+    }
+}
+
+void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
+{
+    // Mouse/keyboard events to control buttons selection/deselection
+    if (event.type == sf::Event::MouseButtonPressed 
+    ||  event.type == sf::Event::KeyPressed)
+    {
+        float viewOffsetY = mWindow.getView().getCenter().y - mWindow.getSize().y / 2;
+        sf::Vector2f mousePos(static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)));
+        mousePos.y += viewOffsetY;
+        sf::Mouse::Button button = event.mouseButton.button;
+        sf::Keyboard::Key key = event.key.code;
+
+        // Check click on buttons
+        for (const auto &elem : mParameterValues)
+        {
+            sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
+            buttonBounds.top += getPosition().y;
+            bool contains = buttonBounds.contains(mousePos);
+
+            if (event.type == sf::Event::MouseButtonPressed 
+            && (button == sf::Mouse::Left && contains))
+            {
+                if (mType == LogicalParameter::Type::Bool)
+                {
+                    mParameter->setValStr(LogicalParameter::getInverseBool(mParameter->getBool()));
+                    elem->mValText.setString(mParameter->getValStr());
+                    elem->setInverseMark();
+                    deselect();
+                    return;
+                }
+                // Refresh button has 0x0 rectangle shape 
+                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
+                {
+                    Settings::requestToReloadAssets();
+                    deselect();
+                    // return in order to don't select refresh button
+                    return; 
+                }
+                if (mType != LogicalParameter::Type::Color && mPalette.isWindowOpen())
+                    mPalette.closeWindow();
+                deselect();
+                select(elem);
+            }
+            if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Enter)
+            {
+                // Refresh button has 0x0 rectangle shape 
+                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
+                {
+                    Settings::requestToReloadAssets();
+                    deselect();
+                    // return in order to don't select refresh button
+                    return; 
+                }
+            }
+
+            if ((event.type == sf::Event::KeyPressed && key == sf::Keyboard::Escape) 
+            ||  (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Right))
+            {
+                deselect();
+            }
+
+            if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Tab)
+            {
+                if (tabulation(key))
+                {
+                    // return in order to avoid further tabulation and segmentation fault
+                    return;
+                }
+            }
+        }
+
+        if (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Left 
+        &&  mType == LogicalParameter::Type::Color)
+            selectRgbCircle(button, mousePos);
+    }
+}
+
+bool ParameterLine::tabulation(sf::Keyboard::Key key)
+{
+    if (isItSelectedLine(shared_from_this()))
+    {
+        for (auto it = mParameterValues.begin(); it < mParameterValues.end(); ++it)
+        {
+            if (*it == mSelectedValue)
+            {
+                deselect();
+                std::shared_ptr<GraphicalParameter> tabOn = nullptr;
+
+                if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+                    // tab forward
+                    tabOn = (it + 1 != mParameterValues.end() ? *(it + 1) : mParameterValues[0]);
+                else
+                    // tab backward
+                    tabOn = (it == mParameterValues.begin() ? mParameterValues.back() : *(it - 1));
+
+                select(tabOn);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+void ParameterLine::selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos)
+{
+    sf::FloatRect rgbCircleBounds = mColorButtonP->getTransform().transformRect(
+        mColorButtonP->rgbCircleSprite.getGlobalBounds());
+    rgbCircleBounds.top += getPosition().y;
+
+    if (rgbCircleBounds.contains(mousePos))
+    {
+        // If there is already selected line, but it isn't this one
+        if (mSelectedLine && !isItSelectedLine(shared_from_this()))
+            deselect();
+        // If nothing is selected
+        if (!mSelectedLine)
+            select(mParameterValues[0]);
+
+        // mPalette.setColorOnPalette(lineToColor(mSelectedLine));
+        mPalette.openWindow(mWindow.getPosition() + static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
     }
 }
 
@@ -377,19 +406,39 @@ void ParameterLine::draw(sf::RenderTarget &target, sf::RenderStates states) cons
 
 void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures)
 {
+    GraphicalParameter::mTextures = &textures;
+    GraphicalParameter::mFonts = &fonts;
+
     std::shared_ptr<GraphicalParameter> val = nullptr; 
     if (mType == LogicalParameter::Type::Bool)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), textures);
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0));
         val->setPosition(sf::Vector2f(mRectLine.getSize().x - 
             GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
         mParameterValues.emplace_back(std::move(val));
         return;
     }
 
+    if (mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath)
+    {
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
+        val->setPosition(605, mRectLine.getSize().y / 2);
+
+        mParameterValues.emplace_back(std::move(val));
+
+        if (mType == LogicalParameter::Type::StringPath)
+        {
+            val = std::make_shared<GraphicalParameter>(0);
+            val->setPosition(760, mRectLine.getSize().y / 2);
+
+            mParameterValues.emplace_back(std::move(val));
+        }
+        return;
+    }
+
     for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), fonts.get(Fonts::Value), i, textures);
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
             GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
@@ -434,9 +483,7 @@ void ParameterLine::deselect()
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    assert(mSelectedValue != nullptr || mSelectedLine != nullptr);
-
-    mSelectedValue->mRect.setFillColor(sf::Color(120,120,120));
+    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
     mSelectedValue = nullptr;
     mSelectedLine = nullptr;
     mSelectedValueIndex = -1;
@@ -664,7 +711,28 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
         case LogicalParameter::ID::OtherHighText: return ParameterLine::ID::OtherHighText;
         case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
+        case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
+        case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
+        case LogicalParameter::ID::StatTextMaxKPSText: return ParameterLine::ID::StatTextMaxKPSText;
+        case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
+        case LogicalParameter::ID::StatTextBPMText: return ParameterLine::ID::StatTextBPMText;
 
         default: return ParameterLine::ID::StatTextColl;
     }
+}
+
+void ParameterLine::deselectValue()
+{
+    if (mSelectedValue == nullptr && mSelectedLine == nullptr)
+        return;
+
+    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
+    mSelectedValue = nullptr;
+    mSelectedLine = nullptr;
+    mSelectedValueIndex = -1;
+}
+
+bool ParameterLine::isValueSelected()
+{
+    return mSelectedValue.get();
 }

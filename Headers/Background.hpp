@@ -25,6 +25,7 @@ class Background : public sf::Drawable, public sf::Transformable
 
 
     private:
+        const TextureHolder &mTextures;
         sf::RenderWindow& mWindow;
         sf::Sprite mBackgroundSprite;
 };

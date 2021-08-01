@@ -13,7 +13,7 @@ Calculation::Calculation()
         element = 0;
 }
 
-void Calculation::handleInput(KeyPressingManager& container, std::vector<sf::Keyboard::Key>& keys)
+void Calculation::handleInput(KeyPressingManager& container)
 {
     mClickedKeysInCurrentFrame = 0;
 

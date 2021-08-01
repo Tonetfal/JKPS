@@ -11,11 +11,11 @@
 
 Background::Background(const TextureHolder& textureHolder, sf::RenderWindow& window)
 : mWindow(window)
+, mTextures(textureHolder)
 { 
-    mBackgroundSprite.setTexture(textureHolder.get(Textures::Background));
+    mBackgroundSprite.setTexture(mTextures.get(Textures::Background));
     setupTexture();
 }
-
 
 void Background::draw(sf::RenderTarget &target, sf::RenderStates states) const 
 {
@@ -30,24 +30,21 @@ void Background::resize()
 
 void Background::scale()
 {
+    sf::Vector2f scale(1.f, 1.f);
     if (Settings::ScaleBackground)
     {
         sf::Vector2u windowSize = mWindow.getSize();
         sf::Vector2f bgSize(mBackgroundSprite.getTexture()->getSize());
-        sf::Vector2f scale(
-            windowSize.x / (bgSize.x * mBackgroundSprite.getScale().x),
-            windowSize.y / (bgSize.y * mBackgroundSprite.getScale().y));
 
-        mBackgroundSprite.scale(scale);
+        scale.x = static_cast<float>(windowSize.x) / bgSize.x;
+        scale.y = static_cast<float>(windowSize.y) / bgSize.y;
     }
-    else
-    {
-        mBackgroundSprite.setScale(1, 1);
-    }
+    mBackgroundSprite.setScale(scale);
 }
 
 void Background::setupTexture()
 {
-    mBackgroundSprite.setColor(Settings::BackgroundColor);
+    mBackgroundSprite.setTexture(mTextures.get(Textures::Background), true);
+    mBackgroundSprite.setColor(Settings::isGreenscreenSet ? sf::Color::White : Settings::BackgroundColor);
     scale();
 }
