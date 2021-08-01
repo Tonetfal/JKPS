@@ -114,10 +114,11 @@ void fillKeys(std::vector<std::unique_ptr<LogicalKey>> &keys)
 {
     static const std::string parName1 = "Keys";
     static const std::string parName2 = "Visual keys";
-    std::string keysStr = readParameter(parName1);
-    std::string visualKeysStr = readParameter(parName2);
+    bool parameterFound = false, nothing;
+    std::string keysStr = readParameter(parName1, parameterFound);
+    std::string visualKeysStr = readParameter(parName2, nothing);
 
-    if (keysStr == "No" || keysStr == "no" || keysStr == "NO")
+    if (!parameterFound || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return;
 
     readKeys(keys, keysStr, visualKeysStr);
@@ -127,10 +128,11 @@ void fillButtons(std::vector<std::unique_ptr<LogicalButton>> &buttons)
 {
     static const std::string parName1 = "Mouse buttons";
     static const std::string parName2 = "Visual buttons";
-    std::string buttonsStr = readParameter(parName1);
-    std::string visualButtonsStr = readParameter(parName2);
+    bool parameterFound = false, nothing;
+    std::string buttonsStr = readParameter(parName1, parameterFound);
+    std::string visualButtonsStr = readParameter(parName2, nothing);
 
-    if (buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
+    if (!parameterFound || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
         return;
 
     readButtons(buttons, buttonsStr, visualButtonsStr);
@@ -138,7 +140,7 @@ void fillButtons(std::vector<std::unique_ptr<LogicalButton>> &buttons)
 
 // Finds the parameter and returns everything after its name and ": ", 
 // can also return empty string, if there is no such parameter or if there is no value
-std::string readParameter(const std::string &parName)
+std::string readParameter(const std::string &parName, bool &parameterFound)
 {
     std::ifstream cfg(cfgPath);
 
@@ -169,14 +171,16 @@ std::string readParameter(const std::string &parName)
     if (line.length() <= parName.length() + 2)
         return "";
 
+    parameterFound = true;
     // Remove parameter name, ':' and space after it
     return line.substr(parName.length() + 2, 81);
 }
 
 void writeParameter(LogicalParameter &par)
 {
-    std::string valStr = readParameter(par.mParName);
-    if (valStr == "" && par.mType != LogicalParameter::Type::String)
+    bool parameterFound = false;
+    std::string valStr = readParameter(par.mParName, parameterFound);
+    if (!parameterFound)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par);
@@ -207,7 +211,16 @@ void writeParameter(LogicalParameter &par)
             return;
             
         std::ifstream check(par.getString());
-        check.is_open() ? check.close() : par.setString(par.getDefValStr());
+        if (check.is_open())
+        {
+            check.close();
+        }
+        else
+        {
+            par.setString(par.getDefValStr());
+            if (ofErrLog.is_open())
+                ofErrLog << getReadingErrMsg(par);
+        }
     }
 }
 

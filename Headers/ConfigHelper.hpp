@@ -23,7 +23,7 @@ void readConfig(
 void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 void fillKeys(std::vector<std::unique_ptr<LogicalKey>> &keys);
 void fillButtons(std::vector<std::unique_ptr<LogicalButton>> &buttons);
-std::string readParameter(const std::string &par);
+std::string readParameter(const std::string &par, bool &parameterFound);
 void writeParameter(LogicalParameter &par);
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
