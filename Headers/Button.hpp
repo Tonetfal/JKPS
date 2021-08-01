@@ -39,6 +39,8 @@ class Button : public sf::Drawable, public sf::Transformable
         void                        resize();
         void                        clear();
 
+        sf::Vector2f                getButtonPosition(unsigned idx) const;
+
         static bool                 parameterIdMatches(LogicalParameter::ID id);
 
 
@@ -73,8 +75,10 @@ class Button : public sf::Drawable, public sf::Transformable
         void                        raiseKey(unsigned idx);
         void                        lowerKey(unsigned idx);
 
-        unsigned                    getKeyCountersWidth(const sf::Text &text, unsigned idx) const;
-        unsigned                    getKeyCountersHeight(const sf::Text &text) const;
+        unsigned                    getButtonWidth(unsigned idx) const;
+        unsigned                    getButtonHeight(unsigned idx) const;
+        unsigned                    getKeyCountersWidth(unsigned idx) const;
+        unsigned                    getKeyCountersHeight(unsigned idx) const;
 
     
     private:

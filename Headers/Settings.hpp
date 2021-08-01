@@ -8,6 +8,8 @@
 #include <vector>
 #include <string>
 
+class Button;
+
 namespace sf
 {
     class Event;
@@ -23,6 +25,7 @@ class Settings
         void                        update();
 
         void                        setWindowReference(sf::RenderWindow& window);
+        void                        setButtonsReference(Button &button);
         void                        buildKeySelector();
 
         void                        setChangeabilityPosition();
@@ -163,6 +166,7 @@ class Settings
 
     private:
         sf::RenderWindow*           mWindow;
+        Button*                     mButton;
         std::unique_ptr<KeySelector> mKeySelector;
 
         static bool                 mIsButtonSelected;

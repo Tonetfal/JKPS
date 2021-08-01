@@ -121,8 +121,6 @@ void Button::highlightKey(int buttonIndex)
 
 void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    states.transform.translate(Settings::WindowBonusSizeLeft, Settings::WindowBonusSizeTop);
-    
     for (auto& elem : mButtonsSprite)
         target.draw(*elem, states);
 
@@ -187,7 +185,11 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::AnimGfxScl ||
         id == LogicalParameter::ID::AnimGfxClr ||
         id == LogicalParameter::ID::AnimGfxOffset ||
-        id == LogicalParameter::ID::OtherHighText;
+        id == LogicalParameter::ID::OtherHighText ||
+        id == LogicalParameter::ID::MainWndwTop ||
+        id == LogicalParameter::ID::MainWndwBot ||
+        id == LogicalParameter::ID::MainWndwLft ||
+        id == LogicalParameter::ID::MainWndwRght;
 }
 
 void Button::setTextures(std::vector<std::unique_ptr<sf::Sprite>>& vector, sf::Texture& texture)
@@ -217,13 +219,11 @@ void Button::centerOrigin(std::vector<std::unique_ptr<sf::Sprite>>& vector)
 
 void Button::setButtonPositions(std::vector<std::unique_ptr<sf::Sprite>>& vector)
 {
-    for (size_t i = 0; i < vector.size(); ++i)
+    unsigned i = 0;
+    for (auto &elem : vector)
     {
-        sf::Vector2f size(Settings::ButtonTextureSize);
-        sf::Vector2f position(
-            Settings::ButtonDistance * i + size.x * i + size.x / 2,
-            size.y / 2);
-        vector[i]->setPosition(position);
+        elem->setPosition(getButtonWidth(i), getButtonHeight(i));
+        ++i;
     }
 }
 
@@ -298,7 +298,7 @@ void Button::setupKeyCounterText(sf::Text &text, unsigned idx)
 void Button::setupTextPosition(sf::Text &text, unsigned idx)
 {
     text.setOrigin(getCenterOriginText(text));
-    text.setPosition(getKeyCountersWidth(text, idx), getKeyCountersHeight(text) + mButtonsYOffset[idx]);
+    text.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx));
 }
 
 bool Button::isTextTooBig(const sf::Text &text) const
@@ -433,8 +433,7 @@ void Button::raiseKey(unsigned idx)
     sf::Sprite &btnSprite = *mButtonsSprite[idx];
     sf::Text &btnText = *mButtonsText[idx];
 
-    const float buttonHeight(mButtonsSprite[0]->getGlobalBounds().height / 2.f);
-    const float counterHeight(getKeyCountersHeight(*mButtonsText[0]));
+    const float buttonHeight(getButtonHeight(idx));
 
     sf::Vector2f spritePos = btnSprite.getPosition();
     float step = Settings::AnimationOffset / Settings::AnimationVelocity;
@@ -450,7 +449,7 @@ void Button::raiseKey(unsigned idx)
     {
         btnYOffset = 0;
         btnSprite.setPosition(spritePos.x, buttonHeight);
-        btnText.setPosition(btnText.getPosition().x, counterHeight);
+        btnText.setPosition(btnText.getPosition().x, buttonHeight);
     }
 }
 
@@ -460,8 +459,7 @@ void Button::lowerKey(unsigned idx)
     sf::Sprite &btnSprite = *mButtonsSprite[idx];
     sf::Text &btnText = *mButtonsText[idx];
 
-    const float buttonLoweredHeight(mButtonsSprite[0]->getGlobalBounds().height / 2.f + Settings::AnimationOffset);
-    const float counterLoweredHeight(getKeyCountersHeight(*mButtonsText[0]) + Settings::AnimationOffset);
+    const float buttonLoweredHeight(getButtonHeight(idx)  + Settings::AnimationOffset);
 
     if (btnSprite.getPosition().y != buttonLoweredHeight)
     {
@@ -471,22 +469,25 @@ void Button::lowerKey(unsigned idx)
     }
 }
 
-unsigned int Button::getKeyCountersWidth(const sf::Text &text, unsigned idx) const
+unsigned Button::getButtonWidth(unsigned idx) const
 {
-    const sf::Text &elem(*mButtonsText[idx]);
-    unsigned int buttonCenterX = 
-        Settings::ButtonDistance * idx +
-        Settings::ButtonTextureSize.x * (idx + 1) - 
-        Settings::ButtonTextureSize.x / 2U;
-
-    return buttonCenterX + Settings::KeyCounterPosition.x;
+    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * idx 
+          + Settings::WindowBonusSizeLeft + Settings::ButtonTextureSize.x / 2;
 }
 
-unsigned int Button::getKeyCountersHeight(const sf::Text &text) const
+unsigned Button::getButtonHeight(unsigned idx) const
 {
-    unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U;
+    return Settings::WindowBonusSizeTop + Settings::ButtonTextureSize.y / 2;
+}
 
-    return buttonCenterY - Settings::KeyCounterPosition.y;
+unsigned int Button::getKeyCountersWidth(unsigned idx) const
+{
+    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * idx + Settings::WindowBonusSizeLeft + Settings::ButtonTextureSize.x / 2.f;
+}
+
+unsigned int Button::getKeyCountersHeight(unsigned idx) const
+{
+    return Settings::WindowBonusSizeTop + mButtonsYOffset[idx] + Settings::ButtonTextureSize.y / 2.f;
 }
 
 sf::Vector2f Button::getCenterOriginText(const sf::Text &text) const
@@ -510,4 +511,12 @@ bool Button::isBeyondDefaultScale(const sf::Sprite &sprite) const
     ||  (scaleAmountPerFrame.y > 0 ? 
             defaultScale.y < spriteScale.y :
             defaultScale.y > spriteScale.y);
-}   
+}
+
+sf::Vector2f Button::getButtonPosition(unsigned idx) const
+{
+    assert(Settings::ButtonAmount >= idx);
+    sf::Vector2f position = mButtonsSprite[idx]->getPosition();
+
+    return position;
+}
