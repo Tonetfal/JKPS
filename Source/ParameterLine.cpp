@@ -96,9 +96,15 @@ void ParameterLine::handleValueModEvent(sf::Event event)
         sf::Keyboard::Key key = event.key.code;
         
 
-        if (!isStrType && key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
+        if (!isStrType
+        && ((key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
+        || (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)))
         {
-            int n = (key - sf::Keyboard::Num0);
+            int n = 0;
+            if (key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
+                n = (key - sf::Keyboard::Num0);
+            if (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)
+                n = (key - sf::Keyboard::Numpad0);
 
             if (mSelectedValueIndex == 0 && (str[0] == '-' || n == 0))
                 return;
