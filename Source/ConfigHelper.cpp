@@ -157,6 +157,8 @@ std::string readParameter(const std::string &parName)
                 break;
             }
         }
+        if (line[i] != ':')
+            i = 0;
     }
 
     cfg.close();
