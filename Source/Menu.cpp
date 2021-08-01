@@ -256,7 +256,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::WindowBonusSizeTop, "Window bonus size top", "6", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::WindowBonusSizeBottom, "Window bonus size bottom", "6", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::WindowBonusSizeLeft, "Window bonus size left", "6", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::WindowBonusSizeRight, "Window bonus size right", "130", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::WindowBonusSizeRight, "Window bonus size right", "135", 0, 500)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwEn, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KPSWindowEnabledFromStart, "Enable from start", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwSz, new LogicalParameter(LogicalParameter::Type::VectorU, &Settings::KPSWindowSize, "Window size", "300,300", 0, 1000)));
