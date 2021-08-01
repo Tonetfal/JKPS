@@ -223,7 +223,7 @@ void Palette::setColorOnPalette(sf::Color color)
     // set cursor on the palette
 }
 
-void Palette::openWindow()
+void Palette::openWindow(sf::Vector2i position)
 {
     if (!mWindow.isOpen())
     {
@@ -231,6 +231,7 @@ void Palette::openWindow()
         float height = mDistance * (mLineSize - 1) / 2 + mWindowOffset.y * 2;
 
         mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", sf::Style::Close);
+        mWindow.setPosition(position - static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
         mWindow.setKeyRepeatEnabled(false);
     }
 }

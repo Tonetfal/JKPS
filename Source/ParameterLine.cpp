@@ -373,7 +373,7 @@ void ParameterLine::selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mouse
             select(mParameterValues[0]);
 
         // mPalette.setColorOnPalette(lineToColor(mSelectedLine));
-        mPalette.openWindow();
+        mPalette.openWindow(mWindow.getPosition() + static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
     }
 }
 

@@ -21,7 +21,7 @@ class Palette
         void render();
 
         void setColorOnPalette(sf::Color color);
-        void openWindow();
+        void openWindow(sf::Vector2i position);
         void closeWindow();
         bool isWindowOpen() const;
 
