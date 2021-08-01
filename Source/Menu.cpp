@@ -137,7 +137,7 @@ void Menu::handleOwnEvent()
             offset = mScrollSpeed;
         if (offset != 0.f)
         {
-            moveSliderBarButtons(offset / 3);
+            moveSliderBarButtons(offset);
             returnViewInBounds();
         }
     }
