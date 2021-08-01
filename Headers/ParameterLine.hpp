@@ -40,6 +40,11 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             StatTextShowMaxKPS,
             StatTextShowTotal,
             StatTextShowBPM,
+            StatTextKPSText,
+            StatTextKPS2Text,
+            StatTextMaxKPSText,
+            StatTextTotalText,
+            StatTextBPMText,
             StatTextMty,
 
             BtnTextColl,

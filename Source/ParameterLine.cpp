@@ -74,7 +74,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             return;
 
         std::string str(mSelectedValue->mValText.getString());
-        bool isStrType = mType == LogicalParameter::Type::String;
+        bool isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
         int btnIdx = 0;
         if (mType == LogicalParameter::Type::Color
         ||  mType == LogicalParameter::Type::VectorU
@@ -285,11 +285,11 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                     return;
                 }
                 // Refresh button has 0x0 rectangle shape 
-                if (mType == LogicalParameter::Type::String && elem->mRect.getSize().x == 0)
+                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
                     Settings::requestToReloadAssets();
                     deselect();
-                    // return in order to don't select button
+                    // return in order to don't select refresh button
                     return; 
                 }
                 if (mType != LogicalParameter::Type::Color && mPalette.isWindowOpen())
@@ -300,11 +300,11 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
             if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Enter)
             {
                 // Refresh button has 0x0 rectangle shape 
-                if (mType == LogicalParameter::Type::String && elem->mRect.getSize().x == 0)
+                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
                     Settings::requestToReloadAssets();
                     deselect();
-                    // return in order to don't select button
+                    // return in order to don't select refresh button
                     return; 
                 }
             }
@@ -419,20 +419,26 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
         return;
     }
 
-    for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
+    if (mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath)
     {
-        if (mType == LogicalParameter::Type::String)
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
+        val->setPosition(605, mRectLine.getSize().y / 2);
+
+        mParameterValues.emplace_back(std::move(val));
+
+        if (mType == LogicalParameter::Type::StringPath)
         {
-            val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), 0, sf::Vector2f(250.f, 25.f));
-            val->setPosition(605, mRectLine.getSize().y / 2);
-            mParameterValues.emplace_back(std::move(val));
             val = std::make_shared<GraphicalParameter>(0);
             val->setPosition(760, mRectLine.getSize().y / 2);
+
             mParameterValues.emplace_back(std::move(val));
-            return;
         }
-        else
-            val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), i);
+        return;
+    }
+
+    for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
+    {
+        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
             GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
@@ -705,6 +711,11 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
         case LogicalParameter::ID::OtherHighText: return ParameterLine::ID::OtherHighText;
         case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
+        case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
+        case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
+        case LogicalParameter::ID::StatTextMaxKPSText: return ParameterLine::ID::StatTextMaxKPSText;
+        case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
+        case LogicalParameter::ID::StatTextBPMText: return ParameterLine::ID::StatTextBPMText;
 
         default: return ParameterLine::ID::StatTextColl;
     }
