@@ -124,6 +124,7 @@ void Menu::handleOwnEvent()
         && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)))
         {
             mWindow.close();
+            return;
         }
     }
     if (!ParameterLine::isValueSelected())
