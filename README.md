@@ -4,23 +4,22 @@ JKPS is a simple program that shows keystates, keys per second, total keys and c
 # Preview
 ![](Media/Preview-White-orange.gif)
 
-It supports up to 10 keyboard keys and 5 mouse buttons. Numerical parameters and keys are be changed in-program, but the textures and fonts only in the config.
+It supports up to 10 keyboard keys and 5 mouse buttons.
 
 # Usage
 To add or remove a keyboard key press Ctrl + "+" or "-". 
 
-To change a key click with right mouse button on the button to select it, and then click the required key on the keyboard
+To add or remove a mouse button press Ctrl + "<" or ">". 
+
+To change a key click with right mouse button on the graphical button to open key selector, and then click the required key on the keyboard. If you want to change the text on the button, then write it in the second box.
+
 These actions look like:
 
 ![](Media/modification-demo.gif)
 
-To change how the program looks press Ctrl + A to open graphical menu.
+To change how the program looks press Ctrl + A to open graphical menu. If you want to change texture or font, then you have to provide it in the same folder where the program is, and then write the whole asset name (extension included) in the graphical menu, and then press Enter or Refresh button.
 
-If you want to use other font or image for anything, then you have to provide it and its name in the config.
-
-The config is generated in the same directory where the program is.
-
-To change anything in the config you must put one space between colon and the rest of the data. If this data are some numbers or keys, they must be separated with a comma without any extra space between. If it is a path to a texture or font, it must be written without any quotes, and must include the extension, such as png, jpg etc.
+The program will generate a config named JKPS.cfg, that holds every parameter of the program.
 
 Entire explanation of the config you can find [here](https://gist.github.com/JekiTheMonkey/06c7b7dc0401729c2574a04442b19225).
 
@@ -30,6 +29,8 @@ Click with right mouse button on the key to edit it
 
 Ctrl + "+/-" - Add/remove keyboard keys
 
+Ctrl + "</>" - Add/remove mouse buttons
+
 Ctrl + W - Close the program
 
 Ctrl + X - Reset all the statistics
@@ -38,7 +39,7 @@ Ctrl + A - Open graphical menu
 
 Ctrl + K - Open an extra window with KPS
 
-Ctrl (hold) - Show opposite button values
+Alt (hold) - Show opposite button values
 
 # Graphical menu
 
@@ -50,18 +51,24 @@ Ctrl (hold) - Show opposite button values
 
 # Notes
 - Capture the program as a game in OBS, not as a window.
-- To make the program work with green screen just provide [greenscreen texture](https://i.imgur.com/8q4k9EZ.png) as "Background texture". Download the image, put it where the program is, open JKPS.cfg, find "Background texture" parameter, and write there the name of image with the extension (png, jpg). If some green is still visible on keys/text, then make the everything bigger by increasing numerical parameters in the menu.
+- To make the program work with green screen just write in the "Background texture" parameter "GreenscreenBG.png" and press Enter or Refresh button.
 - The palette in menu will not adjust own color to the parameter one.
-- If you change anything in the configuration, exit the program first.
+- If you change anything in the config file, exit the program first.
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
-![](Media/Preview-Dark-minimalistic2.gif)
+![](Media/Preview-Red-violet.gif)
+
+![](Media/Preview-Dark-minimalistic-2-nano.gif)
+
+![](Media/Preview-Dark-minimalistic-2.gif)
 
 ![](Media/Preview-Medieval.gif)
 
 ![](Media/Preview-Modern-purple.gif)
+
+![](Media/Preview-Dark-minimalistic-nano.gif)
 
 ![](Media/Preview-Dark-minimalistic.gif)
 
