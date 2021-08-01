@@ -80,8 +80,7 @@ class Settings
         static std::string          KeyCountersFontPath;
         static sf::Color            KeyCountersTextColor;
         static std::size_t          KeyCountersTextCharacterSize;
-        static float                KeyCounterWidth;
-        static float                KeyCounterHeight;
+        static sf::Vector2f         KeyCounterPosition;
         static float                KeyCountersHorizontalBounds;
         static float                KeyCountersVerticalBounds;
         static bool                 KeyCountersBold;

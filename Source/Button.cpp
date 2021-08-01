@@ -479,14 +479,14 @@ unsigned int Button::getKeyCountersWidth(const sf::Text &text, unsigned idx) con
         Settings::ButtonTextureSize.x * (idx + 1) - 
         Settings::ButtonTextureSize.x / 2U;
 
-    return buttonCenterX + Settings::KeyCounterWidth;
+    return buttonCenterX + Settings::KeyCounterPosition.x;
 }
 
 unsigned int Button::getKeyCountersHeight(const sf::Text &text) const
 {
     unsigned int buttonCenterY = Settings::ButtonTextureSize.y / 2U;
 
-    return buttonCenterY - Settings::KeyCounterHeight;
+    return buttonCenterY - Settings::KeyCounterPosition.y;
 }
 
 sf::Vector2f Button::getCenterOriginText(const sf::Text &text) const

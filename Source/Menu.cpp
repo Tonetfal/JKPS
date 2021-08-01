@@ -228,8 +228,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KeyCountersFontPath, "Buttons text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyCountersTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KeyCountersTextCharacterSize, "Buttons text character size", "14", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextWidth, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCounterWidth, "Buttons text width", "0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextHeight, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCounterHeight, "Buttons text height", "0", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextWidth, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyCounterPosition, "Buttons text position", "0,0", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextHorzBounds, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCountersHorizontalBounds, "Buttons text horizontal bounds", "4", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVertBounds, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyCountersVerticalBounds, "Buttons text vertical bounds", "4", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyCountersBold, "Buttons text bold", "False")));
