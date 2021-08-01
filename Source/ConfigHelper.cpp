@@ -190,6 +190,7 @@ void writeParameter(LogicalParameter &par)
         case LogicalParameter::Type::Bool:     par.setBool(readBoolParameter(par, valStr));  break;
         case LogicalParameter::Type::Float:    par.setDigit(readDigitParameter(par, valStr)); break;
         case LogicalParameter::Type::String:   par.setString(valStr); break;
+        case LogicalParameter::Type::StringPath: par.setString(valStr); break;
         case LogicalParameter::Type::Color:    par.setColor(readColorParameter(par, valStr)); break;
         case LogicalParameter::Type::VectorU: 
         case LogicalParameter::Type::VectorI: 
@@ -197,9 +198,9 @@ void writeParameter(LogicalParameter &par)
         default: break;
     }
 
-    if (par.mType == LogicalParameter::Type::String)
+    if (par.mType == LogicalParameter::Type::StringPath)
     {
-        if (par.mType == LogicalParameter::Type::String 
+        if (par.mType == LogicalParameter::Type::StringPath 
         &&  Settings::BackgroundTexturePath == "GreenscreenBG.png")
             return;
             
