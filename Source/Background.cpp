@@ -14,7 +14,7 @@ Background::Background(const TextureHolder& textureHolder, sf::RenderWindow& win
 , mTextures(textureHolder)
 { 
     mBackgroundSprite.setTexture(mTextures.get(Textures::Background));
-    setupTexture();
+    updateAssets();
 }
 
 void Background::draw(sf::RenderTarget &target, sf::RenderStates states) const 
@@ -22,13 +22,7 @@ void Background::draw(sf::RenderTarget &target, sf::RenderStates states) const
     target.draw(mBackgroundSprite, states);
 }
 
-// This is needed to rescale the background when the amount of keys is changed
-void Background::resize()
-{
-    scale();
-}
-
-void Background::scale()
+void Background::rescale()
 {
     sf::Vector2f scale(1.f, 1.f);
     if (Settings::ScaleBackground)
@@ -42,9 +36,9 @@ void Background::scale()
     mBackgroundSprite.setScale(scale);
 }
 
-void Background::setupTexture()
+void Background::updateAssets()
 {
     mBackgroundSprite.setTexture(mTextures.get(Textures::Background), true);
     mBackgroundSprite.setColor(Settings::isGreenscreenSet ? sf::Color::White : Settings::BackgroundColor);
-    scale();
+    rescale();
 }
