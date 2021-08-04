@@ -5,7 +5,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 
 #include "LogKey.hpp"
-#include "GraphicalParameter.hpp"
+#include "GfxParameter.hpp"
 
 #include <memory>
 #include <array>
@@ -52,7 +52,7 @@ class GfxButtonSelector
         // Clicks with keyboard to modify value of buttons
         void handleButtonModificationEvent(sf::Event event);
 
-        void select(GraphicalParameter *ptr);
+        void select(GfxParameter *ptr);
         void deselect();
         void saveKey();
         void setCursorPos();
@@ -64,11 +64,11 @@ class GfxButtonSelector
         sf::RenderWindow mWindow;
 
         sf::Font mFont;
-        std::array<std::unique_ptr<GraphicalParameter>, ButtonsCount> mButtons;
+        std::array<std::unique_ptr<GfxParameter>, ButtonsCount> mButtons;
 
         static sf::RectangleShape mCursor;
         static int mSelectedBtnTextIndex;
-        static GraphicalParameter *mSelectedBtn;
+        static GfxParameter *mSelectedBtn;
         static const std::string mDefaultVisualKeyStr;
         static const sf::Color mDefaultVisualKeyColor;
 

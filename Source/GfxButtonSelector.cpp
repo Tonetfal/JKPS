@@ -11,7 +11,7 @@
 
 sf::RectangleShape GfxButtonSelector::mCursor(sf::Vector2f(1, 21));
 int GfxButtonSelector::mSelectedBtnTextIndex(-1);
-GraphicalParameter *GfxButtonSelector::mSelectedBtn(nullptr);
+GfxParameter *GfxButtonSelector::mSelectedBtn(nullptr);
 const std::string GfxButtonSelector::mDefaultVisualKeyStr("Visual key");
 const sf::Color GfxButtonSelector::mDefaultVisualKeyColor(sf::Color(160, 160, 160));
 
@@ -22,17 +22,17 @@ GfxButtonSelector::GfxButtonSelector()
     if (!mFont.loadFromMemory(RobotoMono, 1100000))
         throw std::runtime_error("KeySelector::KeySelector - Failed to load default font");
 
-    std::unique_ptr<GraphicalParameter> realKeyGfx(new GraphicalParameter("Key", 0, sf::Vector2f(150, 25)));
+    std::unique_ptr<GfxParameter> realKeyGfx(new GfxParameter(nullptr, "Key", 0, sf::Vector2f(150, 25)));
     realKeyGfx->setPosition(mWindowSize.x / 2, 25);
     mButtons[RealKeyButton] = std::move(realKeyGfx);
     
-    std::unique_ptr<GraphicalParameter> visualKeyGfx(new GraphicalParameter("Visual key", 0, sf::Vector2f(250, 25)));
+    std::unique_ptr<GfxParameter> visualKeyGfx(new GfxParameter(nullptr, "Visual key", 0, sf::Vector2f(250, 25)));
     visualKeyGfx->setPosition(mWindowSize.x / 2, 75);
     // Make the text gray in order to show that it is a hint, not an actual text
     visualKeyGfx->mValText.setFillColor(mDefaultVisualKeyColor);
     mButtons[VisualKeyButton] = std::move(visualKeyGfx);
 
-    std::unique_ptr<GraphicalParameter> acceptButton(new GraphicalParameter("True"));
+    std::unique_ptr<GfxParameter> acceptButton(new GfxParameter(nullptr, "True"));
     acceptButton->setPosition(mWindowSize.x / 2, 125);
     mButtons[AcceptButton] = std::move(acceptButton);
 
@@ -184,8 +184,8 @@ void GfxButtonSelector::handleButtonInteractionEvent(sf::Event event)
         sf::Mouse::Button button = event.mouseButton.button;
         for (auto &elem : mButtons)
         {
-            sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
-            sf::Vector2f mousePos(sf::Mouse::getPosition(mWindow));
+            const sf::FloatRect buttonBounds = elem->getGlobalBounds();;
+            const sf::Vector2f mousePos(sf::Mouse::getPosition(mWindow));
 
             if (button == sf::Mouse::Left && buttonBounds.contains(mousePos))
             {
@@ -270,11 +270,11 @@ bool GfxButtonSelector::isOpen()
     return mWindow.isOpen();
 }
 
-void GfxButtonSelector::select(GraphicalParameter *ptr)
+void GfxButtonSelector::select(GfxParameter *ptr)
 {
     mSelectedBtn = ptr;
     // Make the text gray in order to show that it is a hint, not an actual text
-    mSelectedBtn->mRect.setFillColor(GraphicalParameter::defaultSelectedRectColor);
+    mSelectedBtn->mRect.setFillColor(GfxParameter::defaultSelectedRectColor);
     mSelectedBtnTextIndex = mSelectedBtn->mValText.getString().getSize();
     setCursorPos();
 }
@@ -290,7 +290,7 @@ void GfxButtonSelector::deselect()
         resetVisualKeyGfxButton("", "");
     }
 
-    mSelectedBtn->mRect.setFillColor(GraphicalParameter::defaultRectColor);
+    mSelectedBtn->mRect.setFillColor(GfxParameter::defaultRectColor);
     mSelectedBtn = nullptr;
     mSelectedBtnTextIndex = -1;
 }
@@ -310,6 +310,7 @@ void GfxButtonSelector::saveKey()
             break;
     }
 
+    mLogKey->changed = true;
     mLogKey = nullptr;
     deselect();
 }
