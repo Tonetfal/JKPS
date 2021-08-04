@@ -4,8 +4,8 @@ namespace Textures
 {
     enum ID
     {
-        KeyButton,
-        ButtonAnimation,
+        Button,
+        Animation,
         Background,
         rgbCircle,
         vMark,
@@ -18,7 +18,7 @@ namespace Fonts
 {
     enum ID
     {
-        KeyCounters,
+        ButtonValue,
         Statistics,
         KPSText,
         KPSNumber,
