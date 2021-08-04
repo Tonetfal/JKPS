@@ -14,6 +14,8 @@
 
 #include <vector>
 
+class Button;
+
 
 class Menu 
 {
@@ -25,13 +27,13 @@ class Menu
         void update();
         void render();
 
-        Settings &getSettings();
-
         LogicalParameter &getParameter(LogicalParameter::ID id);
         ChangedParametersQueue &getChangedParametersQueue();
 
-        void saveConfig();
+        void saveConfig(const std::vector<std::unique_ptr<Button>> &mKeys);
         void requestFocus();
+        void requestReloadAssets();
+        bool resetReloadAssetsRequest();
 
 
     private:
@@ -55,8 +57,6 @@ class Menu
         const float mScrollSpeed;
         float mHighViewBounds, mLowViewBounds;
 
-        Settings mSettings;
-
         sf::RectangleShape mSliderBar;
         const sf::Color mSliderBarDefaultColor;
         const sf::Color mSliderBarAimedColor;
@@ -67,5 +67,6 @@ class Menu
         ChangedParametersQueue mChangedParametersQueue;
 
         static bool paramValWasChanged;
+        bool mRequestReloadAssets;
         static std::string mProgramVersion;
 };
