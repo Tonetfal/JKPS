@@ -22,10 +22,13 @@ class Menu
     public:
         Menu();
 
-        void handleEvent(sf::Event event);
-        void handleOwnEvent();
+        void processInput();
         void update();
         void render();
+
+        void openWindow();
+        void closeWindow();
+        bool isOpen() const;
 
         LogicalParameter &getParameter(LogicalParameter::ID id);
         ChangedParametersQueue &getChangedParametersQueue();
@@ -37,6 +40,9 @@ class Menu
 
 
     private:
+        void handleEvent();
+        void handleRealtimeInput();
+
         void loadFonts();
         void loadTextures();
         void buildParametersMap();
@@ -67,6 +73,5 @@ class Menu
         ChangedParametersQueue mChangedParametersQueue;
 
         static bool paramValWasChanged;
-        bool mRequestReloadAssets;
         static std::string mProgramVersion;
 };

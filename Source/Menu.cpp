@@ -35,32 +35,13 @@ Menu::Menu()
     mSliderBar.setFillColor(mSliderBarDefaultColor);
 }
 
-void Menu::handleEvent(sf::Event event)
+void Menu::processInput()
 {
-    if (event.type == sf::Event::KeyPressed
-    &&  event.key.code == Settings::KeyToOpenMenuWindow
-    &&  sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-    {
-        if (!mWindow.isOpen())
-        {
-            sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-            mWindow.create(sf::VideoMode(812, 600), "JKPS Menu", sf::Style::Close);
-            mWindow.setPosition(sf::Vector2i(
-                desktop.width  / 2 - mWindow.getSize().x / 2, 
-                desktop.height / 2 - mWindow.getSize().y / 2));
-            mView = mWindow.getView();
-            mView.setCenter(mView.getCenter().x, 0);
-            mSliderBar.setPosition(mSliderBar.getPosition().x, mSliderBar.getSize().y / 2);
-        }
-        else
-        {
-            mWindow.close();
-            ParameterLine::deselectValue();
-        }
-    }
+    handleEvent();
+    handleRealtimeInput();
 }
 
-void Menu::handleOwnEvent()
+void Menu::handleEvent()
 {
     sf::Event event;
     static bool scrollCursorClicked;
@@ -128,7 +109,11 @@ void Menu::handleOwnEvent()
             return;
         }
     }
-    if (!ParameterLine::isValueSelected())
+}
+
+void Menu::handleRealtimeInput()
+{
+    if (mWindow.hasFocus() && !ParameterLine::isValueSelected())
     {
         float offset = 0.f;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
@@ -170,6 +155,32 @@ void Menu::render()
 
 
     mWindow.display();
+}
+
+void Menu::openWindow()
+{
+    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+
+    mWindow.create(sf::VideoMode(812, 600), "JKPS Menu", sf::Style::Close);
+    mWindow.setPosition(sf::Vector2i(
+        desktop.width  / 2 - mWindow.getSize().x / 2, 
+        desktop.height / 2 - mWindow.getSize().y / 2));
+
+    mView = mWindow.getView();
+    mView.setCenter(mView.getCenter().x, 0);
+
+    mSliderBar.setPosition(mSliderBar.getPosition().x, mSliderBar.getSize().y / 2);
+}
+
+void Menu::closeWindow()
+{
+    mWindow.close();
+    ParameterLine::deselectValue();
+}
+
+bool Menu::isOpen() const
+{
+    return mWindow.isOpen();
 }
 
 LogicalParameter &Menu::getParameter(LogicalParameter::ID id)
@@ -437,14 +448,4 @@ void Menu::saveConfig(const std::vector<std::unique_ptr<Button>> &mKeys)
 void Menu::requestFocus()
 {
     mWindow.requestFocus();
-}
-
-void Menu::requestReloadAssets()
-{
-    mRequestReloadAssets = true;
-}
-
-bool Menu::resetReloadAssetsRequest()
-{
-    return mRequestReloadAssets && !(mRequestReloadAssets = false);
 }
