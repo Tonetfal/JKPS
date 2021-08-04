@@ -13,16 +13,19 @@
 #include <memory>
 
 
-struct GraphicalParameter : public sf::Drawable, public sf::Transformable
+class ParameterLine;
+
+struct GfxParameter : public sf::Drawable, public sf::Transformable
 {
     public:
-        GraphicalParameter(const std::string &str, unsigned n, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
-        GraphicalParameter(const std::string &str);
-        GraphicalParameter(unsigned);
+        GfxParameter(const ParameterLine *parent, const std::string &str, unsigned n, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
+        GfxParameter(const ParameterLine *parent, const std::string &str);
+        GfxParameter(const ParameterLine *parent);
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void setupValPos();
+        sf::Vector2f getGlobalPosition() const;
         sf::FloatRect getGlobalBounds() const;
 
         void setInverseMark();
@@ -34,6 +37,8 @@ struct GraphicalParameter : public sf::Drawable, public sf::Transformable
     public:
         static const TextureHolder *mTextures;
         static const FontHolder *mFonts;
+
+        const ParameterLine *mParent;
 
         sf::Sprite mSprite;
         sf::RectangleShape mRect;
