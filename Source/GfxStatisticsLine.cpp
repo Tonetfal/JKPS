@@ -74,9 +74,20 @@ std::string GfxStatisticsLine::getString(StatisticsID id)
     {
         case KPS:
             if (Button::getKeysPerSecond() != 0)
-                str = Settings::StatisticsKPSText + eraseDigitsOverHundredths(std::to_string(Button::getKeysPerSecond()));
+            {
+                if (false)
+                    str = Settings::StatisticsKPSText + eraseDigitsOverHundredths(std::to_string(Button::getKeysPerSecond()));
+                else
+                    str = Settings::StatisticsKPSText + (std::to_string(static_cast<unsigned>(Button::getKeysPerSecond())));
+            }
             else
-                str = Settings::StatisticsKPS2Text + eraseDigitsOverHundredths(std::to_string(Button::getMaxKeysPerSecond()));
+            {
+                if (false)
+                    str = Settings::StatisticsKPS2Text + eraseDigitsOverHundredths(std::to_string(Button::getMaxKeysPerSecond()));
+                else
+                    str = Settings::StatisticsKPS2Text + std::to_string(static_cast<unsigned>(Button::getMaxKeysPerSecond()));
+
+            }
             break;
 
         case Total:
