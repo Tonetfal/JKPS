@@ -8,20 +8,24 @@
 #include "GfxStatisticsLine.hpp"
 #include "StatisticLinesPositioner.hpp"
 #include "GfxButtonSelector.hpp"
+#include "Menu.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <memory>
 
-class Menu;
-
 
 class Application
 {
     public:
-        Application(Menu &menu);
+        Application();
         void run();
+
+        static unsigned getWindowWidth();
+        static unsigned getWindowHeight();
+
+        static bool parameterIdMatches(LogicalParameter::ID id);
 
 
     private:
@@ -31,10 +35,12 @@ class Application
 		void render();
 
         void unloadChangesQueue();
+        void resetAssets();
 
         void loadTextures();
         void loadFonts();
         void loadIcon();
+
         void buildStatistics();
         void buildButtons();
 
@@ -49,29 +55,23 @@ class Application
         void resizeWindow();
         void moveWindow();
 
-        unsigned getWindowWidth();
-        unsigned getWindowHeight();
-
-        static bool parameterIdMatches(LogicalParameter::ID id);
-
 
     private:
         static const sf::Time TimePerFrame;
 
         sf::RenderWindow mWindow;
+        
         TextureHolder mTextures;
         FontHolder mFonts;
 
-        Menu& mMenu;
-        // Settings& mSettings;
-        // std::unique_ptr<Statistics> mStatistics;
-        // std::unique_ptr<Background> mBackground;
-        // std::unique_ptr<KPSWindow> mKPSWindow;
+        Menu mMenu;
 
         std::array<std::unique_ptr<GfxStatisticsLine>, GfxStatisticsLine::StatisticsIdCounter> mStatistics;
         std::unique_ptr<StatisticsPositioner> mStatisticsPositioner;
+
         std::vector<std::unique_ptr<Button>> mButtons;
         std::unique_ptr<GfxButtonSelector> mGfxButtonSelector;
 
-        sf::Vector2i mLastMousePosition;
+        std::unique_ptr<Background> mBackground;
+        std::unique_ptr<KPSWindow> mKPSWindow;
 };
