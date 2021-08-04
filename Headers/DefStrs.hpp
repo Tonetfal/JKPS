@@ -4,13 +4,10 @@
 
 
 static const std::string defCfgComment = 
-R"(# Download link:
-# https://github.com/JekiTheMonkey/JKPS/releases 
-# My Discord: Jeki the Monkey from München#3932
-# If any settings will not be found default parameter value will be used
-#
-# Everything about config:
-# https://gist.github.com/JekiTheMonkey/06c7b7dc0401729c2574a04442b19225
+R"(# Download link: https://github.com/JekiTheMonkey/JKPS/releases 
+# Config explanation: https://gist.github.com/JekiTheMonkey/06c7b7dc0401729c2574a04442b19225
+# Discord server: https://discord.gg/qBcT7zGc46
+# If any parameter has wrong value or if it is not found, then it will be set to default one
 )";
 
 // static const std::string defCfg =  defCfgComment +
