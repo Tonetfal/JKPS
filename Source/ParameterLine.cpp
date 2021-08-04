@@ -2,8 +2,9 @@
 #include "../Headers/ResourceHolder.hpp"
 #include "../Headers/ResourceIdentifiers.hpp"
 #include "../Headers/StringHelper.hpp"
-#include "../Headers/KeySelector.hpp"
+#include "../Headers/GfxButtonSelector.hpp"
 #include "../Headers/Settings.hpp"
+#include "../Headers/Menu.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -20,6 +21,7 @@ std::shared_ptr<ParameterLine> ParameterLine::mSelectedLine(nullptr);
 std::shared_ptr<GraphicalParameter> ParameterLine::mSelectedValue(nullptr);
 int ParameterLine::mSelectedValueIndex(-1);
 Palette ParameterLine::mPalette(0);
+bool ParameterLine::mRefresh(false);
 
 ParameterLine::ParameterLine(
     std::shared_ptr<LogicalParameter> parameter,
@@ -234,7 +236,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex = str.size();
         }
 
-        if (isStrType && KeySelector::isCharacter(key))
+        if (isStrType && GfxButtonSelector::isCharacter(key))
         {
             unsigned maxLength = 50;
             if (str.size() < maxLength)
@@ -291,7 +293,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 // Refresh button has 0x0 rectangle shape 
                 if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
-                    Settings::requestToReloadAssets();
+                    mRefresh = true;
                     deselect();
                     // return in order to don't select refresh button
                     return; 
@@ -306,7 +308,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 // Refresh button has 0x0 rectangle shape 
                 if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
-                    Settings::requestToReloadAssets();
+                    mRefresh = true;
                     deselect();
                     // return in order to don't select refresh button
                     return; 
@@ -662,7 +664,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
     switch(id)
     {
         case LogicalParameter::ID::StatTextDist: return ParameterLine::ID::StatTextDist;
-        case LogicalParameter::ID::SpaceBtwBtnAndStat: return ParameterLine::ID::SpaceBtwBtnAndStat;
+        case LogicalParameter::ID::StatPos: return ParameterLine::ID::StatPos;
         case LogicalParameter::ID::StatTextFont: return ParameterLine::ID::StatTextFont;
         case LogicalParameter::ID::StatTextClr: return ParameterLine::ID::StatTextClr;
         case LogicalParameter::ID::StatTextChSz: return ParameterLine::ID::StatTextChSz;
@@ -670,25 +672,25 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextItal: return ParameterLine::ID::StatTextItal;
         case LogicalParameter::ID::StatTextShow: return ParameterLine::ID::StatTextShow;
         case LogicalParameter::ID::StatTextShowKPS: return ParameterLine::ID::StatTextShowKPS;
-        case LogicalParameter::ID::StatTextShowMaxKPS: return ParameterLine::ID::StatTextShowMaxKPS;
         case LogicalParameter::ID::StatTextShowTotal: return ParameterLine::ID::StatTextShowTotal;
         case LogicalParameter::ID::StatTextShowBPM: return ParameterLine::ID::StatTextShowBPM;
         case LogicalParameter::ID::BtnTextFont: return ParameterLine::ID::BtnTextFont;
         case LogicalParameter::ID::BtnTextClr: return ParameterLine::ID::BtnTextClr;
         case LogicalParameter::ID::BtnTextChSz: return ParameterLine::ID::BtnTextChSz;
-        case LogicalParameter::ID::BtnTextWidth: return ParameterLine::ID::BtnTextWidth;
-        case LogicalParameter::ID::BtnTextHeight: return ParameterLine::ID::BtnTextHeight;
-        case LogicalParameter::ID::BtnTextHorzBounds: return ParameterLine::ID::BtnTextHorzBounds;
-        case LogicalParameter::ID::BtnTextVertBounds: return ParameterLine::ID::BtnTextVertBounds;
+        case LogicalParameter::ID::BtnTextPosition: return ParameterLine::ID::BtnTextPosition;
+        case LogicalParameter::ID::BtnTextBounds: return ParameterLine::ID::BtnTextBounds;
         case LogicalParameter::ID::BtnTextBold: return ParameterLine::ID::BtnTextBold;
         case LogicalParameter::ID::BtnTextItal: return ParameterLine::ID::BtnTextItal;
-        case LogicalParameter::ID::BtnTextShowKeys: return ParameterLine::ID::BtnTextShowKeys;
-        case LogicalParameter::ID::BtnTextShowKeyCtrs: return ParameterLine::ID::BtnTextShowKeyCtrs;
+        case LogicalParameter::ID::BtnTextShowVisKeys: return ParameterLine::ID::BtnTextShowVisKeys;
+        case LogicalParameter::ID::BtnTextShowTot: return ParameterLine::ID::BtnTextShowTot;
+        case LogicalParameter::ID::BtnTextShowKps: return ParameterLine::ID::BtnTextShowKps;
+        case LogicalParameter::ID::BtnTextShowBpm: return ParameterLine::ID::BtnTextShowBpm;
         case LogicalParameter::ID::BtnGfxDist: return ParameterLine::ID::BtnGfxDist;
         case LogicalParameter::ID::BtnGfxTxtr: return ParameterLine::ID::BtnGfxTxtr;
         case LogicalParameter::ID::BtnGfxTxtrSz: return ParameterLine::ID::BtnGfxTxtrSz;
         case LogicalParameter::ID::BtnGfxTxtrClr: return ParameterLine::ID::BtnGfxTxtrClr;
-        case LogicalParameter::ID::AnimGfxStl: return ParameterLine::ID::AnimGfxStl;
+        case LogicalParameter::ID::AnimGfxLight: return ParameterLine::ID::AnimGfxLight;
+        case LogicalParameter::ID::AnimGfxPress: return ParameterLine::ID::AnimGfxPress;
         case LogicalParameter::ID::AnimGfxTxtr: return ParameterLine::ID::AnimGfxTxtr;
         case LogicalParameter::ID::AnimGfxVel: return ParameterLine::ID::AnimGfxVel;
         case LogicalParameter::ID::AnimGfxScl: return ParameterLine::ID::AnimGfxScl;
@@ -713,11 +715,9 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwNumFont: return ParameterLine::ID::KPSWndwNumFont;
         case LogicalParameter::ID::KPSWndwTopPadding: return ParameterLine::ID::KPSWndwTopPadding;
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
-        case LogicalParameter::ID::OtherHighText: return ParameterLine::ID::OtherHighText;
         case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
         case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
         case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
-        case LogicalParameter::ID::StatTextMaxKPSText: return ParameterLine::ID::StatTextMaxKPSText;
         case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
         case LogicalParameter::ID::StatTextBPMText: return ParameterLine::ID::StatTextBPMText;
 
@@ -739,4 +739,9 @@ void ParameterLine::deselectValue()
 bool ParameterLine::isValueSelected()
 {
     return mSelectedValue.get();
+}
+
+bool ParameterLine::resetRefreshState()
+{
+    return mRefresh && !(mRefresh = false);
 }
