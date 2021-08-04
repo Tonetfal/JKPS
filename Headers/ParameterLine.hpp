@@ -3,7 +3,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 
-#include "GraphicalParameter.hpp"
+#include "GfxParameter.hpp"
 #include "LogicalParameter.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "ColorButton.hpp"
@@ -109,6 +109,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             ThemeDevMultpl,
             ThemeDevMty,
 
+            InfoColl,
             Info1,
             Info2,
             Info3,
@@ -146,16 +147,17 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         void processInput();
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-        const std::shared_ptr<LogicalParameter> getParameter() const;
-
         bool resetState();
+
+        const std::shared_ptr<LogicalParameter> getParameter() const;
+        LogicalParameter::Type getType() const;
+
         static void setColor(sf::Color color);
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
+        static bool isCollection(ParameterLine::ID id);
         static void deselectValue();
         static bool isValueSelected();
         static bool resetRefreshState();
-
-        LogicalParameter::Type getType() const;
 
 
     private:
@@ -169,7 +171,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
         void buildLimits(const FontHolder &fonts);
 
-        void select(std::shared_ptr<GraphicalParameter> ptr);
+        void select(std::shared_ptr<GfxParameter> ptr);
         void deselect();
         bool isSelectedValHere() const;
         bool isItSelectedLine(const std::shared_ptr<ParameterLine> val) const;
@@ -191,12 +193,13 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         sf::Text mParameterName;
         sf::Text mLimits;
         std::shared_ptr<LogicalParameter> mParameter;
-        std::vector<std::shared_ptr<GraphicalParameter>> mParameterValues;
+        std::vector<std::shared_ptr<GfxParameter>> mParameterValues;
         std::unique_ptr<ColorButton> mColorButtonP;
 
         static sf::RectangleShape mCursor;
+        static std::shared_ptr<LogicalParameter> mSelectedParameter;
         static std::shared_ptr<ParameterLine> mSelectedLine;
-        static std::shared_ptr<GraphicalParameter> mSelectedValue;
+        static std::shared_ptr<GfxParameter> mSelectedValue;
         static int mSelectedValueIndex;
         bool paramValWasChanged;
         std::thread mWarningTh;

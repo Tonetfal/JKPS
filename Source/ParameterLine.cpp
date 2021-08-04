@@ -5,6 +5,7 @@
 #include "../Headers/GfxButtonSelector.hpp"
 #include "../Headers/Settings.hpp"
 #include "../Headers/Menu.hpp"
+#include "../Headers/GfxButton.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -17,8 +18,9 @@
 
 
 sf::RectangleShape ParameterLine::mCursor(sf::Vector2f(1, 21));
+std::shared_ptr<LogicalParameter> ParameterLine::mSelectedParameter(nullptr);
 std::shared_ptr<ParameterLine> ParameterLine::mSelectedLine(nullptr);
-std::shared_ptr<GraphicalParameter> ParameterLine::mSelectedValue(nullptr);
+std::shared_ptr<GfxParameter> ParameterLine::mSelectedValue(nullptr);
 int ParameterLine::mSelectedValueIndex(-1);
 Palette ParameterLine::mPalette(0);
 bool ParameterLine::mRefresh(false);
@@ -266,18 +268,19 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
     if (event.type == sf::Event::MouseButtonPressed 
     ||  event.type == sf::Event::KeyPressed)
     {
-        float viewOffsetY = mWindow.getView().getCenter().y - mWindow.getSize().y / 2;
-        sf::Vector2f mousePos(static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)));
-        mousePos.y += viewOffsetY;
-        sf::Mouse::Button button = event.mouseButton.button;
-        sf::Keyboard::Key key = event.key.code;
+        const sf::Vector2f halfWindowSize(static_cast<sf::Vector2f>(mWindow.getSize()) / 2.f);
+        const sf::Vector2f viewCenter(mWindow.getView().getCenter());
+        const sf::Vector2f viewOffset(viewCenter - halfWindowSize);
+        const sf::Vector2f relMousePos(sf::Mouse::getPosition(mWindow));
+        const sf::Vector2f absMousePos(relMousePos + viewOffset);
+        const sf::Mouse::Button button = event.mouseButton.button;
+        const sf::Keyboard::Key key = event.key.code;
 
         // Check click on buttons
         for (const auto &elem : mParameterValues)
         {
-            sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
-            buttonBounds.top += getPosition().y;
-            bool contains = buttonBounds.contains(mousePos);
+            const sf::FloatRect buttonBounds(elem->getGlobalBounds());
+            const bool contains = buttonBounds.contains(absMousePos);
 
             if (event.type == sf::Event::MouseButtonPressed 
             && (button == sf::Mouse::Left && contains))
@@ -333,7 +336,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
 
         if (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Left 
         &&  mType == LogicalParameter::Type::Color)
-            selectRgbCircle(button, mousePos);
+            selectRgbCircle(button, absMousePos);
     }
 }
 
@@ -346,7 +349,7 @@ bool ParameterLine::tabulation(sf::Keyboard::Key key)
             if (*it == mSelectedValue)
             {
                 deselect();
-                std::shared_ptr<GraphicalParameter> tabOn = nullptr;
+                std::shared_ptr<GfxParameter> tabOn = nullptr;
 
                 if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
                     // tab forward
@@ -412,29 +415,29 @@ void ParameterLine::draw(sf::RenderTarget &target, sf::RenderStates states) cons
 
 void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures)
 {
-    GraphicalParameter::mTextures = &textures;
-    GraphicalParameter::mFonts = &fonts;
+    GfxParameter::mTextures = &textures;
+    GfxParameter::mFonts = &fonts;
 
-    std::shared_ptr<GraphicalParameter> val = nullptr; 
+    std::shared_ptr<GfxParameter> val = nullptr; 
     if (mType == LogicalParameter::Type::Bool)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0));
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0));
         val->setPosition(sf::Vector2f(mRectLine.getSize().x - 
-            GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
+            GfxParameter::getPosX(), mRectLine.getSize().y / 2));
         mParameterValues.emplace_back(std::move(val));
         return;
     }
 
     if (mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
         val->setPosition(605, mRectLine.getSize().y / 2);
 
         mParameterValues.emplace_back(std::move(val));
 
         if (mType == LogicalParameter::Type::StringPath)
         {
-            val = std::make_shared<GraphicalParameter>(0);
+            val = std::make_shared<GfxParameter>(this);
             val->setPosition(760, mRectLine.getSize().y / 2);
 
             mParameterValues.emplace_back(std::move(val));
@@ -444,10 +447,10 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
 
     for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), i);
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, i), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
-            GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
+            GfxParameter::getPosX(), mRectLine.getSize().y / 2));
         
         if (mType == LogicalParameter::Type::Color && i == 0)
         {
@@ -475,13 +478,17 @@ void ParameterLine::buildLimits(const FontHolder &fonts)
 }
 
 
-void ParameterLine::select(std::shared_ptr<GraphicalParameter> ptr)
+void ParameterLine::select(std::shared_ptr<GfxParameter> ptr)
 {
     mSelectedValue = ptr;
+    mSelectedParameter = mParameter;
     mSelectedLine = shared_from_this();
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultSelectedRectColor);
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultSelectedRectColor);
     mSelectedValueIndex = mSelectedValue->mValText.getString().getSize();
     setCursorPos();
+
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(true);
 }
 
 void ParameterLine::deselect()
@@ -489,9 +496,12 @@ void ParameterLine::deselect()
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
-    mSelectedValue = nullptr;
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(false);
+    mSelectedParameter = nullptr;
     mSelectedLine = nullptr;
+    mSelectedValue = nullptr;
     mSelectedValueIndex = -1;
 }
 
@@ -575,7 +585,7 @@ void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine
     *isRunning = true;
     
     std::mutex mtx;
-    std::shared_ptr<GraphicalParameter> gfxPar = mSelectedValue;
+    std::shared_ptr<GfxParameter> gfxPar = mSelectedValue;
     sf::Color red(sf::Color(170,0,0));
     sf::Clock clock;
     sf::Time elapsedTime = sf::Time::Zero, totalTime = sf::Time::Zero;
@@ -600,14 +610,14 @@ void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine
             // gfxPar->mValText.setFillColor(gfxPar->mValText.getFillColor() == sf::Color::White ? 
             //     sf::Color::Red : sf::Color::White);
             gfxPar->mRect.setFillColor(gfxPar->mRect.getFillColor() != red ? red :
-                gfxPar == mSelectedValue ? GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
+                gfxPar == mSelectedValue ? GfxParameter::defaultSelectedRectColor : GfxParameter::defaultRectColor);
 
             mtx.unlock();
         }
     }
     mtx.lock();
     gfxPar->mRect.setFillColor(gfxPar == mSelectedValue ? 
-        GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
+        GfxParameter::defaultSelectedRectColor : GfxParameter::defaultRectColor);
     mtx.unlock();
 
     *isRunning = false;
@@ -725,14 +735,32 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
     }
 }
 
+bool ParameterLine::isCollection(ParameterLine::ID id)
+{
+    return
+        id == ParameterLine::ID::StatTextColl ||
+        id == ParameterLine::ID::BtnTextColl ||
+        id == ParameterLine::ID::BtnGfxColl ||
+        id == ParameterLine::ID::AnimGfxColl ||
+        id == ParameterLine::ID::BgColl ||
+        id == ParameterLine::ID::MainWndwColl ||
+        id == ParameterLine::ID::KPSWndwColl ||
+        id == ParameterLine::ID::InfoColl ||
+        id == ParameterLine::ID::HotkeyColl;
+}
+
+
 void ParameterLine::deselectValue()
 {
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
-    mSelectedValue = nullptr;
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(false);
+    mSelectedParameter = nullptr;
     mSelectedLine = nullptr;
+    mSelectedValue = nullptr;
     mSelectedValueIndex = -1;
 }
 
