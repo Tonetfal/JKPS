@@ -31,13 +31,22 @@ void Button::update()
             str = std::to_string(LogButton::mTotal);
             break;
         case TextID::KeyPerSecond:
-            str = eraseDigitsOverHundredths(std::to_string(mKeysPerSecond));
+            if (false)
+                str = eraseDigitsOverHundredths(std::to_string(mKeysPerSecond));
+            else
+                str = std::to_string(static_cast<unsigned>(mKeysPerSecond));
             break;
         case TextID::BeatsPerMinute:
             str = std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute()));
             break;
     }
-    GfxButton::mTexts[id]->setString(str);
+    sf::Text &text = *mTexts[id];
+    text.setString(str);
+
+    if (LogButton::mKey.resetChangedState())
+        text.setCharacterSize(Settings::ButtonTextCharacterSize);
+
+    GfxButton::keepInBounds(text);
     GfxButton::centerOrigins();
 }
 
