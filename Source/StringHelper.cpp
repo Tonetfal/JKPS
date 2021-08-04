@@ -1,4 +1,5 @@
 #include "../Headers/StringHelper.hpp"
+#include "../Headers/LogKey.hpp"
 
 #include <cassert>
 
@@ -64,6 +65,14 @@ void rmChOnIdx(std::string &str, unsigned idx)
 {
     modifyNumOnIdx(str, idx, false);
 }
+
+std::string eraseDigitsOverHundredths(const std::string &floatStr)
+{
+    std::size_t pointIdx;
+    const bool isFloat = (pointIdx = floatStr.find('.')) != std::string::npos;
+    return isFloat ? floatStr.substr(0, pointIdx + 2) : floatStr;
+}
+
 
 // For more information
 // https://www.sfml-dev.org/documentation/2.5.1/classsf_1_1Keyboard.php
@@ -417,6 +426,14 @@ sf::Mouse::Button strToBtn(const std::string &str)
         return sf::Mouse::XButton2;
 
     return sf::Mouse::Left;
+}
+
+std::string logKeyToStr(const LogKey &logKey)
+{
+    if (logKey.keyboardKey)
+        return keyToStr(*logKey.keyboardKey);
+    else
+        return btnToStr(*logKey.mouseButton);
 }
 
 char enumKeyToStr(sf::Keyboard::Key key)
