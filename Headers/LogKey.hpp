@@ -11,9 +11,11 @@ struct LogKey
     LogKey(const std::string& realStr, const std::string& visualStr, sf::Keyboard::Key *key, sf::Mouse::Button *button);
 
     bool isPressed() const;
+    bool resetChangedState();
 
     std::string realStr;
     std::string visualStr;
     sf::Keyboard::Key *keyboardKey;
     sf::Mouse::Button *mouseButton;
+    bool changed;
 };

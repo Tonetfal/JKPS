@@ -8,6 +8,7 @@ LogKey::LogKey(const std::string& realStr, const std::string& visualStr, sf::Key
 , visualStr(visualStr)
 , keyboardKey(key)
 , mouseButton(button) 
+, changed(false)
 { 
     assert((key && !button) || (!key && button));
 }
@@ -18,4 +19,9 @@ bool LogKey::isPressed() const
         return sf::Keyboard::isKeyPressed(*keyboardKey);
     else
         return sf::Mouse::isButtonPressed(*mouseButton);
+}
+
+bool LogKey::resetChangedState()
+{
+    return changed && !(changed = false);
 }
