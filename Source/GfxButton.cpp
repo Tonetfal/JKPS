@@ -7,6 +7,8 @@
 #include <SFML/Graphics/RenderStates.hpp>
 
 
+bool GfxButton::mShowBounds(false);
+
 GfxButton::GfxButton(const TextureHolder& textureHolder, const FontHolder& fontHolder)
 : mTextures(textureHolder)
 , mFonts(fontHolder)
@@ -26,6 +28,12 @@ GfxButton::GfxButton(const TextureHolder& textureHolder, const FontHolder& fontH
 
     updateAssets();
     updateParameters();
+
+    mBounds.setFillColor(sf::Color::Transparent);
+    mBounds.setOutlineColor(sf::Color::Magenta);
+    mBounds.setOutlineThickness(1.f);
+    mBounds.setSize(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    mBounds.setOrigin(mBounds.getSize() / 2.f);
 }
 
 void GfxButton::update(bool buttonPressed)
@@ -51,6 +59,9 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 
     const GfxButton::TextID id = getTextIdToDisplay();
     target.draw(*mTexts[id], states);
+
+    if (mShowBounds)
+        target.draw(mBounds, states);
 }
 
 void GfxButton::lightKey()
@@ -139,6 +150,9 @@ void GfxButton::updateParameters()
         text->setPosition(Settings::ButtonTextPosition);
         text->setStyle(Settings::ButtonTextBold ? sf::Text::Bold : 0 | Settings::ButtonTextItalic ? sf::Text::Italic : 0);
     }
+
+    mBounds.setSize(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    mBounds.setOrigin(mBounds.getSize() / 2.f);
 }
 
 void GfxButton::resetAssets()
@@ -163,6 +177,21 @@ void GfxButton::scaleSprites()
 
     buttonSprite.setScale(btnTxtrScale);
     animationSprite.setScale(aniTxtrScale);
+}
+
+void GfxButton::keepInBounds(sf::Text &text)
+{
+    const sf::Vector2f bounds(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    sf::FloatRect rect(text.getLocalBounds());
+    unsigned chSz = text.getCharacterSize();;
+
+    while ((rect.width > bounds.x || rect.height > bounds.y) && chSz > 2)
+    {
+        text.setCharacterSize(chSz - 1);
+
+        chSz = text.getCharacterSize();
+        rect = text.getLocalBounds();
+    }
 }
 
 void GfxButton::centerOrigins()
@@ -208,7 +237,10 @@ GfxButton::TextID GfxButton::getTextIdToDisplay()
     return VisualKey;
 }
 
-
+void GfxButton::setShowBounds(bool b)
+{
+    mShowBounds = b;
+}
 
 GfxButton::~GfxButton()
 {    

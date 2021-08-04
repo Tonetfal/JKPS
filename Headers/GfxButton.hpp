@@ -10,6 +10,8 @@
 #include <array>
 #include <memory>
 
+#include <SFML/Graphics/RectangleShape.hpp>
+
 
 class GfxButton : public sf::Drawable, public sf::Transformable
 {
@@ -39,6 +41,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         void updateAssets();
         void updateParameters();
 
+        static void setShowBounds(bool b);
         static unsigned getWidth(unsigned idx);
         static unsigned getHeight(unsigned idx);
         static sf::Vector2f getTextCenter(const sf::Text &text);
@@ -48,6 +51,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
 
 
     protected:
+        void keepInBounds(sf::Text &text);
         void centerOrigins();
 
 
@@ -75,6 +79,9 @@ class GfxButton : public sf::Drawable, public sf::Transformable
     private:
         const TextureHolder &mTextures;
         const FontHolder &mFonts;
+        sf::RectangleShape mBounds;
 
         float mButtonsHeightOffset;
+
+        static bool mShowBounds;
 };
