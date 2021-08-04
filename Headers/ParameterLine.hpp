@@ -29,7 +29,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         {
             StatTextColl,
             StatTextDist,
-            SpaceBtwBtnAndStat,
+            StatPos,
             StatTextFont,
             StatTextClr,
             StatTextChSz,
@@ -37,12 +37,10 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             StatTextItal,
             StatTextShow,
             StatTextShowKPS,
-            StatTextShowMaxKPS,
             StatTextShowTotal,
             StatTextShowBPM,
             StatTextKPSText,
             StatTextKPS2Text,
-            StatTextMaxKPSText,
             StatTextTotalText,
             StatTextBPMText,
             StatTextMty,
@@ -51,14 +49,15 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnTextFont,
             BtnTextClr,
             BtnTextChSz,
-            BtnTextWidth,
-            BtnTextHeight,
-            BtnTextHorzBounds,
-            BtnTextVertBounds,
+            BtnTextPosition,
+            BtnTextBounds,
             BtnTextBold,
             BtnTextItal,
-            BtnTextShowKeys,
+            BtnTextShowVisKeys,
             BtnTextShowKeyCtrs,
+            BtnTextShowTot,
+            BtnTextShowKps,
+            BtnTextShowBpm,
             BtnTextMty,
 
             BtnGfxColl,
@@ -69,7 +68,8 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnGfxMty,
 
             AnimGfxColl,
-            AnimGfxStl,
+            AnimGfxLight,
+            AnimGfxPress,
             AnimGfxTxtr,
             AnimGfxVel,
             AnimGfxScl,
@@ -104,10 +104,6 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KPSWndwTopPadding,
             KPSWndwDistBtw,
             KPSWndwMty,
-
-            OtherColl,
-            OtherHighText,
-            OtherMty,
 
             ThemeDevColl,
             ThemeDevMultpl,
@@ -157,6 +153,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
         static void deselectValue();
         static bool isValueSelected();
+        static bool resetRefreshState();
 
         LogicalParameter::Type getType() const;
 
@@ -206,4 +203,5 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         bool mIsThRunning;
 
         static Palette mPalette;
+        static bool mRefresh;
 };
