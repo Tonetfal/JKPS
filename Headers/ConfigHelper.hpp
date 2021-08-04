@@ -43,9 +43,4 @@ void saveConfig(
 std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr);
 std::string getButtonStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr);
 
-extern const unsigned minKeys;
-extern const unsigned maxKeys;
-extern const unsigned minButtons;
-extern const unsigned maxButtons;
-
 } // !namespace ConfigHelper

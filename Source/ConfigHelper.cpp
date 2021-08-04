@@ -33,11 +33,6 @@ static std::ofstream ofErrLog;
 namespace ConfigHelper
 {
 
-const unsigned minKeys(0);
-const unsigned maxKeys(10);
-const unsigned minButtons(0);
-const unsigned maxButtons(5);
-
 bool readConfig(
     std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
     std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines)
@@ -370,7 +365,7 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
     std::queue<LogKey> logKeysQueue;
     unsigned strIdx1 = 0, strIdx2 = 0;
 
-    for (unsigned i = 0; strIdx1 < keysStr.size() && i < maxKeys; ++i)
+    for (unsigned i = 0; strIdx1 < keysStr.size(); ++i)
     {
         std::string keyStr(keysStr, strIdx1, keysStr.substr(strIdx1).find(','));
         std::string visualKeyStr(visualKeysStr, strIdx2, visualKeysStr.substr(strIdx2).find(','));
@@ -403,7 +398,7 @@ std::queue<LogKey> readButtons(const std::string &buttonsStr, const std::string 
     std::queue<LogKey> logBtnQueue;
     unsigned strIdx1 = 0, strIdx2 = 0;
 
-    for (unsigned i = 0; strIdx1 < buttonsStr.size() && i < maxButtons; ++i)
+    for (unsigned i = 0; strIdx1 < buttonsStr.size(); ++i)
     {
         std::string buttonStr(buttonsStr, strIdx1, buttonsStr.substr(strIdx1).find(','));
         std::string visualButtonStr(visualButtonsStr, strIdx2, visualButtonsStr.substr(strIdx2).find(','));
