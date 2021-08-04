@@ -72,6 +72,7 @@ void Menu::handleEvent()
             moveSliderBarButtons(offset);
             returnViewInBounds();
         }
+
         if (event.type == sf::Event::MouseButtonPressed 
         ||  event.type == sf::Event::MouseButtonReleased
         ||  event.type == sf::Event::MouseMoved)
@@ -100,12 +101,29 @@ void Menu::handleEvent()
             }
         }
 
+        if (event.type == sf::Event::KeyPressed)
+        {
+            const sf::Keyboard::Key key = event.key.code;
+            const float speed = 50.f;
+            sf::Vector2f movement;
+            if (key == sf::Keyboard::D)
+                movement.x += speed;
+            if (key == sf::Keyboard::A)
+                movement.x -= speed;
+            if (key == sf::Keyboard::S)
+                movement.y += speed;
+            if (key == sf::Keyboard::W)
+                movement.y -= speed;
+            
+            mView.setCenter(mView.getCenter() + movement);
+        }
+
         if (event.type == sf::Event::Closed
         || (event.type == sf::Event::KeyPressed
         && event.key.code == Settings::KeyExit
         && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)))
         {
-            mWindow.close();
+            closeWindow();
             return;
         }
     }
@@ -232,7 +250,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextCharacterSize, "Buttons text character size", "18", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::Float, &Settings::ButtonTextBounds, "Buttons text bounds", "4, 4", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "4, 4", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextItalic, "Buttons text italic", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowVisualKeys, "Show visual keys", "True")));
@@ -323,7 +341,7 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ThemeDevMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
 
-    unsigned info = static_cast<unsigned>(ParameterLine::ID::Info1);
+    unsigned info = static_cast<unsigned>(ParameterLine::ID::InfoColl);
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "                            Quick Guide"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(info++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
@@ -338,10 +356,11 @@ void Menu::buildParameterLines()
 
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::InfoMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Hotkeys]"));
-    mParameterLines.emplace(std::make_pair(ParameterLine::ID::HotkeyColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     unsigned hotKey = static_cast<unsigned>(ParameterLine::ID::HotKey1);
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Hotkeys]"));
+    mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
+
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Ctrl + \"+/-\" - Add/remove keyboard keys"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
@@ -368,15 +387,21 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version " + mProgramVersion));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
-    float distance = 50;
-    unsigned i = 0, halfWindowSize = 300;
+    const float stepX = 1000, stepY = 50;
+    const unsigned halfWindowSize = 300;
+    unsigned row = 0, column = 0;;
     for (auto &pair : mParameterLines)
     {
-        pair.second->setPosition(0, distance * i - halfWindowSize);
-        ++i;
+        if (ParameterLine::isCollection(pair.first))
+        {
+            row = 0;
+            ++column;
+        }
+        pair.second->setPosition(stepX * (column - 1), stepY * row - halfWindowSize);
+        ++row;
     }
 
-    mLowViewBounds = distance * mParameterLines.size() - halfWindowSize * 2;
+    mLowViewBounds = stepY * mParameterLines.size() - halfWindowSize * 2;
 }
 
 // The distance parameter contains offset of the view, 
