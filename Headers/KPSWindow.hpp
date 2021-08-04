@@ -11,28 +11,30 @@
 class KPSWindow
 {
     public:
-                                KPSWindow(const FontHolder &fonts);
-        void                    handleEvent(sf::Event event);
-        void                    handleOwnEvent();
-        void                    update(std::size_t kps);
-        void                    render();
+        KPSWindow(const FontHolder &fonts);
 
-        void                    setupText();
-        static bool             parameterIdMatches(LogicalParameter::ID id);
+        void handleOwnEvent();
+        void update();
+        void render();
+
+        void openWindow();
+        void closeWindow();
+        bool isOpen() const;
+
+        void updateParameters();
+        void updateAssets();
+        static bool parameterIdMatches(LogicalParameter::ID id);
 
 
     private:
-        void                    moveWindow();
-        void                    calculateWidthCenter(unsigned idx) const;
-        void                    openWindow();
+        void moveWindow();
+        void calculateWidthCenter(unsigned idx) const;
 
 
     private:
-        sf::RenderWindow        mWindow;
-        sf::Font*               mTextFont;
-        sf::Font*               mNumberFont;
-        sf::Text                mKPSText;
-        sf::Text                mKPSNumber;
+        sf::RenderWindow mWindow;
 
-        float*                  mDefaultWidthCenters;
+        const FontHolder &mFonts;
+        sf::Text mKPSText;
+        sf::Text mKPSNumber;
 };
