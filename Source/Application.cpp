@@ -300,6 +300,12 @@ void Application::buildStatistics()
 void Application::buildButtons()
 {
     std::queue<LogKey> logKeyQueue = ConfigHelper::getLogKeys();
+    std::queue<LogKey> logKeyBtnsQueue = ConfigHelper::getLogButtons();
+    while (logKeyBtnsQueue.size())
+    {
+        logKeyQueue.push(logKeyBtnsQueue.front());
+        logKeyBtnsQueue.pop();
+    }
 
     for (unsigned i = 0; logKeyQueue.size(); ++i)
     {

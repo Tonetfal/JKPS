@@ -406,7 +406,7 @@ std::queue<LogKey> readButtons(const std::string &buttonsStr, const std::string 
     for (unsigned i = 0; strIdx1 < buttonsStr.size() && i < maxButtons; ++i)
     {
         std::string buttonStr(buttonsStr, strIdx1, buttonsStr.substr(strIdx1).find(','));
-        std::string visualButtonStr(visualButtonsStr, strIdx2, visualButtonsStr.substr(strIdx1).find(','));
+        std::string visualButtonStr(visualButtonsStr, strIdx2, visualButtonsStr.substr(strIdx2).find(','));
         std::string checkStr;
 
         sf::Mouse::Button button = strToBtn(buttonStr);
@@ -533,24 +533,24 @@ std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::s
 
 std::string getButtonStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr)
 {
-    // const auto buttonsBegin = std::find(mKeys.begin(), mKeys.end(), [](std::unique_ptr<Button> it) 
-    //     { 
-    //         if (it->getLogKey()->mouseButton) 
-    //             return it; 
-    //     } );
+    auto it = mKeys.begin();
+    for (; it != mKeys.end(); ++it)
+    {
+        if ((*it)->getLogKey()->mouseButton)
+            break;
+    }
 
-    // if (buttonsBegin == mKeys.end())
-    if (true)
+    if (it == mKeys.end())
         return str + "No\n\n";
 
-    // for (auto it = buttonsBegin; it != mKeys.end(); ++it)
-    // {
-    //     const LogKey *lKey = (*it)->getLogKey();
-    //     if (lKey->mouseButton == nullptr)
-    //         break;
+    for (; it != mKeys.end(); ++it)
+    {
+        const LogKey *lKey = (*it)->getLogKey();
+        if (lKey->mouseButton == nullptr)
+            break;
 
-    //     str += (readRealStr ? lKey->realStr : lKey->visualStr) + ",";
-    // }
+        str += (readRealStr ? lKey->realStr : lKey->visualStr) + ",";
+    }
     str.erase(str.size() - 1);
     str += "\n\n";
 
