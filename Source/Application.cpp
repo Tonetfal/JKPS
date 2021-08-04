@@ -5,31 +5,39 @@
 #include "../Headers/Settings.hpp"
 #include "../Headers/DefaultFiles.hpp"
 #include "../Headers/Menu.hpp"
+#include "../Headers/ConfigHelper.hpp"
+
+#include <SFML/Window/Event.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f / Settings::mFramesPerSecond);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60);
 
 Application::Application(Menu &menu)
 : mMenu(menu)
-, mSettings(mMenu.getSettings())
 {
+    loadTextures();
+    loadFonts();
+
+    buildButtons();
+    buildStatistics();
+
     openWindow();
-    loadAssets();
+    loadIcon();
 
-    std::unique_ptr<Button> buttons(new Button(mTextures, mFonts));
-    mButtons = std::move(buttons);
+    std::unique_ptr<GfxButtonSelector> keySelector(new GfxButtonSelector);
+    mGfxButtonSelector = std::move(keySelector);
 
-    std::unique_ptr<Statistics> stats(new Statistics(mFonts));
-    mStatistics = std::move(stats);
+    std::unique_ptr<StatisticsPositioner> positioner(new StatisticsPositioner(&mStatistics));
+    mStatisticsPositioner = std::move(positioner);
 
-    std::unique_ptr<Background> bg(new Background(mTextures, mWindow));
-    mBackground = std::move(bg);
+    // std::unique_ptr<Background> bg(new Background(mTextures, mWindow));
+    // mBackground = std::move(bg);
 
-    std::unique_ptr<KPSWindow> kpsWindow(new KPSWindow(mFonts));
-    mKPSWindow = std::move(kpsWindow);
+    // std::unique_ptr<KPSWindow> kpsWindow(new KPSWindow(mFonts));
+    // mKPSWindow = std::move(kpsWindow);
 
-    mSettings.setWindowReference(mWindow);
-    mSettings.setButtonsReference(*mButtons);
+    mMenu.saveConfig(mButtons);
 }
 
 void Application::run()
@@ -46,7 +54,7 @@ void Application::run()
             timeSinceLastUpdate -= TimePerFrame;
 
             processInput();
-            update(TimePerFrame);
+            update();
         }
 
         render();
@@ -55,46 +63,40 @@ void Application::run()
 
 void Application::processInput()
 {
-    mKeyPressingManager.readClickedKeys();
     handleEvent();
+    for (auto &button : mButtons)
+        button->processInput();
 
-    if (!Settings::WindowTitleBar)
-        moveWindow();
+    
+    unloadChangesQueue();
+    if (ParameterLine::resetRefreshState())
+        mMenu.requestReloadAssets();
+    // mKPSWindow->handleOwnEvent();
+    (*mStatisticsPositioner)();
+    mMenu.handleOwnEvent();
+    mGfxButtonSelector->handleOwnInput();
 
-    if (mSettings.wasButtonAmountChanged())
-    {
-        resizeWindow();
-        mStatistics->resize();
-        mButtons->resize();
-        mKeyPressingManager.resize();
-        mBackground->resize();
-        mMenu.saveConfig();
-    }
-
-    if (mSettings.getButtonToChangeIndex() != -1)
-        mButtons->highlightKey(mSettings.getButtonToChangeIndex());
-    if (mSettings.wasButtonChanged())
-    {
-        mButtons->highlightKey(mSettings.getButtonToChangeIndex());
-        mButtons->setupKeyCounterTextVec();
-        mMenu.saveConfig();
-    }
-
-    if (mSettings.resetReloadAssetsRequest())
+    if (mMenu.resetReloadAssetsRequest())
     {
         mFonts.clear();
         mTextures.clear();
-        loadAssets();
-        mButtons->setupAssets(true);
-        mStatistics->setupText();
-        mBackground->setupTexture();
-        mMenu.saveConfig();
+        loadTextures();
+        loadFonts();
+        unsigned idx = 0;
+        for (auto &button : mButtons)
+        {
+            button->updateAssets();
+            button->setPosition(Button::getWidth(idx), Button::getHeight(idx));
+            ++idx;
+        }
+        for (auto &line : mStatistics)
+            line->updateAsset();
+        // mBackground->setupTexture();
+        mMenu.saveConfig(mButtons);
     }
-    unloadChangesQueue();
-    mKPSWindow->handleOwnEvent();
-    mMenu.handleOwnEvent();
-    mCalculation.handleInput(mKeyPressingManager);
-    mButtons->handleInput(mKeyPressingManager.mNeedToBeReleased, mKeyPressingManager);
+    
+    if (!Settings::WindowTitleBar)
+        moveWindow();
 }
 
 void Application::handleEvent()
@@ -104,26 +106,53 @@ void Application::handleEvent()
     {
         if (event.type == sf::Event::Closed)
         {
-            mMenu.saveConfig();
+            mMenu.saveConfig(mButtons);
             mWindow.close();
             return;
         }
-        
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+
+        if (event.type == sf::Event::MouseButtonPressed)
         {
-            if (event.type == sf::Event::KeyPressed)
+            const sf::Mouse::Button button = event.mouseButton.button;
+            if (button == sf::Mouse::Right)
             {
-                if (event.key.code == Settings::KeyToClear)
+                unsigned idx;
+                if (isPressPerformedOnButton(idx))
                 {
-                    mButtons->clear();
-                    mStatistics->clear();
-                    mCalculation.clear();
-                    mKeyPressingManager.clear();
+                    mGfxButtonSelector->setKey(mButtons[idx]->getLogKey());
+                    mGfxButtonSelector->openWindow(mWindow.getPosition());
+                }
+            }
+        }
+        
+        if (event.type == sf::Event::KeyPressed)
+        {
+            const sf::Keyboard::Key key = event.key.code;
+            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            {
+                if (key == Settings::KeyToIncreaseKeys || key == Settings::AltKeyToIncreaseKeys)
+                {
+                    addButton(*new LogKey("A", "A", new sf::Keyboard::Key(sf::Keyboard::A), nullptr));
+                    resizeWindow();
+                    // mBackground->resize();
                 }
 
-                if (event.key.code == Settings::KeyExit)
+                if (key == Settings::KeyToDecreaseKeys || key == Settings::AltKeyToDecreaseKeys)
                 {
-                    mMenu.saveConfig();
+                    removeButton();
+                    resizeWindow();
+                    // mBackground->resize();
+                }
+
+                if (key == Settings::KeyToReset)
+                {
+                    for (auto &button : mButtons)
+                        button->reset();
+                }
+
+                if (key == Settings::KeyExit)
+                {
+                    mMenu.saveConfig(mButtons);
                     mWindow.close();
                     return;
                 }
@@ -131,31 +160,39 @@ void Application::handleEvent()
         }
 
         mMenu.handleEvent(event);
-        mKPSWindow->handleEvent(event);
-        mSettings.handleEvent(event);
+        // mKPSWindow->handleEvent(event);
     }
 }
 
-void Application::update(sf::Time dt)
+void Application::update()
 {
-    mCalculation.update();
-    mStatistics->update(mCalculation.getKeyPerSecond(), mCalculation.getBeatsPerMinute(), mKeyPressingManager.mClickedKeys);
-    mButtons->update(mKeyPressingManager.mNeedToBeReleased);
     mMenu.update();
-    mKPSWindow->update(mCalculation.getKeyPerSecond());
-    mKeyPressingManager.clear();
-    mSettings.update();
+    // mKPSWindow->update(mCalculation.getKeyPerSecond());
+    if (mGfxButtonSelector->isOpen())
+        mGfxButtonSelector->render();
+
+    for (auto &button : mButtons)
+        button->update();
+    for (auto &line : mStatistics)
+    {
+        line->update();
+        line->setPosition(line->sf::Transformable::getPosition() + sf::Vector2f(getWindowWidth() - Settings::WindowBonusSizeRight, 0));
+    }
+    Button::movePointer();
 }
+
 
 void Application::render()
 {
-    mWindow.clear();
+    mWindow.clear(sf::Color(45,45,45));
 
-    mWindow.draw(*mBackground);
-    mWindow.draw(*mStatistics);
-    mWindow.draw(*mButtons);
+    // mWindow.draw(*mBackground);
+    for (const auto &elem : mButtons)
+        mWindow.draw(*elem);
+    for (const auto &elem : mStatistics)
+        mWindow.draw(*elem);
     mMenu.render();
-    mKPSWindow->render();
+    // mKPSWindow->render();
     
     mWindow.display();
 }
@@ -166,19 +203,25 @@ void Application::unloadChangesQueue()
     while (!queue.isEmpty())
     {
         std::pair<const LogicalParameter::ID, std::shared_ptr<LogicalParameter>> pair = queue.pop();
-        if (Statistics::parameterIdMatches(pair.first))
+
+        if (GfxStatisticsLine::parameterIdMatches(pair.first))
         {
-            mStatistics->setupText();
+            for (auto &line : mStatistics)
+                line->updateParameters();
         }
         if (Button::parameterIdMatches(pair.first))
         {
-            mButtons->setupAssets(false);
-            mButtons->setupKeyCounterTextVec();
-            mButtons->highlightKey(mSettings.getButtonToChangeIndex());
+            unsigned idx = 0;
+            for (auto &button : mButtons)
+            {
+                button->updateParameters();
+                button->setPosition(Button::getWidth(idx), Button::getHeight(idx));
+                ++idx;
+            }
         }
         if (KPSWindow::parameterIdMatches(pair.first))
         {
-            mKPSWindow->setupText();
+            // mKPSWindow->setupText();
         }
         if (pair.first == LogicalParameter::ID::MainWndwTitleBar)
         {
@@ -190,17 +233,17 @@ void Application::unloadChangesQueue()
             mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
             mMenu.requestFocus();
         }
-        mBackground->setupTexture();
+        // mBackground->setupTexture();
     }
 }
 
-void Application::loadAssets()
+void Application::loadTextures()
 {
-    if (!mTextures.loadFromFile(Textures::KeyButton, Settings::ButtonTexturePath))
-        mTextures.loadFromMemory(Textures::KeyButton, Settings::DefaultButtonTexture, 58700);
+    if (!mTextures.loadFromFile(Textures::Button, Settings::ButtonTexturePath))
+        mTextures.loadFromMemory(Textures::Button, Settings::DefaultButtonTexture, 58700);
 
-    if (!mTextures.loadFromFile(Textures::ButtonAnimation, Settings::AnimationTexturePath))
-        mTextures.loadFromMemory(Textures::ButtonAnimation, Settings::DefaultAnimationTexture, 60100);
+    if (!mTextures.loadFromFile(Textures::Animation, Settings::AnimationTexturePath))
+        mTextures.loadFromMemory(Textures::Animation, Settings::DefaultAnimationTexture, 60100);
 
 
     Settings::isGreenscreenSet = Settings::BackgroundTexturePath == "GreenscreenBG.png";
@@ -211,10 +254,12 @@ void Application::loadAssets()
         if (!mTextures.loadFromFile(Textures::Background, Settings::BackgroundTexturePath))
             mTextures.loadFromMemory(Textures::Background, Settings::DefaultBackgroundTexture, 2700);
     }
-    
-    
-    if (!mFonts.loadFromFile(Fonts::KeyCounters, Settings::KeyCountersFontPath))
-        mFonts.loadFromMemory(Fonts::KeyCounters, Settings::KeyCountersDefaultFont, 446100);
+}
+
+void Application::loadFonts()
+{
+    if (!mFonts.loadFromFile(Fonts::ButtonValue, Settings::ButtonTextFontPath))
+        mFonts.loadFromMemory(Fonts::ButtonValue, Settings::KeyCountersDefaultFont, 446100);
 
     if (!mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath))
         mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
@@ -224,10 +269,81 @@ void Application::loadAssets()
 
     if (!mFonts.loadFromFile(Fonts::KPSNumber, Settings::KPSWindowNumberFontPath))
         mFonts.loadFromMemory(Fonts::KPSNumber, Settings::DefaultKPSWindowFont, 459300);
+}
 
+void Application::loadIcon()
+{
     sf::Image icon;
     icon.loadFromMemory(IconTexture, 53200);
     mWindow.setIcon(256, 256, icon.getPixelsPtr());
+}
+
+void Application::buildStatistics()
+{
+    typedef std::unique_ptr<GfxStatisticsLine> Ptr;
+    Ptr linePtr(nullptr);
+    unsigned id = GfxStatisticsLine::StatisticsID::KPS;
+    
+    linePtr = Ptr(new GfxStatisticsLine(mFonts, Settings::ShowStatisticsKPS, static_cast<GfxStatisticsLine::StatisticsID>(id)));
+    mStatistics[id] = std::move(linePtr);
+    ++id;
+
+    linePtr = Ptr(new GfxStatisticsLine(mFonts, Settings::ShowStatisticsTotal, static_cast<GfxStatisticsLine::StatisticsID>(id)));
+    mStatistics[id] = std::move(linePtr);
+    ++id;
+
+    linePtr = Ptr(new GfxStatisticsLine(mFonts, Settings::ShowStatisticsBPM, static_cast<GfxStatisticsLine::StatisticsID>(id)));
+    mStatistics[id] = std::move(linePtr);
+    ++id;
+}
+
+void Application::buildButtons()
+{
+    std::queue<LogKey> logKeyQueue = ConfigHelper::getLogKeys();
+
+    for (unsigned i = 0; logKeyQueue.size(); ++i)
+    {
+        addButton(logKeyQueue.front());
+        logKeyQueue.pop();
+    }
+}
+
+bool Application::isPressPerformedOnButton(unsigned &btnIdx) const
+{
+    const unsigned size = Button::size();
+    for (unsigned i = 0; i < size; ++i)
+    {
+        if (isMouseInRange(i))
+        {
+            btnIdx = i;
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Application::isMouseInRange(unsigned idx) const
+{
+    const sf::Vector2i mousePosition(sf::Mouse::getPosition(mWindow));
+    const sf::Vector2f textureSize = static_cast<sf::Vector2f>(Settings::ButtonTextureSize);
+    const Button &button = *mButtons[idx];
+    const sf::Vector2f buttonPosition = button.getPosition() - textureSize / 2.f;
+    const sf::FloatRect buttonRectangle(buttonPosition, textureSize);
+
+    return buttonRectangle.contains(static_cast<sf::Vector2f>(mousePosition));
+}
+
+void Application::addButton(LogKey &logKey)
+{
+    unsigned nKey = Button::size();
+    std::unique_ptr<Button> buttonPtr(new Button(logKey, mTextures, mFonts));
+    buttonPtr->setPosition(Button::getWidth(nKey), Button::getHeight(nKey));
+    mButtons.push_back(std::move(buttonPtr));
+}
+
+void Application::removeButton()
+{
+    mButtons.pop_back();
 }
 
 void Application::openWindow()
@@ -265,17 +381,17 @@ void Application::moveWindow()
 
 unsigned Application::getWindowWidth()
 {
-    unsigned width =  
-        Settings::ButtonTextureSize.x * Settings::ButtonAmount + 
-        (int(Settings::ButtonAmount) - 1) * Settings::ButtonDistance + 
+    const unsigned width =  
+        Settings::ButtonTextureSize.x * Button::size() + 
+        (Button::size() - 1) * Settings::ButtonDistance + 
         Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight;
     
-    return width > 0 ? width : 1; 
+    return width > 0 ? width : 100; 
 }
 
 unsigned Application::getWindowHeight()
 {
-    unsigned height = 
+    const unsigned height = 
         Settings::ButtonTextureSize.y + Settings::WindowBonusSizeTop + 
         Settings::WindowBonusSizeBottom;
     
