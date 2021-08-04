@@ -2,6 +2,7 @@
 #include "../Headers/Settings.hpp"
 #include "../Headers/ResourceHolder.hpp"
 #include "../Headers/Button.hpp"
+#include "../Headers/StringHelper.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -39,7 +40,14 @@ void KPSWindow::update()
 {
     if (mWindow.isOpen())
     {
-        mKPSNumber.setString(std::to_string(Button::getKeysPerSecond()));
+        std::string str;
+        const float kps = Button::getKeysPerSecond();
+        if (false)
+            str = eraseDigitsOverHundredths(std::to_string(kps));
+        else
+            str = std::to_string(static_cast<unsigned>(kps));
+        mKPSNumber.setString(str);
+
         mKPSNumber.setOrigin((mKPSNumber.getLocalBounds().left + 
             mKPSNumber.getLocalBounds().width) / 2.f, mKPSNumber.getLocalBounds().top);
     }
