@@ -1,178 +1,108 @@
 #pragma once
 
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/Color.hpp>
 
-#include "StringHelper.hpp"
-#include "KeySelector.hpp"
-
-#include <vector>
 #include <string>
 
-class Button;
 
-namespace sf
+namespace Settings
 {
-    class Event;
-    class RenderWindow;
-}
+    // [Statistics text]
+    extern float StatisticsDistance;
+    extern sf::Vector2f StatisticsPosition;
+    extern std::string StatisticsFontPath;
+    extern sf::Color StatisticsTextColor;
+    extern unsigned StatisticsTextCharacterSize;
+    extern bool StatisticsTextBold;
+    extern bool StatisticsTextItalic;
+    extern bool ShowStatisticsText;
+    extern bool ShowStatisticsKPS;
+    extern bool ShowStatisticsTotal;
+    extern bool ShowStatisticsBPM;
+    extern std::string StatisticsKPSText;
+    extern std::string StatisticsKPS2Text;
+    extern std::string StatisticsTotalText;
+    extern std::string StatisticsBPMText;
 
+    // [Button text]
+    extern std::string ButtonTextFontPath;
+    extern sf::Color ButtonTextColor;
+    extern unsigned ButtonTextCharacterSize;
+    extern sf::Vector2f ButtonTextPosition;
+    extern sf::Vector2f ButtonTextBounds;
+    extern bool ButtonTextBold;
+    extern bool ButtonTextItalic;
+    extern bool ButtonTextShowVisualKeys;
+    extern bool ButtonTextShowTotal;
+    extern bool ButtonTextShowKPS;
+    extern bool ButtonTextShowBPM;
 
-class Settings
-{
-    public:
-                                    Settings();
-        void                        handleEvent(sf::Event event);
-        void                        update();
+    // [Button graphics]
+    extern float ButtonDistance;
+    extern std::string ButtonTexturePath;
+    extern sf::Vector2u ButtonTextureSize;
+    extern sf::Color ButtonTextureColor;
 
-        void                        setWindowReference(sf::RenderWindow& window);
-        void                        setButtonsReference(Button &button);
-        void                        buildKeySelector();
+    // [Animation graphics]
+    extern bool LightAnimation;
+    extern bool PressAnimation;
+    extern std::string AnimationTexturePath;
+    extern unsigned AnimationFrames;
+    extern sf::Vector2f AnimationScale;
+    extern sf::Color AnimationColor;
+    extern float AnimationOffset;
 
-        void                        setChangeabilityPosition();
-        static bool                 wasButtonChanged();
-        static bool                 wasButtonAmountChanged();
+    // [Background]
+    extern std::string BackgroundTexturePath;
+    extern sf::Color BackgroundColor;
+    extern bool ScaleBackground;
 
-        static sf::Keyboard::Key    getButtonToChange();
-        static int                  getButtonToChangeIndex();
+    // Non config parameters
+    extern bool isGreenscreenSet;
 
-        static void                 requestToReloadAssets();
-        bool                        resetReloadAssetsRequest() const;
+    // [Main window]
+    extern bool WindowTitleBar;
+    extern unsigned WindowBonusSizeTop;
+    extern unsigned WindowBonusSizeBottom;
+    extern unsigned WindowBonusSizeLeft;
+    extern unsigned WindowBonusSizeRight;
 
+    // [KPS window]
+    extern bool KPSWindowEnabledFromStart;
+    extern sf::Vector2u KPSWindowSize;
+    extern sf::Color KPSBackgroundColor;
+    extern sf::Color KPSTextColor;
+    extern sf::Color KPSNumberColor;
+    extern std::string KPSWindowTextFontPath;
+    extern std::string KPSWindowNumberFontPath;
+    extern float KPSWindowTopPadding;
+    extern float KPSWindowDistanceBetween;
+    extern unsigned KPSTextSize;
+    extern unsigned KPSNumberSize;
 
-    private:
-        void                        changeKeysAmount(sf::Keyboard::Key clickedKey);
-        void                        selectButton();
-        void                        addKeyboardKey();
-        void                        removeKeyboardKey();
-        void                        addMouseButton();
-        void                        removeMouseButton();
-        bool                        isPressPerformedOnButton(unsigned &buttonIndex);            
-        bool                        isMouseInRange(unsigned index);
+    // [Theme developer]
+    extern int ButtonPressMultiplier;
 
+    // Default assets
+    extern unsigned char* KeyCountersDefaultFont;
+    extern unsigned char* StatisticsDefaultFont;
+    extern unsigned char* DefaultButtonTexture;
+    extern unsigned char* DefaultAnimationTexture;
+    extern unsigned char* DefaultBackgroundTexture;
+    extern unsigned char* DefaultGreenscreenBackgroundTexture;
+    extern unsigned char* DefaultKPSWindowFont;
 
-    public:
-        const static std::size_t    mFramesPerSecond;
-
-        // [Keys] [Mouse]
-        static std::vector<std::unique_ptr<LogicalKey>> LogicalKeys;
-        static std::vector<std::unique_ptr<LogicalButton>> LogicalButtons;
-
-        // Non config parameters
-        static std::size_t          ButtonAmount;
-
-        // [Statistics text]
-        static float                StatisticsDistance;
-        static float                SpaceBetweenButtonsAndStatistics;
-        static std::string          StatisticsFontPath;
-        static sf::Color            StatisticsTextColor;
-        static std::size_t          StatisticsTextCharacterSize;
-        static bool                 StatisticsBold;
-        static bool                 StatisticsItalic;
-        static bool                 ShowStatisticsText;
-        static bool                 ShowKPS;
-        static bool                 ShowMaxKPS;
-        static bool                 ShowTotal;
-        static bool                 ShowBPMText;
-        static std::string          StatisticsKPSText;
-        static std::string          StatisticsKPS2Text;
-        static std::string          StatisticsMaxKPSText;
-        static std::string          StatisticsTotalText;
-        static std::string          StatisticsBPMText;
-
-        // [Button text]
-        static std::string          KeyCountersFontPath;
-        static sf::Color            KeyCountersTextColor;
-        static std::size_t          KeyCountersTextCharacterSize;
-        static sf::Vector2f         KeyCounterPosition;
-        static float                KeyCountersHorizontalBounds;
-        static float                KeyCountersVerticalBounds;
-        static bool                 KeyCountersBold;
-        static bool                 KeyCountersItalic;
-        static bool                 ShowSetKeysText;
-        static bool                 ShowKeyCountersText;
-
-        // [Button graphics]
-        static float                ButtonDistance;
-        static std::string          ButtonTexturePath;
-        static sf::Vector2u         ButtonTextureSize;
-        static sf::Color            ButtonTextureColor;
-
-        // [Animation graphics]
-        static unsigned             AnimationStyle;
-        static std::string          AnimationTexturePath;
-        static std::size_t          AnimationVelocity;
-        static sf::Vector2f         AnimationScale;
-        static sf::Color            AnimationColor;
-        static float                AnimationOffset;
-
-        // Non config parameters
-        static sf::Color            AnimationOnClickTransparency;
-        static sf::Vector2f         ScaledAnimationScale;
-
-        // [Background]
-        static std::string          BackgroundTexturePath;
-        static sf::Color            BackgroundColor;
-        static bool                 ScaleBackground;
-
-        // Non config parameters
-        static bool                 isGreenscreenSet;
-
-        // [Edit mode]
-        static sf::Color            HighlightedKeyColor;
-
-        // [Main window]
-        static bool                 WindowTitleBar;
-        static unsigned             WindowBonusSizeTop;
-        static unsigned             WindowBonusSizeBottom;
-        static unsigned             WindowBonusSizeLeft;
-        static unsigned             WindowBonusSizeRight;
-
-        // [KPS window]
-        static bool                 KPSWindowEnabledFromStart;
-        static sf::Vector2u         KPSWindowSize;
-        static sf::Color            KPSBackgroundColor;
-        static sf::Color            KPSTextColor;
-        static sf::Color            KPSNumberColor;
-        static std::string          KPSWindowTextFontPath;
-        static std::string          KPSWindowNumberFontPath;
-        static float                KPSWindowTopPadding;
-        static float                KPSWindowDistanceBetween;
-        static unsigned             KPSTextSize;
-        static unsigned             KPSNumberSize;
-
-        // [Theme developer]
-        static int                  ValueToMultiplyOnClick;
-
-        static unsigned char*       KeyCountersDefaultFont;
-        static unsigned char*       StatisticsDefaultFont;
-        static unsigned char*       DefaultButtonTexture;
-        static unsigned char*       DefaultAnimationTexture;
-        static unsigned char*       DefaultBackgroundTexture;
-        static unsigned char*       DefaultGreenscreenBackgroundTexture;
-        static unsigned char*       DefaultKPSWindowFont;
-
-        // Hot keys
-        static sf::Keyboard::Key    KeyToIncreaseKeys;
-        static sf::Keyboard::Key    AltKeyToIncreaseKeys;
-        static sf::Keyboard::Key    KeyToDecreaseKeys;
-        static sf::Keyboard::Key    AltKeyToDecreaseKeys;
-        static sf::Keyboard::Key    KeyToIncreaseButtons;
-        static sf::Keyboard::Key    KeyToDecreaseButtons;
-        static sf::Keyboard::Key    KeyToClear;
-        static sf::Keyboard::Key    KeyExit;
-        static sf::Keyboard::Key    KeyToOpenKPSWindow;
-        static sf::Keyboard::Key    KeyToOpenMenuWindow;
-
-
-    private:
-        sf::RenderWindow*           mWindow;
-        Button*                     mButton;
-        std::unique_ptr<KeySelector> mKeySelector;
-
-        static bool                 mIsButtonSelected;
-        static int                  mButtonToChangeIndex;
-        static sf::Keyboard::Key    mButtonToChange;
-        static bool                 mButtonAmountChanged;
-        static bool                 mKeyWasChanged;
-        static bool                 mReloadAssetsRequest;
+    // Hot keys
+    extern sf::Keyboard::Key KeyToIncreaseKeys;
+    extern sf::Keyboard::Key AltKeyToIncreaseKeys;
+    extern sf::Keyboard::Key KeyToDecreaseKeys;
+    extern sf::Keyboard::Key AltKeyToDecreaseKeys;
+    extern sf::Keyboard::Key KeyToIncreaseButtons;
+    extern sf::Keyboard::Key KeyToDecreaseButtons;
+    extern sf::Keyboard::Key KeyToReset;
+    extern sf::Keyboard::Key KeyExit;
+    extern sf::Keyboard::Key KeyToOpenKPSWindow;
+    extern sf::Keyboard::Key KeyToOpenMenuWindow;
 };
