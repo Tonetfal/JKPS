@@ -9,10 +9,10 @@ float StatisticsPositioner::getTotalHeight()
     for (auto &text : *mStatistics)
     {
         if (text->getShowState())
-            totalLinesHeight += text->getText().getLocalBounds().height + Settings::StatisticsDistance;
+            totalLinesHeight += text->getText().getLocalBounds().height + Settings::StatisticsTextDistance;
     }
     if (totalLinesHeight > 0)
-        totalLinesHeight -= Settings::StatisticsDistance;
+        totalLinesHeight -= Settings::StatisticsTextDistance;
     
     return totalLinesHeight;
 }
@@ -21,17 +21,30 @@ void StatisticsPositioner::operator()()
 {
     assert(mStatistics);
 
-    const float width = Settings::StatisticsPosition.x + Application::getWindowWidth() - Settings::WindowBonusSizeRight;
-    const float totalHeight = getTotalHeight();
-    const float startHeight = Settings::WindowBonusSizeTop + Settings::ButtonTextureSize.y / 2 - totalHeight / 2 - Settings::StatisticsPosition.y;
-    float currentHeight = 0;
-
-    for (auto &text : *mStatistics)
+    if (!Settings::StatisticsTextPositionsAdvancedMode)
     {
-        if (text->getShowState())
+        const sf::Vector2f halfOrigin(mStatistics->front()->getText().getOrigin() / 2.f);
+        const float width = Settings::StatisticsTextPosition.x + Application::getWindowWidth() - Settings::WindowBonusSizeRight + halfOrigin.x;
+        const float totalHeight = getTotalHeight();
+        const float startHeight = Settings::WindowBonusSizeTop + Settings::GfxButtonTextureSize.y / 2 - totalHeight / 2 - Settings::StatisticsTextPosition.y + halfOrigin.y;
+        float currentHeight = 0;
+
+        for (auto &text : *mStatistics)
         {
-            text->setPosition(width, startHeight + currentHeight);
-            currentHeight += text->getText().getLocalBounds().height + Settings::StatisticsDistance;
+            if (text->getShowState())
+            {
+                text->setPosition(width, startHeight + currentHeight);
+                currentHeight += text->getText().getLocalBounds().height + Settings::StatisticsTextDistance;
+            }
+        }
+    }
+    else
+    {
+        unsigned idx = 0;
+        for (auto &text : *mStatistics)
+        {
+            text->setPosition(Settings::StatisticsTextPositions[idx]);
+            ++idx;
         }
     }
 }
