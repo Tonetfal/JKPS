@@ -9,8 +9,9 @@
 #include <cassert>
 
 
-sf::Color GfxParameter::defaultRectColor(sf::Color(120,120,120));
-sf::Color GfxParameter::defaultSelectedRectColor(sf::Color(200,200,200));
+const sf::Color GfxParameter::defaultRectColor(sf::Color(120,120,120));
+const sf::Color GfxParameter::defaultAimedRectColor(sf::Color(160,160,160));
+const sf::Color GfxParameter::defaultSelectedRectColor(sf::Color(200,200,200));
 const TextureHolder *GfxParameter::mTextures(nullptr);
 const FontHolder *GfxParameter::mFonts(nullptr);
 
@@ -33,12 +34,29 @@ GfxParameter::GfxParameter(const ParameterLine *parent, const std::string &str, 
 }
 
 // Bool type
-GfxParameter::GfxParameter(const ParameterLine *parent, const std::string &str)
+GfxParameter::GfxParameter(const ParameterLine *parent, bool b)
 : mParent(parent)
 {
-    mValText.setString(str);
+    mValText.setString(b ? "True" : "False");
     setRightTexture();
     mSprite.setOrigin(static_cast<sf::Vector2f>(mSprite.getTexture()->getSize()) / 2.f);
+}
+
+// Tab
+GfxParameter::GfxParameter(const std::string &str, unsigned nTab)
+: mParent(nullptr)
+{
+    mRect.setSize(sf::Vector2f(129.133f, 25.f));
+    mRect.setFillColor(defaultRectColor);
+    mValText.setFont(mFonts->get(Fonts::Value));
+    mValText.setString(str);
+    mValText.setCharacterSize(16);
+    mValText.setOrigin(
+        mValText.getLocalBounds().left + mValText.getLocalBounds().width  / 2,
+        mValText.getLocalBounds().top  + mValText.getLocalBounds().height / 2);
+
+    setPosition(129.133f * nTab, 0);
+    mValText.setPosition(mRect.getSize() / 2.f);
 }
 
 GfxParameter::GfxParameter(const ParameterLine *parent)
@@ -52,7 +70,7 @@ void GfxParameter::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
 
-    if (mValText.getFont() != nullptr)
+    if (mRect.getSize().x != 0)
     {
         target.draw(mRect, states);
         target.draw(mValText, states);
@@ -76,6 +94,11 @@ float GfxParameter::getPosX()
 {
     unsigned maxValues = 4, valRectWidth = 70, distBetweenEdges = 10, distBetweenOrigins = 80;
     return distBetweenOrigins * (maxValues - 1) + valRectWidth / 2 + distBetweenEdges;
+}
+
+bool GfxParameter::contains(sf::Vector2f v2) const
+{
+    return getGlobalBounds().contains(v2);
 }
 
 sf::FloatRect GfxParameter::getGlobalBounds() const

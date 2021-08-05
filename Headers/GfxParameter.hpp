@@ -19,12 +19,14 @@ struct GfxParameter : public sf::Drawable, public sf::Transformable
 {
     public:
         GfxParameter(const ParameterLine *parent, const std::string &str, unsigned n, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
-        GfxParameter(const ParameterLine *parent, const std::string &str);
+        GfxParameter(const ParameterLine *parent, bool b);
+        GfxParameter(const std::string &str, unsigned nTab);
         GfxParameter(const ParameterLine *parent);
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void setupValPos();
+        bool contains(sf::Vector2f v2) const;
         sf::Vector2f getGlobalPosition() const;
         sf::FloatRect getGlobalBounds() const;
 
@@ -42,7 +44,8 @@ struct GfxParameter : public sf::Drawable, public sf::Transformable
 
         sf::Sprite mSprite;
         sf::RectangleShape mRect;
-        static sf::Color defaultRectColor;
-        static sf::Color defaultSelectedRectColor;
+        const static sf::Color defaultRectColor;
+        const static sf::Color defaultAimedRectColor;
+        const static sf::Color defaultSelectedRectColor;
         sf::Text mValText;
 };
