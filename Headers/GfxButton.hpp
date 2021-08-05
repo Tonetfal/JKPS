@@ -33,7 +33,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
 
 
     public:
-        GfxButton(const TextureHolder& textureHolder, const FontHolder& fontHolder);
+        GfxButton(const unsigned idx, const TextureHolder& textureHolder, const FontHolder& fontHolder);
 
         void update(bool buttonPressed);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -42,8 +42,8 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         void updateParameters();
 
         static void setShowBounds(bool b);
-        static unsigned getWidth(unsigned idx);
-        static unsigned getHeight(unsigned idx);
+        static float getWidth(unsigned idx);
+        static float getHeight(unsigned idx);
         static sf::Vector2f getTextCenter(const sf::Text &text);
         static TextID getTextIdToDisplay();
 
@@ -82,6 +82,8 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         sf::RectangleShape mBounds;
 
         float mButtonsHeightOffset;
+
+        const unsigned mBtnIdx;
 
         static bool mShowBounds;
 };

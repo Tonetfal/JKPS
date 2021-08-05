@@ -9,10 +9,11 @@
 
 bool GfxButton::mShowBounds(false);
 
-GfxButton::GfxButton(const TextureHolder& textureHolder, const FontHolder& fontHolder)
+GfxButton::GfxButton(const unsigned idx, const TextureHolder& textureHolder, const FontHolder& fontHolder)
 : mTextures(textureHolder)
 , mFonts(fontHolder)
 , mButtonsHeightOffset(0.f)
+, mBtnIdx(idx)
 {
     for (unsigned i = 0; i < SpriteIdCounter; ++i)
     {
@@ -32,7 +33,7 @@ GfxButton::GfxButton(const TextureHolder& textureHolder, const FontHolder& fontH
     mBounds.setFillColor(sf::Color::Transparent);
     mBounds.setOutlineColor(sf::Color::Magenta);
     mBounds.setOutlineThickness(1.f);
-    mBounds.setSize(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    mBounds.setSize(static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize) - Settings::ButtonTextBounds);
     mBounds.setOrigin(mBounds.getSize() / 2.f);
 }
 
@@ -139,19 +140,23 @@ void GfxButton::updateAssets()
 void GfxButton::updateParameters()
 {
     scaleSprites();
-    mSprites[ButtonSprite]->setColor(Settings::ButtonTextureColor);
+    mSprites[ButtonSprite]->setColor(Settings::GfxButtonTextureColor);
     // Substraction by black (0,0,0,255) is needed to set alpha channel on 0 when any related animation key parameter is changed
     mSprites[AnimationSprite]->setColor(Settings::AnimationColor - sf::Color::Black);
 
     for (auto &text : mTexts)
     {
+        const bool isInRange = mBtnIdx < Settings::GfxButtonsBtnPositions.size();
+        const sf::Vector2f advancedPos = !Settings::GfxButtonTextPosAdvancedMode || !isInRange ? Settings::ButtonTextPosition : 
+            sf::Vector2f(Settings::GfxButtonsTextPositions[mBtnIdx].x, -Settings::GfxButtonsTextPositions[mBtnIdx].y);
+
         text->setFillColor(Settings::ButtonTextColor);
         text->setCharacterSize(Settings::ButtonTextCharacterSize);
-        text->setPosition(Settings::ButtonTextPosition);
+        text->setPosition(advancedPos);
         text->setStyle(Settings::ButtonTextBold ? sf::Text::Bold : 0 | Settings::ButtonTextItalic ? sf::Text::Italic : 0);
     }
 
-    mBounds.setSize(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    mBounds.setSize(static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize) - Settings::ButtonTextBounds);
     mBounds.setOrigin(mBounds.getSize() / 2.f);
 }
 
@@ -171,7 +176,8 @@ void GfxButton::scaleSprites()
     sf::Sprite &animationSprite = *mSprites[AnimationSprite];
     const sf::Vector2u origBtnTxtrSz(buttonSprite.getTexture()->getSize());
     const sf::Vector2u origAniTxtrSz(animationSprite.getTexture()->getSize());
-    const sf::Vector2f btnTxtrSz(Settings::ButtonTextureSize);
+    const bool isInRange = mBtnIdx < Settings::GfxButtonsBtnPositions.size();
+    const sf::Vector2f btnTxtrSz(!Settings::GfxButtonSizesAdvancedMode || !isInRange ? sf::Vector2f(Settings::GfxButtonTextureSize) : Settings::GfxButtonsSizes[mBtnIdx]);
     const sf::Vector2f btnTxtrScale(btnTxtrSz.x / origBtnTxtrSz.x, btnTxtrSz.y / origBtnTxtrSz.y);
     const sf::Vector2f aniTxtrScale(btnTxtrSz.x / origAniTxtrSz.x, btnTxtrSz.y / origAniTxtrSz.y);
 
@@ -181,7 +187,7 @@ void GfxButton::scaleSprites()
 
 void GfxButton::keepInBounds(sf::Text &text)
 {
-    const sf::Vector2f bounds(static_cast<sf::Vector2f>(Settings::ButtonTextureSize) - Settings::ButtonTextBounds);
+    const sf::Vector2f bounds(static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize) - Settings::ButtonTextBounds);
     sf::FloatRect rect(text.getLocalBounds());
     unsigned chSz = text.getCharacterSize();;
 
@@ -211,16 +217,18 @@ sf::Vector2f GfxButton::getTextCenter(const sf::Text &text)
     return { rect.left + rect.width / 2, rect.top + rect.height / 2};
 }
 
-unsigned GfxButton::getWidth(unsigned idx)
+float GfxButton::getWidth(unsigned idx)
 {
-    return Settings::WindowBonusSizeLeft + 
-        (Settings::ButtonTextureSize.x + Settings::ButtonDistance) * idx + 
-        Settings::ButtonTextureSize.x / 2;
+    const float width = Settings::WindowBonusSizeLeft + 
+        (Settings::GfxButtonTextureSize.x + Settings::GfxButtonDistance) * idx + 
+        Settings::GfxButtonTextureSize.x / 2;
+    return width;
 }
 
-unsigned GfxButton::getHeight(unsigned idx)
+float GfxButton::getHeight(unsigned idx)
 {
-    return Settings::WindowBonusSizeTop + Settings::ButtonTextureSize.y / 2;;
+    const float height = Settings::WindowBonusSizeTop + Settings::GfxButtonTextureSize.y / 2;
+    return height;
 }
 
 GfxButton::TextID GfxButton::getTextIdToDisplay()
