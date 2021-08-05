@@ -16,6 +16,7 @@ class Button : public GfxButton, public LogButton
 
         LogKey *getLogKey();
 
+        unsigned getIdx() const;
         static unsigned size();
         static bool parameterIdMatches(LogicalParameter::ID id);
 
@@ -26,5 +27,6 @@ class Button : public GfxButton, public LogButton
         const TextureHolder &mTextures;
         const FontHolder &mFonts;
 
+        const unsigned mBtnIdx;
         static unsigned mSize;
 };
