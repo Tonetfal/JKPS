@@ -34,11 +34,11 @@ void Background::rescale()
         scale.y = static_cast<float>(windowSize.y) / bgSize.y;
     }
     mBackgroundSprite.setScale(scale);
+    mBackgroundSprite.setColor(Settings::isGreenscreenSet ? sf::Color::White : Settings::BackgroundColor);
 }
 
 void Background::updateAssets()
 {
     mBackgroundSprite.setTexture(mTextures.get(Textures::Background), true);
-    mBackgroundSprite.setColor(Settings::isGreenscreenSet ? sf::Color::White : Settings::BackgroundColor);
     rescale();
 }
