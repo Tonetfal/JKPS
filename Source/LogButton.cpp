@@ -16,6 +16,8 @@ LogButton::LogButton(LogKey &key)
 , mKeysPerSecond(0)
 , mTotal(0)
 {
+    statMaxKeysPerSecond = Settings::MaxKPS;
+    statTotal = Settings::Total;
     for (auto &elem : mBuffer)
         elem = 0;
     for (auto &elem : mPrevKpsBuffer)
@@ -40,11 +42,12 @@ void LogButton::processRealtimeInput()
         ++mKeysPerSecond;
         ++statKeysPerSecond;
         if (statKeysPerSecond > statMaxKeysPerSecond)
-            statMaxKeysPerSecond = statKeysPerSecond;
+            statMaxKeysPerSecond = Settings::MaxKPS = statKeysPerSecond;
 
         const unsigned amtToAdd = 1 * Settings::ButtonPressMultiplier;
         mTotal += amtToAdd;
         statTotal += amtToAdd;
+        Settings::Total += amtToAdd;
     }
 
     mPrevKpsBuffer[mPrevKpsBufferPointer] = mKeysPerSecond;
@@ -69,7 +72,7 @@ void LogButton::movePointer()
 
 void LogButton::reset()
 {
-    mKeysPerSecond = mTotal = statKeysPerSecond = statTotal = statBeatsPerMinute = 0;
+    mKeysPerSecond = mTotal = statKeysPerSecond = statTotal = statBeatsPerMinute = statMaxKeysPerSecond = Settings::MaxKPS = Settings::Total = 0;
     for (auto &elem : mBuffer)
         elem = 0;
     for (auto &elem : mPrevKpsBuffer)
