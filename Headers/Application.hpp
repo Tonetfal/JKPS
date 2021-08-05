@@ -7,6 +7,7 @@
 #include "Button.hpp"
 #include "GfxStatisticsLine.hpp"
 #include "StatisticLinesPositioner.hpp"
+#include "ButtonPositioner.hpp"
 #include "GfxButtonSelector.hpp"
 #include "Menu.hpp"
 
@@ -70,6 +71,7 @@ class Application
         std::unique_ptr<StatisticsPositioner> mStatisticsPositioner;
 
         std::vector<std::unique_ptr<Button>> mButtons;
+        std::unique_ptr<ButtonPositioner> mButtonsPositioner;
         std::unique_ptr<GfxButtonSelector> mGfxButtonSelector;
 
         std::unique_ptr<Background> mBackground;

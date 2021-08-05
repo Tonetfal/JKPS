@@ -27,8 +27,13 @@ Application::Application()
     std::unique_ptr<GfxButtonSelector> keySelector(new GfxButtonSelector);
     mGfxButtonSelector = std::move(keySelector);
 
-    std::unique_ptr<StatisticsPositioner> positioner(new StatisticsPositioner(&mStatistics));
-    mStatisticsPositioner = std::move(positioner);
+    std::unique_ptr<ButtonPositioner> buttonPositioner(new ButtonPositioner(&mButtons));
+    mButtonsPositioner = std::move(buttonPositioner);
+    (*mButtonsPositioner)();
+
+    std::unique_ptr<StatisticsPositioner> statPositioner(new StatisticsPositioner(&mStatistics));
+    mStatisticsPositioner = std::move(statPositioner);
+    (*mStatisticsPositioner)();
 
     std::unique_ptr<Background> bg(new Background(mTextures, mWindow));
     mBackground = std::move(bg);
@@ -134,6 +139,7 @@ void Application::handleEvent()
 
                 if (btnAmtChanged)
                 {
+                    (*mButtonsPositioner)();
                     resizeWindow();
                     mBackground->rescale();
                 }
@@ -183,10 +189,7 @@ void Application::update()
     for (auto &button : mButtons)
         button->update();
     for (auto &line : mStatistics)
-    {
         line->update();
-        line->setPosition(line->sf::Transformable::getPosition() + sf::Vector2f(getWindowWidth() - Settings::WindowBonusSizeRight, 0));
-    }
 
     if (mMenu.isOpen())
         mMenu.update();
@@ -194,7 +197,6 @@ void Application::update()
     if (mKPSWindow->isOpen())
         mKPSWindow->update();
 
-    (*mStatisticsPositioner)();
     Button::movePointer();
 }
 
@@ -230,6 +232,7 @@ void Application::unloadChangesQueue()
         {
             for (auto &line : mStatistics)
                 line->updateParameters();
+            (*mStatisticsPositioner)();
         }
 
         if (Button::parameterIdMatches(pair.first))
@@ -238,9 +241,9 @@ void Application::unloadChangesQueue()
             for (auto &button : mButtons)
             {
                 button->updateParameters();
-                button->setPosition(Button::getWidth(idx), Button::getHeight(idx));
                 ++idx;
             }
+            (*mButtonsPositioner)();
         }
 
         if (KPSWindow::parameterIdMatches(pair.first))
@@ -290,7 +293,7 @@ void Application::resetAssets()
 
 void Application::loadTextures()
 {
-    if (!mTextures.loadFromFile(Textures::Button, Settings::ButtonTexturePath))
+    if (!mTextures.loadFromFile(Textures::Button, Settings::GfxButtonTexturePath))
         mTextures.loadFromMemory(Textures::Button, Settings::DefaultButtonTexture, 58700);
 
     if (!mTextures.loadFromFile(Textures::Animation, Settings::AnimationTexturePath))
@@ -312,7 +315,7 @@ void Application::loadFonts()
     if (!mFonts.loadFromFile(Fonts::ButtonValue, Settings::ButtonTextFontPath))
         mFonts.loadFromMemory(Fonts::ButtonValue, Settings::KeyCountersDefaultFont, 446100);
 
-    if (!mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsFontPath))
+    if (!mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsTextFontPath))
         mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
 
     if (!mFonts.loadFromFile(Fonts::KPSText, Settings::KPSWindowTextFontPath))
@@ -382,7 +385,7 @@ bool Application::isPressPerformedOnButton(unsigned &btnIdx) const
 bool Application::isMouseInRange(unsigned idx) const
 {
     const sf::Vector2i mousePosition(sf::Mouse::getPosition(mWindow));
-    const sf::Vector2f textureSize = static_cast<sf::Vector2f>(Settings::ButtonTextureSize);
+    const sf::Vector2f textureSize = static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize);
     const Button &button = *mButtons[idx];
     const sf::Vector2f buttonPosition = button.getPosition() - textureSize / 2.f;
     const sf::FloatRect buttonRectangle(buttonPosition, textureSize);
@@ -392,9 +395,7 @@ bool Application::isMouseInRange(unsigned idx) const
 
 void Application::addButton(LogKey &logKey)
 {
-    unsigned nKey = Button::size();
     std::unique_ptr<Button> buttonPtr(new Button(logKey, mTextures, mFonts));
-    buttonPtr->setPosition(Button::getWidth(nKey), Button::getHeight(nKey));
     mButtons.push_back(std::move(buttonPtr));
 }
 
@@ -439,8 +440,8 @@ void Application::moveWindow()
 unsigned Application::getWindowWidth()
 {
     const unsigned width =  
-        Settings::ButtonTextureSize.x * Button::size() + 
-        (Button::size() - 1) * Settings::ButtonDistance + 
+        Settings::GfxButtonTextureSize.x * Button::size() + 
+        (Button::size() - 1) * Settings::GfxButtonDistance + 
         Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight;
     
     return width > 0 ? width : 100; 
@@ -449,7 +450,7 @@ unsigned Application::getWindowWidth()
 unsigned Application::getWindowHeight()
 {
     const unsigned height = 
-        Settings::ButtonTextureSize.y + Settings::WindowBonusSizeTop + 
+        Settings::GfxButtonTextureSize.y + Settings::WindowBonusSizeTop + 
         Settings::WindowBonusSizeBottom;
     
     return height > 0 ? height : 100;
