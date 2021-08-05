@@ -45,6 +45,8 @@ class Menu
 
         void loadFonts();
         void loadTextures();
+
+        void buildMenuTabs();
         void buildParametersMap();
         void buildParameterLines();
 
@@ -61,12 +63,17 @@ class Menu
 
         sf::View mView;
         const float mScrollSpeed;
-        float mHighViewBounds, mLowViewBounds;
+        float mHighViewBounds;
 
         sf::RectangleShape mSliderBar;
         const sf::Color mSliderBarDefaultColor;
         const sf::Color mSliderBarAimedColor;
         const sf::Color mSliderBarPressedColor;
+
+        unsigned mCurrentTab;
+        std::vector<std::unique_ptr<GfxParameter>> mTabs;
+        std::vector<float> mBounds;
+        sf::RectangleShape mTabsBackground;
 
         std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> mParameters;
         std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> mParameterLines;
