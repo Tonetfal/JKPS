@@ -134,7 +134,7 @@ std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::Menu: return "Menu";
         case sf::Keyboard::LBracket: return (saveToCfg ? "LBracket" : "[");
         case sf::Keyboard::RBracket: return (saveToCfg ? "RBracket" : "]");
-        case sf::Keyboard::Semicolon: return (saveToCfg ? "Semicolon" : ":");
+        case sf::Keyboard::Semicolon: return (saveToCfg ? "Semicolon" : ";");
         case sf::Keyboard::Comma: return (saveToCfg ? "Comma" : ",");
         case sf::Keyboard::Period: return (saveToCfg ? "Period" : ".");
         case sf::Keyboard::Quote: return (saveToCfg ? "Quote" : "\"");
