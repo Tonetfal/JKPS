@@ -44,11 +44,23 @@ void GfxStatisticsLine::updateAsset()
 
 void GfxStatisticsLine::updateParameters()
 {
-    mText.setFillColor(Settings::StatisticsTextColor);
-    mText.setCharacterSize(Settings::StatisticsTextCharacterSize);
-    mText.setStyle(
-        Settings::StatisticsTextBold   ? sf::Text::Bold   : 0 | 
-        Settings::StatisticsTextItalic ? sf::Text::Italic : 0);
+    const sf::Color color = !Settings::StatisticsTextColorsAdvancedMode ? 
+        Settings::StatisticsTextColor : Settings::StatisticsTextColors[mIdentifier];
+
+    const unsigned chSz = !Settings::StatisticsTextChSzssAdvancedMode ?
+        Settings::StatisticsTextCharacterSize : Settings::StatisticsTextCharacterSizes[mIdentifier];
+
+    const bool bold = !Settings::StatisticsTextBoldAdvancedMode ?
+        Settings::StatisticsTextBold : Settings::StatisticsTextBolds[mIdentifier];
+    
+    const bool italic = !Settings::StatisticsTextItalicAdvancedMode ?
+        Settings::StatisticsTextItalic : Settings::StatisticsTextItalics[mIdentifier];
+
+    const sf::Uint32 style = (bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0);
+
+    mText.setFillColor(color);
+    mText.setCharacterSize(chSz);
+    mText.setStyle(style);
 }
 
 bool GfxStatisticsLine::getShowState() const
@@ -63,7 +75,8 @@ const sf::Text &GfxStatisticsLine::getText() const
 
 void GfxStatisticsLine::centerOrigin()
 {
-    mText.setOrigin(mText.getLocalBounds().left, mText.getLocalBounds().top);
+    const sf::FloatRect rect(mText.getLocalBounds());
+    mText.setOrigin(rect.left + rect.width / 2, rect.top + rect.height / 2);
 }
 
 std::string GfxStatisticsLine::getString(StatisticsID id)
@@ -108,5 +121,25 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextBold || 
         id == LogicalParameter::ID::StatTextItal || 
         id == LogicalParameter::ID::StatTextChSz || 
-        id == LogicalParameter::ID::StatTextClr;
+        id == LogicalParameter::ID::StatTextClr ||
+        id == LogicalParameter::ID::StatTextPosAdvMode ||
+        id == LogicalParameter::ID::StatTextPos1 ||
+        id == LogicalParameter::ID::StatTextPos2 ||
+        id == LogicalParameter::ID::StatTextPos3 ||
+        id == LogicalParameter::ID::StatTextClrAdvMode ||
+        id == LogicalParameter::ID::StatTextClr1 ||
+        id == LogicalParameter::ID::StatTextClr2 ||
+        id == LogicalParameter::ID::StatTextClr3 ||
+        id == LogicalParameter::ID::StatTextChSzAdvMode ||
+        id == LogicalParameter::ID::StatTextChSz1 ||
+        id == LogicalParameter::ID::StatTextChSz2 ||
+        id == LogicalParameter::ID::StatTextChSz3 ||
+        id == LogicalParameter::ID::StatTextBoldAdvMode ||
+        id == LogicalParameter::ID::StatTextBold1 ||
+        id == LogicalParameter::ID::StatTextBold2 ||
+        id == LogicalParameter::ID::StatTextBold3 ||
+        id == LogicalParameter::ID::StatTextItalAdvMode ||
+        id == LogicalParameter::ID::StatTextItal1 ||
+        id == LogicalParameter::ID::StatTextItal2 ||
+        id == LogicalParameter::ID::StatTextItal3;
 }
