@@ -71,7 +71,7 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
             return;
         std::string str = static_cast<std::string>(mSelectedBtn->mValText.getString());
 
-        sf::Keyboard::Key key = event.key.code;
+        const sf::Keyboard::Key key = event.key.code;
 
         if (mSelectedBtn == mButtons[RealKeyButton].get())
         {
@@ -181,13 +181,12 @@ void GfxButtonSelector::handleButtonInteractionEvent(sf::Event event)
 {
     if (event.type == sf::Event::MouseButtonPressed)
     {
-        sf::Mouse::Button button = event.mouseButton.button;
+        const sf::Mouse::Button button = event.mouseButton.button;
         for (auto &elem : mButtons)
         {
-            const sf::FloatRect buttonBounds = elem->getGlobalBounds();;
             const sf::Vector2f mousePos(sf::Mouse::getPosition(mWindow));
 
-            if (button == sf::Mouse::Left && buttonBounds.contains(mousePos))
+            if (button == sf::Mouse::Left && elem->contains(mousePos))
             {
                 if (elem == mButtons[VisualKeyButton] 
                 &&  mButtons[VisualKeyButton]->mValText.getFillColor() == mDefaultVisualKeyColor)
@@ -212,7 +211,7 @@ void GfxButtonSelector::handleButtonInteractionEvent(sf::Event event)
     }
     if (event.type == sf::Event::KeyPressed)
     {
-        sf::Keyboard::Key key = event.key.code;
+        const sf::Keyboard::Key key = event.key.code;
         if (key == sf::Keyboard::Escape)
         {
             deselect();
