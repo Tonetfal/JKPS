@@ -6,9 +6,9 @@ namespace Settings
 {
 
 // [Statistics text]
-float StatisticsDistance;
-sf::Vector2f StatisticsPosition;
-std::string StatisticsFontPath;
+float StatisticsTextDistance;
+sf::Vector2f StatisticsTextPosition;
+std::string StatisticsTextFontPath;
 sf::Color StatisticsTextColor;
 unsigned StatisticsTextCharacterSize;
 bool StatisticsTextBold;
@@ -17,6 +17,17 @@ bool ShowStatisticsText;
 bool ShowStatisticsKPS;
 bool ShowStatisticsTotal;
 bool ShowStatisticsBPM;
+
+bool StatisticsTextPositionsAdvancedMode;
+std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
+bool StatisticsTextColorsAdvancedMode;
+std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
+bool StatisticsTextChSzssAdvancedMode;
+std::array<unsigned, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextCharacterSizes;
+bool StatisticsTextBoldAdvancedMode;
+std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextBolds;
+bool StatisticsTextItalicAdvancedMode;
+std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextItalics;
 std::string StatisticsKPSText;
 std::string StatisticsKPS2Text;
 std::string StatisticsTotalText;
@@ -27,6 +38,10 @@ std::string ButtonTextFontPath;
 sf::Color ButtonTextColor;
 unsigned ButtonTextCharacterSize;
 sf::Vector2f ButtonTextPosition;
+sf::Vector2f ButtonVisualKeysTextPosition;
+sf::Vector2f ButtonTotalTextPosition;
+sf::Vector2f ButtonKPSTextPosition;
+sf::Vector2f ButtonBPMTextPosition;
 sf::Vector2f ButtonTextBounds;
 bool ButtonTextBold;
 bool ButtonTextItalic;
@@ -36,14 +51,20 @@ bool ButtonTextShowKPS;
 bool ButtonTextShowBPM;
 
 // [Button graphics]
-bool LightAnimation;
-bool PressAnimation;
-float ButtonDistance;
-std::string ButtonTexturePath;
-sf::Vector2u ButtonTextureSize;
-sf::Color ButtonTextureColor;
+float GfxButtonDistance;
+std::string GfxButtonTexturePath;
+sf::Vector2u GfxButtonTextureSize;
+sf::Color GfxButtonTextureColor;
+bool GfxButtonBtnPositionsAdvancedMode;
+std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
+bool GfxButtonTextPosAdvancedMode;
+std::array<sf::Vector2f, 15> GfxButtonsTextPositions;
+bool GfxButtonSizesAdvancedMode;
+std::array<sf::Vector2f, 15> GfxButtonsSizes;
 
 // [Animation graphics]
+bool LightAnimation;
+bool PressAnimation;
 std::string AnimationTexturePath;
 unsigned AnimationFrames;
 sf::Vector2f AnimationScale;
@@ -60,10 +81,10 @@ bool isGreenscreenSet;
 
 // [Main window]
 bool WindowTitleBar;
-unsigned WindowBonusSizeTop;
-unsigned WindowBonusSizeBottom = 0U;
-unsigned WindowBonusSizeLeft;
-unsigned WindowBonusSizeRight;
+int WindowBonusSizeTop;
+int WindowBonusSizeBottom;
+int WindowBonusSizeLeft;
+int WindowBonusSizeRight;
 
 // [KPS window]
 bool KPSWindowEnabledFromStart;
@@ -102,4 +123,9 @@ sf::Keyboard::Key KeyExit(sf::Keyboard::W);
 sf::Keyboard::Key KeyToOpenKPSWindow(sf::Keyboard::K);
 sf::Keyboard::Key KeyToOpenMenuWindow(sf::Keyboard::A);
 
+// Saved parameters
+float MaxKPS;
+unsigned Total;
+
 } // !namespace Settings
+

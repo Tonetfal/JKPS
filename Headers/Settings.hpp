@@ -4,15 +4,18 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Graphics/Color.hpp>
 
+#include "GfxStatisticsLine.hpp"
+
 #include <string>
+#include <array>
 
 
 namespace Settings
 {
     // [Statistics text]
-    extern float StatisticsDistance;
-    extern sf::Vector2f StatisticsPosition;
-    extern std::string StatisticsFontPath;
+    extern float StatisticsTextDistance;
+    extern sf::Vector2f StatisticsTextPosition;
+    extern std::string StatisticsTextFontPath;
     extern sf::Color StatisticsTextColor;
     extern unsigned StatisticsTextCharacterSize;
     extern bool StatisticsTextBold;
@@ -21,6 +24,17 @@ namespace Settings
     extern bool ShowStatisticsKPS;
     extern bool ShowStatisticsTotal;
     extern bool ShowStatisticsBPM;
+
+    extern bool StatisticsTextPositionsAdvancedMode;
+    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
+    extern bool StatisticsTextColorsAdvancedMode;
+    extern std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
+    extern bool StatisticsTextChSzssAdvancedMode;
+    extern std::array<unsigned, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextCharacterSizes;
+    extern bool StatisticsTextBoldAdvancedMode;
+    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextBolds;
+    extern bool StatisticsTextItalicAdvancedMode;
+    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextItalics;
     extern std::string StatisticsKPSText;
     extern std::string StatisticsKPS2Text;
     extern std::string StatisticsTotalText;
@@ -31,6 +45,10 @@ namespace Settings
     extern sf::Color ButtonTextColor;
     extern unsigned ButtonTextCharacterSize;
     extern sf::Vector2f ButtonTextPosition;
+    extern sf::Vector2f ButtonVisualKeysTextPosition;
+    extern sf::Vector2f ButtonTotalTextPosition;
+    extern sf::Vector2f ButtonKPSTextPosition;
+    extern sf::Vector2f ButtonBPMTextPosition;
     extern sf::Vector2f ButtonTextBounds;
     extern bool ButtonTextBold;
     extern bool ButtonTextItalic;
@@ -40,10 +58,16 @@ namespace Settings
     extern bool ButtonTextShowBPM;
 
     // [Button graphics]
-    extern float ButtonDistance;
-    extern std::string ButtonTexturePath;
-    extern sf::Vector2u ButtonTextureSize;
-    extern sf::Color ButtonTextureColor;
+    extern float GfxButtonDistance;
+    extern std::string GfxButtonTexturePath;
+    extern sf::Vector2u GfxButtonTextureSize;
+    extern sf::Color GfxButtonTextureColor;
+    extern bool GfxButtonBtnPositionsAdvancedMode;
+    extern std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
+    extern bool GfxButtonTextPosAdvancedMode;
+    extern std::array<sf::Vector2f, 15> GfxButtonsTextPositions;
+    extern bool GfxButtonSizesAdvancedMode;
+    extern std::array<sf::Vector2f, 15> GfxButtonsSizes;
 
     // [Animation graphics]
     extern bool LightAnimation;
@@ -64,10 +88,10 @@ namespace Settings
 
     // [Main window]
     extern bool WindowTitleBar;
-    extern unsigned WindowBonusSizeTop;
-    extern unsigned WindowBonusSizeBottom;
-    extern unsigned WindowBonusSizeLeft;
-    extern unsigned WindowBonusSizeRight;
+    extern int WindowBonusSizeTop;
+    extern int WindowBonusSizeBottom;
+    extern int WindowBonusSizeLeft;
+    extern int WindowBonusSizeRight;
 
     // [KPS window]
     extern bool KPSWindowEnabledFromStart;
@@ -105,4 +129,8 @@ namespace Settings
     extern sf::Keyboard::Key KeyExit;
     extern sf::Keyboard::Key KeyToOpenKPSWindow;
     extern sf::Keyboard::Key KeyToOpenMenuWindow;
+
+    // Saved parameters
+    extern float MaxKPS;
+    extern unsigned Total;
 };
