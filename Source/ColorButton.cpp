@@ -8,7 +8,6 @@
 ColorButton::ColorButton(const sf::Texture &texture)
 {
     rgbCircleSprite.setTexture(texture);
-    rgbCircleSprite.setOrigin(static_cast<sf::Vector2f>(texture.getSize()) / 2.f);
 }
 
 void ColorButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
