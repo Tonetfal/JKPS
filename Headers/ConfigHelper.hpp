@@ -22,7 +22,7 @@ bool readConfig(
 void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 std::queue<LogKey> getLogKeys();
 std::queue<LogKey> getLogButtons();
-std::string readParameter(const std::string &par, bool &parameterFound);
+std::string readParameter(const std::string &par, bool &parameterFound, bool &parameterEmpty);
 void writeParameter(LogicalParameter &par);
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);

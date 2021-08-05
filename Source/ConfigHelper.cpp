@@ -96,11 +96,11 @@ std::queue<LogKey> getLogKeys()
 {
     static const std::string parName1 = "Keyboard keys";
     static const std::string parName2 = "Visual keys";
-    bool parameterFound = false, nothing;
-    std::string keysStr = readParameter(parName1, parameterFound);
-    std::string visualKeysStr = readParameter(parName2, nothing);
+    bool parameterFound = false, parameterEmpty = false, nothing;
+    std::string keysStr = readParameter(parName1, parameterFound, parameterEmpty);
+    std::string visualKeysStr = readParameter(parName2, nothing, nothing);
 
-    if (!parameterFound || keysStr == "No" || keysStr == "no" || keysStr == "NO")
+    if (!parameterFound || parameterEmpty || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return { };
 
     return readKeys(keysStr, visualKeysStr);
@@ -110,11 +110,11 @@ std::queue<LogKey> getLogButtons()
 {
     static const std::string parName1 = "Mouse buttons";
     static const std::string parName2 = "Visual buttons";
-    bool parameterFound = false, nothing;
-    std::string buttonsStr = readParameter(parName1, parameterFound);
-    std::string visualButtonsStr = readParameter(parName2, nothing);
+    bool parameterFound = false, parameterEmpty = false, nothing;
+    std::string buttonsStr = readParameter(parName1, parameterFound, parameterEmpty);
+    std::string visualButtonsStr = readParameter(parName2, nothing, nothing);
 
-    if (!parameterFound || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
+    if (!parameterFound || parameterEmpty || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
         return { };
 
     return readButtons(buttonsStr, visualButtonsStr);
@@ -122,11 +122,10 @@ std::queue<LogKey> getLogButtons()
 
 // Finds the parameter and returns everything after its name and ": ", 
 // can also return empty string, if there is no such parameter or if there is no value
-std::string readParameter(const std::string &parName, bool &parameterFound)
+std::string readParameter(const std::string &parName, bool &parameterFound, bool &parameterEmpty)
 {
     std::ifstream cfg(cfgPath);
     assert(cfg.is_open());
-        
 
     std::string line;
     unsigned i = 0;
@@ -153,9 +152,14 @@ std::string readParameter(const std::string &parName, bool &parameterFound)
         return "";
     // Does it have 2 characters after? (": " have to be deleted)
     if (line.length() <= parName.length() + 2)
+    {
+        parameterFound = true;
+        parameterEmpty = true;
         return "";
+    }
 
     parameterFound = true;
+    parameterEmpty = false;
     // Remove parameter name, ':' and space after it
     return line.substr(parName.length() + 2, 81);
 }
@@ -163,8 +167,12 @@ std::string readParameter(const std::string &parName, bool &parameterFound)
 void writeParameter(LogicalParameter &par)
 {
     bool parameterFound = false;
-    std::string valStr = readParameter(par.mParName, parameterFound);
-    if (!parameterFound)
+    bool parameterEmpty = false;
+    const std::string valStr = readParameter(par.mParName, parameterFound, parameterEmpty);
+    const std::string tmp = par.mParName;
+    // only these 4 can be empty
+    if ((parameterEmpty && !(tmp == "KPS text" || tmp == "KPS text when it is 0" || tmp == "Total text" || tmp == "BPM text"))
+    ||  !parameterFound)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par);
@@ -175,12 +183,12 @@ void writeParameter(LogicalParameter &par)
 
     switch(par.mType)
     {
-        case LogicalParameter::Type::Unsigned: par.setDigit(readDigitParameter(par, valStr)); break;
-        case LogicalParameter::Type::Int:      par.setDigit(readDigitParameter(par, valStr)); break;
-        case LogicalParameter::Type::Bool:     par.setBool(readBoolParameter(par, valStr));  break;
+        case LogicalParameter::Type::Unsigned: 
+        case LogicalParameter::Type::Int:      
         case LogicalParameter::Type::Float:    par.setDigit(readDigitParameter(par, valStr)); break;
+        case LogicalParameter::Type::Bool:     par.setBool(readBoolParameter(par, valStr));  break;
+        case LogicalParameter::Type::StringPath: 
         case LogicalParameter::Type::String:   par.setString(valStr); break;
-        case LogicalParameter::Type::StringPath: par.setString(valStr); break;
         case LogicalParameter::Type::Color:    par.setColor(readColorParameter(par, valStr)); break;
         case LogicalParameter::Type::VectorU: 
         case LogicalParameter::Type::VectorI: 
@@ -310,8 +318,8 @@ void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParamet
     const std::string defAssetName = "Default";
 
     // Textures
-    if (Settings::ButtonTexturePath != defAssetName)
-        if (!texture.loadFromFile(Settings::ButtonTexturePath))
+    if (Settings::GfxButtonTexturePath != defAssetName)
+        if (!texture.loadFromFile(Settings::GfxButtonTexturePath))
         {
             ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second);
             parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second->resetToDefaultValue();
@@ -333,8 +341,8 @@ void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParamet
     }
 
     // Fonts
-    if (Settings::StatisticsFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::StatisticsFontPath))
+    if (Settings::StatisticsTextFontPath != defAssetName)
+        if (!font.loadFromFile(Settings::StatisticsTextFontPath))
         {
             ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::StatTextFont)->second);
             parameters.find(LogicalParameter::ID::StatTextFont)->second->resetToDefaultValue();
