@@ -312,7 +312,8 @@ void Menu::buildMenuTabs()
 void Menu::buildParametersMap()
 {
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::StatisticsTextDistance, "Statistics text distance", "5", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatPos, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPosition, "Statistics position", "15, 0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatPos, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPosition, "Statistics text position", "15, 0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatValPos, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePosition, "Statistics value text position", "0, 0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::StatisticsTextFontPath, "Statistics text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColor, "Statistics text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSize, "Statistics text character size", "14", 0, 500)));
@@ -327,6 +328,10 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos1, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[0], "Statistics KPS text position", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos2, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[1], "Statistics total text position", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos3, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[2], "Statistics BPM text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextValuePositionsAdvancedMode, "Enable advanced mode for stats value text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos1, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[0], "Statistics KPS value text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos2, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[1], "Statistics total value text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos3, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[2], "Statistics BPM value text position", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClrAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextColorsAdvancedMode, "Enable advanced mode for stats text colors", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr1, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColors[0], "Statistics KPS text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr2, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColors[1], "Statistics total text color", "255,255,255,255")));
