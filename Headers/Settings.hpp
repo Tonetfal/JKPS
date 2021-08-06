@@ -133,6 +133,7 @@ namespace Settings
     extern sf::Keyboard::Key KeyExit;
     extern sf::Keyboard::Key KeyToOpenKPSWindow;
     extern sf::Keyboard::Key KeyToOpenMenuWindow;
+    extern sf::Keyboard::Key KeyToOpenGraphWindow;
 
     // Saved parameters
     extern float MaxKPS;

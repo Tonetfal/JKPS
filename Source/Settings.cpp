@@ -126,6 +126,7 @@ sf::Keyboard::Key KeyToReset(sf::Keyboard::X);
 sf::Keyboard::Key KeyExit(sf::Keyboard::W);
 sf::Keyboard::Key KeyToOpenKPSWindow(sf::Keyboard::K);
 sf::Keyboard::Key KeyToOpenMenuWindow(sf::Keyboard::A);
+sf::Keyboard::Key KeyToOpenGraphWindow(sf::Keyboard::G);
 
 // Saved parameters
 float MaxKPS;
