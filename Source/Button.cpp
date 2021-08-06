@@ -56,7 +56,7 @@ void Button::setTextStrings()
     }
     if (Settings::ButtonTextShowTotal)
     {
-        if (!lAlt && !advMode && !Settings::ButtonTextShowVisualKeys)
+        if (!lAlt == (!advMode || !Settings::ButtonTextShowVisualKeys))
             mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
         else
             mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
