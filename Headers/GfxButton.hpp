@@ -28,7 +28,8 @@ class GfxButton : public sf::Drawable, public sf::Transformable
             KeyCounter,
             KeyPerSecond,
             BeatsPerMinute,
-            TextIdCounter
+            TextIdCounter,
+            Nothing
         };
 
 

@@ -72,7 +72,8 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
     else
     {
         const TextID id = getTextIdToDisplay();
-        target.draw(*mTexts[id], states);
+        if (id <= BeatsPerMinute)
+            target.draw(*mTexts[id], states);
     }
 
     if (mShowBounds)
@@ -180,6 +181,13 @@ void GfxButton::updateParameters()
                 case BeatsPerMinute: text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonBPMTextPosition.x, -Settings::ButtonBPMTextPosition.y)); break;
             }
         }
+
+        const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
+        if (lAlt && idx == VisualKey && Settings::ButtonTextShowVisualKeys && !Settings::ButtonTextShowTotal)
+            text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonTotalTextPosition.x, -Settings::ButtonTotalTextPosition.y));
+        if (lAlt && idx == KeyCounter && !Settings::ButtonTextShowVisualKeys && Settings::ButtonTextShowTotal)
+            text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonVisualKeysTextPosition.x, -Settings::ButtonVisualKeysTextPosition.y));
+
         ++idx;
     }
 
@@ -269,7 +277,7 @@ GfxButton::TextID GfxButton::getTextIdToDisplay()
     if (Settings::ButtonTextShowBPM)
         return BeatsPerMinute;
     
-    return VisualKey;
+    return Nothing;
 }
 
 void GfxButton::setShowBounds(bool b)
