@@ -9,7 +9,7 @@
 class LogButton
 {
     public:
-        LogButton(LogKey &key);
+        LogButton(const unsigned idx, LogKey &key);
 
         void processRealtimeInput();
 
@@ -43,6 +43,8 @@ class LogButton
 
 
     private:
+        const unsigned mBtnIdx;
+        
         // Calculation related
         std::array<unsigned, 60> mBuffer;
         std::array<unsigned, 9> mPrevKpsBuffer;
