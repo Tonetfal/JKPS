@@ -43,7 +43,8 @@ void StatisticsPositioner::operator()()
         unsigned idx = 0;
         for (auto &text : *mStatistics)
         {
-            text->setPosition(Settings::StatisticsTextPositions[idx]);
+            const sf::Vector2f pos(Settings::StatisticsTextPositions[idx].x, -Settings::StatisticsTextPositions[idx].y);
+            text->setPosition(pos);
             ++idx;
         }
     }
