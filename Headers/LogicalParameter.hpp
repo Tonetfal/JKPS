@@ -30,6 +30,7 @@ struct LogicalParameter
         {
             StatTextDist,
             StatPos,
+            StatValPos,
             StatTextFont,
             StatTextClr,
             StatTextChSz,
@@ -44,6 +45,10 @@ struct LogicalParameter
             StatTextPos1,
             StatTextPos2,
             StatTextPos3,
+            StatTextValPosAdvMode,
+            StatTextValPos1,
+            StatTextValPos2,
+            StatTextValPos3,
             StatTextClrAdvMode,
             StatTextClr1,
             StatTextClr2,
