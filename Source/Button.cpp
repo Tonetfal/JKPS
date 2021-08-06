@@ -7,53 +7,72 @@
 unsigned Button::mSize(0);
 
 Button::Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder &fontHolder)
-: LogButton(key)
+: LogButton(mSize, key)
 , GfxButton(mSize, textureHolder, fontHolder)
 , mTextures(textureHolder)
 , mFonts(fontHolder)
 , mBtnIdx(mSize)
 {
+    LogButton::mTotal = Settings::KeysTotal[mBtnIdx];
     ++mSize;
 }
 
 void Button::update()
 {
     GfxButton::update(LogButton::isButtonPressed());
-
-    std::string str;
-    const GfxButton::TextID id = GfxButton::getTextIdToDisplay();
-    switch (id)
-    {
-        case TextID::VisualKey: 
-            str = LogButton::mKey.visualStr;
-            break;
-
-        case TextID::KeyCounters:
-            str = std::to_string(LogButton::mTotal);
-            break;
-        case TextID::KeyPerSecond:
-            if (false)
-                str = eraseDigitsOverHundredths(std::to_string(mKeysPerSecond));
-            else
-                str = std::to_string(static_cast<unsigned>(mKeysPerSecond));
-            break;
-        case TextID::BeatsPerMinute:
-            str = std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute()));
-            break;
-    }
-    sf::Text &text = *mTexts[id];
-    text.setString(str);
-
-    if (LogButton::mKey.resetChangedState())
-        text.setCharacterSize(Settings::ButtonTextCharacterSize);
-
-    GfxButton::keepInBounds(text);
-    GfxButton::centerOrigins();
+    setTextStrings();
+    controlBounds();
 }
 
 void Button::processInput()
 {
     processRealtimeInput();
+}
+
+void Button::reset()
+{
+    LogButton::reset();
+    setTextStrings();
+    // text could be too large, but if everything was reset then original ch size must be set and controlled
+    for (auto &text : mTexts)
+    {
+        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        GfxButton::keepInBounds(*text);
+    }
+    GfxButton::centerOrigins();
+}
+
+void Button::setTextStrings()
+{
+    if (Settings::ButtonTextShowVisualKeys) 
+    {
+        mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
+    }
+    if (Settings::ButtonTextShowTotal)
+    {
+        mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
+    }
+    if (Settings::ButtonTextShowKPS)
+    {
+        // static_cast is required since KPS w/floating point is not still done
+        mTexts[KeyPerSecond]->setString(std::to_string(static_cast<unsigned>(mKeysPerSecond)));
+    }
+    if (Settings::ButtonTextShowBPM)
+    {
+        mTexts[BeatsPerMinute]->setString(std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute())));
+    }
+}
+
+void Button::controlBounds()
+{
+    for (auto &text : mTexts)
+    {
+        if (LogButton::mKey.resetChangedState())
+            text->setCharacterSize(Settings::ButtonTextCharacterSize);
+
+        GfxButton::keepInBounds(*text);
+    }
+    GfxButton::centerOrigins();
 }
 
 LogKey *Button::getLogKey()
@@ -63,6 +82,7 @@ LogKey *Button::getLogKey()
 
 Button::~Button()
 {
+    Settings::KeysTotal[mBtnIdx] = 0;
     --mSize;
 }
 
@@ -88,6 +108,11 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::BtnTextShowVisKeys ||
         id == LogicalParameter::ID::BtnTextShowTot ||
         id == LogicalParameter::ID::BtnTextShowKps ||
+        id == LogicalParameter::ID::BtnTextSepPosAdvMode ||
+        id == LogicalParameter::ID::BtnTextVisPosition ||
+        id == LogicalParameter::ID::BtnTextTotPosition ||
+        id == LogicalParameter::ID::BtnTextKPSPosition ||
+        id == LogicalParameter::ID::BtnTextBPMPosition ||
         id == LogicalParameter::ID::BtnGfxDist ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
         id == LogicalParameter::ID::BtnGfxTxtrClr ||

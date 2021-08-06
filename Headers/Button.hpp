@@ -14,6 +14,8 @@ class Button : public GfxButton, public LogButton
         void update();
         void processInput();
 
+        void reset();
+
         LogKey *getLogKey();
 
         unsigned getIdx() const;
@@ -21,6 +23,11 @@ class Button : public GfxButton, public LogButton
         static bool parameterIdMatches(LogicalParameter::ID id);
 
         ~Button();
+
+
+    private:
+        void setTextStrings();
+        void controlBounds();
 
 
     private:
