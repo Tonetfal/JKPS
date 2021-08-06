@@ -314,10 +314,10 @@ void Application::resetAssets()
 void Application::loadTextures()
 {
     if (!mTextures.loadFromFile(Textures::Button, Settings::GfxButtonTexturePath))
-        mTextures.loadFromMemory(Textures::Button, Settings::DefaultButtonTexture, 58700);
+        mTextures.loadFromMemory(Textures::Button, Settings::DefaultButtonTexture, 2700);
 
     if (!mTextures.loadFromFile(Textures::Animation, Settings::AnimationTexturePath))
-        mTextures.loadFromMemory(Textures::Animation, Settings::DefaultAnimationTexture, 60100);
+        mTextures.loadFromMemory(Textures::Animation, Settings::DefaultAnimationTexture, 15800);
 
 
     Settings::isGreenscreenSet = Settings::BackgroundTexturePath == "GreenscreenBG.png";
@@ -333,10 +333,10 @@ void Application::loadTextures()
 void Application::loadFonts()
 {
     if (!mFonts.loadFromFile(Fonts::ButtonValue, Settings::ButtonTextFontPath))
-        mFonts.loadFromMemory(Fonts::ButtonValue, Settings::KeyCountersDefaultFont, 446100);
+        mFonts.loadFromMemory(Fonts::ButtonValue, Settings::KeyCountersDefaultFont, 581700);
 
     if (!mFonts.loadFromFile(Fonts::Statistics, Settings::StatisticsTextFontPath))
-        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 446100);
+        mFonts.loadFromMemory(Fonts::Statistics, Settings::StatisticsDefaultFont, 581700);
 
     if (!mFonts.loadFromFile(Fonts::KPSText, Settings::KPSWindowTextFontPath))
         mFonts.loadFromMemory(Fonts::KPSText, Settings::DefaultKPSWindowFont, 459300);
