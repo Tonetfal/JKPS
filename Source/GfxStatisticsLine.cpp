@@ -91,9 +91,14 @@ bool GfxStatisticsLine::getShowState() const
     return mShow;
 }
 
-const sf::Text &GfxStatisticsLine::getText() const
+const sf::Text &GfxStatisticsLine::getLineText() const
 {
     return mStatLineText;
+}
+
+const sf::Text &GfxStatisticsLine::getValueText() const
+{
+    return mStatValueText;
 }
 
 void GfxStatisticsLine::centerOrigin()

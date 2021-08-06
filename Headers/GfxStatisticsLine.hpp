@@ -31,7 +31,8 @@ class GfxStatisticsLine : public sf::Drawable, public sf::Transformable
         void updateParameters();
 
         bool getShowState() const;
-        const sf::Text &getText() const;
+        const sf::Text &getLineText() const;
+        const sf::Text &getValueText() const;
 
         static std::string *getStatLineString(StatisticsID id);
         static std::string getStatValueString(StatisticsID id);

@@ -9,7 +9,11 @@ float StatisticsPositioner::getTotalHeight()
     for (auto &text : *mStatistics)
     {
         if (text->getShowState())
-            totalLinesHeight += text->getText().getLocalBounds().height + Settings::StatisticsTextDistance;
+        {
+            const float rectLineHeight(text->getLineText().getLocalBounds().height);
+            const float rectValHeight(text->getValueText().getLocalBounds().height);
+            totalLinesHeight += std::max(rectLineHeight, rectValHeight) + Settings::StatisticsTextDistance;
+        }
     }
     if (totalLinesHeight > 0)
         totalLinesHeight -= Settings::StatisticsTextDistance;
@@ -32,8 +36,11 @@ void StatisticsPositioner::operator()()
         {
             if (text->getShowState())
             {
+                const float rectLineHeight(text->getLineText().getLocalBounds().height);
+                const float rectValHeight(text->getValueText().getLocalBounds().height);
+
                 text->setPosition(width, startHeight + currentHeight);
-                currentHeight += text->getText().getLocalBounds().height + Settings::StatisticsTextDistance;
+                currentHeight += std::max(rectLineHeight, rectValHeight) + Settings::StatisticsTextDistance;
             }
         }
     }
