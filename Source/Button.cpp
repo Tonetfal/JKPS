@@ -49,14 +49,14 @@ void Button::setTextStrings()
 
     if (Settings::ButtonTextShowVisualKeys) 
     {
-        if (!lAlt || (advMode && Settings::ButtonTextShowTotal))
+        if (!lAlt == (!advMode || !Settings::ButtonTextShowTotal))
             mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
         else 
             mTexts[VisualKey]->setString(std::to_string(LogButton::mTotal));
     }
     if (Settings::ButtonTextShowTotal)
     {
-        if (!lAlt || (advMode && Settings::ButtonTextShowVisualKeys))
+        if (!lAlt && !advMode && !Settings::ButtonTextShowVisualKeys)
             mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
         else
             mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
