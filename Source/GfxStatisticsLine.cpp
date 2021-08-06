@@ -22,10 +22,12 @@ void GfxStatisticsLine::draw(sf::RenderTarget &target, sf::RenderStates states) 
     if (!mShow || !Settings::ShowStatisticsText)
         return;
 
-    states.transform.translate(Transformable::getPosition());
-    states.transform.scale(getScale());
+    states.transform.combine(getTransform());
 
-    target.draw(mText, states);
+    target.draw(mStatLineText, states);
+    const sf::FloatRect rect(mStatLineText.getLocalBounds());
+    states.transform.translate(rect.left + rect.width, 0);
+    target.draw(mStatValueText, states);
 }
 
 void GfxStatisticsLine::update()
@@ -33,13 +35,15 @@ void GfxStatisticsLine::update()
     if (!mShow || !Settings::ShowStatisticsText)
         return;
 
-    mText.setString(getString(mIdentifier));
+    mStatLineText.setString(*getStatLineString(mIdentifier));
+    mStatValueText.setString(getStatValueString(mIdentifier));
     centerOrigin();
 }
 
 void GfxStatisticsLine::updateAsset()
 {
-    mText.setFont(mFonts.get(Fonts::Statistics));
+    mStatLineText.setFont(mFonts.get(Fonts::Statistics));
+    mStatValueText.setFont(mFonts.get(Fonts::Statistics));
 }
 
 void GfxStatisticsLine::updateParameters()
@@ -58,9 +62,25 @@ void GfxStatisticsLine::updateParameters()
 
     const sf::Uint32 style = (bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0);
 
-    mText.setFillColor(color);
-    mText.setCharacterSize(chSz);
-    mText.setStyle(style);
+    mStatLineText.setFillColor(color);
+    mStatLineText.setCharacterSize(chSz);
+    mStatLineText.setStyle(style);
+    mStatValueText.setFillColor(color);
+    mStatValueText.setCharacterSize(chSz);
+    mStatValueText.setStyle(style);
+    sf::Vector2f pos;
+    if (!Settings::StatisticsTextValuePositionsAdvancedMode)
+    {
+        pos.x = Settings::StatisticsTextValuePosition.x;
+        pos.y = -Settings::StatisticsTextValuePosition.y;
+    }
+    else
+    {
+        pos.x = Settings::StatisticsTextValuePositions[mIdentifier].x;
+        pos.y = -Settings::StatisticsTextValuePositions[mIdentifier].y;
+    }
+    mStatValueText.setPosition(pos);
+    centerOrigin();
 }
 
 bool GfxStatisticsLine::getShowState() const
@@ -70,16 +90,42 @@ bool GfxStatisticsLine::getShowState() const
 
 const sf::Text &GfxStatisticsLine::getText() const
 {
-    return mText;
+    return mStatLineText;
 }
 
 void GfxStatisticsLine::centerOrigin()
 {
-    const sf::FloatRect rect(mText.getLocalBounds());
-    mText.setOrigin(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    const sf::FloatRect lineRect(mStatLineText.getLocalBounds());
+    const sf::Vector2f lineOrigin(lineRect.left + lineRect.width / 2, lineRect.top + lineRect.height / 2);
+    const sf::FloatRect valueRect(mStatValueText.getLocalBounds());
+    const sf::Vector2f valueOrigin(valueRect.left + valueRect.width / 2, valueRect.top + valueRect.height / 2);
+    mStatLineText.setOrigin(lineOrigin);
+    mStatValueText.setOrigin(valueOrigin);
 }
 
-std::string GfxStatisticsLine::getString(StatisticsID id)
+std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
+{
+    std::string *str;
+    
+    switch(id)
+    {
+        case KPS:
+            str = Button::getKeysPerSecond() != 0 ? &Settings::StatisticsKPSText : &Settings::StatisticsKPS2Text;
+            break;
+
+        case Total:
+            str = &Settings::StatisticsTotalText;
+            break;
+
+        case BPM:
+            str = &Settings::StatisticsBPMText;
+            break;
+    }
+    
+    return str;
+}
+
+std::string GfxStatisticsLine::getStatValueString(StatisticsID id)
 {
     std::string str;
     
@@ -88,27 +134,26 @@ std::string GfxStatisticsLine::getString(StatisticsID id)
         case KPS:
             if (Button::getKeysPerSecond() != 0)
             {
-                if (false)
-                    str = Settings::StatisticsKPSText + eraseDigitsOverHundredths(std::to_string(Button::getKeysPerSecond()));
-                else
-                    str = Settings::StatisticsKPSText + (std::to_string(static_cast<unsigned>(Button::getKeysPerSecond())));
+                // if (show decimal)
+                //     str = eraseDigitsOverHundredths(std::to_string(Button::getKeysPerSecond()));
+                // else
+                str = std::to_string(static_cast<unsigned>(Button::getKeysPerSecond()));
             }
             else
             {
-                if (false)
-                    str = Settings::StatisticsKPS2Text + eraseDigitsOverHundredths(std::to_string(Button::getMaxKeysPerSecond()));
-                else
-                    str = Settings::StatisticsKPS2Text + std::to_string(static_cast<unsigned>(Button::getMaxKeysPerSecond()));
-
+                // if (show decimal)
+                //     str = eraseDigitsOverHundredths(std::to_string(Button::getMaxKeysPerSecond()));
+                // else
+                str = std::to_string(static_cast<unsigned>(Button::getMaxKeysPerSecond()));
             }
             break;
 
         case Total:
-            str = Settings::StatisticsTotalText + std::to_string(Button::getTotal());
+            str = std::to_string(Button::getTotal());
             break;
 
         case BPM:
-            str = Settings::StatisticsBPMText + std::to_string(static_cast<unsigned>(Button::getBeatsPerMinute()));
+            str = std::to_string(static_cast<unsigned>(Button::getBeatsPerMinute()));
             break;
     }
     
@@ -122,10 +167,15 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextItal || 
         id == LogicalParameter::ID::StatTextChSz || 
         id == LogicalParameter::ID::StatTextClr ||
+        id == LogicalParameter::ID::StatValPos ||
         id == LogicalParameter::ID::StatTextPosAdvMode ||
         id == LogicalParameter::ID::StatTextPos1 ||
         id == LogicalParameter::ID::StatTextPos2 ||
         id == LogicalParameter::ID::StatTextPos3 ||
+        id == LogicalParameter::ID::StatTextValPosAdvMode ||
+        id == LogicalParameter::ID::StatTextValPos1 ||
+        id == LogicalParameter::ID::StatTextValPos2 ||
+        id == LogicalParameter::ID::StatTextValPos3 ||
         id == LogicalParameter::ID::StatTextClrAdvMode ||
         id == LogicalParameter::ID::StatTextClr1 ||
         id == LogicalParameter::ID::StatTextClr2 ||

@@ -33,8 +33,8 @@ class GfxStatisticsLine : public sf::Drawable, public sf::Transformable
         bool getShowState() const;
         const sf::Text &getText() const;
 
-        static GfxStatisticsLine::StatisticsID getPreviousLineID(StatisticsID current);
-        static std::string getString(StatisticsID id);
+        static std::string *getStatLineString(StatisticsID id);
+        static std::string getStatValueString(StatisticsID id);
 
         static bool parameterIdMatches(LogicalParameter::ID id);
 
@@ -49,5 +49,6 @@ class GfxStatisticsLine : public sf::Drawable, public sf::Transformable
         const StatisticsID mIdentifier;
 
         const bool &mShow;
-        sf::Text mText;
+        sf::Text mStatLineText;
+        sf::Text mStatValueText;
 };
