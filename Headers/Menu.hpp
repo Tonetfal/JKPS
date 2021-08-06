@@ -54,6 +54,8 @@ class Menu
         void moveSliderBarMouse(sf::Vector2i mousePos);
         void returnViewInBounds();
 
+        void updateSaveStatsStrings();
+
 
     private:
         sf::RenderWindow mWindow;

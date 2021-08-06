@@ -11,6 +11,8 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/System/Clock.hpp>
 
+#include <limits.h>
+
 
 std::string Menu::mProgramVersion("v0.9-alpha");
 
@@ -350,10 +352,6 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextCharacterSize, "Buttons text character size", "18", 0, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVisPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonVisualKeysTextPosition, "Buttpns visual keys text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextTotPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTotalTextPosition, "Buttpns total text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextKPSPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonKPSTextPosition, "Buttpns KPS text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBPMPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonBPMTextPosition, "Buttpns BPM text position", "0,0", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "4, 4", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextItalic, "Buttons text italic", "False")));
@@ -362,11 +360,16 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowKPS, "Show key KPS", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowBpm, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowBPM, "Show key BPM", "False")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::GfxButtonTextPosAdvancedMode, "Enable advanced mode for button text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextSepPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextSepPosAdvancedMode, "Enable advanced mode for separate button text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVisPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonVisualKeysTextPosition, "Buttons visual keys text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextTotPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTotalTextPosition, "Buttons key counters text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextKPSPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonKPSTextPosition, "Buttons KPS text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBPMPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonBPMTextPosition, "Buttons BPM text position", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextPosAdvancedMode, "Enable advanced mode for button text positions", "False")));
     for (unsigned idx = 0; idx < 15; ++idx)
     {
         const LogicalParameter::ID textPosId = LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnTextPos1) + idx);
-        mParameters.emplace(std::make_pair(textPosId, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::GfxButtonsTextPositions[idx], ("Button text " + std::to_string(idx + 1) + " position"), "0,0", -1000, 1000)));
+        mParameters.emplace(std::make_pair(textPosId, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonsTextPositions[idx], ("Button text " + std::to_string(idx + 1) + " position"), "0,0", -1000, 1000)));
     }
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::GfxButtonDistance, "Button distance", "10", -500, 500)));
@@ -414,6 +417,14 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::ThemeDevMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
+
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS, new LogicalParameter(LogicalParameter::Type::Float, &Settings::MaxKPS, "Saved max KPS", "0", 0, UINT_MAX)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::Total, "Saved total", "0", 0, UINT_MAX)));
+    for (unsigned idx = 0; idx < Settings::KeysTotal.size(); ++idx)
+    {
+        const LogicalParameter::ID id = LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + idx);
+        mParameters.emplace(std::make_pair(id, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KeysTotal[idx], "Saved total " + std::to_string(idx + 1), "0", 0, UINT_MAX)));
+    }
 }
 
 void Menu::buildParameterLines()
@@ -467,6 +478,10 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Theme developer]"));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ThemeDevColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ThemeDevMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Statistics save]"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::SaveStatColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::SaveStatMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
 
     unsigned info = static_cast<unsigned>(ParameterLine::ID::InfoColl);
@@ -610,10 +625,24 @@ void Menu::returnViewInBounds()
 
 void Menu::saveConfig(const std::vector<std::unique_ptr<Button>> &mKeys)
 {
+    updateSaveStatsStrings();
     ConfigHelper::saveConfig(mParameters, mParameterLines, &mKeys, true);
 }
 
 void Menu::requestFocus()
 {
     mWindow.requestFocus();
+}
+
+void Menu::updateSaveStatsStrings()
+{
+    auto it = mParameters.find(LogicalParameter::ID::SaveStatMaxKPS);
+    it->second->setValStr(std::to_string(it->second->getDigit<float>()));
+    ++it;
+
+    while (it->first <= LogicalParameter::ID::SaveStatTotal15)
+    {
+        it->second->setValStr(std::to_string(it->second->getDigit<unsigned>()));
+        ++it;
+    }
 }
