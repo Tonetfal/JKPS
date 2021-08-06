@@ -261,6 +261,7 @@ void GfxButtonSelector::openWindow(sf::Vector2i spawnPosition)
         std::string title = mKeyType == Keyboard ? "Keyboard key selector" : "Mouse button selector";
         mWindow.create(sf::VideoMode(300, 150), title, sf::Style::Close);
         mWindow.setPosition(spawnPosition);
+        mWindow.requestFocus();
     }
 }
 
