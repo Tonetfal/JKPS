@@ -58,8 +58,22 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
     for (const auto &sprite : mSprites)
         target.draw(*sprite, states);
 
-    const GfxButton::TextID id = getTextIdToDisplay();
-    target.draw(*mTexts[id], states);
+    if (Settings::ButtonTextSepPosAdvancedMode)
+    {
+        if (Settings::ButtonTextShowVisualKeys) 
+            target.draw(*mTexts[VisualKey], states);
+        if (Settings::ButtonTextShowTotal)
+            target.draw(*mTexts[KeyCounter], states);
+        if (Settings::ButtonTextShowKPS)
+            target.draw(*mTexts[KeyPerSecond], states);
+        if (Settings::ButtonTextShowBPM)
+            target.draw(*mTexts[BeatsPerMinute], states);
+    }
+    else
+    {
+        const TextID id = getTextIdToDisplay();
+        target.draw(*mTexts[id], states);
+    }
 
     if (mShowBounds)
         target.draw(mBounds, states);
@@ -144,16 +158,29 @@ void GfxButton::updateParameters()
     // Substraction by black (0,0,0,255) is needed to set alpha channel on 0 when any related animation key parameter is changed
     mSprites[AnimationSprite]->setColor(Settings::AnimationColor - sf::Color::Black);
 
+    unsigned idx = 0;
     for (auto &text : mTexts)
     {
         const bool isInRange = mBtnIdx < Settings::GfxButtonsBtnPositions.size();
-        const sf::Vector2f advancedPos = !Settings::GfxButtonTextPosAdvancedMode || !isInRange ? Settings::ButtonTextPosition : 
-            sf::Vector2f(Settings::GfxButtonsTextPositions[mBtnIdx].x, -Settings::GfxButtonsTextPositions[mBtnIdx].y);
+        const sf::Vector2f advancedPos = !Settings::ButtonTextPosAdvancedMode || !isInRange ? Settings::ButtonTextPosition : 
+            sf::Vector2f(Settings::ButtonsTextPositions[mBtnIdx].x, -Settings::ButtonsTextPositions[mBtnIdx].y);
 
         text->setFillColor(Settings::ButtonTextColor);
         text->setCharacterSize(Settings::ButtonTextCharacterSize);
         text->setPosition(advancedPos);
         text->setStyle(Settings::ButtonTextBold ? sf::Text::Bold : 0 | Settings::ButtonTextItalic ? sf::Text::Italic : 0);
+
+        if (Settings::ButtonTextSepPosAdvancedMode)
+        {
+            switch(idx)
+            {
+                case VisualKey:      text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonVisualKeysTextPosition.x, -Settings::ButtonVisualKeysTextPosition.y)); break;
+                case KeyCounter:     text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonTotalTextPosition.x, -Settings::ButtonTotalTextPosition.y)); break;
+                case KeyPerSecond:   text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonKPSTextPosition.x, -Settings::ButtonKPSTextPosition.y)); break;
+                case BeatsPerMinute: text->setPosition(advancedPos + sf::Vector2f(Settings::ButtonBPMTextPosition.x, -Settings::ButtonBPMTextPosition.y)); break;
+            }
+        }
+        ++idx;
     }
 
     mBounds.setSize(static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize) - Settings::ButtonTextBounds);
@@ -236,7 +263,7 @@ GfxButton::TextID GfxButton::getTextIdToDisplay()
     if (Settings::ButtonTextShowVisualKeys) 
         return VisualKey;
     if (Settings::ButtonTextShowTotal)
-        return KeyCounters;
+        return KeyCounter;
     if (Settings::ButtonTextShowKPS)
         return KeyPerSecond;
     if (Settings::ButtonTextShowBPM)

@@ -25,7 +25,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         enum TextID
         {
             VisualKey,
-            KeyCounters,
+            KeyCounter,
             KeyPerSecond,
             BeatsPerMinute,
             TextIdCounter
