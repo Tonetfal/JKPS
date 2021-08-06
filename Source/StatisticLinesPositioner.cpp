@@ -23,10 +23,9 @@ void StatisticsPositioner::operator()()
 
     if (!Settings::StatisticsTextPositionsAdvancedMode)
     {
-        const sf::Vector2f halfOrigin(mStatistics->front()->getText().getOrigin() / 2.f);
-        const float width = Settings::StatisticsTextPosition.x + Application::getWindowWidth() - Settings::WindowBonusSizeRight + halfOrigin.x;
+        const float width = Settings::StatisticsTextPosition.x + Application::getWindowWidth() - Settings::WindowBonusSizeRight;
         const float totalHeight = getTotalHeight();
-        const float startHeight = Settings::WindowBonusSizeTop + Settings::GfxButtonTextureSize.y / 2 - totalHeight / 2 - Settings::StatisticsTextPosition.y + halfOrigin.y;
+        const float startHeight = Settings::WindowBonusSizeTop + Settings::GfxButtonTextureSize.y / 2 - totalHeight / 2 - Settings::StatisticsTextPosition.y;
         float currentHeight = 0;
 
         for (auto &text : *mStatistics)

@@ -15,6 +15,9 @@ GfxStatisticsLine::GfxStatisticsLine(const FontHolder& fontHolder, const bool &s
 {
     updateAsset();
     updateParameters();
+    mStatLineText.setString(*getStatLineString(mIdentifier));
+    mStatValueText.setString(getStatValueString(mIdentifier));
+    centerOrigin();
 }
 
 void GfxStatisticsLine::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -38,6 +41,9 @@ void GfxStatisticsLine::update()
     mStatLineText.setString(*getStatLineString(mIdentifier));
     mStatValueText.setString(getStatValueString(mIdentifier));
     centerOrigin();
+
+    std::cout << mStatLineText.getOrigin().x << " " << mStatLineText.getOrigin().y << "\n";
+    std::cout << mStatValueText.getOrigin().x << " " << mStatValueText.getOrigin().y << "\n";
 }
 
 void GfxStatisticsLine::updateAsset()
@@ -99,8 +105,16 @@ void GfxStatisticsLine::centerOrigin()
     const sf::Vector2f lineOrigin(lineRect.left + lineRect.width / 2, lineRect.top + lineRect.height / 2);
     const sf::FloatRect valueRect(mStatValueText.getLocalBounds());
     const sf::Vector2f valueOrigin(valueRect.left + valueRect.width / 2, valueRect.top + valueRect.height / 2);
-    mStatLineText.setOrigin(lineOrigin);
-    mStatValueText.setOrigin(valueOrigin);
+
+    if (!Settings::StatisticsTextPositionsAdvancedMode)
+        mStatLineText.setOrigin(lineRect.left, lineRect.top);
+    else
+        mStatLineText.setOrigin(lineOrigin);
+
+    if (!Settings::StatisticsTextValuePositionsAdvancedMode)
+        mStatValueText.setOrigin(valueRect.left, valueRect.top);
+    else
+        mStatValueText.setOrigin(valueOrigin);
 }
 
 std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
@@ -163,11 +177,18 @@ std::string GfxStatisticsLine::getStatValueString(StatisticsID id)
 bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
 {
     return 
-        id == LogicalParameter::ID::StatTextBold || 
-        id == LogicalParameter::ID::StatTextItal || 
-        id == LogicalParameter::ID::StatTextChSz || 
-        id == LogicalParameter::ID::StatTextClr ||
+        id == LogicalParameter::ID::StatTextDist ||
+        id == LogicalParameter::ID::StatPos ||
         id == LogicalParameter::ID::StatValPos ||
+        id == LogicalParameter::ID::StatTextFont ||
+        id == LogicalParameter::ID::StatTextClr ||
+        id == LogicalParameter::ID::StatTextChSz ||
+        id == LogicalParameter::ID::StatTextBold ||
+        id == LogicalParameter::ID::StatTextItal ||
+        id == LogicalParameter::ID::StatTextShow ||
+        id == LogicalParameter::ID::StatTextShowKPS ||
+        id == LogicalParameter::ID::StatTextShowTotal ||
+        id == LogicalParameter::ID::StatTextShowBPM ||
         id == LogicalParameter::ID::StatTextPosAdvMode ||
         id == LogicalParameter::ID::StatTextPos1 ||
         id == LogicalParameter::ID::StatTextPos2 ||
@@ -191,5 +212,9 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextItalAdvMode ||
         id == LogicalParameter::ID::StatTextItal1 ||
         id == LogicalParameter::ID::StatTextItal2 ||
-        id == LogicalParameter::ID::StatTextItal3;
+        id == LogicalParameter::ID::StatTextItal3 ||
+        id == LogicalParameter::ID::StatTextKPSText ||
+        id == LogicalParameter::ID::StatTextKPS2Text ||
+        id == LogicalParameter::ID::StatTextTotalText ||
+        id == LogicalParameter::ID::StatTextBPMText;
 }
