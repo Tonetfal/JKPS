@@ -41,9 +41,6 @@ void GfxStatisticsLine::update()
     mStatLineText.setString(*getStatLineString(mIdentifier));
     mStatValueText.setString(getStatValueString(mIdentifier));
     centerOrigin();
-
-    std::cout << mStatLineText.getOrigin().x << " " << mStatLineText.getOrigin().y << "\n";
-    std::cout << mStatValueText.getOrigin().x << " " << mStatValueText.getOrigin().y << "\n";
 }
 
 void GfxStatisticsLine::updateAsset()
