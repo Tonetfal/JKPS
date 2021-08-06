@@ -38,10 +38,6 @@ std::string ButtonTextFontPath;
 sf::Color ButtonTextColor;
 unsigned ButtonTextCharacterSize;
 sf::Vector2f ButtonTextPosition;
-sf::Vector2f ButtonVisualKeysTextPosition;
-sf::Vector2f ButtonTotalTextPosition;
-sf::Vector2f ButtonKPSTextPosition;
-sf::Vector2f ButtonBPMTextPosition;
 sf::Vector2f ButtonTextBounds;
 bool ButtonTextBold;
 bool ButtonTextItalic;
@@ -49,6 +45,13 @@ bool ButtonTextShowVisualKeys;
 bool ButtonTextShowTotal;
 bool ButtonTextShowKPS;
 bool ButtonTextShowBPM;
+bool ButtonTextSepPosAdvancedMode;
+sf::Vector2f ButtonVisualKeysTextPosition;
+sf::Vector2f ButtonTotalTextPosition;
+sf::Vector2f ButtonKPSTextPosition;
+sf::Vector2f ButtonBPMTextPosition;
+bool ButtonTextPosAdvancedMode;
+std::array<sf::Vector2f, 15> ButtonsTextPositions;
 
 // [Button graphics]
 float GfxButtonDistance;
@@ -57,8 +60,6 @@ sf::Vector2u GfxButtonTextureSize;
 sf::Color GfxButtonTextureColor;
 bool GfxButtonBtnPositionsAdvancedMode;
 std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
-bool GfxButtonTextPosAdvancedMode;
-std::array<sf::Vector2f, 15> GfxButtonsTextPositions;
 bool GfxButtonSizesAdvancedMode;
 std::array<sf::Vector2f, 15> GfxButtonsSizes;
 
@@ -126,6 +127,7 @@ sf::Keyboard::Key KeyToOpenMenuWindow(sf::Keyboard::A);
 // Saved parameters
 float MaxKPS;
 unsigned Total;
+std::array<unsigned, 15> KeysTotal;
 
 } // !namespace Settings
 

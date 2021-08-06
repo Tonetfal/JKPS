@@ -45,10 +45,6 @@ namespace Settings
     extern sf::Color ButtonTextColor;
     extern unsigned ButtonTextCharacterSize;
     extern sf::Vector2f ButtonTextPosition;
-    extern sf::Vector2f ButtonVisualKeysTextPosition;
-    extern sf::Vector2f ButtonTotalTextPosition;
-    extern sf::Vector2f ButtonKPSTextPosition;
-    extern sf::Vector2f ButtonBPMTextPosition;
     extern sf::Vector2f ButtonTextBounds;
     extern bool ButtonTextBold;
     extern bool ButtonTextItalic;
@@ -56,6 +52,13 @@ namespace Settings
     extern bool ButtonTextShowTotal;
     extern bool ButtonTextShowKPS;
     extern bool ButtonTextShowBPM;
+    extern bool ButtonTextSepPosAdvancedMode;
+    extern sf::Vector2f ButtonVisualKeysTextPosition;
+    extern sf::Vector2f ButtonTotalTextPosition;
+    extern sf::Vector2f ButtonKPSTextPosition;
+    extern sf::Vector2f ButtonBPMTextPosition;
+    extern bool ButtonTextPosAdvancedMode;
+    extern std::array<sf::Vector2f, 15> ButtonsTextPositions;
 
     // [Button graphics]
     extern float GfxButtonDistance;
@@ -64,8 +67,6 @@ namespace Settings
     extern sf::Color GfxButtonTextureColor;
     extern bool GfxButtonBtnPositionsAdvancedMode;
     extern std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
-    extern bool GfxButtonTextPosAdvancedMode;
-    extern std::array<sf::Vector2f, 15> GfxButtonsTextPositions;
     extern bool GfxButtonSizesAdvancedMode;
     extern std::array<sf::Vector2f, 15> GfxButtonsSizes;
 
@@ -133,4 +134,5 @@ namespace Settings
     // Saved parameters
     extern float MaxKPS;
     extern unsigned Total;
+    extern std::array<unsigned, 15> KeysTotal;
 };
