@@ -10,6 +10,7 @@ float StatisticsTextDistance;
 sf::Vector2f StatisticsTextPosition;
 std::string StatisticsTextFontPath;
 sf::Color StatisticsTextColor;
+sf::Vector2f StatisticsTextValuePosition;
 unsigned StatisticsTextCharacterSize;
 bool StatisticsTextBold;
 bool StatisticsTextItalic;
@@ -20,6 +21,8 @@ bool ShowStatisticsBPM;
 
 bool StatisticsTextPositionsAdvancedMode;
 std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
+bool StatisticsTextValuePositionsAdvancedMode;
+std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextValuePositions;
 bool StatisticsTextColorsAdvancedMode;
 std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
 bool StatisticsTextChSzssAdvancedMode;

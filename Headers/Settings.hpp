@@ -15,6 +15,7 @@ namespace Settings
     // [Statistics text]
     extern float StatisticsTextDistance;
     extern sf::Vector2f StatisticsTextPosition;
+    extern sf::Vector2f StatisticsTextValuePosition;
     extern std::string StatisticsTextFontPath;
     extern sf::Color StatisticsTextColor;
     extern unsigned StatisticsTextCharacterSize;
@@ -27,6 +28,8 @@ namespace Settings
 
     extern bool StatisticsTextPositionsAdvancedMode;
     extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
+    extern bool StatisticsTextValuePositionsAdvancedMode;
+    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextValuePositions;
     extern bool StatisticsTextColorsAdvancedMode;
     extern std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
     extern bool StatisticsTextChSzssAdvancedMode;
