@@ -307,6 +307,8 @@ void Application::resetAssets()
         line->updateAsset();
 
     mBackground->updateAssets();
+    (*mButtonsPositioner)();
+    (*mStatisticsPositioner)();
 
     mMenu.saveConfig(mButtons);
 }
