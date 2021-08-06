@@ -96,10 +96,14 @@ std::queue<LogKey> getLogKeys()
 {
     static const std::string parName1 = "Keyboard keys";
     static const std::string parName2 = "Visual keys";
+    // This needs to support old versions, but it has to be removed later
+    static const std::string oldParName1 = "Keys";
     bool parameterFound = false, parameterEmpty = false, nothing;
     std::string keysStr = readParameter(parName1, parameterFound, parameterEmpty);
     std::string visualKeysStr = readParameter(parName2, nothing, nothing);
-
+    if (!parameterFound)
+        keysStr = readParameter(oldParName1, parameterFound, parameterEmpty);
+         
     if (!parameterFound || parameterEmpty || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return { };
 
@@ -366,7 +370,6 @@ void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParamet
             parameters.find(LogicalParameter::ID::KPSWndwNumFont)->second->resetToDefaultValue();
         }
 }
-
 
 std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visualKeysStr)
 {
