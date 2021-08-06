@@ -679,6 +679,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
     {
         case LogicalParameter::ID::StatTextDist: return ParameterLine::ID::StatTextDist;
         case LogicalParameter::ID::StatPos: return ParameterLine::ID::StatPos;
+        case LogicalParameter::ID::StatValPos: return ParameterLine::ID::StatValPos;
         case LogicalParameter::ID::StatTextFont: return ParameterLine::ID::StatTextFont;
         case LogicalParameter::ID::StatTextClr: return ParameterLine::ID::StatTextClr;
         case LogicalParameter::ID::StatTextChSz: return ParameterLine::ID::StatTextChSz;
@@ -692,6 +693,10 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextPos1: return ParameterLine::ID::StatTextPos1;
         case LogicalParameter::ID::StatTextPos2: return ParameterLine::ID::StatTextPos2;
         case LogicalParameter::ID::StatTextPos3: return ParameterLine::ID::StatTextPos3;
+        case LogicalParameter::ID::StatTextValPosAdvMode: return ParameterLine::ID::StatTextValPosAdvMode;
+        case LogicalParameter::ID::StatTextValPos1: return ParameterLine::ID::StatTextValPos1;
+        case LogicalParameter::ID::StatTextValPos2: return ParameterLine::ID::StatTextValPos2;
+        case LogicalParameter::ID::StatTextValPos3: return ParameterLine::ID::StatTextValPos3;
         case LogicalParameter::ID::StatTextClrAdvMode: return ParameterLine::ID::StatTextClrAdvMode;
         case LogicalParameter::ID::StatTextClr1: return ParameterLine::ID::StatTextClr1;
         case LogicalParameter::ID::StatTextClr2: return ParameterLine::ID::StatTextClr2;
@@ -836,8 +841,10 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::SaveStatTotal14: return ParameterLine::ID::SaveStatTotal14;
         case LogicalParameter::ID::SaveStatTotal15: return ParameterLine::ID::SaveStatTotal15;
 
-        // You forgot to add a parameter here, dumbass
-        default: assert(false); return ParameterLine::ID::StatTextColl;
+        bool ForgotToAddParameter;
+        default: 
+            assert(!(ForgotToAddParameter = true)); 
+            return ParameterLine::ID::StatTextColl;
     }
 }
 
