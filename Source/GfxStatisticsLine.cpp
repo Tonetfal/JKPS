@@ -218,5 +218,39 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextKPSText ||
         id == LogicalParameter::ID::StatTextKPS2Text ||
         id == LogicalParameter::ID::StatTextTotalText ||
-        id == LogicalParameter::ID::StatTextBPMText;
+        id == LogicalParameter::ID::StatTextBPMText ||
+        id == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
+        id == LogicalParameter::ID::BtnGfxSzAdvMode ||
+        id == LogicalParameter::ID::BtnGfxBtnPos1 ||
+        id == LogicalParameter::ID::BtnGfxSz1 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos2 ||
+        id == LogicalParameter::ID::BtnGfxSz2 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos3 ||
+        id == LogicalParameter::ID::BtnGfxSz3 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos4 ||
+        id == LogicalParameter::ID::BtnGfxSz4 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos5 ||
+        id == LogicalParameter::ID::BtnGfxSz5 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos6 ||
+        id == LogicalParameter::ID::BtnGfxSz6 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos7 ||
+        id == LogicalParameter::ID::BtnGfxSz7 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos8 ||
+        id == LogicalParameter::ID::BtnGfxSz8 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos9 ||
+        id == LogicalParameter::ID::BtnGfxSz9 ||
+        id == LogicalParameter::ID::BtnGfxBtnos10 ||
+        id == LogicalParameter::ID::BtnGfxSz10 ||
+        id == LogicalParameter::ID::BtnGfxBtnos11 ||
+        id == LogicalParameter::ID::BtnGfxSz11 ||
+        id == LogicalParameter::ID::BtnGfxBtnos12 ||
+        id == LogicalParameter::ID::BtnGfxSz12 ||
+        id == LogicalParameter::ID::BtnGfxBtnos13 ||
+        id == LogicalParameter::ID::BtnGfxSz13 ||
+        id == LogicalParameter::ID::BtnGfxBtnos14 ||
+        id == LogicalParameter::ID::BtnGfxSz14 ||
+        id == LogicalParameter::ID::BtnGfxBtnos15 ||
+        id == LogicalParameter::ID::BtnGfxSz15 ||
+        id == LogicalParameter::ID::BtnGfxTxtrSz ||
+        id == LogicalParameter::ID::BtnGfxDist;
 }
