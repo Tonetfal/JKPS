@@ -145,6 +145,7 @@ void Application::handleEvent()
                 if (btnAmtChanged)
                 {
                     (*mButtonsPositioner)();
+                    (*mStatisticsPositioner)();
                     resizeWindow();
                     mBackground->rescale();
                 }
