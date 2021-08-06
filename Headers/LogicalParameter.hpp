@@ -69,10 +69,6 @@ struct LogicalParameter
             BtnTextClr,
             BtnTextChSz,
             BtnTextPosition,
-            BtnTextVisPosition,
-            BtnTextTotPosition,
-            BtnTextKPSPosition,
-            BtnTextBPMPosition,
             BtnTextBounds,
             BtnTextBold,
             BtnTextItal,
@@ -81,6 +77,11 @@ struct LogicalParameter
             BtnTextShowKps,
             BtnTextShowBpm,
 
+            BtnTextSepPosAdvMode,
+            BtnTextVisPosition,
+            BtnTextTotPosition,
+            BtnTextKPSPosition,
+            BtnTextBPMPosition,
             BtnTextPosAdvMode,
             BtnTextPos1,
             BtnTextPos2,
@@ -166,6 +167,24 @@ struct LogicalParameter
             KPSWndwDistBtw,
 
             ThemeDevMultpl,
+
+            SaveStatMaxKPS,
+            SaveStatTotal,
+            SaveStatTotal1,
+            SaveStatTotal2,
+            SaveStatTotal3,
+            SaveStatTotal4,
+            SaveStatTotal5,
+            SaveStatTotal6,
+            SaveStatTotal7,
+            SaveStatTotal8,
+            SaveStatTotal9,
+            SaveStatTotal10,
+            SaveStatTotal11,
+            SaveStatTotal12,
+            SaveStatTotal13,
+            SaveStatTotal14,
+            SaveStatTotal15,
         };
 
         union Val
