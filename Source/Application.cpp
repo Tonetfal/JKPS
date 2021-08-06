@@ -41,6 +41,9 @@ Application::Application()
     std::unique_ptr<KPSWindow> kpsWindow(new KPSWindow(mFonts));
     mKPSWindow = std::move(kpsWindow);
 
+    std::unique_ptr<KeysPerSecondGraph> graph(new KeysPerSecondGraph);
+    mGraph = std::move(graph);
+
     mMenu.saveConfig(mButtons);
 }
 
@@ -92,6 +95,8 @@ void Application::processInput()
         mGfxButtonSelector->handleOwnInput();
     if (mKPSWindow->isOpen())
         mKPSWindow->handleOwnEvent();
+    if (mGraph->isOpen())
+        mGraph->handleOwnEvent();
 }
 
 void Application::handleEvent()
@@ -160,6 +165,15 @@ void Application::handleEvent()
                         mMenu.openWindow();
                 }
 
+                // Will be finished in next update :)
+                // if (key == Settings::KeyToOpenGraphWindow)
+                // {
+                //     if (mGraph->isOpen())
+                //         mGraph->closeWindow();
+                //     else
+                //         mGraph->openWindow();
+                // }
+
                 if (key == Settings::KeyToReset)
                 {
                     for (auto &button : mButtons)
@@ -197,6 +211,9 @@ void Application::update()
     if (mKPSWindow->isOpen())
         mKPSWindow->update();
 
+    if (mGraph->isOpen())
+        mGraph->update();
+
     Button::movePointer();
 }
 
@@ -217,6 +234,8 @@ void Application::render()
         mGfxButtonSelector->render();
     if (mKPSWindow->isOpen())
         mKPSWindow->render();
+    if (mGraph->isOpen())
+        mGraph->render();
     
     mWindow.display();
 }

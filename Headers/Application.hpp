@@ -2,14 +2,15 @@
 
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "Background.hpp"
-#include "KPSWindow.hpp"
+#include "Menu.hpp"
 #include "Button.hpp"
-#include "GfxStatisticsLine.hpp"
-#include "StatisticLinesPositioner.hpp"
 #include "ButtonPositioner.hpp"
 #include "GfxButtonSelector.hpp"
-#include "Menu.hpp"
+#include "GfxStatisticsLine.hpp"
+#include "StatisticLinesPositioner.hpp"
+#include "Background.hpp"
+#include "KPSWindow.hpp"
+#include "KeysPerSecondGraph.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -76,4 +77,5 @@ class Application
 
         std::unique_ptr<Background> mBackground;
         std::unique_ptr<KPSWindow> mKPSWindow;
+        std::unique_ptr<KeysPerSecondGraph> mGraph;
 };
