@@ -100,7 +100,6 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             str = mParameter->getValPt(btnIdx);
         }
 
-        std::cout << isStrType << "\n";
         if (!isStrType
         && ((key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
         || (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)))
@@ -718,10 +717,6 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BtnTextClr: return ParameterLine::ID::BtnTextClr;
         case LogicalParameter::ID::BtnTextChSz: return ParameterLine::ID::BtnTextChSz;
         case LogicalParameter::ID::BtnTextPosition: return ParameterLine::ID::BtnTextPosition;
-        case LogicalParameter::ID::BtnTextVisPosition: return ParameterLine::ID::BtnTextVisPosition;
-        case LogicalParameter::ID::BtnTextTotPosition: return ParameterLine::ID::BtnTextTotPosition;
-        case LogicalParameter::ID::BtnTextKPSPosition: return ParameterLine::ID::BtnTextKPSPosition;
-        case LogicalParameter::ID::BtnTextBPMPosition: return ParameterLine::ID::BtnTextBPMPosition;
         case LogicalParameter::ID::BtnTextBounds: return ParameterLine::ID::BtnTextBounds;
         case LogicalParameter::ID::BtnTextBold: return ParameterLine::ID::BtnTextBold;
         case LogicalParameter::ID::BtnTextItal: return ParameterLine::ID::BtnTextItal;
@@ -730,6 +725,11 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BtnTextShowKps: return ParameterLine::ID::BtnTextShowKps;
         case LogicalParameter::ID::BtnTextShowBpm: return ParameterLine::ID::BtnTextShowBpm;
 
+        case LogicalParameter::ID::BtnTextSepPosAdvMode: return ParameterLine::ID::BtnTextSepPosAdvMode;
+        case LogicalParameter::ID::BtnTextVisPosition: return ParameterLine::ID::BtnTextVisPosition;
+        case LogicalParameter::ID::BtnTextTotPosition: return ParameterLine::ID::BtnTextTotPosition;
+        case LogicalParameter::ID::BtnTextKPSPosition: return ParameterLine::ID::BtnTextKPSPosition;
+        case LogicalParameter::ID::BtnTextBPMPosition: return ParameterLine::ID::BtnTextBPMPosition;
         case LogicalParameter::ID::BtnTextPosAdvMode: return ParameterLine::ID::BtnTextPosAdvMode;
         case LogicalParameter::ID::BtnTextPos1:  return ParameterLine::ID::BtnTextPos1;
         case LogicalParameter::ID::BtnTextPos2:  return ParameterLine::ID::BtnTextPos2;
@@ -817,6 +817,24 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
 
         case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
+
+        case LogicalParameter::ID::SaveStatMaxKPS: return ParameterLine::ID::SaveStatMaxKPS;
+        case LogicalParameter::ID::SaveStatTotal: return ParameterLine::ID::SaveStatTotal;
+        case LogicalParameter::ID::SaveStatTotal1: return ParameterLine::ID::SaveStatTotal1;
+        case LogicalParameter::ID::SaveStatTotal2: return ParameterLine::ID::SaveStatTotal2;
+        case LogicalParameter::ID::SaveStatTotal3: return ParameterLine::ID::SaveStatTotal3;
+        case LogicalParameter::ID::SaveStatTotal4: return ParameterLine::ID::SaveStatTotal4;
+        case LogicalParameter::ID::SaveStatTotal5: return ParameterLine::ID::SaveStatTotal5;
+        case LogicalParameter::ID::SaveStatTotal6: return ParameterLine::ID::SaveStatTotal6;
+        case LogicalParameter::ID::SaveStatTotal7: return ParameterLine::ID::SaveStatTotal7;
+        case LogicalParameter::ID::SaveStatTotal8: return ParameterLine::ID::SaveStatTotal8;
+        case LogicalParameter::ID::SaveStatTotal9: return ParameterLine::ID::SaveStatTotal9;
+        case LogicalParameter::ID::SaveStatTotal10: return ParameterLine::ID::SaveStatTotal10;
+        case LogicalParameter::ID::SaveStatTotal11: return ParameterLine::ID::SaveStatTotal11;
+        case LogicalParameter::ID::SaveStatTotal12: return ParameterLine::ID::SaveStatTotal12;
+        case LogicalParameter::ID::SaveStatTotal13: return ParameterLine::ID::SaveStatTotal13;
+        case LogicalParameter::ID::SaveStatTotal14: return ParameterLine::ID::SaveStatTotal14;
+        case LogicalParameter::ID::SaveStatTotal15: return ParameterLine::ID::SaveStatTotal15;
 
         // You forgot to add a parameter here, dumbass
         default: assert(false); return ParameterLine::ID::StatTextColl;
