@@ -44,13 +44,24 @@ void Button::reset()
 
 void Button::setTextStrings()
 {
+    const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
+    const bool advMode = Settings::ButtonTextPosAdvancedMode;
+
+        // if (lAlt && idx == VisualKey && Settings::ButtonTextShowVisualKeys && !Settings::ButtonTextShowTotal);
+        // if (lAlt && idx == KeyCounter && !Settings::ButtonTextShowVisualKeys && Settings::ButtonTextShowTotal);
     if (Settings::ButtonTextShowVisualKeys) 
     {
-        mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
+        if (!lAlt || (advMode && Settings::ButtonTextShowTotal))
+            mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
+        else 
+            mTexts[VisualKey]->setString(std::to_string(LogButton::mTotal));
     }
     if (Settings::ButtonTextShowTotal)
     {
-        mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
+        if (!lAlt || (advMode && Settings::ButtonTextShowVisualKeys))
+            mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
+        else
+            mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
     }
     if (Settings::ButtonTextShowKPS)
     {
