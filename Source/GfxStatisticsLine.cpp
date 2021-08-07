@@ -253,5 +253,9 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::BtnGfxBtnos15 ||
         id == LogicalParameter::ID::BtnGfxSz15 ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
-        id == LogicalParameter::ID::BtnGfxDist;
+        id == LogicalParameter::ID::BtnGfxDist ||
+        id == LogicalParameter::ID::MainWndwTop ||
+        id == LogicalParameter::ID::MainWndwBot ||
+        id == LogicalParameter::ID::MainWndwLft ||
+        id == LogicalParameter::ID::MainWndwRght;
 }
