@@ -2,63 +2,80 @@
 
 #include "ResourceHolder.hpp"
 #include "ResourceIdentifiers.hpp"
-#include "Calculation.hpp"
-#include "KeyPressingManager.hpp"
-#include "Statistics.hpp"
+#include "Menu.hpp"
 #include "Button.hpp"
+#include "ButtonPositioner.hpp"
+#include "GfxButtonSelector.hpp"
+#include "GfxStatisticsLine.hpp"
+#include "StatisticLinesPositioner.hpp"
 #include "Background.hpp"
 #include "KPSWindow.hpp"
+#include "KeysPerSecondGraph.hpp"
 
 #include <SFML/System/Time.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 #include <memory>
 
-class Menu;
-
 
 class Application
 {
     public:
-                                    Application(Menu &menu);
-        void                        run();
+        Application();
+        void run();
+
+        static unsigned getWindowWidth();
+        static unsigned getWindowHeight();
+
+        static bool parameterIdMatches(LogicalParameter::ID id);
 
 
     private:
-        void					    processInput();
-        void                        handleEvent();
-		void					    update(sf::Time dt);
-		void					    render();
+        void processInput();
+        void handleEvent();
+		void update();
+		void render();
 
-        void                        unloadChangesQueue();
+        void unloadChangesQueue();
+        void resetAssets();
 
-        void                        loadAssets();
+        void loadTextures();
+        void loadFonts();
+        void loadIcon();
 
-        void                        openWindow();
-        void                        resizeWindow();
-        void                        moveWindow();
+        void buildStatistics();
+        void buildButtons();
 
-        unsigned int                getWindowWidth();
-        unsigned int                getWindowHeight();
+        // Function returns bool value and the index of button on which the click is performed
+        bool isPressPerformedOnButton(unsigned &btnIdx) const;
+        bool isMouseInRange(unsigned idx) const;
 
-        static bool                 parameterIdMatches(LogicalParameter::ID id);
+        void addButton(LogKey &logKey);
+        void removeButton();
+
+        void openWindow();
+        void resizeWindow();
+        void moveWindow();
 
 
     private:
-        static const sf::Time       TimePerFrame;
+        static const sf::Time TimePerFrame;
 
-        sf::RenderWindow            mWindow;
-        TextureHolder               mTextures;
-        FontHolder                  mFonts;
+        sf::RenderWindow mWindow;
+        
+        TextureHolder mTextures;
+        FontHolder mFonts;
 
-        Menu&                       mMenu;
-        Settings&                   mSettings;
-        Calculation                 mCalculation;
-        KeyPressingManager          mKeyPressingManager;
-        std::unique_ptr<Statistics> mStatistics;
-        std::unique_ptr<Button>     mButtons;
+        Menu mMenu;
+
+        std::array<std::unique_ptr<GfxStatisticsLine>, GfxStatisticsLine::StatisticsIdCounter> mStatistics;
+        std::unique_ptr<StatisticsPositioner> mStatisticsPositioner;
+
+        std::vector<std::unique_ptr<Button>> mButtons;
+        std::unique_ptr<ButtonPositioner> mButtonsPositioner;
+        std::unique_ptr<GfxButtonSelector> mGfxButtonSelector;
+
         std::unique_ptr<Background> mBackground;
-        std::unique_ptr<KPSWindow>  mKPSWindow;
-
-        sf::Vector2i                mLastMousePosition;
+        std::unique_ptr<KPSWindow> mKPSWindow;
+        std::unique_ptr<KeysPerSecondGraph> mGraph;
 };

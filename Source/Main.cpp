@@ -1,12 +1,10 @@
 #include "../Headers/Application.hpp"
-#include "../Headers/Menu.hpp"
 
 #include <stdexcept>
 
 int main()
 {
-    Menu menu;
-    Application app(menu);
+    Application app;
     
     try
     {

@@ -1,6 +1,8 @@
 #include "../Headers/KPSWindow.hpp"
 #include "../Headers/Settings.hpp"
 #include "../Headers/ResourceHolder.hpp"
+#include "../Headers/Button.hpp"
+#include "../Headers/StringHelper.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -8,38 +10,15 @@
 static unsigned maxLen = 4U;
 
 KPSWindow::KPSWindow(const FontHolder &fonts)
-: mTextFont(&fonts.get(Fonts::KPSText))
-, mNumberFont(&fonts.get(Fonts::KPSNumber))
+: mFonts(fonts)
 {
-    mKPSText.setFont(*mTextFont);
-    mKPSNumber.setFont(*mNumberFont);
+    updateAssets();
+    updateParameters();
 
     mKPSText.setString("KPS");
     mKPSNumber.setString("0");
     if (Settings::KPSWindowEnabledFromStart)
-    {
         openWindow();
-    }
-
-    setupText();
-    mDefaultWidthCenters = new float(maxLen);
-}
-
-void KPSWindow::handleEvent(sf::Event event)
-{
-    if (event.type == sf::Event::KeyPressed
-    &&  event.key.code == Settings::KeyToOpenKPSWindow
-    &&  sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
-    {
-        if (!mWindow.isOpen())
-        {
-            openWindow();
-        }
-        else
-        {
-            mWindow.close();
-        }
-    }
 }
 
 void KPSWindow::handleOwnEvent()
@@ -57,11 +36,18 @@ void KPSWindow::handleOwnEvent()
     }
 }
 
-void KPSWindow::update(std::size_t kps)
+void KPSWindow::update()
 {
     if (mWindow.isOpen())
     {
-        mKPSNumber.setString(std::to_string(kps));
+        std::string str;
+        const float kps = Button::getKeysPerSecond();
+        if (false)
+            str = eraseDigitsOverHundredths(std::to_string(kps));
+        else
+            str = std::to_string(static_cast<unsigned>(kps));
+        mKPSNumber.setString(str);
+
         mKPSNumber.setOrigin((mKPSNumber.getLocalBounds().left + 
             mKPSNumber.getLocalBounds().width) / 2.f, mKPSNumber.getLocalBounds().top);
     }
@@ -81,13 +67,15 @@ void KPSWindow::render()
             mKPSText.getLocalBounds().height + Settings::KPSWindowDistanceBetween + Settings::KPSWindowTopPadding);
 
         mWindow.clear(Settings::KPSBackgroundColor);
+
         mWindow.draw(mKPSText, textTransform);
         mWindow.draw(mKPSNumber, numberTranform);
+
         mWindow.display();
     }
 }
 
-void KPSWindow::setupText()
+void KPSWindow::updateParameters()
 {
     mKPSText.setOrigin(mKPSText.getLocalBounds().left, mKPSText.getLocalBounds().top);
     mKPSNumber.setOrigin((mKPSNumber.getLocalBounds().left + mKPSNumber.getLocalBounds().width) / 2.f, 
@@ -103,17 +91,10 @@ void KPSWindow::setupText()
     mWindow.setView(sf::View( { 0, 0, static_cast<float>(Settings::KPSWindowSize.x), static_cast<float>(Settings::KPSWindowSize.y) } ));
 }   
 
-bool KPSWindow::parameterIdMatches(LogicalParameter::ID id)
+void KPSWindow::updateAssets()
 {
-    return
-        id == LogicalParameter::ID::KPSWndwSz ||
-        id == LogicalParameter::ID::KPSWndwTxtChSz ||
-        id == LogicalParameter::ID::KPSWndwNumChSz ||
-        id == LogicalParameter::ID::KPSWndwBgClr ||
-        id == LogicalParameter::ID::KPSWndwTxtClr ||
-        id == LogicalParameter::ID::KPSWndwNumClr ||
-        id == LogicalParameter::ID::KPSWndwTopPadding ||
-        id == LogicalParameter::ID::KPSWndwDistBtw;
+    mKPSText.setFont(mFonts.get(Fonts::KPSText));
+    mKPSNumber.setFont(mFonts.get(Fonts::KPSNumber));
 }
 
 void KPSWindow::openWindow()
@@ -125,4 +106,27 @@ void KPSWindow::openWindow()
     mWindow.setPosition(sf::Vector2i(
         desktop.width / 1.5  - mWindow.getSize().x / 2, 
         desktop.height / 2 - mWindow.getSize().y / 2));
+}
+
+void KPSWindow::closeWindow()
+{
+    mWindow.close();
+}
+
+bool KPSWindow::isOpen() const
+{
+    return mWindow.isOpen();
+}
+
+bool KPSWindow::parameterIdMatches(LogicalParameter::ID id)
+{
+    return
+        id == LogicalParameter::ID::KPSWndwSz ||
+        id == LogicalParameter::ID::KPSWndwTxtChSz ||
+        id == LogicalParameter::ID::KPSWndwNumChSz ||
+        id == LogicalParameter::ID::KPSWndwBgClr ||
+        id == LogicalParameter::ID::KPSWndwTxtClr ||
+        id == LogicalParameter::ID::KPSWndwNumClr ||
+        id == LogicalParameter::ID::KPSWndwTopPadding ||
+        id == LogicalParameter::ID::KPSWndwDistBtw;
 }

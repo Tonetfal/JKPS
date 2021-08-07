@@ -1,167 +1,108 @@
 #include "../Headers/Button.hpp"
-#include "../Headers/Menu.hpp"
-#include "../Headers/StringHelper.hpp"
 #include "../Headers/ResourceHolder.hpp"
-
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-
-#include <cassert>
+#include "../Headers/Settings.hpp"
+#include "../Headers/StringHelper.hpp"
 
 
-Button::Button(const TextureHolder& textureHolder, const FontHolder& fontHolder)
-: mTextures(textureHolder)
+unsigned Button::mSize(0);
+
+Button::Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder &fontHolder)
+: LogButton(mSize, key)
+, GfxButton(mSize, textureHolder, fontHolder)
+, mTextures(textureHolder)
 , mFonts(fontHolder)
-{ 
-    assert(AnimationStyle(Settings::AnimationStyle) >= Light && AnimationStyle(Settings::AnimationStyle) <= Press); 
-
-    resizeVectors();
-    setupKeyCounterTextVec();
-    setupAssets(true);
+, mBtnIdx(mSize)
+{
+    LogButton::mTotal = Settings::KeysTotal[mBtnIdx];
+    ++mSize;
 }
 
-void Button::update(std::vector<bool>& needToBeReleased)
+void Button::update()
 {
-    updateAnimation(needToBeReleased);
-    updateButtonText();
+    GfxButton::update(LogButton::isButtonPressed());
+    setTextStrings();
+    controlBounds();
 }
 
-void Button::updateAnimation(const std::vector<bool>& needToBeReleased)
+void Button::processInput()
 {
-    for (size_t i = 0; i < Settings::ButtonAmount; ++i)
+    processRealtimeInput();
+}
+
+void Button::reset()
+{
+    LogButton::reset();
+    setTextStrings();
+    // text could be too large, but if everything was reset then original ch size must be set and controlled
+    for (auto &text : mTexts)
     {
-        // Velocity = frames to perform the animation
-        const sf::Color animation(0, 0, 0, 255 / Settings::AnimationVelocity);
-        
-        switch (AnimationStyle(Settings::AnimationStyle))
-        {
-            case Light:
-                if (needToBeReleased[i])
-                    lightUpKey(i);
-                else
-                {
-                    auto &elem = mAnimationSprite[i];
-                    fadeKeyLight(i);
-                    if (elem->getColor().a != 0)
-                        elem->setColor(elem->getColor() - animation);
-                }
-                break;
+        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        GfxButton::keepInBounds(*text);
+    }
+    GfxButton::centerOrigins();
+}
 
-            case Press:
-                needToBeReleased[i] ? lowerKey(i) : raiseKey(i);
-                break;
-        }
+void Button::setTextStrings()
+{
+    const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
+    const bool advMode = Settings::ButtonTextPosAdvancedMode;
+
+    if (Settings::ButtonTextShowVisualKeys) 
+    {
+        if (!lAlt == (!advMode || !Settings::ButtonTextShowTotal))
+            mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
+        else 
+            mTexts[VisualKey]->setString(std::to_string(LogButton::mTotal));
+    }
+    if (Settings::ButtonTextShowTotal)
+    {
+        if (!lAlt == (!advMode || !Settings::ButtonTextShowVisualKeys))
+            mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
+        else
+            mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
+    }
+    if (Settings::ButtonTextShowKPS)
+    {
+        // static_cast is required since KPS w/floating point is not still done
+        mTexts[KeyPerSecond]->setString(std::to_string(static_cast<unsigned>(mKeysPerSecond)));
+    }
+    if (Settings::ButtonTextShowBPM)
+    {
+        mTexts[BeatsPerMinute]->setString(std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute())));
     }
 }
 
-void Button::updateButtonText()
+void Button::controlBounds()
 {
-    unsigned idx = 0;
-    for (auto &text : mButtonsText)
+    for (auto &text : mTexts)
     {
-        std::string newStr = getButtonText(*text, idx);
-        if (text->getString() != newStr)
-        {
-            text->setString(newStr);
-            // Since text on the buttons is decreased when it is too large, and it is not reset automatically,
-            // there it is reset because visual key can be less wide then the key counter
-            setupKeyCounterText(*text, idx);
-        }
+        if (LogButton::mKey.resetChangedState())
+            text->setCharacterSize(Settings::ButtonTextCharacterSize);
 
-        while (isTextTooBig(*text) && text->getCharacterSize() > 0)
-        {
-            decreaseTextCharacterSize(*text);
-        }
-        setupTextPosition(*text, idx);
-        ++idx;
+        GfxButton::keepInBounds(*text);
     }
+    GfxButton::centerOrigins();
 }
 
-// Increase/Decrease key amount
-void Button::resize()
+LogKey *Button::getLogKey()
 {
-    resizeVectors();
-    if (sf::Keyboard::isKeyPressed(Settings::KeyToIncreaseKeys))
-        mKeyCounters.back() = 0;
-    
-    setupKeyCounterTextVec();
-    setFonts();
-
-    setupAssets(false);
+    return &(LogButton::mKey);
 }
 
-// User clicks a key
-void Button::handleInput(std::vector<bool>& needToBeReleased, KeyPressingManager& container)
+Button::~Button()
 {
-    assert(container.mClickedKeys.size() == mKeyCounters.size());
-
-    const unsigned sz = container.mClickedKeys.size();
-    auto keyCountersIt = mKeyCounters.begin();
-    auto clickedKeysIt = container.mClickedKeys.begin();
-
-    for (unsigned i = 0; i < sz; ++i)
-    {
-        *keyCountersIt += *clickedKeysIt * Settings::ValueToMultiplyOnClick;
-
-        ++keyCountersIt;
-        ++clickedKeysIt;
-    }
-
-    assert(keyCountersIt == mKeyCounters.end() && clickedKeysIt == container.mClickedKeys.end());
+    Settings::KeysTotal[mBtnIdx] = 0;
+    --mSize;
 }
 
-void Button::highlightKey(int buttonIndex)
+unsigned Button::getIdx() const
 {
-    for (auto& element : mButtonsText)
-        element->setFillColor(Settings::KeyCountersTextColor);
-
-    if (buttonIndex != -1)
-        mButtonsText[buttonIndex]->setFillColor(Settings::HighlightedKeyColor);
+    return mBtnIdx;
 }
 
-void Button::draw(sf::RenderTarget &target, sf::RenderStates states) const
+unsigned Button::size()
 {
-    for (auto& elem : mButtonsSprite)
-        target.draw(*elem, states);
-
-    for (auto& elem : mAnimationSprite)
-        target.draw(*elem, states);
-
-    for (auto& elem : mButtonsText)
-        target.draw(*elem, states);
-}
-
-void Button::setFonts()
-{
-    const sf::Font &font = mFonts.get(Fonts::KeyCounters);
-    for (auto& element : mButtonsText)
-        element->setFont(font);
-}
-
-void Button::setupAssets(bool newTexture)
-{
-    resizeVectors();
-    setFonts();
-
-    setTextures(mButtonsSprite, mTextures.get(Textures::KeyButton));
-    setColor(mButtonsSprite, Settings::ButtonTextureColor);
-    scaleTexture(mButtonsSprite, Settings::ButtonTextureSize);
-    centerOrigin(mButtonsSprite);
-    setButtonPositions(mButtonsSprite);
-
-    setTextures(mAnimationSprite, mTextures.get(Textures::ButtonAnimation));
-    setColor(mAnimationSprite, sf::Color::Transparent);
-    scaleTexture(mAnimationSprite, Settings::ButtonTextureSize);
-    centerOrigin(mAnimationSprite);
-    setButtonPositions(mAnimationSprite);
-}
-
-void Button::clear()
-{
-    for (auto &elem : mButtonsText)
-        elem->setCharacterSize(Settings::KeyCountersTextCharacterSize);
-    for (auto &elem : mKeyCounters)
-        elem = 0;
+    return mSize;
 }
 
 bool Button::parameterIdMatches(LogicalParameter::ID id)
@@ -169,354 +110,80 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
     return 
         id == LogicalParameter::ID::BtnTextClr ||
         id == LogicalParameter::ID::BtnTextChSz ||
-        id == LogicalParameter::ID::BtnTextWidth ||
-        id == LogicalParameter::ID::BtnTextHeight ||
-        id == LogicalParameter::ID::BtnTextHorzBounds ||
-        id == LogicalParameter::ID::BtnTextVertBounds ||
+        id == LogicalParameter::ID::BtnTextPosition ||
+        id == LogicalParameter::ID::BtnTextBounds ||
         id == LogicalParameter::ID::BtnTextBold ||
         id == LogicalParameter::ID::BtnTextItal ||
-        id == LogicalParameter::ID::BtnTextShowKeys ||
-        id == LogicalParameter::ID::BtnTextShowKeyCtrs ||
+        id == LogicalParameter::ID::BtnTextShowVisKeys ||
+        id == LogicalParameter::ID::BtnTextShowTot ||
+        id == LogicalParameter::ID::BtnTextShowKps ||
+        id == LogicalParameter::ID::BtnTextSepPosAdvMode ||
+        id == LogicalParameter::ID::BtnTextVisPosition ||
+        id == LogicalParameter::ID::BtnTextTotPosition ||
+        id == LogicalParameter::ID::BtnTextKPSPosition ||
+        id == LogicalParameter::ID::BtnTextBPMPosition ||
         id == LogicalParameter::ID::BtnGfxDist ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
         id == LogicalParameter::ID::BtnGfxTxtrClr ||
-        id == LogicalParameter::ID::AnimGfxStl ||
         id == LogicalParameter::ID::AnimGfxVel ||
         id == LogicalParameter::ID::AnimGfxScl ||
         id == LogicalParameter::ID::AnimGfxClr ||
         id == LogicalParameter::ID::AnimGfxOffset ||
-        id == LogicalParameter::ID::OtherHighText ||
         id == LogicalParameter::ID::MainWndwTop ||
         id == LogicalParameter::ID::MainWndwBot ||
         id == LogicalParameter::ID::MainWndwLft ||
-        id == LogicalParameter::ID::MainWndwRght;
-}
-
-void Button::setTextures(std::vector<std::unique_ptr<sf::Sprite>>& vector, sf::Texture& texture)
-{
-    for (auto& element : vector)
-        element->setTexture(texture, true);
-}
-
-void Button::setColor(std::vector<std::unique_ptr<sf::Sprite>>& vector, const sf::Color& color)
-{
-    for (auto& element : vector)
-        element->setColor(color);
-}
-
-void Button::scaleTexture(std::vector<std::unique_ptr<sf::Sprite>>& vector, const sf::Vector2u& textureSize)
-{
-    const sf::Vector2f defaultScale = getDefaultScale();
-    for (auto& element : vector)
-        element->setScale(defaultScale);
-}
-
-void Button::centerOrigin(std::vector<std::unique_ptr<sf::Sprite>>& vector)
-{
-    for (auto &elem : vector)
-        elem->setOrigin(sf::Vector2f(elem->getTexture()->getSize() / 2U));
-}
-
-void Button::setButtonPositions(std::vector<std::unique_ptr<sf::Sprite>>& vector)
-{
-    unsigned i = 0;
-    for (auto &elem : vector)
-    {
-        elem->setPosition(getButtonWidth(i), getButtonHeight(i));
-        ++i;
-    }
-}
-
-sf::Vector2f Button::getDefaultScale() const
-{
-    const sf::Vector2u textureSize = mTextures.get(Textures::KeyButton).getSize();
-    sf::Vector2f scale(
-        Settings::ButtonTextureSize.x / static_cast<float>(textureSize.x), 
-        Settings::ButtonTextureSize.y / static_cast<float>(textureSize.y));
-
-    Settings::ScaledAnimationScale = sf::Vector2f(
-        scale.x - scale.x * (1.f - Settings::AnimationScale.x / 100),
-        scale.y - scale.y * (1.f - Settings::AnimationScale.y / 100));
-
-    return scale;
-}
-
-sf::Vector2f Button::getScaleForText() const
-{
-    float x = (1.f - Settings::AnimationScale.x / 100) / 
-        Settings::AnimationVelocity;
-    float y = (1.f - Settings::AnimationScale.y / 100) / 
-        Settings::AnimationVelocity;
-
-    return { x, y };
-}
-
-sf::Vector2f Button::getScaleAmountPerFrame() const
-{
-    const sf::Vector2f defaultScale = getDefaultScale();
-    float x = (defaultScale.x - Settings::ScaledAnimationScale.x) / 
-        Settings::AnimationVelocity;
-    float y = (defaultScale.y - Settings::ScaledAnimationScale.y) / 
-        Settings::AnimationVelocity;
-
-    return { x, y };
-}
-
-float Button::getTextMaxWidth() const
-{
-    return Settings::ButtonTextureSize.x - Settings::KeyCountersVerticalBounds * 2.f;
-}
-
-float Button::getTextMaxHeight() const
-{
-    return Settings::ButtonTextureSize.y - Settings::KeyCountersHorizontalBounds * 2.f;
-}
-
-void Button::setupKeyCounterTextVec()
-{
-    unsigned idx = 0;
-    for (auto &text : mButtonsText)
-    {
-        setupKeyCounterText(*text, idx);
-        ++idx;
-    }
-}
-
-void Button::setupKeyCounterText(sf::Text &text, unsigned idx)
-{
-    text.setCharacterSize(Settings::KeyCountersTextCharacterSize);
-    text.setFillColor(Settings::KeyCountersTextColor);
-    sf::Text::Style style(static_cast<sf::Text::Style>(
-        (Settings::KeyCountersBold ? sf::Text::Bold : 0) | 
-        (Settings::KeyCountersItalic ? sf::Text::Italic : 0)));
-    text.setStyle(style);
-
-    setupTextPosition(text, idx);
-    ++idx;
-}
-
-void Button::setupTextPosition(sf::Text &text, unsigned idx)
-{
-    text.setOrigin(getCenterOriginText(text));
-    text.setPosition(getKeyCountersWidth(idx), getKeyCountersHeight(idx));
-}
-
-bool Button::isTextTooBig(const sf::Text &text) const
-{
-    return text.getLocalBounds().width > getTextMaxWidth() || text.getLocalBounds().height > getTextMaxHeight();
-}
-
-void Button::decreaseTextCharacterSize(sf::Text &text)
-{
-    text.setCharacterSize(text.getCharacterSize() - 1);
-}
-
-std::string Button::getButtonText(sf::Text &text, unsigned idx)
-{
-    const unsigned keyAmt = Settings::LogicalKeys.size();
-    const bool lAltPressed = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
-    const bool changeKey = Settings::getButtonToChangeIndex() != -1;
-    std::string str("");
-
-    if (( lAltPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
-    ||  ( lAltPressed && !changeKey && (Settings::ShowSetKeysText ||  Settings::ShowKeyCountersText)
-    &&    mKeyCounters[idx] == 0)
-    ||  (!lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
-    &&  mKeyCounters[idx] > 0))
-    {
-        str = std::to_string(mKeyCounters[idx]);
-    }
-    if (( lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
-    &&    mKeyCounters[idx] > 0)
-    ||  (!lAltPressed && !changeKey &&  Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText)
-    ||  (!lAltPressed && !changeKey && !Settings::ShowSetKeysText &&  Settings::ShowKeyCountersText
-    &&    mKeyCounters[idx] == 0) 
-    ||    changeKey)
-    {
-        str = getVisualStr(idx);
-    }
-    if (lAltPressed && !changeKey && !Settings::ShowSetKeysText && !Settings::ShowKeyCountersText)
-    {
-        str = getVisualStr(idx);
-        std::string spaces = "";
-        for (unsigned i = 0; i < str.size() / 2; ++i)
-            spaces += " ";
-        str += "\n" + spaces + std::to_string(mKeyCounters[idx]);
-    }
-
-    return str;
-}
-
-std::string Button::getVisualStr(unsigned index)
-{
-    const unsigned keyAmt = Settings::LogicalKeys.size();
-
-    if (index < keyAmt)
-        return Settings::LogicalKeys[index]->visualStr;
-    else
-        return Settings::LogicalButtons[index - keyAmt]->visualStr;
-}
-
-void Button::resizeVectors()
-{
-    assert(
-        mKeyCounters.size() == mButtonsYOffset.size() && 
-        mKeyCounters.size() == mButtonsText.size() && 
-        mKeyCounters.size() == mButtonsSprite.size() && 
-        mKeyCounters.size() == mAnimationSprite.size());
-    unsigned prevSize = mKeyCounters.size();
-
-    mKeyCounters.resize(Settings::ButtonAmount);
-    mButtonsYOffset.resize(Settings::ButtonAmount);
-    mButtonsText.resize(Settings::ButtonAmount);
-    mButtonsSprite.resize(Settings::ButtonAmount);
-    mAnimationSprite.resize(Settings::ButtonAmount);
-    mCurDefaultTextHeight.resize(Settings::ButtonAmount);
-    mKeyCounterDigits.resize(Settings::ButtonAmount);
-
-    if (prevSize < Settings::ButtonAmount)
-    {
-        for (unsigned i = prevSize; i < Settings::ButtonAmount; i++)
-        {
-            mButtonsYOffset[i] = mKeyCounters[i] = mCurDefaultTextHeight[i] = mKeyCounterDigits[i] = 0;
-            mButtonsText[i] = std::move(std::unique_ptr<sf::Text>(new sf::Text));
-            mButtonsSprite[i] = std::move(std::unique_ptr<sf::Sprite>(new sf::Sprite));
-            mAnimationSprite[i] = std::move(std::unique_ptr<sf::Sprite>(new sf::Sprite));
-        }
-    }
-}
-
-void Button::lightUpKey(unsigned idx)
-{
-    mAnimationSprite[idx]->setColor(Settings::AnimationColor);
-    mAnimationSprite[idx]->setScale(Settings::ScaledAnimationScale);
-    mButtonsSprite[idx]->setScale(Settings::ScaledAnimationScale);
-    mButtonsText[idx]->setScale(Settings::AnimationScale / 100.f);
-}
-
-void Button::fadeKeyLight(unsigned idx)
-{
-    sf::Sprite &btnSprite = *mButtonsSprite[idx];
-    sf::Sprite &animSprite = *mAnimationSprite[idx];
-    sf::Text &btnText = *mButtonsText[idx];
-    const sf::Vector2f defaultScale = getDefaultScale();
-    const sf::Vector2f btnSpriteScale = btnSprite.getScale();
-
-    if (defaultScale.x != btnSpriteScale.x 
-    ||  defaultScale.y != btnSpriteScale.y)
-    {
-        sf::Vector2f scale;
-        scale = btnSpriteScale + getScaleAmountPerFrame();
-
-        btnSprite.setScale(scale);
-        animSprite.setScale(scale);
-        btnText.setScale(btnText.getScale() + getScaleForText());
-        
-        // Check if went out of needed scaling
-        if (isBeyondDefaultScale(btnSprite))
-        {
-            btnSprite.setScale(defaultScale);
-            animSprite.setScale(defaultScale);
-            btnText.setScale(sf::Vector2f(1,1));
-        }
-        // Re-set position, otherwise the key will go to the left
-        setupTextPosition(btnText, idx);
-    }
-}
-
-void Button::raiseKey(unsigned idx)
-{
-    if (mButtonsYOffset[idx] == 0)
-        return;
-
-    float &btnYOffset = mButtonsYOffset[idx];
-    sf::Sprite &btnSprite = *mButtonsSprite[idx];
-    sf::Text &btnText = *mButtonsText[idx];
-
-    const float buttonHeight(getButtonHeight(idx));
-
-    sf::Vector2f spritePos = btnSprite.getPosition();
-    float step = Settings::AnimationOffset / Settings::AnimationVelocity;
-    
-    // Buttons text shouldn't be moved since its position is changed in another place
-
-    btnYOffset -= step;
-    btnSprite.move(0.f, -step);
-
-    // If textures went beyond required - reset
-    if ((spritePos.y < buttonHeight && Settings::AnimationOffset > 0)
-    ||  (spritePos.y > buttonHeight && Settings::AnimationOffset < 0))
-    {
-        btnYOffset = 0;
-        btnSprite.setPosition(spritePos.x, buttonHeight);
-        btnText.setPosition(btnText.getPosition().x, buttonHeight);
-    }
-}
-
-void Button::lowerKey(unsigned idx)
-{
-    float &btnYOffset = mButtonsYOffset[idx];
-    sf::Sprite &btnSprite = *mButtonsSprite[idx];
-    sf::Text &btnText = *mButtonsText[idx];
-
-    const float buttonLoweredHeight(getButtonHeight(idx)  + Settings::AnimationOffset);
-
-    if (btnSprite.getPosition().y != buttonLoweredHeight)
-    {
-        btnYOffset = Settings::AnimationOffset;
-        btnSprite.setPosition(btnSprite.getPosition().x, buttonLoweredHeight);
-        btnText.setPosition(btnText.getPosition().x, buttonLoweredHeight);
-    }
-}
-
-unsigned Button::getButtonWidth(unsigned idx) const
-{
-    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * idx 
-          + Settings::WindowBonusSizeLeft + Settings::ButtonTextureSize.x / 2;
-}
-
-unsigned Button::getButtonHeight(unsigned idx) const
-{
-    return Settings::WindowBonusSizeTop + Settings::ButtonTextureSize.y / 2;
-}
-
-unsigned int Button::getKeyCountersWidth(unsigned idx) const
-{
-    return (Settings::ButtonDistance + Settings::ButtonTextureSize.x) * idx + Settings::WindowBonusSizeLeft + Settings::ButtonTextureSize.x / 2.f;
-}
-
-unsigned int Button::getKeyCountersHeight(unsigned idx) const
-{
-    return Settings::WindowBonusSizeTop + mButtonsYOffset[idx] + Settings::ButtonTextureSize.y / 2.f;
-}
-
-sf::Vector2f Button::getCenterOriginText(const sf::Text &text) const
-{
-    const sf::FloatRect textLocalBounds = text.getLocalBounds();
-    return { textLocalBounds.left + textLocalBounds.width / 2.f , 
-             textLocalBounds.top +  textLocalBounds.height / 2.f  };
-}
-
-bool Button::isBeyondDefaultScale(const sf::Sprite &sprite) const
-{
-    const sf::Vector2f defaultScale = getDefaultScale();
-    const sf::Vector2f scaleAmountPerFrame = getScaleAmountPerFrame();
-    const sf::Vector2f spriteScale = sprite.getScale();
-
-    // if it has to extend on x axes (!(> 0)), then check if it isn't extended beyond. same thing with y axes
-    return 
-        (scaleAmountPerFrame.x > 0 ? 
-            defaultScale.x < spriteScale.x :
-            defaultScale.x > spriteScale.x)
-    ||  (scaleAmountPerFrame.y > 0 ? 
-            defaultScale.y < spriteScale.y :
-            defaultScale.y > spriteScale.y);
-}
-
-sf::Vector2f Button::getButtonPosition(unsigned idx) const
-{
-    assert(Settings::ButtonAmount >= idx);
-    sf::Vector2f position = mButtonsSprite[idx]->getPosition();
-
-    return position;
+        id == LogicalParameter::ID::MainWndwRght ||
+        id == LogicalParameter::ID::BtnGfxTxtrClr ||
+        id == LogicalParameter::ID::BtnTextPosAdvMode ||
+        id == LogicalParameter::ID::BtnTextPos1 ||
+        id == LogicalParameter::ID::BtnTextPos2 ||
+        id == LogicalParameter::ID::BtnTextPos3 ||
+        id == LogicalParameter::ID::BtnTextPos4 ||
+        id == LogicalParameter::ID::BtnTextPos5 ||
+        id == LogicalParameter::ID::BtnTextPos6 ||
+        id == LogicalParameter::ID::BtnTextPos7 ||
+        id == LogicalParameter::ID::BtnTextPos8 ||
+        id == LogicalParameter::ID::BtnTextPos9 ||
+        id == LogicalParameter::ID::BtnTextPos10 ||
+        id == LogicalParameter::ID::BtnTextPos11 ||
+        id == LogicalParameter::ID::BtnTextPos12 ||
+        id == LogicalParameter::ID::BtnTextPos13 ||
+        id == LogicalParameter::ID::BtnTextPos14 ||
+        id == LogicalParameter::ID::BtnTextPos15 ||
+        id == LogicalParameter::ID::BtnGfxDist ||
+        id == LogicalParameter::ID::BtnGfxTxtr ||
+        id == LogicalParameter::ID::BtnGfxTxtrSz ||
+        id == LogicalParameter::ID::BtnGfxTxtrClr ||
+        id == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
+        id == LogicalParameter::ID::BtnGfxSzAdvMode ||
+        id == LogicalParameter::ID::BtnGfxBtnPos1 ||
+        id == LogicalParameter::ID::BtnGfxSz1 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos2 ||
+        id == LogicalParameter::ID::BtnGfxSz2 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos3 ||
+        id == LogicalParameter::ID::BtnGfxSz3 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos4 ||
+        id == LogicalParameter::ID::BtnGfxSz4 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos5 ||
+        id == LogicalParameter::ID::BtnGfxSz5 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos6 ||
+        id == LogicalParameter::ID::BtnGfxSz6 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos7 ||
+        id == LogicalParameter::ID::BtnGfxSz7 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos8 ||
+        id == LogicalParameter::ID::BtnGfxSz8 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos9 ||
+        id == LogicalParameter::ID::BtnGfxSz9 ||
+        id == LogicalParameter::ID::BtnGfxBtnos10 ||
+        id == LogicalParameter::ID::BtnGfxSz10 ||
+        id == LogicalParameter::ID::BtnGfxBtnos11 ||
+        id == LogicalParameter::ID::BtnGfxSz11 ||
+        id == LogicalParameter::ID::BtnGfxBtnos12 ||
+        id == LogicalParameter::ID::BtnGfxSz12 ||
+        id == LogicalParameter::ID::BtnGfxBtnos13 ||
+        id == LogicalParameter::ID::BtnGfxSz13 ||
+        id == LogicalParameter::ID::BtnGfxBtnos14 ||
+        id == LogicalParameter::ID::BtnGfxSz14 ||
+        id == LogicalParameter::ID::BtnGfxBtnos15 ||
+        id == LogicalParameter::ID::BtnGfxSz15;
 }

@@ -19,9 +19,8 @@ class Background : public sf::Drawable, public sf::Transformable
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-        void resize();
-        void scale();
-        void setupTexture();
+        void rescale();
+        void updateAssets();
 
 
     private:

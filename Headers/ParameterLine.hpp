@@ -3,7 +3,7 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
 
-#include "GraphicalParameter.hpp"
+#include "GfxParameter.hpp"
 #include "LogicalParameter.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "ColorButton.hpp"
@@ -29,7 +29,8 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         {
             StatTextColl,
             StatTextDist,
-            SpaceBtwBtnAndStat,
+            StatPos,
+            StatValPos,
             StatTextFont,
             StatTextClr,
             StatTextChSz,
@@ -37,29 +38,79 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             StatTextItal,
             StatTextShow,
             StatTextShowKPS,
-            StatTextShowMaxKPS,
             StatTextShowTotal,
             StatTextShowBPM,
+            StatTextMty,
+
+            StatTextAdvColl,
+            StatTextPosAdvMode,
+            StatTextPos1,
+            StatTextPos2,
+            StatTextPos3,
+            StatTextValPosAdvMode,
+            StatTextValPos1,
+            StatTextValPos2,
+            StatTextValPos3,
+            StatTextClrAdvMode,
+            StatTextClr1,
+            StatTextClr2,
+            StatTextClr3,
+            StatTextChSzAdvMode,
+            StatTextChSz1,
+            StatTextChSz2,
+            StatTextChSz3,
+            StatTextBoldAdvMode,
+            StatTextBold1,
+            StatTextBold2,
+            StatTextBold3,
+            StatTextItalAdvMode,
+            StatTextItal1,
+            StatTextItal2,
+            StatTextItal3,
             StatTextKPSText,
             StatTextKPS2Text,
-            StatTextMaxKPSText,
             StatTextTotalText,
             StatTextBPMText,
-            StatTextMty,
+            StatTextAdvMty,
 
             BtnTextColl,
             BtnTextFont,
             BtnTextClr,
             BtnTextChSz,
-            BtnTextWidth,
-            BtnTextHeight,
-            BtnTextHorzBounds,
-            BtnTextVertBounds,
+            BtnTextPosition,
+            BtnTextBounds,
             BtnTextBold,
             BtnTextItal,
-            BtnTextShowKeys,
+            BtnTextShowVisKeys,
             BtnTextShowKeyCtrs,
+            BtnTextShowTot,
+            BtnTextShowKps,
+            BtnTextShowBpm,
             BtnTextMty,
+
+            BtnTextAdvColl,
+            BtnTextSepPosAdvMode,
+            BtnTextVisPosition,
+            BtnTextTotPosition,
+            BtnTextKPSPosition,
+            BtnTextBPMPosition,
+            BtnTextPosAdvMode,
+            BtnTextPos1,
+            BtnTextPos2,
+            BtnTextPos3,
+            BtnTextPos4,
+            BtnTextPos5,
+            BtnTextPos6,
+            BtnTextPos7,
+            BtnTextPos8,
+            BtnTextPos9,
+            BtnTextPos10,
+            BtnTextPos11,
+            BtnTextPos12,
+            BtnTextPos13,
+            BtnTextPos14,
+            BtnTextPos15,
+            BtnTextAdvMty,
 
             BtnGfxColl,
             BtnGfxDist,
@@ -68,8 +119,45 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnGfxTxtrClr,
             BtnGfxMty,
 
+            BtnGfxAdvColl,
+            BtnGfxBtnPosAdvMode,
+            BtnGfxTextPosAdvMode,
+            BtnGfxSzAdvMode,
+            BtnGfxBtnPos1,
+            BtnGfxSz1,
+            BtnGfxBtnPos2,
+            BtnGfxSz2,
+            BtnGfxBtnPos3,
+            BtnGfxSz3,
+            BtnGfxBtnPos4,
+            BtnGfxSz4,
+            BtnGfxBtnPos5,
+            BtnGfxSz5,
+            BtnGfxBtnPos6,
+            BtnGfxSz6,
+            BtnGfxBtnPos7,
+            BtnGfxSz7,
+            BtnGfxBtnPos8,
+            BtnGfxSz8,
+            BtnGfxBtnPos9,
+            BtnGfxSz9,
+            BtnGfxBtnos10,
+            BtnGfxSz10,
+            BtnGfxBtnos11,
+            BtnGfxSz11,
+            BtnGfxBtnos12,
+            BtnGfxSz12,
+            BtnGfxBtnos13,
+            BtnGfxSz13,
+            BtnGfxBtnos14,
+            BtnGfxSz14,
+            BtnGfxBtnos15,
+            BtnGfxSz15,
+            BtnGfxAdvMty,
+
             AnimGfxColl,
-            AnimGfxStl,
+            AnimGfxLight,
+            AnimGfxPress,
             AnimGfxTxtr,
             AnimGfxVel,
             AnimGfxScl,
@@ -77,13 +165,10 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             AnimGfxOffset,
             AnimGfxMty,
 
-            BgColl,
+            MainWndwColl,
             BgTxtr,
             BgClr,
             BgScale,
-            BgMty,
-
-            MainWndwColl,
             MainWndwTitleBar,
             MainWndwTop,
             MainWndwBot,
@@ -105,14 +190,31 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KPSWndwDistBtw,
             KPSWndwMty,
 
-            OtherColl,
-            OtherHighText,
-            OtherMty,
-
             ThemeDevColl,
             ThemeDevMultpl,
             ThemeDevMty,
 
+            SaveStatColl,
+            SaveStatMaxKPS,
+            SaveStatTotal,
+            SaveStatTotal1,
+            SaveStatTotal2,
+            SaveStatTotal3,
+            SaveStatTotal4,
+            SaveStatTotal5,
+            SaveStatTotal6,
+            SaveStatTotal7,
+            SaveStatTotal8,
+            SaveStatTotal9,
+            SaveStatTotal10,
+            SaveStatTotal11,
+            SaveStatTotal12,
+            SaveStatTotal13,
+            SaveStatTotal14,
+            SaveStatTotal15,
+            SaveStatMty,
+
+            InfoColl,
             Info1,
             Info2,
             Info3,
@@ -150,15 +252,17 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         void processInput();
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-        const std::shared_ptr<LogicalParameter> getParameter() const;
-
         bool resetState();
+
+        const std::shared_ptr<LogicalParameter> getParameter() const;
+        LogicalParameter::Type getType() const;
+
         static void setColor(sf::Color color);
         static ParameterLine::ID parIdToParLineId(LogicalParameter::ID id);
+        static bool isEmpty(ParameterLine::ID id);
         static void deselectValue();
         static bool isValueSelected();
-
-        LogicalParameter::Type getType() const;
+        static bool resetRefreshState();
 
 
     private:
@@ -172,7 +276,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
         void buildLimits(const FontHolder &fonts);
 
-        void select(std::shared_ptr<GraphicalParameter> ptr);
+        void select(std::shared_ptr<GfxParameter> ptr);
         void deselect();
         bool isSelectedValHere() const;
         bool isItSelectedLine(const std::shared_ptr<ParameterLine> val) const;
@@ -194,16 +298,18 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         sf::Text mParameterName;
         sf::Text mLimits;
         std::shared_ptr<LogicalParameter> mParameter;
-        std::vector<std::shared_ptr<GraphicalParameter>> mParameterValues;
+        std::vector<std::shared_ptr<GfxParameter>> mParameterValues;
         std::unique_ptr<ColorButton> mColorButtonP;
 
         static sf::RectangleShape mCursor;
+        static std::shared_ptr<LogicalParameter> mSelectedParameter;
         static std::shared_ptr<ParameterLine> mSelectedLine;
-        static std::shared_ptr<GraphicalParameter> mSelectedValue;
+        static std::shared_ptr<GfxParameter> mSelectedValue;
         static int mSelectedValueIndex;
         bool paramValWasChanged;
         std::thread mWarningTh;
         bool mIsThRunning;
 
         static Palette mPalette;
+        static bool mRefresh;
 };

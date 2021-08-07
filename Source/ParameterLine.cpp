@@ -2,8 +2,11 @@
 #include "../Headers/ResourceHolder.hpp"
 #include "../Headers/ResourceIdentifiers.hpp"
 #include "../Headers/StringHelper.hpp"
-#include "../Headers/KeySelector.hpp"
+#include "../Headers/GfxButtonSelector.hpp"
 #include "../Headers/Settings.hpp"
+#include "../Headers/Menu.hpp"
+#include "../Headers/GfxButton.hpp"
+#include "../Headers/ConfigHelper.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -16,10 +19,12 @@
 
 
 sf::RectangleShape ParameterLine::mCursor(sf::Vector2f(1, 21));
+std::shared_ptr<LogicalParameter> ParameterLine::mSelectedParameter(nullptr);
 std::shared_ptr<ParameterLine> ParameterLine::mSelectedLine(nullptr);
-std::shared_ptr<GraphicalParameter> ParameterLine::mSelectedValue(nullptr);
+std::shared_ptr<GfxParameter> ParameterLine::mSelectedValue(nullptr);
 int ParameterLine::mSelectedValueIndex(-1);
 Palette ParameterLine::mPalette(0);
+bool ParameterLine::mRefresh(false);
 
 ParameterLine::ParameterLine(
     std::shared_ptr<LogicalParameter> parameter,
@@ -108,10 +113,10 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             if (mSelectedValueIndex == 0 && (str[0] == '-' || n == 0))
                 return;
 
-            if (str.size() == 1 && str[0] == '0' || 
-               (str.size() == 2 && str[1] == '0' && str[0] == '-'))
+            if (str.size() == 1 && str[0] == '0'
+            ||  str.size() == 2 && str[1] == '0' && str[0] == '-')
             {
-                str[str.size() - 1] = n + '0';
+                str.back() = n + '0';
                 --mSelectedValueIndex;
             }
             else
@@ -158,15 +163,14 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             if (mType == LogicalParameter::Type::Unsigned || mType == LogicalParameter::Type::Color)
                 return;
 
-            if (str[0] != '-')
-            {
-                addChOnIdx(str, 0, '-');
-                ++mSelectedValueIndex;
-            }
-            else if (str[0] == '-')
+            if (str[0] == '-')
             {
                 rmChOnIdx(str, 0);
                 --mSelectedValueIndex;
+            } else if (str != "0")
+            {
+                addChOnIdx(str, 0, '-');
+                ++mSelectedValueIndex;
             }
         }
 
@@ -179,14 +183,16 @@ void ParameterLine::handleValueModEvent(sf::Event event)
                 {
                     str.resize(str.size() - 1);
                     str.append(mParameter->mLowLimits <= 0 ? "0" : std::to_string(static_cast<int>(mParameter->mLowLimits)));
+                    if (str.size() == 2 && str[0] == '-' && str[1] == '0')
+                        str = "0";
                     mSelectedValueIndex = str.size() + 1;
                 }
                 else
                 {
                     rmChOnIdx(str, mSelectedValueIndex - 1);
-                    // ex.: -500, remove 5, result "-0"
+                    // ex.: -500, remove 5, result "0"
                     if (!isStrType && std::stoi(str) == 0)
-                        str = std::string(str[0] == '-' ? "-" : "") + "0";
+                        str = "0";
                 }
 
                 --mSelectedValueIndex;
@@ -205,9 +211,9 @@ void ParameterLine::handleValueModEvent(sf::Event event)
                 else
                 {
                     rmChOnIdx(str, mSelectedValueIndex);
-                    // ex.: -500, remove 5, result "-0"
+                    // ex.: -500, remove 5, result "0"
                     if (!isStrType && std::stoi(str) == 0)
-                        str = std::string(str[0] == '-' ? "-" : "") + "0";
+                        str = "0";
                 }
             }
         }
@@ -234,7 +240,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex = str.size();
         }
 
-        if (isStrType && KeySelector::isCharacter(key))
+        if (isStrType && GfxButtonSelector::isCharacter(key))
         {
             unsigned maxLength = 50;
             if (str.size() < maxLength)
@@ -264,18 +270,18 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
     if (event.type == sf::Event::MouseButtonPressed 
     ||  event.type == sf::Event::KeyPressed)
     {
-        float viewOffsetY = mWindow.getView().getCenter().y - mWindow.getSize().y / 2;
-        sf::Vector2f mousePos(static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)));
-        mousePos.y += viewOffsetY;
-        sf::Mouse::Button button = event.mouseButton.button;
-        sf::Keyboard::Key key = event.key.code;
+        const sf::Vector2f halfWindowSize(static_cast<sf::Vector2f>(mWindow.getSize()) / 2.f);
+        const sf::Vector2f viewCenter(mWindow.getView().getCenter());
+        const sf::Vector2f viewOffset(viewCenter - halfWindowSize);
+        const sf::Vector2f relMousePos(sf::Mouse::getPosition(mWindow));
+        const sf::Vector2f absMousePos(relMousePos + viewOffset);
+        const sf::Mouse::Button button = event.mouseButton.button;
+        const sf::Keyboard::Key key = event.key.code;
 
         // Check click on buttons
         for (const auto &elem : mParameterValues)
         {
-            sf::FloatRect buttonBounds = elem->getTransform().transformRect(elem->getGlobalBounds());
-            buttonBounds.top += getPosition().y;
-            bool contains = buttonBounds.contains(mousePos);
+            const bool contains = elem->contains(absMousePos);
 
             if (event.type == sf::Event::MouseButtonPressed 
             && (button == sf::Mouse::Left && contains))
@@ -291,7 +297,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 // Refresh button has 0x0 rectangle shape 
                 if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
-                    Settings::requestToReloadAssets();
+                    mRefresh = true;
                     deselect();
                     // return in order to don't select refresh button
                     return; 
@@ -306,7 +312,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                 // Refresh button has 0x0 rectangle shape 
                 if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
                 {
-                    Settings::requestToReloadAssets();
+                    mRefresh = true;
                     deselect();
                     // return in order to don't select refresh button
                     return; 
@@ -331,7 +337,7 @@ void ParameterLine::handleButtonsInteractionEvent(sf::Event event)
 
         if (event.type == sf::Event::MouseButtonPressed && button == sf::Mouse::Left 
         &&  mType == LogicalParameter::Type::Color)
-            selectRgbCircle(button, mousePos);
+            selectRgbCircle(button, absMousePos);
     }
 }
 
@@ -344,7 +350,7 @@ bool ParameterLine::tabulation(sf::Keyboard::Key key)
             if (*it == mSelectedValue)
             {
                 deselect();
-                std::shared_ptr<GraphicalParameter> tabOn = nullptr;
+                std::shared_ptr<GfxParameter> tabOn = nullptr;
 
                 if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
                     // tab forward
@@ -363,11 +369,13 @@ bool ParameterLine::tabulation(sf::Keyboard::Key key)
 
 void ParameterLine::selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos)
 {
-    sf::FloatRect rgbCircleBounds = mColorButtonP->getTransform().transformRect(
-        mColorButtonP->rgbCircleSprite.getGlobalBounds());
-    rgbCircleBounds.top += getPosition().y;
+    const sf::Vector2f circleOrigin(mColorButtonP->getOrigin());
+    const sf::Vector2f circlePosition(mColorButtonP->getPosition());
+    sf::FloatRect circleRect(mColorButtonP->rgbCircleSprite.getGlobalBounds());
+    circleRect.left = getPosition().x + circlePosition.x - circleOrigin.x;
+    circleRect.top = getPosition().y + circlePosition.y - circleOrigin.y;
 
-    if (rgbCircleBounds.contains(mousePos))
+    if (circleRect.contains(mousePos))
     {
         // If there is already selected line, but it isn't this one
         if (mSelectedLine && !isItSelectedLine(shared_from_this()))
@@ -410,29 +418,29 @@ void ParameterLine::draw(sf::RenderTarget &target, sf::RenderStates states) cons
 
 void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures)
 {
-    GraphicalParameter::mTextures = &textures;
-    GraphicalParameter::mFonts = &fonts;
+    GfxParameter::mTextures = &textures;
+    GfxParameter::mFonts = &fonts;
 
-    std::shared_ptr<GraphicalParameter> val = nullptr; 
+    std::shared_ptr<GfxParameter> val = nullptr; 
     if (mType == LogicalParameter::Type::Bool)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0));
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0) == "True");
         val->setPosition(sf::Vector2f(mRectLine.getSize().x - 
-            GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
+            GfxParameter::getPosX(), mRectLine.getSize().y / 2));
         mParameterValues.emplace_back(std::move(val));
         return;
     }
 
     if (mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
         val->setPosition(605, mRectLine.getSize().y / 2);
 
         mParameterValues.emplace_back(std::move(val));
 
         if (mType == LogicalParameter::Type::StringPath)
         {
-            val = std::make_shared<GraphicalParameter>(0);
+            val = std::make_shared<GfxParameter>(this);
             val->setPosition(760, mRectLine.getSize().y / 2);
 
             mParameterValues.emplace_back(std::move(val));
@@ -442,16 +450,17 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
 
     for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
     {
-        val = std::make_shared<GraphicalParameter>(readValue(valueStr, i), i);
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, i), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
-            GraphicalParameter::getPosX(), mRectLine.getSize().y / 2));
+            GfxParameter::getPosX(), mRectLine.getSize().y / 2));
         
         if (mType == LogicalParameter::Type::Color && i == 0)
         {
             float dist = 65.f;
             mColorButtonP = std::make_unique<ColorButton>(textures.get(Textures::rgbCircle));
             mColorButtonP->setPosition(val->getPosition().x - dist, mRectLine.getSize().y / 2);
+            mColorButtonP->setOrigin(static_cast<sf::Vector2f>(mColorButtonP->rgbCircleSprite.getTexture()->getSize()) / 2.f);
         }
 
         mParameterValues.emplace_back(std::move(val));
@@ -473,13 +482,17 @@ void ParameterLine::buildLimits(const FontHolder &fonts)
 }
 
 
-void ParameterLine::select(std::shared_ptr<GraphicalParameter> ptr)
+void ParameterLine::select(std::shared_ptr<GfxParameter> ptr)
 {
     mSelectedValue = ptr;
+    mSelectedParameter = mParameter;
     mSelectedLine = shared_from_this();
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultSelectedRectColor);
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultSelectedRectColor);
     mSelectedValueIndex = mSelectedValue->mValText.getString().getSize();
     setCursorPos();
+
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(true);
 }
 
 void ParameterLine::deselect()
@@ -487,9 +500,12 @@ void ParameterLine::deselect()
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
-    mSelectedValue = nullptr;
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(false);
+    mSelectedParameter = nullptr;
     mSelectedLine = nullptr;
+    mSelectedValue = nullptr;
     mSelectedValueIndex = -1;
 }
 
@@ -573,7 +589,7 @@ void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine
     *isRunning = true;
     
     std::mutex mtx;
-    std::shared_ptr<GraphicalParameter> gfxPar = mSelectedValue;
+    std::shared_ptr<GfxParameter> gfxPar = mSelectedValue;
     sf::Color red(sf::Color(170,0,0));
     sf::Clock clock;
     sf::Time elapsedTime = sf::Time::Zero, totalTime = sf::Time::Zero;
@@ -598,14 +614,14 @@ void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine
             // gfxPar->mValText.setFillColor(gfxPar->mValText.getFillColor() == sf::Color::White ? 
             //     sf::Color::Red : sf::Color::White);
             gfxPar->mRect.setFillColor(gfxPar->mRect.getFillColor() != red ? red :
-                gfxPar == mSelectedValue ? GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
+                gfxPar == mSelectedValue ? GfxParameter::defaultSelectedRectColor : GfxParameter::defaultRectColor);
 
             mtx.unlock();
         }
     }
     mtx.lock();
     gfxPar->mRect.setFillColor(gfxPar == mSelectedValue ? 
-        GraphicalParameter::defaultSelectedRectColor : GraphicalParameter::defaultRectColor);
+        GfxParameter::defaultSelectedRectColor : GfxParameter::defaultRectColor);
     mtx.unlock();
 
     *isRunning = false;
@@ -662,7 +678,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
     switch(id)
     {
         case LogicalParameter::ID::StatTextDist: return ParameterLine::ID::StatTextDist;
-        case LogicalParameter::ID::SpaceBtwBtnAndStat: return ParameterLine::ID::SpaceBtwBtnAndStat;
+        case LogicalParameter::ID::StatPos: return ParameterLine::ID::StatPos;
+        case LogicalParameter::ID::StatValPos: return ParameterLine::ID::StatValPos;
         case LogicalParameter::ID::StatTextFont: return ParameterLine::ID::StatTextFont;
         case LogicalParameter::ID::StatTextClr: return ParameterLine::ID::StatTextClr;
         case LogicalParameter::ID::StatTextChSz: return ParameterLine::ID::StatTextChSz;
@@ -670,38 +687,128 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextItal: return ParameterLine::ID::StatTextItal;
         case LogicalParameter::ID::StatTextShow: return ParameterLine::ID::StatTextShow;
         case LogicalParameter::ID::StatTextShowKPS: return ParameterLine::ID::StatTextShowKPS;
-        case LogicalParameter::ID::StatTextShowMaxKPS: return ParameterLine::ID::StatTextShowMaxKPS;
         case LogicalParameter::ID::StatTextShowTotal: return ParameterLine::ID::StatTextShowTotal;
         case LogicalParameter::ID::StatTextShowBPM: return ParameterLine::ID::StatTextShowBPM;
+        case LogicalParameter::ID::StatTextPosAdvMode: return ParameterLine::ID::StatTextPosAdvMode;
+        case LogicalParameter::ID::StatTextPos1: return ParameterLine::ID::StatTextPos1;
+        case LogicalParameter::ID::StatTextPos2: return ParameterLine::ID::StatTextPos2;
+        case LogicalParameter::ID::StatTextPos3: return ParameterLine::ID::StatTextPos3;
+        case LogicalParameter::ID::StatTextValPosAdvMode: return ParameterLine::ID::StatTextValPosAdvMode;
+        case LogicalParameter::ID::StatTextValPos1: return ParameterLine::ID::StatTextValPos1;
+        case LogicalParameter::ID::StatTextValPos2: return ParameterLine::ID::StatTextValPos2;
+        case LogicalParameter::ID::StatTextValPos3: return ParameterLine::ID::StatTextValPos3;
+        case LogicalParameter::ID::StatTextClrAdvMode: return ParameterLine::ID::StatTextClrAdvMode;
+        case LogicalParameter::ID::StatTextClr1: return ParameterLine::ID::StatTextClr1;
+        case LogicalParameter::ID::StatTextClr2: return ParameterLine::ID::StatTextClr2;
+        case LogicalParameter::ID::StatTextClr3: return ParameterLine::ID::StatTextClr3;
+        case LogicalParameter::ID::StatTextChSzAdvMode: return ParameterLine::ID::StatTextChSzAdvMode;
+        case LogicalParameter::ID::StatTextChSz1: return ParameterLine::ID::StatTextChSz1;
+        case LogicalParameter::ID::StatTextChSz2: return ParameterLine::ID::StatTextChSz2;
+        case LogicalParameter::ID::StatTextChSz3: return ParameterLine::ID::StatTextChSz3;
+        case LogicalParameter::ID::StatTextBoldAdvMode: return ParameterLine::ID::StatTextBoldAdvMode;
+        case LogicalParameter::ID::StatTextBold1: return ParameterLine::ID::StatTextBold1;
+        case LogicalParameter::ID::StatTextBold2: return ParameterLine::ID::StatTextBold2;
+        case LogicalParameter::ID::StatTextBold3: return ParameterLine::ID::StatTextBold3;
+        case LogicalParameter::ID::StatTextItalAdvMode: return ParameterLine::ID::StatTextItalAdvMode;
+        case LogicalParameter::ID::StatTextItal1: return ParameterLine::ID::StatTextItal1;
+        case LogicalParameter::ID::StatTextItal2: return ParameterLine::ID::StatTextItal2;
+        case LogicalParameter::ID::StatTextItal3: return ParameterLine::ID::StatTextItal3;
+        case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
+        case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
+        case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
+        case LogicalParameter::ID::StatTextBPMText: return ParameterLine::ID::StatTextBPMText;
+
         case LogicalParameter::ID::BtnTextFont: return ParameterLine::ID::BtnTextFont;
         case LogicalParameter::ID::BtnTextClr: return ParameterLine::ID::BtnTextClr;
         case LogicalParameter::ID::BtnTextChSz: return ParameterLine::ID::BtnTextChSz;
-        case LogicalParameter::ID::BtnTextWidth: return ParameterLine::ID::BtnTextWidth;
-        case LogicalParameter::ID::BtnTextHeight: return ParameterLine::ID::BtnTextHeight;
-        case LogicalParameter::ID::BtnTextHorzBounds: return ParameterLine::ID::BtnTextHorzBounds;
-        case LogicalParameter::ID::BtnTextVertBounds: return ParameterLine::ID::BtnTextVertBounds;
+        case LogicalParameter::ID::BtnTextPosition: return ParameterLine::ID::BtnTextPosition;
+        case LogicalParameter::ID::BtnTextBounds: return ParameterLine::ID::BtnTextBounds;
         case LogicalParameter::ID::BtnTextBold: return ParameterLine::ID::BtnTextBold;
         case LogicalParameter::ID::BtnTextItal: return ParameterLine::ID::BtnTextItal;
-        case LogicalParameter::ID::BtnTextShowKeys: return ParameterLine::ID::BtnTextShowKeys;
-        case LogicalParameter::ID::BtnTextShowKeyCtrs: return ParameterLine::ID::BtnTextShowKeyCtrs;
+        case LogicalParameter::ID::BtnTextShowVisKeys: return ParameterLine::ID::BtnTextShowVisKeys;
+        case LogicalParameter::ID::BtnTextShowTot: return ParameterLine::ID::BtnTextShowTot;
+        case LogicalParameter::ID::BtnTextShowKps: return ParameterLine::ID::BtnTextShowKps;
+        case LogicalParameter::ID::BtnTextShowBpm: return ParameterLine::ID::BtnTextShowBpm;
+
+        case LogicalParameter::ID::BtnTextSepPosAdvMode: return ParameterLine::ID::BtnTextSepPosAdvMode;
+        case LogicalParameter::ID::BtnTextVisPosition: return ParameterLine::ID::BtnTextVisPosition;
+        case LogicalParameter::ID::BtnTextTotPosition: return ParameterLine::ID::BtnTextTotPosition;
+        case LogicalParameter::ID::BtnTextKPSPosition: return ParameterLine::ID::BtnTextKPSPosition;
+        case LogicalParameter::ID::BtnTextBPMPosition: return ParameterLine::ID::BtnTextBPMPosition;
+        case LogicalParameter::ID::BtnTextPosAdvMode: return ParameterLine::ID::BtnTextPosAdvMode;
+        case LogicalParameter::ID::BtnTextPos1:  return ParameterLine::ID::BtnTextPos1;
+        case LogicalParameter::ID::BtnTextPos2:  return ParameterLine::ID::BtnTextPos2;
+        case LogicalParameter::ID::BtnTextPos3:  return ParameterLine::ID::BtnTextPos3;
+        case LogicalParameter::ID::BtnTextPos4:  return ParameterLine::ID::BtnTextPos4;
+        case LogicalParameter::ID::BtnTextPos5:  return ParameterLine::ID::BtnTextPos5;
+        case LogicalParameter::ID::BtnTextPos6:  return ParameterLine::ID::BtnTextPos6;
+        case LogicalParameter::ID::BtnTextPos7:  return ParameterLine::ID::BtnTextPos7;
+        case LogicalParameter::ID::BtnTextPos8:  return ParameterLine::ID::BtnTextPos8;
+        case LogicalParameter::ID::BtnTextPos9:  return ParameterLine::ID::BtnTextPos9;
+        case LogicalParameter::ID::BtnTextPos10: return ParameterLine::ID::BtnTextPos10;
+        case LogicalParameter::ID::BtnTextPos11: return ParameterLine::ID::BtnTextPos11;
+        case LogicalParameter::ID::BtnTextPos12: return ParameterLine::ID::BtnTextPos12;
+        case LogicalParameter::ID::BtnTextPos13: return ParameterLine::ID::BtnTextPos13;
+        case LogicalParameter::ID::BtnTextPos14: return ParameterLine::ID::BtnTextPos14;
+        case LogicalParameter::ID::BtnTextPos15: return ParameterLine::ID::BtnTextPos15;
+
+
         case LogicalParameter::ID::BtnGfxDist: return ParameterLine::ID::BtnGfxDist;
         case LogicalParameter::ID::BtnGfxTxtr: return ParameterLine::ID::BtnGfxTxtr;
         case LogicalParameter::ID::BtnGfxTxtrSz: return ParameterLine::ID::BtnGfxTxtrSz;
         case LogicalParameter::ID::BtnGfxTxtrClr: return ParameterLine::ID::BtnGfxTxtrClr;
-        case LogicalParameter::ID::AnimGfxStl: return ParameterLine::ID::AnimGfxStl;
+        case LogicalParameter::ID::BtnGfxBtnPosAdvMode: return ParameterLine::ID::BtnGfxBtnPosAdvMode;
+        case LogicalParameter::ID::BtnGfxSzAdvMode: return ParameterLine::ID::BtnGfxSzAdvMode;
+        case LogicalParameter::ID::BtnGfxBtnPos1: return ParameterLine::ID::BtnGfxBtnPos1;
+        case LogicalParameter::ID::BtnGfxSz1: return ParameterLine::ID::BtnGfxSz1;
+        case LogicalParameter::ID::BtnGfxBtnPos2: return ParameterLine::ID::BtnGfxBtnPos2;
+        case LogicalParameter::ID::BtnGfxSz2: return ParameterLine::ID::BtnGfxSz2;
+        case LogicalParameter::ID::BtnGfxBtnPos3: return ParameterLine::ID::BtnGfxBtnPos3;
+        case LogicalParameter::ID::BtnGfxSz3: return ParameterLine::ID::BtnGfxSz3;
+        case LogicalParameter::ID::BtnGfxBtnPos4: return ParameterLine::ID::BtnGfxBtnPos4;
+        case LogicalParameter::ID::BtnGfxSz4: return ParameterLine::ID::BtnGfxSz4;
+        case LogicalParameter::ID::BtnGfxBtnPos5: return ParameterLine::ID::BtnGfxBtnPos5;
+        case LogicalParameter::ID::BtnGfxSz5: return ParameterLine::ID::BtnGfxSz5;
+        case LogicalParameter::ID::BtnGfxBtnPos6: return ParameterLine::ID::BtnGfxBtnPos6;
+        case LogicalParameter::ID::BtnGfxSz6: return ParameterLine::ID::BtnGfxSz6;
+        case LogicalParameter::ID::BtnGfxBtnPos7: return ParameterLine::ID::BtnGfxBtnPos7;
+        case LogicalParameter::ID::BtnGfxSz7: return ParameterLine::ID::BtnGfxSz7;
+        case LogicalParameter::ID::BtnGfxBtnPos8: return ParameterLine::ID::BtnGfxBtnPos8;
+        case LogicalParameter::ID::BtnGfxSz8: return ParameterLine::ID::BtnGfxSz8;
+        case LogicalParameter::ID::BtnGfxBtnPos9: return ParameterLine::ID::BtnGfxBtnPos9;
+        case LogicalParameter::ID::BtnGfxSz9: return ParameterLine::ID::BtnGfxSz9;
+        case LogicalParameter::ID::BtnGfxBtnos10: return ParameterLine::ID::BtnGfxBtnos10;
+        case LogicalParameter::ID::BtnGfxSz10: return ParameterLine::ID::BtnGfxSz10;
+        case LogicalParameter::ID::BtnGfxBtnos11: return ParameterLine::ID::BtnGfxBtnos11;
+        case LogicalParameter::ID::BtnGfxSz11: return ParameterLine::ID::BtnGfxSz11;
+        case LogicalParameter::ID::BtnGfxBtnos12: return ParameterLine::ID::BtnGfxBtnos12;
+        case LogicalParameter::ID::BtnGfxSz12: return ParameterLine::ID::BtnGfxSz12;
+        case LogicalParameter::ID::BtnGfxBtnos13: return ParameterLine::ID::BtnGfxBtnos13;
+        case LogicalParameter::ID::BtnGfxSz13: return ParameterLine::ID::BtnGfxSz13;
+        case LogicalParameter::ID::BtnGfxBtnos14: return ParameterLine::ID::BtnGfxBtnos14;
+        case LogicalParameter::ID::BtnGfxSz14: return ParameterLine::ID::BtnGfxSz14;
+        case LogicalParameter::ID::BtnGfxBtnos15: return ParameterLine::ID::BtnGfxBtnos15;
+        case LogicalParameter::ID::BtnGfxSz15: return ParameterLine::ID::BtnGfxSz15;
+        
+
+        case LogicalParameter::ID::AnimGfxLight: return ParameterLine::ID::AnimGfxLight;
+        case LogicalParameter::ID::AnimGfxPress: return ParameterLine::ID::AnimGfxPress;
         case LogicalParameter::ID::AnimGfxTxtr: return ParameterLine::ID::AnimGfxTxtr;
         case LogicalParameter::ID::AnimGfxVel: return ParameterLine::ID::AnimGfxVel;
         case LogicalParameter::ID::AnimGfxScl: return ParameterLine::ID::AnimGfxScl;
         case LogicalParameter::ID::AnimGfxClr: return ParameterLine::ID::AnimGfxClr;
         case LogicalParameter::ID::AnimGfxOffset: return ParameterLine::ID::AnimGfxOffset;
+
         case LogicalParameter::ID::BgTxtr: return ParameterLine::ID::BgTxtr;
         case LogicalParameter::ID::BgClr: return ParameterLine::ID::BgClr;
         case LogicalParameter::ID::BgScale: return ParameterLine::ID::BgScale;
+
         case LogicalParameter::ID::MainWndwTitleBar: return ParameterLine::ID::MainWndwTitleBar;
         case LogicalParameter::ID::MainWndwTop: return ParameterLine::ID::MainWndwTop;
         case LogicalParameter::ID::MainWndwBot: return ParameterLine::ID::MainWndwBot;
         case LogicalParameter::ID::MainWndwLft: return ParameterLine::ID::MainWndwLft;
         case LogicalParameter::ID::MainWndwRght: return ParameterLine::ID::MainWndwRght;
+
         case LogicalParameter::ID::KPSWndwEn: return ParameterLine::ID::KPSWndwEn;
         case LogicalParameter::ID::KPSWndwSz: return ParameterLine::ID::KPSWndwSz;
         case LogicalParameter::ID::KPSWndwTxtChSz: return ParameterLine::ID::KPSWndwTxtChSz;
@@ -713,30 +820,72 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwNumFont: return ParameterLine::ID::KPSWndwNumFont;
         case LogicalParameter::ID::KPSWndwTopPadding: return ParameterLine::ID::KPSWndwTopPadding;
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
-        case LogicalParameter::ID::OtherHighText: return ParameterLine::ID::OtherHighText;
-        case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
-        case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
-        case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
-        case LogicalParameter::ID::StatTextMaxKPSText: return ParameterLine::ID::StatTextMaxKPSText;
-        case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
-        case LogicalParameter::ID::StatTextBPMText: return ParameterLine::ID::StatTextBPMText;
 
-        default: return ParameterLine::ID::StatTextColl;
+        case LogicalParameter::ID::ThemeDevMultpl: return ParameterLine::ID::ThemeDevMultpl;
+
+        case LogicalParameter::ID::SaveStatMaxKPS: return ParameterLine::ID::SaveStatMaxKPS;
+        case LogicalParameter::ID::SaveStatTotal: return ParameterLine::ID::SaveStatTotal;
+        case LogicalParameter::ID::SaveStatTotal1: return ParameterLine::ID::SaveStatTotal1;
+        case LogicalParameter::ID::SaveStatTotal2: return ParameterLine::ID::SaveStatTotal2;
+        case LogicalParameter::ID::SaveStatTotal3: return ParameterLine::ID::SaveStatTotal3;
+        case LogicalParameter::ID::SaveStatTotal4: return ParameterLine::ID::SaveStatTotal4;
+        case LogicalParameter::ID::SaveStatTotal5: return ParameterLine::ID::SaveStatTotal5;
+        case LogicalParameter::ID::SaveStatTotal6: return ParameterLine::ID::SaveStatTotal6;
+        case LogicalParameter::ID::SaveStatTotal7: return ParameterLine::ID::SaveStatTotal7;
+        case LogicalParameter::ID::SaveStatTotal8: return ParameterLine::ID::SaveStatTotal8;
+        case LogicalParameter::ID::SaveStatTotal9: return ParameterLine::ID::SaveStatTotal9;
+        case LogicalParameter::ID::SaveStatTotal10: return ParameterLine::ID::SaveStatTotal10;
+        case LogicalParameter::ID::SaveStatTotal11: return ParameterLine::ID::SaveStatTotal11;
+        case LogicalParameter::ID::SaveStatTotal12: return ParameterLine::ID::SaveStatTotal12;
+        case LogicalParameter::ID::SaveStatTotal13: return ParameterLine::ID::SaveStatTotal13;
+        case LogicalParameter::ID::SaveStatTotal14: return ParameterLine::ID::SaveStatTotal14;
+        case LogicalParameter::ID::SaveStatTotal15: return ParameterLine::ID::SaveStatTotal15;
+
+        bool ForgotToAddParameter;
+        default: 
+            assert(!(ForgotToAddParameter = true)); 
+            return ParameterLine::ID::StatTextColl;
     }
 }
+
+bool ParameterLine::isEmpty(ParameterLine::ID id)
+{
+    return
+        // id == ParameterLine::ID::StatTextMty ||
+        id == ParameterLine::ID::StatTextAdvMty ||
+        // id == ParameterLine::ID::BtnTextMty ||
+        id == ParameterLine::ID::BtnTextAdvMty ||
+        // id == ParameterLine::ID::BtnGfxMty ||
+        id == ParameterLine::ID::BtnGfxAdvMty ||
+        id == ParameterLine::ID::AnimGfxMty ||
+        id == ParameterLine::ID::MainWndwMty ||
+        id == ParameterLine::ID::KPSWndwMty ||
+        id == ParameterLine::ID::ThemeDevMty ||
+        // id == ParameterLine::ID::InfoMty ||
+        id == ParameterLine::ID::LastLine;
+}
+
 
 void ParameterLine::deselectValue()
 {
     if (mSelectedValue == nullptr && mSelectedLine == nullptr)
         return;
 
-    mSelectedValue->mRect.setFillColor(GraphicalParameter::defaultRectColor);
-    mSelectedValue = nullptr;
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
+    if (mSelectedParameter->mParName == "Buttons text bounds")
+        GfxButton::setShowBounds(false);
+    mSelectedParameter = nullptr;
     mSelectedLine = nullptr;
+    mSelectedValue = nullptr;
     mSelectedValueIndex = -1;
 }
 
 bool ParameterLine::isValueSelected()
 {
     return mSelectedValue.get();
+}
+
+bool ParameterLine::resetRefreshState()
+{
+    return mRefresh && !(mRefresh = false);
 }

@@ -4,9 +4,8 @@
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-#include "LogicalKey.hpp"
-#include "LogicalButton.hpp"
-#include "GraphicalParameter.hpp"
+#include "LogKey.hpp"
+#include "GfxParameter.hpp"
 
 #include <memory>
 #include <array>
@@ -17,7 +16,7 @@ namespace sf
 }
 
 
-class KeySelector
+class GfxButtonSelector
 {
     private:
         enum Buttons
@@ -36,17 +35,14 @@ class KeySelector
 
 
     public:
-        KeySelector();
+        GfxButtonSelector();
 
         void handleOwnInput();
         void render();
 
-        void setKey(LogicalKey *key, LogicalButton *button);
-        void openWindow();
-        void closeWindow();
+        void setKey(LogKey *logKey);
+        void openWindow(sf::Vector2i spawnPosition);
         bool isOpen();
-
-        void setMainWindowPointer(sf::RenderWindow *mainWindow);
         
         static bool isCharacter(sf::Keyboard::Key key);
 
@@ -56,7 +52,7 @@ class KeySelector
         // Clicks with keyboard to modify value of buttons
         void handleButtonModificationEvent(sf::Event event);
 
-        void select(GraphicalParameter *ptr);
+        void select(GfxParameter *ptr);
         void deselect();
         void saveKey();
         void setCursorPos();
@@ -66,18 +62,16 @@ class KeySelector
     private:
         sf::Vector2u mWindowSize;
         sf::RenderWindow mWindow;
-        sf::RenderWindow *mMainWindow;
 
         sf::Font mFont;
-        std::array<std::unique_ptr<GraphicalParameter>, ButtonsCount> mButtons;
+        std::array<std::unique_ptr<GfxParameter>, ButtonsCount> mButtons;
 
         static sf::RectangleShape mCursor;
         static int mSelectedBtnTextIndex;
-        static GraphicalParameter *mSelectedBtn;
+        static GfxParameter *mSelectedBtn;
         static const std::string mDefaultVisualKeyStr;
         static const sf::Color mDefaultVisualKeyColor;
 
-        LogicalKey *mKey;
-        LogicalButton *mButton;
+        LogKey *mLogKey;
         KeyType mKeyType;
 };

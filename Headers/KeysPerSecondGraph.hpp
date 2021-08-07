@@ -1,17 +1,17 @@
 #pragma once
 
 #include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 
-#include "ResourceIdentifiers.hpp"
 #include "LogicalParameter.hpp"
 
+#include <array>
 
-class KPSWindow
+
+class KeysPerSecondGraph
 {
     public:
-        KPSWindow(const FontHolder &fonts);
+        KeysPerSecondGraph();
 
         void handleOwnEvent();
         void update();
@@ -22,19 +22,12 @@ class KPSWindow
         bool isOpen() const;
 
         void updateParameters();
-        void updateAssets();
         static bool parameterIdMatches(LogicalParameter::ID id);
-
-
-    private:
-        void moveWindow();
-        void calculateWidthCenter(unsigned idx) const;
 
 
     private:
         sf::RenderWindow mWindow;
 
-        const FontHolder &mFonts;
-        sf::Text mKPSText;
-        sf::Text mKPSNumber;
+        sf::VertexArray mVertecies;
+        unsigned mActiveVertecies;
 };
