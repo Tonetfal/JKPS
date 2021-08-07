@@ -15,7 +15,7 @@ KeysPerSecondGraph::KeysPerSecondGraph()
     srand(time(NULL));
 
     const float widthStep = 800.f / 13.f;
-    float width;
+    float width = 0;
     float height = 600;
     for (unsigned i = 0; i < 14; ++i)
     {
