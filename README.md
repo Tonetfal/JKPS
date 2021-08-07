@@ -2,6 +2,8 @@
 JKPS is a program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rhythm games such as osu!, etterna, stepmania etc.
 
 # Preview
+The program when active looks like that:
+
 ![](Media/Preview-White-orange-new.gif)
 
 # Usage
