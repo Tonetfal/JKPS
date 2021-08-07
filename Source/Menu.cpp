@@ -168,7 +168,7 @@ void Menu::handleRealtimeInput()
     for (auto &pair : mParameterLines)
         pair.second->processInput();
 
-    for (auto elem : mParameters)
+    for (auto &elem : mParameters)
         if (elem.second->resetChangeState())
             mChangedParametersQueue.push(elem);
 }
@@ -652,7 +652,7 @@ void Menu::updateSaveStatsStrings()
     it->second->setValStr(std::to_string(it->second->getDigit<float>()));
     ++it;
 
-    while (it->first <= LogicalParameter::ID::SaveStatTotal15)
+    while (it->first <= LogicalParameter::ID::SaveStatTotal15 && it != mParameters.end())
     {
         it->second->setValStr(std::to_string(it->second->getDigit<unsigned>()));
         ++it;
