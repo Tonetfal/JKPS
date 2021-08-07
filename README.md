@@ -1,15 +1,11 @@
 # JKPS
-JKPS is a simple program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rhythm games such as osu!, stepmania etc.
+JKPS is a program that shows keystates, keys per second, total keys and current beats per minute. The program is intended to be used in rhythm games such as osu!, etterna, stepmania etc.
 
 # Preview
-![](Media/Preview-White-orange.gif)
-
-It supports up to 10 keyboard keys and 5 mouse buttons.
+![](Media/Preview-White-orange-new.gif)
 
 # Usage
-To add or remove a keyboard key press Ctrl + "+" or "-". 
-
-To add or remove a mouse button press Ctrl + "<" or ">". 
+To add a keyboard key press Ctrl + "+", to add mouse button press Ctrl + ">", and to remove press Ctrl + "-".
 
 To change a key click with right mouse button on the graphical button to open key selector, and then click the required key on the keyboard. If you want to change the text on the button, then write it in the second box.
 
@@ -27,9 +23,9 @@ Entire explanation of the config you can find [here](https://gist.github.com/Jek
 
 Click with right mouse button on the key to edit it
 
-Ctrl + "+/-" - Add/remove keyboard keys
+Ctrl + "+/-" - Add/remove keys
 
-Ctrl + "</>" - Add/remove mouse buttons
+Ctrl + "<" - Add mouse buttons
 
 Ctrl + W - Close the program
 
@@ -45,18 +41,20 @@ Alt (hold) - Show opposite button values
 
 ![](Media/menu-demo.gif)
 
-# Extra window with KPS
-
-![](Media/Preview-kps-window.gif)
-
 # Notes
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with green screen just write in the "Background texture" parameter "GreenscreenBG.png" and press Enter or Refresh button.
 - The palette in menu will not adjust own color to the parameter one.
-- If you change anything in the config file, exit the program first.
+- If you change anything in the config file, then exit the program first.
 - BPM is not calculated immediately, it will be displayed correctly only after a second and 9 frames. To get the right BPM you must stream at least "BPM / 15" notes.
 
 # [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
+
+![](Media/Preview-ADOFAI-default-theme.gif)
+
+![](Media/Preview-osu!mania-7k-default-theme.gif)
+
+![](Media/Preview-White-orange-new.gif)
 
 ![](Media/Preview-Red-violet.gif)
 
@@ -72,7 +70,7 @@ Alt (hold) - Show opposite button values
 
 ![](Media/Preview-Dark-minimalistic.gif)
 
-![](Media/Preview-White-orange.gif)
+![](Media/Preview-White-orange-old.gif)
 
 ![](Media/Preview-Dark-violet.gif)
 
