@@ -121,7 +121,7 @@ void GfxStatisticsLine::centerOrigin()
 
 std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
 {
-    std::string *str;
+    std::string *str(nullptr);
     
     switch(id)
     {
@@ -138,6 +138,7 @@ std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
             break;
     }
     
+    assert(str);
     return str;
 }
 
