@@ -66,9 +66,9 @@ Alt (hold) - Show opposite button values
 
 ![](Media/Preview-Modern-purple.gif)
 
-![](Media/Preview-Dark-minimalistic-nano.gif)
+![](Media/Preview-Dark-minimalistic-1-nano.gif)
 
-![](Media/Preview-Dark-minimalistic.gif)
+![](Media/Preview-Dark-minimalistic-1.gif)
 
 ![](Media/Preview-White-orange-old.gif)
 
