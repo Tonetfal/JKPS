@@ -541,6 +541,13 @@ void Menu::buildParameterLines()
     unsigned row = 1, column = 0;;
     for (auto &pair : mParameterLines)
     {
+        if (pair.first >= ParameterLine::ID::SaveStatColl && pair.first <= ParameterLine::ID::SaveStatMty)
+        {
+            // Hide them
+            pair.second->setPosition(-100, -100);
+            continue;
+        }
+
         if (ParameterLine::isEmpty(pair.first))
         {
             mBounds.push_back(stepY * (row - 2) - halfWindowSize + padding);
