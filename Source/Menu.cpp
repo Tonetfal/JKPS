@@ -544,7 +544,7 @@ void Menu::buildParameterLines()
         if (pair.first >= ParameterLine::ID::SaveStatColl && pair.first <= ParameterLine::ID::SaveStatMty)
         {
             // Hide them
-            pair.second->setPosition(-100, -100);
+            pair.second->setPosition(-1000, -1000);
             continue;
         }
 
