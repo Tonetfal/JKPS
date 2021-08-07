@@ -163,7 +163,8 @@ void GfxButton::updateParameters()
     for (auto &text : mTexts)
     {
         const bool isInRange = mBtnIdx < Settings::GfxButtonsBtnPositions.size();
-        const sf::Vector2f advancedPos = !Settings::ButtonTextPosAdvancedMode || !isInRange ? Settings::ButtonTextPosition : 
+        const sf::Vector2f advancedPos = !Settings::ButtonTextPosAdvancedMode || !isInRange ? 
+            sf::Vector2f(Settings::ButtonTextPosition.x, -Settings::ButtonTextPosition.y) : 
             sf::Vector2f(Settings::ButtonsTextPositions[mBtnIdx].x, -Settings::ButtonsTextPositions[mBtnIdx].y);
 
         text->setFillColor(Settings::ButtonTextColor);
