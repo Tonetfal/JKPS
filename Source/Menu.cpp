@@ -421,7 +421,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::ThemeDevMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS, new LogicalParameter(LogicalParameter::Type::Float, &Settings::MaxKPS, "Saved max KPS", "0", 0, UINT_MAX)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::Total, "Saved total", "0", 0, UINT_MAX)));
@@ -480,9 +480,9 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Theme developer]"));
-    mParameterLines.emplace(std::make_pair(ParameterLine::ID::ThemeDevColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
-    mParameterLines.emplace(std::make_pair(ParameterLine::ID::ThemeDevMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Other]"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Statistics save]"));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::SaveStatColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));

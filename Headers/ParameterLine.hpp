@@ -190,9 +190,9 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KPSWndwDistBtw,
             KPSWndwMty,
 
-            ThemeDevColl,
-            ThemeDevMultpl,
-            ThemeDevMty,
+            OtherColl,
+            OtherMultpl,
+            OtherMty,
 
             SaveStatColl,
             SaveStatMaxKPS,

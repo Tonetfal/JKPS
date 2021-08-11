@@ -171,7 +171,7 @@ struct LogicalParameter
             KPSWndwTopPadding,
             KPSWndwDistBtw,
 
-            ThemeDevMultpl,
+            OtherMultpl,
 
             SaveStatMaxKPS,
             SaveStatTotal,
