@@ -14,7 +14,7 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.9-alpha");
+std::string Menu::mProgramVersion("v0.10-alpha");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
