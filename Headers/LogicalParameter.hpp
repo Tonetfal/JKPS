@@ -171,6 +171,7 @@ struct LogicalParameter
             KPSWndwTopPadding,
             KPSWndwDistBtw,
 
+            OtherSaveStats,
             OtherMultpl,
 
             SaveStatMaxKPS,

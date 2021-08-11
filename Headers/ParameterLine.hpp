@@ -191,6 +191,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KPSWndwMty,
 
             OtherColl,
+            OtherSaveStats,
             OtherMultpl,
             OtherMty,
 

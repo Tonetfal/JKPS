@@ -821,6 +821,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwTopPadding: return ParameterLine::ID::KPSWndwTopPadding;
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
 
+        case LogicalParameter::ID::OtherSaveStats: return ParameterLine::ID::OtherSaveStats;
         case LogicalParameter::ID::OtherMultpl: return ParameterLine::ID::OtherMultpl;
 
         case LogicalParameter::ID::SaveStatMaxKPS: return ParameterLine::ID::SaveStatMaxKPS;
