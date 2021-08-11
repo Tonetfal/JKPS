@@ -33,6 +33,8 @@ static std::ofstream ofErrLog;
 namespace ConfigHelper
 {
 
+const std::string separationSign(" $SEPARATION$ ");
+
 bool readConfig(
     std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
     std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines)
@@ -94,6 +96,23 @@ void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParame
 
 std::queue<LogKey> getLogKeys()
 {
+    static const std::string parName1 = "Real keys";
+    static const std::string parName2 = "Visual keys";
+    bool parameterFound1 = false, parameterEmpty1 = false, nothing;
+
+    std::string keysStr = readParameter(parName1, parameterFound1, parameterEmpty1);
+    std::string visualKeysStr = readParameter(parName2, nothing, nothing);
+         
+    if (!parameterFound1 || parameterEmpty1 || keysStr == "No" || keysStr == "no" || keysStr == "NO")
+        return { };
+
+    std::queue<LogKey> keyboardQueue = readKeys(keysStr, visualKeysStr);
+    
+    return keyboardQueue;
+}
+
+std::queue<LogKey> oldGetLogKeys()
+{
     static const std::string parName1 = "Keyboard keys";
     static const std::string parName2 = "Visual keys";
     // This needs to support old versions, but it has to be removed later
@@ -107,10 +126,10 @@ std::queue<LogKey> getLogKeys()
     if (!parameterFound || parameterEmpty || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return { };
 
-    return readKeys(keysStr, visualKeysStr);
+    return oldReadKeys(keysStr, visualKeysStr);
 }
 
-std::queue<LogKey> getLogButtons()
+std::queue<LogKey> oldGetLogButtons()
 {
     static const std::string parName1 = "Mouse buttons";
     static const std::string parName2 = "Visual buttons";
@@ -121,7 +140,7 @@ std::queue<LogKey> getLogButtons()
     if (!parameterFound || parameterEmpty || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
         return { };
 
-    return readButtons(buttonsStr, visualButtonsStr);
+    return oldReadButtons(buttonsStr, visualButtonsStr);
 }
 
 // Finds the parameter and returns everything after its name and ": ", 
@@ -165,7 +184,7 @@ std::string readParameter(const std::string &parName, bool &parameterFound, bool
     parameterFound = true;
     parameterEmpty = false;
     // Remove parameter name, ':' and space after it
-    return line.substr(parName.length() + 2, 81);
+    return std::string(line, parName.length() + 2);
 }
 
 void writeParameter(LogicalParameter &par)
@@ -375,6 +394,66 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
 {
     std::queue<LogKey> logKeysQueue;
     unsigned strIdx1 = 0, strIdx2 = 0;
+    const unsigned len = ConfigHelper::separationSign.length();
+
+    for (unsigned i = 0; strIdx1 < keysStr.size(); ++i)
+    {
+        std::string keyStr(keysStr, strIdx1, keysStr.substr(strIdx1).find(ConfigHelper::separationSign));
+        std::string visualKeyStr(visualKeysStr, strIdx2, visualKeysStr.substr(strIdx2).find(ConfigHelper::separationSign));   
+        std::string checkStr;
+        sf::Keyboard::Key key;
+        sf::Mouse::Button button;
+
+        const bool isKeyB = isKey(keyStr);
+        const bool isButtonB = isButton(keyStr);
+        if (!isKeyB && !isButtonB)
+        {
+            // If there is no data to read - break
+            if (keysStr.find(ConfigHelper::separationSign, strIdx1) == std::string::npos)
+                break;
+
+            // Move index to the beggining of the next key
+            strIdx1 = keysStr.find(ConfigHelper::separationSign, strIdx1) + len;
+            strIdx2 = visualKeysStr.find(ConfigHelper::separationSign, strIdx2) + len;
+        } 
+        else if (isKeyB)
+        {
+            key = strToKey(keyStr);
+            checkStr = keyToStr(key, true);
+        }
+        else
+        {
+            button = strToBtn(keyStr);
+            checkStr = btnToStr(button);
+        }
+            
+        unsigned maxLength = 20;
+        if (visualKeyStr.size() > maxLength || visualKeyStr.size() == 0)
+            visualKeyStr = checkStr;
+
+        if (isKeyB)
+            logKeysQueue.emplace(*new LogKey(keyStr, visualKeyStr, new sf::Keyboard::Key(key), nullptr));
+        else
+            logKeysQueue.emplace(*new LogKey(keyStr, visualKeyStr, nullptr, new sf::Mouse::Button(button)));
+
+        logKeysQueue.back().realStr = checkStr == keyStr ? keyStr : checkStr;
+
+        // If there is no data to read - break
+        if (keysStr.find(ConfigHelper::separationSign, strIdx1) == std::string::npos)
+            break;
+
+        // Move index to the beggining of the next key
+        strIdx1 = keysStr.find(ConfigHelper::separationSign, strIdx1) + len;
+        strIdx2 = visualKeysStr.find(ConfigHelper::separationSign, strIdx2) + len;
+    }
+
+    return logKeysQueue;
+}
+
+std::queue<LogKey> oldReadKeys(const std::string &keysStr, const std::string &visualKeysStr)
+{
+    std::queue<LogKey> logKeysQueue;
+    unsigned strIdx1 = 0, strIdx2 = 0;
 
     for (unsigned i = 0; strIdx1 < keysStr.size(); ++i)
     {
@@ -383,6 +462,13 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
         std::string checkStr;
 
         sf::Keyboard::Key key = strToKey(keyStr);
+        if (key == sf::Keyboard::Unknown)
+        {
+            if (keysStr.find(',', strIdx1) == std::string::npos)
+                break;
+            strIdx1 = keysStr.find(',', strIdx1) + 1;
+            strIdx2 = visualKeysStr.find(',', strIdx2) + 1;
+        }
 
         checkStr = keyToStr(key, true);
         unsigned maxLength = 20;
@@ -404,7 +490,7 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
     return logKeysQueue;
 }
 
-std::queue<LogKey> readButtons(const std::string &buttonsStr, const std::string &visualButtonsStr)
+std::queue<LogKey> oldReadButtons(const std::string &buttonsStr, const std::string &visualButtonsStr)
 {
     std::queue<LogKey> logBtnQueue;
     unsigned strIdx1 = 0, strIdx2 = 0;
@@ -450,17 +536,13 @@ void saveConfig(
 
     if (saveKeys)
     {    
-        ofCfg << getKeysStr(*mKeys, "[Keyboard keys]\nKeyboard keys: ", true);
-        ofCfg << getKeysStr(*mKeys, "[Visual keys]\nVisual keys: ", false);
-        ofCfg << getButtonStr(*mKeys, "[Mouse buttons]\nMouse buttons: ", true);
-        ofCfg << getButtonStr(*mKeys, "[Visual buttons]\nVisual buttons: ", false);
+        ofCfg << "[Real keys]\nReal keys: " << getKeysStr(*mKeys, true);
+        ofCfg << "[Visual keys]\nVisual keys: " << getKeysStr(*mKeys, false);
     }
     else
     {
-        ofCfg << "[Keyboard keys]\nKeyboard keys: Z,X\n";
-        ofCfg << "[nVisual keys]\nVisual keys: Z,X\n";
-        ofCfg << "[Mouse buttons]\nMouse buttons: No\n";
-        ofCfg << "[Visual buttons]\nVisual buttons: No\n";
+        ofCfg << "[Real keys]\nReal keys: Z,X\n";
+        ofCfg << "[Visual keys]\nVisual keys: Z,X\n";
     }
 
     bool commentsSection = false;
@@ -517,52 +599,26 @@ void saveConfig(
     rename(tmpCfgPath.c_str(), cfgPath.c_str());
 }
 
-std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr)
+std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, bool readRealStr)
 {
+    std::string str;
     auto it = mKeys.begin();
+
     for (; it != mKeys.end(); ++it)
     {
         const LogKey *lKey = (*it)->getLogKey();
-        if (lKey->keyboardKey == nullptr)
-            break;
+        assert(lKey && (lKey->keyboardKey || lKey->mouseButton));
 
-        str += (readRealStr ? lKey->realStr : lKey->visualStr) + ",";
+        str += (readRealStr ? lKey->realStr : lKey->visualStr) + ConfigHelper::separationSign;
     }
     if (it != mKeys.begin())
-        str.erase(str.size() - 1);
+        str.erase(str.size() - ConfigHelper::separationSign.length());
     else
         str += "No";
     str += "\n\n";
 
     return str;
 }
-
-std::string getButtonStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr)
-{
-    auto it = mKeys.begin();
-    for (; it != mKeys.end(); ++it)
-    {
-        if ((*it)->getLogKey()->mouseButton)
-            break;
-    }
-
-    if (it == mKeys.end())
-        return str + "No\n\n";
-
-    for (; it != mKeys.end(); ++it)
-    {
-        const LogKey *lKey = (*it)->getLogKey();
-        if (lKey->mouseButton == nullptr)
-            break;
-
-        str += (readRealStr ? lKey->realStr : lKey->visualStr) + ",";
-    }
-    str.erase(str.size() - 1);
-    str += "\n\n";
-
-    return str;
-}
-
 
 } // !namespace ConfigHelper
 

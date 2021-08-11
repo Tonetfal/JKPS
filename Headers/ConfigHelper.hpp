@@ -15,13 +15,16 @@
 
 namespace ConfigHelper
 {
+
+extern const std::string separationSign;
     
 bool readConfig(
     std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
     std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines);
 void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 std::queue<LogKey> getLogKeys();
-std::queue<LogKey> getLogButtons();
+std::queue<LogKey> oldGetLogKeys();
+std::queue<LogKey> oldGetLogButtons();
 std::string readParameter(const std::string &par, bool &parameterFound, bool &parameterEmpty);
 void writeParameter(LogicalParameter &par);
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
@@ -31,7 +34,8 @@ bool readBoolParameter(const LogicalParameter &par, const std::string &valStr);
 void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
 
 std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visualKeysStr);
-std::queue<LogKey> readButtons(const std::string &valStr, const std::string &visualValStr);
+std::queue<LogKey> oldReadKeys(const std::string &keysStr, const std::string &visualKeysStr);
+std::queue<LogKey> oldReadButtons(const std::string &valStr, const std::string &visualValStr);
 
 void createDefaultConfig();
 void saveConfig(
@@ -40,7 +44,6 @@ void saveConfig(
     const std::vector<std::unique_ptr<Button>> *mKeys,
     bool saveKeys);
 
-std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr);
-std::string getButtonStr(const std::vector<std::unique_ptr<Button>> &mKeys, std::string str, bool readRealStr);
+std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, bool readRealStr);
 
 } // !namespace ConfigHelper
