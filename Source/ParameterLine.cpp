@@ -158,7 +158,7 @@ void ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex += str.length() == prevVal.length() ? 0 : str.length() > prevVal.length() ? 1 : -1;
         }
 
-        if (!isStrType && key == sf::Keyboard::Hyphen)
+        if (!isStrType && (key == sf::Keyboard::Hyphen || key == sf::Keyboard::Subtract))
         {
             if (mType == LogicalParameter::Type::Unsigned || mType == LogicalParameter::Type::Color)
                 return;

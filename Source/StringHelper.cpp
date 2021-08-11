@@ -509,6 +509,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Period: return '>';
             case sf::Keyboard::Quote: return '"';
             case sf::Keyboard::Slash: return '?';
+            case sf::Keyboard::BackSlash: return '|';
             case sf::Keyboard::Tilde: return '~';
             case sf::Keyboard::Equal: return '+';
             case sf::Keyboard::Hyphen: return '_';
@@ -517,7 +518,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Subtract: return '-';
             case sf::Keyboard::Multiply: return '*';
             case sf::Keyboard::Divide: return '/';
-            default: return 'a';
+            default: return ' ';
         }
     }
     else
@@ -577,6 +578,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Period: return '.';
             case sf::Keyboard::Quote: return '\'';
             case sf::Keyboard::Slash: return '/';
+            case sf::Keyboard::BackSlash: return '\\';
             case sf::Keyboard::Tilde: return '`';
             case sf::Keyboard::Equal: return '=';
             case sf::Keyboard::Hyphen: return '-';
@@ -585,7 +587,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Subtract: return '-';
             case sf::Keyboard::Multiply: return '*';
             case sf::Keyboard::Divide: return '/';
-            default: return 'a';
+            default: return ' ';
         }
     }
 }
