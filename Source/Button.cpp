@@ -45,18 +45,18 @@ void Button::reset()
 void Button::setTextStrings()
 {
     const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
-    const bool advMode = Settings::ButtonTextPosAdvancedMode;
+    const bool advMode = Settings::ButtonTextSepPosAdvancedMode;
 
     if (Settings::ButtonTextShowVisualKeys) 
     {
-        if (!lAlt == (!advMode || !Settings::ButtonTextShowTotal))
+        if ((!lAlt) || (lAlt && advMode && Settings::ButtonTextShowTotal))
             mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
-        else 
+        else
             mTexts[VisualKey]->setString(std::to_string(LogButton::mTotal));
     }
     if (Settings::ButtonTextShowTotal)
     {
-        if (!lAlt == (!advMode || !Settings::ButtonTextShowVisualKeys))
+        if ((!lAlt) || (lAlt && advMode && Settings::ButtonTextShowVisualKeys))
             mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
         else
             mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
@@ -70,6 +70,13 @@ void Button::setTextStrings()
     {
         mTexts[BeatsPerMinute]->setString(std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute())));
     }
+
+    for (auto &text : mTexts)
+    {
+        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        GfxButton::keepInBounds(*text);
+    }
+    GfxButton::centerOrigins();
 }
 
 void Button::controlBounds()

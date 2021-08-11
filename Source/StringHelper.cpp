@@ -187,7 +187,7 @@ std::string keyToStr(sf::Keyboard::Key key, bool saveToCfg)
         case sf::Keyboard::F14: return "F14";
         case sf::Keyboard::F15: return "F15";
         case sf::Keyboard::Pause: return "Pause";
-        default: return "A";
+        default: return "Unknown";
     }
 }
 
@@ -428,6 +428,19 @@ sf::Mouse::Button strToBtn(const std::string &str)
     return sf::Mouse::Left;
 }
 
+bool isKey(const std::string &str)
+{
+    sf::Keyboard::Key key = strToKey(str);
+    return key != sf::Keyboard::Unknown;
+}
+
+bool isButton(const std::string &str)
+{
+    sf::Mouse::Button btn = strToBtn(str);
+    // strToBtn returns sf::Mouse::Left if it couldn't find right value
+    return btn == sf::Mouse::Left ? str == "M Left" : true;
+}
+
 std::string logKeyToStr(const LogKey &logKey)
 {
     if (logKey.keyboardKey)
@@ -496,6 +509,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Period: return '>';
             case sf::Keyboard::Quote: return '"';
             case sf::Keyboard::Slash: return '?';
+            case sf::Keyboard::BackSlash: return '|';
             case sf::Keyboard::Tilde: return '~';
             case sf::Keyboard::Equal: return '+';
             case sf::Keyboard::Hyphen: return '_';
@@ -504,7 +518,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Subtract: return '-';
             case sf::Keyboard::Multiply: return '*';
             case sf::Keyboard::Divide: return '/';
-            default: return 'a';
+            default: return ' ';
         }
     }
     else
@@ -564,6 +578,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Period: return '.';
             case sf::Keyboard::Quote: return '\'';
             case sf::Keyboard::Slash: return '/';
+            case sf::Keyboard::BackSlash: return '\\';
             case sf::Keyboard::Tilde: return '`';
             case sf::Keyboard::Equal: return '=';
             case sf::Keyboard::Hyphen: return '-';
@@ -572,7 +587,7 @@ char enumKeyToStr(sf::Keyboard::Key key)
             case sf::Keyboard::Subtract: return '-';
             case sf::Keyboard::Multiply: return '*';
             case sf::Keyboard::Divide: return '/';
-            default: return 'a';
+            default: return ' ';
         }
     }
 }

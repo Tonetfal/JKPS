@@ -103,7 +103,8 @@ unsigned KPSNumberSize;
 float KPSWindowTopPadding;
 float KPSWindowDistanceBetween;
 
-// [Theme developer]
+// [Other]
+bool SaveStats;
 int ButtonPressMultiplier;
 
 // Default assets

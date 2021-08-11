@@ -110,7 +110,8 @@ namespace Settings
     extern unsigned KPSTextSize;
     extern unsigned KPSNumberSize;
 
-    // [Theme developer]
+    // [Other]
+    extern bool SaveStats;
     extern int ButtonPressMultiplier;
 
     // Default assets

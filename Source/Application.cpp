@@ -375,18 +375,26 @@ void Application::buildStatistics()
 
 void Application::buildButtons()
 {
-    std::queue<LogKey> logKeyQueue = ConfigHelper::getLogKeys();
-    std::queue<LogKey> logKeyBtnsQueue = ConfigHelper::getLogButtons();
+    std::queue<LogKey> logKeyQueue = ConfigHelper::oldGetLogKeys();
+    std::queue<LogKey> logKeyBtnsQueue = ConfigHelper::oldGetLogButtons();
     while (logKeyBtnsQueue.size())
     {
         logKeyQueue.push(logKeyBtnsQueue.front());
         logKeyBtnsQueue.pop();
     }
+    if (logKeyQueue.size() == 0)
+        logKeyQueue = ConfigHelper::getLogKeys();
 
     for (unsigned i = 0; logKeyQueue.size(); ++i)
     {
         addButton(logKeyQueue.front());
         logKeyQueue.pop();
+    }
+    
+    if (mButtons.empty())
+    {
+        addButton(*new LogKey("Z", "Z", new sf::Keyboard::Key(sf::Keyboard::Z), nullptr));
+        addButton(*new LogKey("X", "X", new sf::Keyboard::Key(sf::Keyboard::X), nullptr));
     }
 }
 
