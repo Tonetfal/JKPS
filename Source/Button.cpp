@@ -70,6 +70,13 @@ void Button::setTextStrings()
     {
         mTexts[BeatsPerMinute]->setString(std::to_string(static_cast<unsigned>(LogButton::getLocalBeatsPerMinute())));
     }
+
+    for (auto &text : mTexts)
+    {
+        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        GfxButton::keepInBounds(*text);
+    }
+    GfxButton::centerOrigins();
 }
 
 void Button::controlBounds()
