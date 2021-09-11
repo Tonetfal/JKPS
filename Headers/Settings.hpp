@@ -19,6 +19,8 @@ namespace Settings
     extern std::string StatisticsTextFontPath;
     extern sf::Color StatisticsTextColor;
     extern unsigned StatisticsTextCharacterSize;
+    extern unsigned StatisticsTextOutlineThickness;
+    extern sf::Color StatisticsTextOutlineColor;
     extern bool StatisticsTextBold;
     extern bool StatisticsTextItalic;
     extern bool ShowStatisticsText;
@@ -47,6 +49,8 @@ namespace Settings
     extern std::string ButtonTextFontPath;
     extern sf::Color ButtonTextColor;
     extern unsigned ButtonTextCharacterSize;
+    extern unsigned ButtonTextOutlineThickness;
+    extern sf::Color ButtonTextOutlineColor;
     extern sf::Vector2f ButtonTextPosition;
     extern sf::Vector2f ButtonTextBounds;
     extern bool ButtonTextBold;
