@@ -317,6 +317,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::StatisticsTextFontPath, "Statistics text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColor, "Statistics text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSize, "Statistics text character size", "17", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextOutlineThickness, "Statistics text outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextOutlineColor, "Statistics text outline color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBold, "Statistics text bold", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalic, "Statistics text italic", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShow, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsText, "Show statistics text", "True")));
@@ -356,6 +358,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::ButtonTextFontPath, "Buttons text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextCharacterSize, "Buttons text character size", "20", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextOutlineThickness, "Buttons text outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextOutlineColor, "Buttons text outline color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "8,8", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "True")));

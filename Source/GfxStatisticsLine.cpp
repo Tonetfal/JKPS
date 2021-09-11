@@ -68,9 +68,13 @@ void GfxStatisticsLine::updateParameters()
     mStatLineText.setFillColor(color);
     mStatLineText.setCharacterSize(chSz);
     mStatLineText.setStyle(style);
+    mStatLineText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
+    mStatLineText.setOutlineColor(Settings::StatisticsTextOutlineColor);
     mStatValueText.setFillColor(color);
     mStatValueText.setCharacterSize(chSz);
     mStatValueText.setStyle(style);
+    mStatValueText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
+    mStatValueText.setOutlineColor(Settings::StatisticsTextOutlineColor);
     sf::Vector2f pos;
     if (!Settings::StatisticsTextValuePositionsAdvancedMode)
     {
@@ -186,6 +190,8 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextFont ||
         id == LogicalParameter::ID::StatTextClr ||
         id == LogicalParameter::ID::StatTextChSz ||
+        id == LogicalParameter::ID::StatTextOutThck ||
+        id == LogicalParameter::ID::StatTextOutClr ||
         id == LogicalParameter::ID::StatTextBold ||
         id == LogicalParameter::ID::StatTextItal ||
         id == LogicalParameter::ID::StatTextShow ||
