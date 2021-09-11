@@ -683,6 +683,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextFont: return ParameterLine::ID::StatTextFont;
         case LogicalParameter::ID::StatTextClr: return ParameterLine::ID::StatTextClr;
         case LogicalParameter::ID::StatTextChSz: return ParameterLine::ID::StatTextChSz;
+        case LogicalParameter::ID::StatTextOutThck: return ParameterLine::ID::StatTextOutThck;
+        case LogicalParameter::ID::StatTextOutClr: return ParameterLine::ID::StatTextOutClr;
         case LogicalParameter::ID::StatTextBold: return ParameterLine::ID::StatTextBold;
         case LogicalParameter::ID::StatTextItal: return ParameterLine::ID::StatTextItal;
         case LogicalParameter::ID::StatTextShow: return ParameterLine::ID::StatTextShow;
@@ -721,6 +723,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BtnTextFont: return ParameterLine::ID::BtnTextFont;
         case LogicalParameter::ID::BtnTextClr: return ParameterLine::ID::BtnTextClr;
         case LogicalParameter::ID::BtnTextChSz: return ParameterLine::ID::BtnTextChSz;
+        case LogicalParameter::ID::BtnTextOutThck: return ParameterLine::ID::BtnTextOutThck;
+        case LogicalParameter::ID::BtnTextOutClr: return ParameterLine::ID::BtnTextOutClr;
         case LogicalParameter::ID::BtnTextPosition: return ParameterLine::ID::BtnTextPosition;
         case LogicalParameter::ID::BtnTextBounds: return ParameterLine::ID::BtnTextBounds;
         case LogicalParameter::ID::BtnTextBold: return ParameterLine::ID::BtnTextBold;
