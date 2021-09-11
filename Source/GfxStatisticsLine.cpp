@@ -14,9 +14,9 @@ GfxStatisticsLine::GfxStatisticsLine(const FontHolder& fontHolder, const bool &s
 , mShow(show)
 {
     updateAsset();
-    updateParameters();
     mStatLineText.setString(*getStatLineString(mIdentifier));
     mStatValueText.setString(getStatValueString(mIdentifier));
+    updateParameters();
     centerOrigin();
 }
 
@@ -41,6 +41,17 @@ void GfxStatisticsLine::update()
     mStatLineText.setString(*getStatLineString(mIdentifier));
     mStatValueText.setString(getStatValueString(mIdentifier));
     centerOrigin();
+
+    // Due to different text sizes of KPS and Max that change continuously
+    // value text position has to be updated. I've put it here cuz I'm lazy atm :(
+    if (Settings::StatisticsTextPositionsAdvancedMode
+    && !Settings::StatisticsTextValuePositionsAdvancedMode)
+    {
+        const sf::FloatRect bounds = mStatLineText.getLocalBounds();
+        float x = -bounds.width / 2.f;
+        float y = -bounds.height / 2.f;
+        mStatValueText.setPosition(x, y);
+    } 
 }
 
 void GfxStatisticsLine::updateAsset()
@@ -66,21 +77,33 @@ void GfxStatisticsLine::updateParameters()
     const sf::Uint32 style = (bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0);
 
     mStatLineText.setFillColor(color);
-    mStatLineText.setCharacterSize(chSz);
-    mStatLineText.setStyle(style);
-    mStatLineText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
-    mStatLineText.setOutlineColor(Settings::StatisticsTextOutlineColor);
     mStatValueText.setFillColor(color);
+
+    mStatLineText.setCharacterSize(chSz);
     mStatValueText.setCharacterSize(chSz);
+
+    mStatLineText.setStyle(style);
     mStatValueText.setStyle(style);
+
+    mStatLineText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
     mStatValueText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
+
+    mStatLineText.setOutlineColor(Settings::StatisticsTextOutlineColor);
     mStatValueText.setOutlineColor(Settings::StatisticsTextOutlineColor);
+
     sf::Vector2f pos;
-    if (!Settings::StatisticsTextValuePositionsAdvancedMode)
+    if (Settings::StatisticsTextPositionsAdvancedMode
+    && !Settings::StatisticsTextValuePositionsAdvancedMode)
+    {
+        const sf::FloatRect bounds = mStatLineText.getLocalBounds();
+        pos.x = -bounds.width / 2.f;
+        pos.y = -bounds.height / 2.f;
+    } 
+    else if (!Settings::StatisticsTextValuePositionsAdvancedMode)
     {
         pos.x = Settings::StatisticsTextValuePosition.x;
         pos.y = -Settings::StatisticsTextValuePosition.y;
-    }
+    } 
     else
     {
         pos.x = Settings::StatisticsTextValuePositions[mIdentifier].x;
