@@ -170,7 +170,7 @@ void GfxButton::updateParameters()
         text->setFillColor(Settings::ButtonTextColor);
         text->setCharacterSize(Settings::ButtonTextCharacterSize);
         text->setPosition(advancedPos);
-        text->setStyle(Settings::ButtonTextBold ? sf::Text::Bold : 0 | Settings::ButtonTextItalic ? sf::Text::Italic : 0);
+        text->setStyle((Settings::ButtonTextBold ? sf::Text::Bold : 0) | (Settings::ButtonTextItalic ? sf::Text::Italic : 0));
         text->setOutlineThickness(Settings::ButtonTextOutlineThickness / 10.f);
         text->setOutlineColor(Settings::ButtonTextOutlineColor);
 
