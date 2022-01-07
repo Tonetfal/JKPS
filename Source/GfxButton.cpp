@@ -60,8 +60,12 @@ void GfxButton::update(bool buttonPressed)
         {
             const auto &buttonSprite = *mSprites[ButtonSprite];
             float width = buttonSprite.getGlobalBounds().width;
-            mPressRects.emplace_back(sf::RectangleShape(sf::Vector2f(width, 0.1f)));
-            mPressRects.back().setFillColor(Settings::KeyPressVisColor);
+            float height = buttonSprite.getGlobalBounds().height;
+            sf::RectangleShape rect(sf::Vector2f(width, 0.1f));
+            rect.setFillColor(Settings::KeyPressVisColor);
+            rect.setOrigin(width / 2.f, height / 2.f);
+            mPressRects.push_back(std::move(rect));
+
             removeOutOfViewPressRects();
         }
         // Make the last rectangle longer if during both last and current frame the key is pressed
@@ -69,17 +73,19 @@ void GfxButton::update(bool buttonPressed)
         {
             auto &rect = mPressRects.back();
             auto oldSize = rect.getSize();
-            rect.setSize(sf::Vector2f(oldSize.x, oldSize.y - Settings::KeyPressVisSpeed));
+            rect.setSize(sf::Vector2f(oldSize.x, oldSize.y - Settings::KeyPressVisSpeed / 10.f));
         }
     }
 
+    sf::Vector2f movement(0.f, -Settings::KeyPressVisSpeed / 10.f);
+
     // Move each rectangle by speed
     for (auto &rect : mPressRects)
-        rect.move(0.f, -Settings::KeyPressVisSpeed);
+        rect.move(movement);
         
     // Move last rectangle back
     if (Settings::KeyPressVisToggle && !mPressRects.empty() && buttonPressed)
-        mPressRects.back().move(0.f, Settings::KeyPressVisSpeed);
+        mPressRects.back().move(-movement);
 
     mLastKeyState = buttonPressed;
 }
@@ -87,9 +93,12 @@ void GfxButton::update(bool buttonPressed)
 void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
+    auto pressRectTransf = states;
+    pressRectTransf.transform.rotate(-Settings::KeyPressVisRotation);
+    pressRectTransf.transform = pressRectTransf.transform.translate(Settings::KeyPressVisOrig.x, -Settings::KeyPressVisOrig.y);
 
     for (const auto &rect : mPressRects)
-        target.draw(rect, states);
+        target.draw(rect, pressRectTransf);
     for (const auto &sprite : mSprites)
         target.draw(*sprite, states);
 
@@ -260,11 +269,14 @@ void GfxButton::scaleSprites()
 
 void GfxButton::removeOutOfViewPressRects()
 {
-    sf::FloatRect windowBounds(sf::Vector2f(), sf::Vector2f(Application::getWindowWidth(), Application::getWindowHeight()));
+    sf::FloatRect bounds(sf::Vector2f(), sf::Vector2f(Application::getWindowWidth(), Application::getWindowHeight()));
     sf::Transform transform = getTransform();
+    transform.rotate(-Settings::KeyPressVisRotation);
+    transform = transform.translate(Settings::KeyPressVisOrig.x, -Settings::KeyPressVisOrig.y);
+
     mPressRects.erase(std::remove_if(mPressRects.begin(), mPressRects.end(), 
-        [transform, windowBounds](const auto& rect) 
-        { return !windowBounds.intersects(transform.transformRect(rect.getGlobalBounds())); }),
+        [transform, bounds](const auto& rect) 
+        { return !bounds.intersects(transform.transformRect(rect.getGlobalBounds())); }),
         mPressRects.end());
 }
 
@@ -289,16 +301,6 @@ void GfxButton::centerOrigins()
     sf::Sprite &animationSprite = *mSprites[AnimationSprite];
     buttonSprite.setOrigin(static_cast<sf::Vector2f>(buttonSprite.getTexture()->getSize()) / 2.f);
     animationSprite.setOrigin(static_cast<sf::Vector2f>(animationSprite.getTexture()->getSize()) / 2.f);
-    
-    // Make it appear in top left corner
-    float width = buttonSprite.getGlobalBounds().width;
-    float height = buttonSprite.getGlobalBounds().height;
-    for (auto &rect : mPressRects)
-    {
-        rect.setOrigin(
-            width  / 2.f + Settings::KeyPressVisOrig.x, 
-            height / 2.f + Settings::KeyPressVisOrig.y);
-    }
 
     for (auto &text : mTexts)
         text->setOrigin(getTextCenter(*text));

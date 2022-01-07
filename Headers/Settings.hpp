@@ -117,6 +117,7 @@ namespace Settings
     // [Key presses visualizer]
     extern bool KeyPressVisToggle;
     extern float KeyPressVisSpeed;
+    extern float KeyPressVisRotation;
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
 

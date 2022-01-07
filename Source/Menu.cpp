@@ -426,7 +426,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Key press visualization enabled", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Key press visualization speed", "2", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Key press visualization speed", "25", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisRotation, "Key press visualization rotation", "0", -360, 360)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Key press visualization origin", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Key press visualization color", "255,255,255,255")));
 

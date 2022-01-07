@@ -824,7 +824,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
 
         case LogicalParameter::ID::KeyPressVisToggle: return ParameterLine::ID::KeyPressVisToggle;
-        case LogicalParameter::ID::KeyPressVisSpeed: return ParameterLine::ID::KeyPressVisSpeed;
+        case LogicalParameter::ID::KeyPressVisSpeed: return ParameterLine::ID::KeyPressVisSpeed; 
+        case LogicalParameter::ID::KeyPressVisRotation: return ParameterLine::ID::KeyPressVisRotation;
         case LogicalParameter::ID::KeyPressVisOrig: return ParameterLine::ID::KeyPressVisOrig;
         case LogicalParameter::ID::KeyPressVisColor: return ParameterLine::ID::KeyPressVisColor;
 

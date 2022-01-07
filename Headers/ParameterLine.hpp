@@ -197,6 +197,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KeyPressVisColl,
             KeyPressVisToggle,
             KeyPressVisSpeed,
+            KeyPressVisRotation,
             KeyPressVisOrig,
             KeyPressVisColor,
             KeyPressVisMty,

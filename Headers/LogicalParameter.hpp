@@ -177,6 +177,7 @@ struct LogicalParameter
 
             KeyPressVisToggle,
             KeyPressVisSpeed,
+            KeyPressVisRotation,
             KeyPressVisOrig,
             KeyPressVisColor,
 

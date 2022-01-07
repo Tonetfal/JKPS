@@ -110,6 +110,7 @@ float KPSWindowDistanceBetween;
 // [Key presses visualizer]
 bool KeyPressVisToggle;
 float KeyPressVisSpeed;
+float KeyPressVisRotation;
 sf::Vector2f KeyPressVisOrig;
 sf::Color KeyPressVisColor;
 
