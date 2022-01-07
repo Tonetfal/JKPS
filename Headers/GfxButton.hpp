@@ -80,7 +80,10 @@ class GfxButton : public sf::Drawable, public sf::Transformable
     private:
         const TextureHolder &mTextures;
         const FontHolder &mFonts;
+        std::vector<sf::RectangleShape> mPressRects;
         sf::RectangleShape mBounds;
+
+        bool mLastKeyState;
 
         float mButtonsHeightOffset;
 

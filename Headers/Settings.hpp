@@ -114,6 +114,12 @@ namespace Settings
     extern unsigned KPSTextSize;
     extern unsigned KPSNumberSize;
 
+    // [Key presses visualizer]
+    extern bool KeyPressVisToggle;
+    extern float KeyPressVisSpeed;
+    extern sf::Vector2f KeyPressVisOrig;
+    extern sf::Color KeyPressVisColor;
+
     // [Other]
     extern bool SaveStats;
     extern int ButtonPressMultiplier;

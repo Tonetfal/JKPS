@@ -80,5 +80,7 @@ Alt (hold) - Show opposite button values
 
 [Themes](https://gist.github.com/JekiTheMonkey/727f57dcdecb76480b982f0fe479c5c1)
 
+[Patreon](https://www.patreon.com/jekithemonkey)
+
 # License
 Licensed under the [MIT License](LICENSE).

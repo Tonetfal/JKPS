@@ -12,6 +12,7 @@ bool GfxButton::mShowBounds(false);
 GfxButton::GfxButton(const unsigned idx, const TextureHolder& textureHolder, const FontHolder& fontHolder)
 : mTextures(textureHolder)
 , mFonts(fontHolder)
+, mLastKeyState(false)
 , mButtonsHeightOffset(0.f)
 , mBtnIdx(idx)
 {
@@ -48,13 +49,38 @@ void GfxButton::update(bool buttonPressed)
     {
         buttonPressed ? lowerKey() : raiseKey();
     }
+
+    if (Settings::KeyPressVisToggle)
+    {
+        if (!mLastKeyState && buttonPressed)
+        {
+            const auto &buttonSprite = *mSprites[ButtonSprite];
+            float width = buttonSprite.getGlobalBounds().width;
+            mPressRects.emplace_back(sf::RectangleShape(sf::Vector2f(width, 0.f)));
+            mPressRects.back().setFillColor(Settings::KeyPressVisColor);
+        }
+        else if (mLastKeyState && buttonPressed)
+        {
+            auto &rect = mPressRects.back();
+            auto oldSize = rect.getSize();
+            rect.setSize(sf::Vector2f(oldSize.x, oldSize.y - Settings::KeyPressVisSpeed));
+        }
+    }
+
+    for (auto &rect : mPressRects)
+        rect.move(0.f, -Settings::KeyPressVisSpeed);
+    if (Settings::KeyPressVisToggle && !mPressRects.empty() && mLastKeyState)
+        mPressRects.back().move(0.f, Settings::KeyPressVisSpeed);
+
+    mLastKeyState = buttonPressed;
 }
 
 void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    states.transform.translate(getPosition());
-    states.transform.scale(getScale());
+    states.transform *= getTransform();
 
+    for (const auto &rect : mPressRects)
+        target.draw(rect, states);
     for (const auto &sprite : mSprites)
         target.draw(*sprite, states);
 
@@ -221,6 +247,12 @@ void GfxButton::scaleSprites()
 
     buttonSprite.setScale(btnTxtrScale);
     animationSprite.setScale(aniTxtrScale);
+
+    // for (auto &rect : mPressRects)
+    // {
+    //     float oldHeight = rect.getSize().y;
+    //     rect.setSize(sf::Vector2f(buttonSprite.getGlobalBounds().width, oldHeight));
+    // }
 }
 
 void GfxButton::keepInBounds(sf::Text &text)
@@ -244,6 +276,16 @@ void GfxButton::centerOrigins()
     sf::Sprite &animationSprite = *mSprites[AnimationSprite];
     buttonSprite.setOrigin(static_cast<sf::Vector2f>(buttonSprite.getTexture()->getSize()) / 2.f);
     animationSprite.setOrigin(static_cast<sf::Vector2f>(animationSprite.getTexture()->getSize()) / 2.f);
+    
+    // Make it appear in top left corner
+    float width = buttonSprite.getGlobalBounds().width;
+    float height = buttonSprite.getGlobalBounds().height;
+    for (auto &rect : mPressRects)
+    {
+        rect.setOrigin(
+            width  / 2.f + Settings::KeyPressVisOrig.x, 
+            height / 2.f + Settings::KeyPressVisOrig.y);
+    }
 
     for (auto &text : mTexts)
         text->setOrigin(getTextCenter(*text));

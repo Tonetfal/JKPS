@@ -107,6 +107,12 @@ unsigned KPSNumberSize;
 float KPSWindowTopPadding;
 float KPSWindowDistanceBetween;
 
+// [Key presses visualizer]
+bool KeyPressVisToggle;
+float KeyPressVisSpeed;
+sf::Vector2f KeyPressVisOrig;
+sf::Color KeyPressVisColor;
+
 // [Other]
 bool SaveStats;
 int ButtonPressMultiplier;

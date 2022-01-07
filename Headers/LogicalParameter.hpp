@@ -175,6 +175,11 @@ struct LogicalParameter
             KPSWndwTopPadding,
             KPSWndwDistBtw,
 
+            KeyPressVisToggle,
+            KeyPressVisSpeed,
+            KeyPressVisOrig,
+            KeyPressVisColor,
+
             OtherSaveStats,
             OtherMultpl,
 
