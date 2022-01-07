@@ -117,6 +117,8 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
     return 
         id == LogicalParameter::ID::BtnTextClr ||
         id == LogicalParameter::ID::BtnTextChSz ||
+        id == LogicalParameter::ID::BtnTextOutThck ||
+        id == LogicalParameter::ID::BtnTextOutClr ||
         id == LogicalParameter::ID::BtnTextPosition ||
         id == LogicalParameter::ID::BtnTextBounds ||
         id == LogicalParameter::ID::BtnTextBold ||
