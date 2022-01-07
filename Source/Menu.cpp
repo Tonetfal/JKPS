@@ -14,7 +14,7 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.10-alpha");
+std::string Menu::mProgramVersion("v0.1");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
@@ -317,6 +317,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::StatisticsTextFontPath, "Statistics text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColor, "Statistics text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSize, "Statistics text character size", "17", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextOutlineThickness, "Statistics text outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextOutlineColor, "Statistics text outline color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBold, "Statistics text bold", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalic, "Statistics text italic", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShow, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsText, "Show statistics text", "True")));
@@ -356,6 +358,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::ButtonTextFontPath, "Buttons text font", "Default")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextColor, "Buttons text color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextCharacterSize, "Buttons text character size", "20", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextOutlineThickness, "Buttons text outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextOutlineColor, "Buttons text outline color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "8,8", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "True")));
@@ -421,6 +425,11 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Key press visualization enabled", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Key press visualization speed", "2", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Key press visualization origin", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Key press visualization color", "255,255,255,255")));
+
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::SaveStats, "Update statistics on quit", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
 
@@ -481,6 +490,10 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Key press visualization]"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Other]"));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
@@ -531,10 +544,8 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Alt (hold) - Show opposite buttons values"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
-    mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
-
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version " + mProgramVersion));
-    mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     const float stepX = 1000, stepY = 50;
     const unsigned halfWindowSize = 300;

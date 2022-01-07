@@ -12,6 +12,8 @@ std::string StatisticsTextFontPath;
 sf::Color StatisticsTextColor;
 sf::Vector2f StatisticsTextValuePosition;
 unsigned StatisticsTextCharacterSize;
+unsigned StatisticsTextOutlineThickness;
+sf::Color StatisticsTextOutlineColor;
 bool StatisticsTextBold;
 bool StatisticsTextItalic;
 bool ShowStatisticsText;
@@ -40,6 +42,8 @@ std::string StatisticsBPMText;
 std::string ButtonTextFontPath;
 sf::Color ButtonTextColor;
 unsigned ButtonTextCharacterSize;
+unsigned ButtonTextOutlineThickness;
+sf::Color ButtonTextOutlineColor;
 sf::Vector2f ButtonTextPosition;
 sf::Vector2f ButtonTextBounds;
 bool ButtonTextBold;
@@ -102,6 +106,12 @@ unsigned KPSTextSize;
 unsigned KPSNumberSize;
 float KPSWindowTopPadding;
 float KPSWindowDistanceBetween;
+
+// [Key presses visualizer]
+bool KeyPressVisToggle;
+float KeyPressVisSpeed;
+sf::Vector2f KeyPressVisOrig;
+sf::Color KeyPressVisColor;
 
 // [Other]
 bool SaveStats;
