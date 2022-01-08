@@ -194,5 +194,7 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::BtnGfxBtnos14 ||
         id == LogicalParameter::ID::BtnGfxSz14 ||
         id == LogicalParameter::ID::BtnGfxBtnos15 ||
-        id == LogicalParameter::ID::BtnGfxSz15;
+        id == LogicalParameter::ID::BtnGfxSz15 ||
+        id == LogicalParameter::ID::KeyPressVisRotation ||
+        id == LogicalParameter::ID::KeyPressVisFadeLineLen;
 }

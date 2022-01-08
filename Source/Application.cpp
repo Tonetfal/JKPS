@@ -486,6 +486,12 @@ unsigned Application::getWindowHeight()
     return height > 0 ? height : 100;
 }
 
+sf::IntRect Application::getWindowRect()
+{
+    return { { }, sf::Vector2i(getWindowWidth(), getWindowHeight()) };
+}
+
+
 bool Application::parameterIdMatches(LogicalParameter::ID id)
 {
     return

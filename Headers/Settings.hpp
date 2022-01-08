@@ -118,6 +118,7 @@ namespace Settings
     extern bool KeyPressVisToggle;
     extern float KeyPressVisSpeed;
     extern float KeyPressVisRotation;
+    extern float KeyPressVisFadeLineLen;
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
 

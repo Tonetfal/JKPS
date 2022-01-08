@@ -26,6 +26,7 @@ class Application
 
         static unsigned getWindowWidth();
         static unsigned getWindowHeight();
+        static sf::IntRect getWindowRect();
 
         static bool parameterIdMatches(LogicalParameter::ID id);
 

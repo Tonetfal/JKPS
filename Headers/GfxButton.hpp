@@ -4,13 +4,13 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 
 #include "ResourceIdentifiers.hpp"
 
 #include <array>
 #include <memory>
 
-#include <SFML/Graphics/RectangleShape.hpp>
 
 
 class GfxButton : public sf::Drawable, public sf::Transformable
@@ -60,8 +60,6 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         void resetAssets();
         void scaleSprites();
 
-        void removeOutOfViewPressRects();
-
         // Light animation
         void lightKey();
         void fadeKey();
@@ -80,9 +78,36 @@ class GfxButton : public sf::Drawable, public sf::Transformable
 
 
     private:
+        class RectEmitter : public sf::Drawable
+        {
+            public:
+                RectEmitter();
+
+                void update(bool buttonPressed);
+                void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+
+                void setPosition(sf::Vector2f position);
+                void create(sf::Vector2f buttonSize);
+
+
+            private:
+                sf::Transform getPressRectTransform(sf::Transform transform) const;
+                float getVertexProgress(size_t vertexNumber, float vertexHeight) const;
+
+
+            private:
+                sf::VertexArray mVertecies;
+                std::vector<size_t> mAvailableRectIndices;
+                std::vector<size_t> mUsedRectIndices;
+                sf::Vector2f mEmitterPosition;
+                sf::Vector2f mLastRectSize;
+        };
+
+
+    private:
         const TextureHolder &mTextures;
         const FontHolder &mFonts;
-        std::vector<sf::RectangleShape> mPressRects;
+        RectEmitter mEmitter;
         sf::RectangleShape mBounds;
 
         bool mLastKeyState;

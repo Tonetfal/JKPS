@@ -425,11 +425,12 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Key press visualization enabled", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Key press visualization speed", "25", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisRotation, "Key press visualization rotation", "0", -360, 360)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Key press visualization origin", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Key press visualization color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Enabled", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Speed", "25", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisRotation, "Movement rotation", "0", -360, 360)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Origin", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisFadeLineLen, "Fade out distance", "100", -16384, 16384)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Color", "255,255,255,255")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::SaveStats, "Update statistics on quit", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
