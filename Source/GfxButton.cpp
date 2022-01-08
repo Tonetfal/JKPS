@@ -44,15 +44,11 @@ GfxButton::GfxButton(const unsigned idx, const TextureHolder& textureHolder, con
 void GfxButton::update(bool buttonPressed)
 {
     if (Settings::LightAnimation)
-    {
         buttonPressed ? lightKey() : fadeKey();
-    }
-
     if (Settings::PressAnimation)
-    {
         buttonPressed ? lowerKey() : raiseKey();
-    }
 
+    float speed = -Settings::KeyPressVisSpeed / 10.f;
     if (Settings::KeyPressVisToggle)
     {
         // Create a new rectangle on button press if last frame the button was not pressed
@@ -61,7 +57,7 @@ void GfxButton::update(bool buttonPressed)
             const auto &buttonSprite = *mSprites[ButtonSprite];
             float width = buttonSprite.getGlobalBounds().width;
             float height = buttonSprite.getGlobalBounds().height;
-            sf::RectangleShape rect(sf::Vector2f(width, 0.1f));
+            sf::RectangleShape rect(sf::Vector2f(width, speed));
             rect.setFillColor(Settings::KeyPressVisColor);
             rect.setOrigin(width / 2.f, height / 2.f);
             mPressRects.push_back(std::move(rect));
@@ -73,11 +69,11 @@ void GfxButton::update(bool buttonPressed)
         {
             auto &rect = mPressRects.back();
             auto oldSize = rect.getSize();
-            rect.setSize(sf::Vector2f(oldSize.x, oldSize.y - Settings::KeyPressVisSpeed / 10.f));
+            rect.setSize(sf::Vector2f(oldSize.x, oldSize.y + speed));
         }
     }
 
-    sf::Vector2f movement(0.f, -Settings::KeyPressVisSpeed / 10.f);
+    sf::Vector2f movement(0.f, speed);
 
     // Move each rectangle by speed
     for (auto &rect : mPressRects)
@@ -94,8 +90,8 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
     states.transform *= getTransform();
     auto pressRectTransf = states;
-    pressRectTransf.transform.rotate(-Settings::KeyPressVisRotation);
-    pressRectTransf.transform = pressRectTransf.transform.translate(Settings::KeyPressVisOrig.x, -Settings::KeyPressVisOrig.y);
+    // pressRectTransf.transform.rotate(-Settings::KeyPressVisRotation);
+    // pressRectTransf.transform = pressRectTransf.transform.translate(Settings::KeyPressVisOrig.x, -Settings::KeyPressVisOrig.y);
 
     for (const auto &rect : mPressRects)
         target.draw(rect, pressRectTransf);
