@@ -83,6 +83,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnTextOutClr,
             BtnTextPosition,
             BtnTextBounds,
+            BtnTextIgnoreBtnMovement,
             BtnTextBold,
             BtnTextItal,
             BtnTextShowVisKeys,

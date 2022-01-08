@@ -136,10 +136,13 @@ void GfxButton::lowerKey()
         const auto position = sprite->getPosition();
         sprite->setPosition(position.x, position.y + Settings::AnimationOffset - mButtonsHeightOffset);
     }
-    for (auto &label : mTexts)
+    if (!Settings::BtnTextIgnoreBtnMovement)
     {
-        const auto position = label->getPosition();
-        label->setPosition(position.x, position.y + Settings::AnimationOffset - mButtonsHeightOffset);
+        for (auto &label : mTexts)
+        {
+            const auto position = label->getPosition();
+            label->setPosition(position.x, position.y + Settings::AnimationOffset - mButtonsHeightOffset);
+        }
     }
     mButtonsHeightOffset = Settings::AnimationOffset;
 }
@@ -156,10 +159,13 @@ void GfxButton::raiseKey()
         const auto position = sprite->getPosition();
         sprite->setPosition(position.x, position.y - step);
     }
-    for (auto &label : mTexts)
+    if (!Settings::BtnTextIgnoreBtnMovement)
     {
-        const auto position = label->getPosition();
-        label->setPosition(position.x, position.y - step);
+        for (auto &label : mTexts)
+        {
+            const auto position = label->getPosition();
+            label->setPosition(position.x, position.y - step);
+        }
     }
     mButtonsHeightOffset = std::max(mButtonsHeightOffset - step, 0.f);
 }
@@ -364,7 +370,7 @@ void GfxButton::RectEmitter::update(bool buttonPressed)
             }
 
             // Set the right alpha channel depending on the progress to the end of the fade out length line
-            vertex.color.a = 255 - 255 * getVertexProgress(i, vertex.position.y);
+            vertex.color = getVertexColor(j);
         }
 
         // All vertices are on the same height
@@ -415,10 +421,10 @@ void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
     auto halfRectSize = rectSize / 2.f;
     
     // Create and position the 4 vertices
-    vertices[0].position = sf::Vector2f(-halfRectSize.x, -halfRectSize.y);
-    vertices[1].position = sf::Vector2f(+halfRectSize.x, -halfRectSize.y);
-    vertices[2].position = sf::Vector2f(+halfRectSize.x, +halfRectSize.y);
-    vertices[3].position = sf::Vector2f(-halfRectSize.x, +halfRectSize.y);
+    vertices[0].position = sf::Vector2f(-halfRectSize.x, -rectSize.y);
+    vertices[1].position = sf::Vector2f(+halfRectSize.x, -rectSize.y);
+    vertices[2].position = sf::Vector2f(+halfRectSize.x, 0.f);
+    vertices[3].position = sf::Vector2f(-halfRectSize.x, 0.f);
 
     // Iterate through created vertices
     const auto rectIndex = mAvailableRectIndices.back();
@@ -431,9 +437,8 @@ void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
         // Move the position to the emitter's origin
         vertex.position += mEmitterPosition - sf::Vector2f(0.f, buttonSize.y / 2.f);
 
-        // Change the color, set the alpha depending on the progress
-        vertex.color = Settings::KeyPressVisColor;
-        vertex.color.a = 255 - 255 * getVertexProgress(i, vertex.position.y);
+        // Change the color
+        vertex.color = getVertexColor(firstVertexIndex + i);
         
         // Assign the created vertex to the contrainer
         mVertecies[firstVertexIndex + i] = vertex;
@@ -466,4 +471,11 @@ float GfxButton::RectEmitter::getVertexProgress(size_t vertexNumber, float verte
         originOffset = +height;
 
     return std::min(mEmitterPosition.y - vertexHeight / Settings::KeyPressVisFadeLineLen, 1.f);
+}
+
+sf::Color GfxButton::RectEmitter::getVertexColor(size_t vertexIndex) const
+{
+    auto color = Settings::KeyPressVisColor;
+    color.a -= color.a * getVertexProgress(vertexIndex, mVertecies[vertexIndex].position.y);
+    return color;
 }

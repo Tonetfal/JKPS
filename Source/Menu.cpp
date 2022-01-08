@@ -14,7 +14,7 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.1");
+std::string Menu::mProgramVersion("v0.1-pre-release");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
@@ -362,6 +362,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextOutlineColor, "Buttons text outline color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "8,8", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::BtnTextIgnoreBtnMovement, "Ignore button movement", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextItalic, "Buttons text italic", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowVisualKeys, "Show visual keys", "True")));
@@ -426,10 +427,10 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Enabled", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Speed", "25", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Speed", "60", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisRotation, "Movement rotation", "0", -360, 360)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Origin", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisFadeLineLen, "Fade out distance", "100", -16384, 16384)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisFadeLineLen, "Fade out distance", "500", -16384, 16384)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Color", "255,255,255,255")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::SaveStats, "Update statistics on quit", "False")));

@@ -727,6 +727,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BtnTextOutClr: return ParameterLine::ID::BtnTextOutClr;
         case LogicalParameter::ID::BtnTextPosition: return ParameterLine::ID::BtnTextPosition;
         case LogicalParameter::ID::BtnTextBounds: return ParameterLine::ID::BtnTextBounds;
+        case LogicalParameter::ID::BtnTextIgnoreBtnMovement: return ParameterLine::ID::BtnTextIgnoreBtnMovement;
         case LogicalParameter::ID::BtnTextBold: return ParameterLine::ID::BtnTextBold;
         case LogicalParameter::ID::BtnTextItal: return ParameterLine::ID::BtnTextItal;
         case LogicalParameter::ID::BtnTextShowVisKeys: return ParameterLine::ID::BtnTextShowVisKeys;

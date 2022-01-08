@@ -93,6 +93,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
             private:
                 sf::Transform getPressRectTransform(sf::Transform transform) const;
                 float getVertexProgress(size_t vertexNumber, float vertexHeight) const;
+                sf::Color getVertexColor(size_t vertexIndex) const;
 
 
             private:

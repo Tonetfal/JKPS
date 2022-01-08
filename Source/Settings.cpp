@@ -46,6 +46,7 @@ unsigned ButtonTextOutlineThickness;
 sf::Color ButtonTextOutlineColor;
 sf::Vector2f ButtonTextPosition;
 sf::Vector2f ButtonTextBounds;
+bool BtnTextIgnoreBtnMovement;
 bool ButtonTextBold;
 bool ButtonTextItalic;
 bool ButtonTextShowVisualKeys;

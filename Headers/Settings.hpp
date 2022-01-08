@@ -53,6 +53,7 @@ namespace Settings
     extern sf::Color ButtonTextOutlineColor;
     extern sf::Vector2f ButtonTextPosition;
     extern sf::Vector2f ButtonTextBounds;
+    extern bool BtnTextIgnoreBtnMovement;
     extern bool ButtonTextBold;
     extern bool ButtonTextItalic;
     extern bool ButtonTextShowVisualKeys;

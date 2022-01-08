@@ -79,6 +79,7 @@ struct LogicalParameter
             BtnTextOutClr,
             BtnTextPosition,
             BtnTextBounds,
+            BtnTextIgnoreBtnMovement,
             BtnTextBold,
             BtnTextItal,
             BtnTextShowVisKeys,
