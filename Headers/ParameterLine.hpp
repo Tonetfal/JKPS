@@ -263,7 +263,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             const TextureHolder &textures,
             sf::RenderWindow &window);
 
-        void handleEvent(sf::Event event);
+        bool handleEvent(sf::Event event);
         void processInput();
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
@@ -282,11 +282,11 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
 
     private:
         // Clicks with keyboard to modify value of buttons
-        void handleValueModEvent(sf::Event event);
-        void handleButtonsInteractionEvent(sf::Event event);
+        bool handleValueModEvent(sf::Event event);
+        bool handleButtonsInteractionEvent(sf::Event event);
 
         bool tabulation(sf::Keyboard::Key key);
-        void selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos);
+        bool selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos);
 
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
         void buildLimits(const FontHolder &fonts);

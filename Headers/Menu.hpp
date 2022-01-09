@@ -46,6 +46,7 @@ class Menu
         void loadFonts();
         void loadTextures();
 
+        void initCollectionNames();
         void buildMenuTabs();
         void buildParametersMap();
         void buildParameterLines();
@@ -79,6 +80,7 @@ class Menu
 
         std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> mParameters;
         std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> mParameterLines;
+        std::vector<std::string> mCollectionNames;
         ChangedParametersQueue mChangedParametersQueue;
 
         static bool paramValWasChanged;

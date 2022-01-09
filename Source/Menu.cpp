@@ -27,8 +27,9 @@ Menu::Menu()
     loadFonts();
     loadTextures();
 
+    initCollectionNames();
     buildParametersMap();
-    const bool read = ConfigHelper::readConfig(mParameters, mParameterLines);
+    auto read = ConfigHelper::readConfig(mParameters, mCollectionNames);
     buildParameterLines();
     buildMenuTabs();
     if (!read)
@@ -50,39 +51,56 @@ void Menu::handleEvent()
     sf::Event event;
     static bool scrollCursorClicked;
     while (mWindow.pollEvent(event))
-    { 
-        for (auto &pair : mParameterLines)
-            pair.second->handleEvent(event);
-
-        if (event.type == sf::Event::MouseWheelScrolled || event.type == sf::Event::KeyPressed)
+    {
+        if (event.type == sf::Event::MouseButtonPressed 
+        ||  event.type == sf::Event::KeyPressed
+        ||  event.type == sf::Event::MouseWheelScrolled)
         {
-            const sf::Vector2f viewCenter = mView.getCenter();
-            float offset = 0.f;
-
-            if (event.type == sf::Event::MouseWheelScrolled)
+            bool isAnyLineSelected = false;
+            for (auto &pair : mParameterLines)
             {
-                offset = -mScrollSpeed * event.mouseWheelScroll.delta;
-            }
-            if (event.type == sf::Event::KeyPressed)
-            {
-                const sf::Keyboard::Key key = event.key.code;
-                const sf::Vector2f viewSize = mView.getSize();
-                if (key == sf::Keyboard::PageUp)
-                    offset = -viewSize.y;
-                if (key == sf::Keyboard::PageDown)
-                    offset = viewSize.y;
+                bool isSelected = pair.second->handleEvent(event);
+                if (isSelected)
+                    isAnyLineSelected = true;
             }
 
-            moveSliderBarButtons(offset);
-            returnViewInBounds();
+            if (!isAnyLineSelected)
+            {
+                // If a key was pressed, but mouse aims at no box - deselect
+                ParameterLine::deselectValue();
+
+                // If the mouse wheel was scrolled and no value is selected - scroll
+                if (event.type == sf::Event::MouseWheelScrolled || event.type == sf::Event::KeyPressed)
+                {
+                    const sf::Vector2f viewCenter = mView.getCenter();
+                    float offset = 0.f;
+
+                    if (event.type == sf::Event::MouseWheelScrolled)
+                    {
+                        offset = -mScrollSpeed * event.mouseWheelScroll.delta;
+                    }
+                    if (event.type == sf::Event::KeyPressed)
+                    {
+                        const sf::Keyboard::Key key = event.key.code;
+                        const sf::Vector2f viewSize = mView.getSize();
+                        if (key == sf::Keyboard::PageUp)
+                            offset = -viewSize.y;
+                        if (key == sf::Keyboard::PageDown)
+                            offset = viewSize.y;
+                    }
+
+                    moveSliderBarButtons(offset);
+                    returnViewInBounds();
+                }
+            }
         }
 
         if (event.type == sf::Event::MouseButtonPressed 
         ||  event.type == sf::Event::MouseButtonReleased
         ||  event.type == sf::Event::MouseMoved)
         {
-            sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow));
-            sf::Color colorToSet = mSliderBarDefaultColor;
+            auto mousePos = sf::Mouse::getPosition(mWindow);
+            auto colorToSet = mSliderBarDefaultColor;
             if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left)
                 scrollCursorClicked = false;
             if (mSliderBar.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos)))
@@ -169,8 +187,10 @@ void Menu::handleRealtimeInput()
         pair.second->processInput();
 
     for (auto &elem : mParameters)
+    {
         if (elem.second->resetChangeState())
             mChangedParametersQueue.push(elem);
+    }
 }
 
 void Menu::update()
@@ -186,9 +206,8 @@ void Menu::render()
 
     for (const auto &pair : mParameterLines)
         mWindow.draw(*pair.second);
-    
 
-    sf::Transform transform = sf::Transform::Identity;
+    auto transform = sf::Transform::Identity;
     transform.translate(0, -mTabs.front()->getPosition().y);
     mWindow.setView(mWindow.getDefaultView());
 
@@ -198,7 +217,6 @@ void Menu::render()
     mWindow.draw(mSliderBar);
 
     mWindow.setView(mView);
-
 
     mWindow.display();
 }
@@ -256,9 +274,27 @@ void Menu::loadTextures()
     mTextures.loadFromMemory(Textures::Refresh, RefreshTexture, 6000);
 }
 
+void Menu::initCollectionNames()
+{
+    mCollectionNames.emplace_back("[Statistics text]");
+    mCollectionNames.emplace_back("[Statistics text advanced settings]");
+    mCollectionNames.emplace_back("[Buttons text]");
+    mCollectionNames.emplace_back("[Buttons text advanced settings]");
+    mCollectionNames.emplace_back("[Button graphics]");
+    mCollectionNames.emplace_back("[Button graphics advanced settings]");
+    mCollectionNames.emplace_back("[Animation graphics]");
+    mCollectionNames.emplace_back("[Main window]");
+    mCollectionNames.emplace_back("[Extra KPS window]");
+    mCollectionNames.emplace_back("[Key press visualization]");
+    mCollectionNames.emplace_back("[Other]");
+    mCollectionNames.emplace_back("[Statistics save]");
+}
+
 void Menu::buildMenuTabs()
 {
-    typedef std::unique_ptr<GfxParameter> Ptr;
+    // Font has to be loaded before tabs can be constructed
+
+    using Ptr = std::unique_ptr<GfxParameter>;
     Ptr tabPtr;
     const sf::Vector2f topLeftAngle(0.f, 300.f);
     const sf::Vector2f distBtw(5.f, 0.f);
@@ -311,137 +347,137 @@ void Menu::buildMenuTabs()
 
 void Menu::buildParametersMap()
 {
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::StatisticsTextDistance, "Statistics text distance", "5", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatPos, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPosition, "Statistics text position", "10, 0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatValPos, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePosition, "Statistics value text position", "0, 0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::StatisticsTextFontPath, "Statistics text font", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColor, "Statistics text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSize, "Statistics text character size", "17", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextOutlineThickness, "Statistics text outline thickness", "0", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextOutlineColor, "Statistics text outline color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBold, "Statistics text bold", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalic, "Statistics text italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShow, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsText, "Show statistics text", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowKPS, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsKPS, "Show KPS", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowTotal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsTotal, "Show total", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowBPM, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ShowStatisticsBPM, "Show BPM", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextDist,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::StatisticsTextDistance,                      "Distance between", "5", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatPos,                   new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextPosition,                      "Position offset", "10, 0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatValPos,                new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextValuePosition,                 "Number position offset", "0, 0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextFont,              new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::StatisticsTextFontPath,                      "Font filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr,               new LogicalParameter(LogicalParameter::Type::Color,         &Settings::StatisticsTextColor,                         "Text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz,              new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::StatisticsTextCharacterSize,                 "Character size", "17", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutThck,           new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::StatisticsTextOutlineThickness,              "Outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextOutClr,            new LogicalParameter(LogicalParameter::Type::Color,         &Settings::StatisticsTextOutlineColor,                  "Outline color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBold,                          "Bold", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalic,                        "Italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShow,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsText,                          "Enabled", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowKPS,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsKPS,                           "Show KPS", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowTotal,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsTotal,                         "Show total", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowBPM,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsBPM,                           "Show BPM", "True")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextPositionsAdvancedMode, "Enable advanced mode for stats text positions", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos1, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[0], "Statistics KPS text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos2, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[1], "Statistics total text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos3, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextPositions[2], "Statistics BPM text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextValuePositionsAdvancedMode, "Enable advanced mode for stats value text positions", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos1, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[0], "Statistics KPS value text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos2, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[1], "Statistics total value text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos3, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::StatisticsTextValuePositions[2], "Statistics BPM value text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClrAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextColorsAdvancedMode, "Enable advanced mode for stats text colors", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr1, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColors[0], "Statistics KPS text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr2, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColors[1], "Statistics total text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr3, new LogicalParameter(LogicalParameter::Type::Color, &Settings::StatisticsTextColors[2], "Statistics BPM text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSzAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextChSzssAdvancedMode, "Enable advanced mode for character sizes", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz1, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSizes[0], "Statistics KPS text character size", "14", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz2, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSizes[1], "Statistics total text character size", "14", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz3, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::StatisticsTextCharacterSizes[2], "Statistics BPM text character size", "14", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBoldAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBoldAdvancedMode, "Enable advanced mode for stats text bold", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold1, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBolds[0], "Statistics KPS bold", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold2, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBolds[1], "Statistics total bold", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold3, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextBolds[2], "Statistics BPM bold", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItalAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalicAdvancedMode, "Enable advanced mode for stats text italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal1, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalics[0], "Statistics KPS italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal2, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalics[1], "Statistics total italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal3, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::StatisticsTextItalics[2], "Statistics BPM italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPSText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsKPSText, "KPS text", "KPS: ")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPS2Text, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsKPS2Text, "KPS text when it is 0", "Max: ")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextTotalText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsTotalText, "Total text", "Total: ")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBPMText, new LogicalParameter(LogicalParameter::Type::String, &Settings::StatisticsBPMText, "BPM text", "BPM: ")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPosAdvMode,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextPositionsAdvancedMode,         "Enable advanced mode for text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos1,              new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextPositions[0],                  "KPS text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos2,              new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextPositions[1],                  "Total text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextPos3,              new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextPositions[2],                  "BPM text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPosAdvMode,     new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextValuePositionsAdvancedMode,    "Enable advanced mode for number text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos1,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextValuePositions[0],             "KPS number text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos2,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextValuePositions[1],             "Total number text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextValPos3,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextValuePositions[2],             "BPM number text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClrAdvMode,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextColorsAdvancedMode,            "Enable advanced mode for text colors", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr1,              new LogicalParameter(LogicalParameter::Type::Color,         &Settings::StatisticsTextColors[0],                     "KPS text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr2,              new LogicalParameter(LogicalParameter::Type::Color,         &Settings::StatisticsTextColors[1],                     "Total text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextClr3,              new LogicalParameter(LogicalParameter::Type::Color,         &Settings::StatisticsTextColors[2],                     "BPM text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSzAdvMode,       new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextChSzssAdvancedMode,            "Enable advanced mode for character sizes", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz1,             new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::StatisticsTextCharacterSizes[0],             "KPS text character size", "14", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz2,             new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::StatisticsTextCharacterSizes[1],             "Total text character size", "14", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextChSz3,             new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::StatisticsTextCharacterSizes[2],             "BPM text character size", "14", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBoldAdvMode,       new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBoldAdvancedMode,              "Enable advanced mode for stats text bold", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold1,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBolds[0],                      "KPS bold", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold2,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBolds[1],                      "Total bold", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold3,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBolds[2],                      "BPM bold", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItalAdvMode,       new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalicAdvancedMode,            "Enable advanced mode for stats text italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal1,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalics[0],                    "KPS italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal2,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalics[1],                    "Total italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal3,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalics[2],                    "BPM italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPSText,           new LogicalParameter(LogicalParameter::Type::String,        &Settings::StatisticsKPSText,                           "KPS text", "KPS: ")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextKPS2Text,          new LogicalParameter(LogicalParameter::Type::String,        &Settings::StatisticsKPS2Text,                          "KPS text when it is 0", "Max: ")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextTotalText,         new LogicalParameter(LogicalParameter::Type::String,        &Settings::StatisticsTotalText,                         "Total text", "Total: ")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBPMText,           new LogicalParameter(LogicalParameter::Type::String,        &Settings::StatisticsBPMText,                           "BPM text", "BPM: ")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::ButtonTextFontPath, "Buttons text font", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextColor, "Buttons text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextCharacterSize, "Buttons text character size", "20", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutThck, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonTextOutlineThickness, "Buttons text outline thickness", "0", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::ButtonTextOutlineColor, "Buttons text outline color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextPosition, "Buttons text position", "0,0", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTextBounds, "Buttons text bounds", "8,8", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::BtnTextIgnoreBtnMovement, "Ignore button movement", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextBold, "Buttons text bold", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextItalic, "Buttons text italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowVisualKeys, "Show visual keys", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowTot, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowTotal, "Show key counters", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowKPS, "Show key KPS", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowBpm, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextShowBPM, "Show key BPM", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextFont,               new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::ButtonTextFontPath,                          "Font filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextClr,                new LogicalParameter(LogicalParameter::Type::Color,         &Settings::ButtonTextColor,                             "Text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextChSz,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonTextCharacterSize,                     "Character size", "20", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutThck,            new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonTextOutlineThickness,                  "Outline thickness", "0", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextOutClr,             new LogicalParameter(LogicalParameter::Type::Color,         &Settings::ButtonTextOutlineColor,                      "Outline color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosition,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonTextPosition,                          "Position offset", "0,0", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBounds,             new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonTextBounds,                            "Text bounds", "8,8", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement,  new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::BtnTextIgnoreBtnMovement,                    "Ignore button movement", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextBold,                              "Bold", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextItalic,                            "Italic", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Enabled", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowTot,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowTotal,                         "Show key counters", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowKPS,                           "Show key KPS", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowBpm,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowBPM,                           "Show key BPM", "False")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextSepPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextSepPosAdvancedMode, "Enable advanced mode for separate button text positions", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVisPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonVisualKeysTextPosition, "Buttons visual keys text position", "0,12", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextTotPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonTotalTextPosition, "Buttons key counters text position", "0,-13", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextKPSPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonKPSTextPosition, "Buttons KPS text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBPMPosition, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonBPMTextPosition, "Buttons BPM text position", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ButtonTextPosAdvancedMode, "Enable advanced mode for button text positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextSepPosAdvMode,      new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextSepPosAdvancedMode,                "Enable advanced mode for separate button text positions", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextVisPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonVisualKeysTextPosition,                "Visual keys text position offset", "0,12", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextTotPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonTotalTextPosition,                     "Key counters text position offset", "0,-13", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextKPSPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonKPSTextPosition,                       "KPS text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBPMPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonBPMTextPosition,                       "BPM text position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosAdvMode,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextPosAdvancedMode,                   "Enable advanced mode for button text positions", "False")));
     for (unsigned idx = 0; idx < 15; ++idx)
     {
-        const LogicalParameter::ID textPosId = LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnTextPos1) + idx);
-        mParameters.emplace(std::make_pair(textPosId, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::ButtonsTextPositions[idx], ("Button text " + std::to_string(idx + 1) + " position"), "0,0", -1000, 1000)));
+        auto textPosId =               LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnTextPos1) + idx);
+        mParameters.emplace(std::make_pair(textPosId,                                   new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonsTextPositions[idx],                  ("Button " + std::to_string(idx + 1) + " text position offset"), "0,0", -1000, 1000)));
     }
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxDist, new LogicalParameter(LogicalParameter::Type::Float, &Settings::GfxButtonDistance, "Button distance", "10", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::GfxButtonTexturePath, "Button texture", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrSz, new LogicalParameter(LogicalParameter::Type::VectorU, &Settings::GfxButtonTextureSize, "Button texture size", "60,60", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::GfxButtonTextureColor, "Button texture color", "30,30,30,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxDist,                new LogicalParameter(LogicalParameter::Type::Float,         &Settings::GfxButtonDistance,                           "Distance", "10", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtr,                new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::GfxButtonTexturePath,                        "Texture filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrSz,              new LogicalParameter(LogicalParameter::Type::VectorU,       &Settings::GfxButtonTextureSize,                        "Texture size", "60,60", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxTxtrClr,             new LogicalParameter(LogicalParameter::Type::Color,         &Settings::GfxButtonTextureColor,                       "Texture color", "30,30,30,255")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxBtnPosAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::GfxButtonBtnPositionsAdvancedMode, "Enable advanced mode for button positions", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxSzAdvMode, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::GfxButtonSizesAdvancedMode, "Enable advanced mode for button sizes", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxBtnPosAdvMode,       new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::GfxButtonBtnPositionsAdvancedMode,           "Enable advanced mode for button positions", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxSzAdvMode,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::GfxButtonSizesAdvancedMode,                  "Enable advanced mode for button sizes", "False")));
     for (unsigned idx = 0; idx < 15; ++idx)
     {
-        const LogicalParameter::ID btnPosId = LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxBtnPos1) + idx * 2);
-        const LogicalParameter::ID btnSzId = LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxSz1) + idx * 2);
-        mParameters.emplace(std::make_pair(btnPosId, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::GfxButtonsBtnPositions[idx], ("Button " + std::to_string(idx + 1) + " position"), "0,0", -1000, 1000)));
-        mParameters.emplace(std::make_pair(btnSzId, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::GfxButtonsSizes[idx], ("Button " + std::to_string(idx + 1) + " size"), "60,60", -1000, 1000)));
+        auto btnPosId =                LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxBtnPos1) + idx * 2);
+        auto btnSzId =                 LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxSz1) + idx * 2);
+        mParameters.emplace(std::make_pair(btnPosId,                                    new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::GfxButtonsBtnPositions[idx],                ("Button " + std::to_string(idx + 1) + " position offset"), "0,0", -1000, 1000)));
+        mParameters.emplace(std::make_pair(btnSzId,                                     new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::GfxButtonsSizes[idx],                       ("Button " + std::to_string(idx + 1) + " size"), "60,60", -1000, 1000)));
     }
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxLight, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::LightAnimation, "Light animation", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxPress, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::PressAnimation, "Press animation", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::AnimationTexturePath, "Animation texture", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxVel, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::AnimationFrames, "Animation frames", "5", 1, 120)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxScl, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::AnimationScale, "Animation scale on click (%)", "100,100", 0, 200)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::AnimationColor, "Animation color", "255,180,0,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxOffset, new LogicalParameter(LogicalParameter::Type::Float, &Settings::AnimationOffset, "Animation offset", "3", -100, 100)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxLight,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::LightAnimation,                              "Light animation enabled", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxPress,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::PressAnimation,                              "Press animation enabled", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxTxtr,               new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::AnimationTexturePath,                        "Texture filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxVel,                new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::AnimationFrames,                             "Animation frames", "5", 1, 120)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxScl,                new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::AnimationScale,                              "Scale on click (%)", "100,100", 0, 200)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxClr,                new LogicalParameter(LogicalParameter::Type::Color,         &Settings::AnimationColor,                              "Color", "255,180,0,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxOffset,             new LogicalParameter(LogicalParameter::Type::Float,         &Settings::AnimationOffset,                             "Offset", "3", -100, 100)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::BackgroundTexturePath, "Background texture", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::BackgroundColor, "Background color", "140,140,140,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::ScaleBackground, "Scale background texture if it does not fit", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTitleBar, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::WindowTitleBar, "Window title bar", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop, new LogicalParameter(LogicalParameter::Type::Int, &Settings::WindowBonusSizeTop, "Window bonus size top", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot, new LogicalParameter(LogicalParameter::Type::Int, &Settings::WindowBonusSizeBottom, "Window bonus size bottom", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft, new LogicalParameter(LogicalParameter::Type::Int, &Settings::WindowBonusSizeLeft, "Window bonus size left", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght, new LogicalParameter(LogicalParameter::Type::Int, &Settings::WindowBonusSizeRight, "Window bonus size right", "135", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr,                    new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::BackgroundTexturePath,                       "Background texture filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr,                     new LogicalParameter(LogicalParameter::Type::Color,         &Settings::BackgroundColor,                             "Background color", "140,140,140,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale,                   new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ScaleBackground,                             "Scale background texture if it does not fit", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTitleBar,          new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::WindowTitleBar,                              "Title bar", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeTop,                          "Bonus size top", "6", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeBottom,                       "Bonus size bottom", "6", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeLeft,                         "Bonus size left", "6", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght,              new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeRight,                        "Bonus size right", "135", -1000, 1000)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwEn, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KPSWindowEnabledFromStart, "Enable from start", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwSz, new LogicalParameter(LogicalParameter::Type::VectorU, &Settings::KPSWindowSize, "Window size", "300,300", 0, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KPSTextSize, "Text character size:", "130", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumChSz, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KPSNumberSize, "Number character size", "100", 0, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwBgClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSBackgroundColor, "KPS Background color", "0,177,64,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSTextColor, "KPS text color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumClr, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KPSNumberColor, "KPS number color", "255,255,255,255")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KPSWindowTextFontPath, "KPS window text font", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumFont, new LogicalParameter(LogicalParameter::Type::StringPath, &Settings::KPSWindowNumberFontPath, "KPS window number font", "Default", -50)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowTopPadding, "KPS top padding", "20", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KPSWindowDistanceBetween, "KPS extra window distance between text", "50", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwEn,                 new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KPSWindowEnabledFromStart,                   "Enable from start", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwSz,                 new LogicalParameter(LogicalParameter::Type::VectorU,       &Settings::KPSWindowSize,                               "Window size", "300,300", 0, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtChSz,            new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KPSTextSize,                                 "Text character size:", "130", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumChSz,            new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KPSNumberSize,                               "Number character size", "100", 0, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwBgClr,              new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KPSBackgroundColor,                          "Background color", "0,177,64,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtClr,             new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KPSTextColor,                                "Text color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumClr,             new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KPSNumberColor,                              "Number color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTxtFont,            new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::KPSWindowTextFontPath,                       "Text font filepath", "Default")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwNumFont,            new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::KPSWindowNumberFontPath,                     "Number font filepaht", "Default", -50)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwTopPadding,         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KPSWindowTopPadding,                         "Top padding", "20", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw,            new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KPSWindowDistanceBetween,                    "Distance between text", "50", -500, 500)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::KeyPressVisToggle, "Enabled", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisSpeed, "Speed", "60", -500, 500)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisRotation, "Movement rotation", "0", -360, 360)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig, new LogicalParameter(LogicalParameter::Type::VectorF, &Settings::KeyPressVisOrig, "Origin", "0,0", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen, new LogicalParameter(LogicalParameter::Type::Float, &Settings::KeyPressVisFadeLineLen, "Fade out distance", "500", -16384, 16384)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor, new LogicalParameter(LogicalParameter::Type::Color, &Settings::KeyPressVisColor, "Color", "255,255,255,255")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KeyPressVisToggle,                           "Enabled", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed,          new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisSpeed,                            "Speed", "60", -500, 500)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation,       new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisRotation,                         "Movement rotation", "0", -360, 360)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisOrig,                             "Spawn position offset", "0,0", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen,    new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisFadeLineLen,                      "Fade out distance", "500", -16384, 16384)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor,          new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisColor,                            "Color", "255,255,255,255")));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats, new LogicalParameter(LogicalParameter::Type::Bool, &Settings::SaveStats, "Update statistics on quit", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::ButtonPressMultiplier, "Value to multiply on click", "1", 0, 1000000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::SaveStats,                                   "Update statistics on quit", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonPressMultiplier,                       "Value to multiply on click", "1", 0, 1000000)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS, new LogicalParameter(LogicalParameter::Type::Float, &Settings::MaxKPS, "Saved max KPS", "0", 0, UINT_MAX)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::Total, "Saved total", "0", 0, UINT_MAX)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS,            new LogicalParameter(LogicalParameter::Type::Float,         &Settings::MaxKPS,                                      "Saved max KPS", "0", 0, UINT_MAX)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal,             new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::Total,                                       "Saved total", "0", 0, UINT_MAX)));
     for (unsigned idx = 0; idx < Settings::KeysTotal.size(); ++idx)
     {
-        const LogicalParameter::ID id = LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + idx);
-        mParameters.emplace(std::make_pair(id, new LogicalParameter(LogicalParameter::Type::Unsigned, &Settings::KeysTotal[idx], "Saved total " + std::to_string(idx + 1), "0", 0, UINT_MAX)));
+        auto id =                       LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + idx);
+        mParameters.emplace(std::make_pair(id,                                          new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KeysTotal[idx],                             "Saved total " + std::to_string(idx + 1), "0", 0, UINT_MAX)));
     }
 }
 
@@ -453,55 +489,56 @@ void Menu::buildParameterLines()
             new ParameterLine(pair.second, mFonts, mTextures, mWindow)));
     }
     
-    typedef std::shared_ptr<LogicalParameter> sPtr;
+    using sPtr = std::shared_ptr<LogicalParameter>;
     sPtr parP = nullptr;
     sPtr emptyP(new LogicalParameter(LogicalParameter::Type::Empty, nullptr));
+    size_t collectionNameIdx = 0u;
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Statistics text]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::StatTextColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::StatTextMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Statistics text advanced settings]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::StatTextAdvColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::StatTextAdvMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Buttons text]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnTextColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnTextMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Buttons text advanced settings]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnTextAdvColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnTextAdvMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Button graphics]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnGfxColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnGfxMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Button graphics advanced settings]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnGfxAdvColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnGfxAdvMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Animation graphics]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Main window]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::MainWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::MainWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Extra KPS window]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Key press visualization]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Other]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "[Statistics save]"));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::SaveStatColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::SaveStatMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 

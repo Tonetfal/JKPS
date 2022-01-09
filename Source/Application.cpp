@@ -220,7 +220,7 @@ void Application::update()
 
 void Application::render()
 {
-    mWindow.clear(sf::Color(45,45,45));
+    mWindow.clear();
 
     mWindow.draw(*mBackground);
 

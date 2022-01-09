@@ -20,13 +20,15 @@ extern const std::string separationSign;
     
 bool readConfig(
     std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
-    std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines);
-void fillParameters(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
+    const std::vector<std::string> &collectionNames);
+void readParameters(
+    std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters,
+    const std::vector<std::string> &collectionNames);
 std::queue<LogKey> getLogKeys();
 std::queue<LogKey> oldGetLogKeys();
 std::queue<LogKey> oldGetLogButtons();
-std::string readParameter(const std::string &par, bool &parameterFound, bool &parameterEmpty);
-void writeParameter(LogicalParameter &par);
+std::string scanParameter(const std::string &par, bool &parameterFound, bool &parameterEmpty, std::string_view collection);
+void readParameter(LogicalParameter &par, std::string_view collection);
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr);
