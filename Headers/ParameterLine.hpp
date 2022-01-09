@@ -251,8 +251,8 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             HotKey12,
             HotKey13,
 
-            LastLine,
-
+            ProgramVersion,
+            LastLine
         };
 
 

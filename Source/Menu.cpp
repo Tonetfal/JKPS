@@ -331,6 +331,11 @@ void Menu::buildMenuTabs()
     ++idx;
 
     idx = 0;
+    tabPtr = Ptr(new GfxParameter("Press visual.", idx));
+    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx) + sf::Vector2f(0, 30));
+    mTabs.push_back(std::move(tabPtr));
+    ++idx;
+
     tabPtr = Ptr(new GfxParameter("Other", idx));
     tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx) + sf::Vector2f(0, 30));
     mTabs.push_back(std::move(tabPtr));
@@ -585,7 +590,9 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version " + mProgramVersion));
-    mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::ProgramVersion, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
     const float stepX = 1000, stepY = 50;
     const unsigned halfWindowSize = 300;
@@ -602,6 +609,11 @@ void Menu::buildParameterLines()
 
         if (ParameterLine::isEmpty(pair.first))
         {
+            if (pair.first == ParameterLine::ID::LastLine)
+            {
+                mParameterLines.at(ParameterLine::ID::ProgramVersion)
+                    ->move(0.f, static_cast<float>(halfWindowSize) - stepY * 2.f + padding);
+            }
             mBounds.push_back(stepY * (row - 2) - halfWindowSize + padding);
             row = 0;
             ++column;

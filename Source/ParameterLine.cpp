@@ -904,6 +904,7 @@ bool ParameterLine::isEmpty(ParameterLine::ID id)
         id == ParameterLine::ID::AnimGfxMty ||
         id == ParameterLine::ID::MainWndwMty ||
         id == ParameterLine::ID::KPSWndwMty ||
+        id == ParameterLine::ID::KeyPressVisMty ||
         id == ParameterLine::ID::OtherMty ||
         // id == ParameterLine::ID::InfoMty ||
         id == ParameterLine::ID::LastLine;
