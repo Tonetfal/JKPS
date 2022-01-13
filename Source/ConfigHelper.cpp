@@ -223,8 +223,6 @@ std::string scanParameter(const std::string &parName, bool &parameterFound, bool
 
 void readParameter(LogicalParameter &par, std::string_view collection)
 {
-    if (collection == "[Key press visualization]")
-        int a = 5;
     bool parameterFound = false;
     bool parameterEmpty = false;
     auto valStr = scanParameter(par.mParName, parameterFound, parameterEmpty, collection);
@@ -234,13 +232,21 @@ void readParameter(LogicalParameter &par, std::string_view collection)
     while (valStr == "" && parName != "")
     {
         if (parName = getOldParName(parName, collection); parName != "")
+        {
             valStr = scanParameter(parName, parameterFound, parameterEmpty, collection);
+            // if (valStr == "")
+            //     std::cout << parName << " was not found even with old version support\n";
+        }
     }
 
     parName = par.mParName;
     // only these 4 can be empty
-    if ((parameterEmpty && !(parName == "KPS text" || parName == "KPS text when it is 0" || parName == "Total text" || parName == "BPM text"))
-    ||  !parameterFound)
+    if ((parameterEmpty && 
+            !( parName == "KPS text" 
+            || parName == "KPS text when it is 0" 
+            || parName == "Total text" 
+            || parName == "BPM text"))
+        ||  !parameterFound)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par, collection);
@@ -811,8 +817,8 @@ std::string getOldParName(std::string_view newParName, std::string_view collecti
     else if (newParName == "Texture color" && collection == "[Button graphics]")
         return 			   "Button texture color";
 
-    else if (newParName == "Enable advanced mode for button positions" && collection == "[Button graphics advanced settings]")
-        return 			   "Enable advanced mode for button positions";
+    // else if (newParName == "Enable advanced mode for button positions" && collection == "[Button graphics advanced settings]")
+    //     return 			   "Enable advanced mode for button positions";
     else if (newParName == "Button 1 position offset" && collection == "[Button graphics advanced settings]")
         return 			   "Button 1 position";
     else if (newParName == "Button 2 position offset" && collection == "[Button graphics advanced settings]")

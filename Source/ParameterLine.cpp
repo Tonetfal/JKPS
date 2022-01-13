@@ -79,8 +79,9 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
     {
         sf::Event e;
         e.type = sf::Event::KeyPressed;
-        e.key.code = (event.mouseWheel.delta > 0 
+        e.key.code = (event.mouseWheelScroll.delta > 0 
             ? sf::Keyboard::Up : sf::Keyboard::Down);
+        event = e;
     }
 
     if (event.type == sf::Event::KeyPressed)
@@ -355,10 +356,11 @@ bool ParameterLine::handleButtonsInteractionEvent(sf::Event event)
 
             if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Tab)
             {
-                if (tabulation(key))
+                if (tabulation())
                 {
                     // return in order to avoid further tabulation and segmentation fault
                     ret = true;
+                    break;
                 }
             }
         }
@@ -372,7 +374,7 @@ bool ParameterLine::handleButtonsInteractionEvent(sf::Event event)
     return false;
 }
 
-bool ParameterLine::tabulation(sf::Keyboard::Key key)
+bool ParameterLine::tabulation()
 {
     if (isItSelectedLine(shared_from_this()))
     {

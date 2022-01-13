@@ -285,7 +285,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         bool handleValueModEvent(sf::Event event);
         bool handleButtonsInteractionEvent(sf::Event event);
 
-        bool tabulation(sf::Keyboard::Key key);
+        bool tabulation();
         bool selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos);
 
         void buildButtons(const std::string &valueStr, const FontHolder &fonts, const TextureHolder &textures);
