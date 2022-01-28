@@ -118,7 +118,7 @@ sf::Color KeyPressVisColor;
 
 // [Other]
 bool SaveStats;
-int ButtonPressMultiplier;
+unsigned ButtonPressMultiplier;
 
 // Default assets
 unsigned char* StatisticsDefaultFont = MainProgramFont;

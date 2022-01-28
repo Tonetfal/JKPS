@@ -9,10 +9,10 @@ LogicalParameter::LogicalParameter(Type type, void *valPtr, const std::string &p
     float lowLimits, float highLimits, const std::string &val)
 : mType(type)
 , mParName(parName)
-, mDefValStr(defVal)
 , mLowLimits(lowLimits)
 , mHighLimits(highLimits)
 , mChanged(false)
+, mDefValStr(defVal)
 { 
     if (type == Type::Color)
         this->mHighLimits = 255;
@@ -23,48 +23,48 @@ LogicalParameter::LogicalParameter(Type type, void *valPtr, const std::string &p
     {
         case Type::Unsigned: 
             mVal.uP = static_cast<unsigned*>(valPtr); 
-            setDigit<unsigned>(std::stoi(defVal)); 
+            setDigit<unsigned>(static_cast<unsigned>(std::stoi(defVal)));
             break;
             
         case Type::Int: 
-            mVal.iP = static_cast<int*>(valPtr); 
+            mVal.iP = static_cast<int*>(valPtr);
             setDigit<int>(std::stoi(defVal)); 
             break;
 
         case Type::Bool: 
-            mVal.bP = static_cast<bool*>(valPtr); 
+            mVal.bP = static_cast<bool*>(valPtr);
             setBool(defVal); 
             break;
 
         case Type::Float: 
             mVal.fP = static_cast<float*>(valPtr); 
-            setDigit<float>(std::stoi(defVal)); 
+            setDigit<float>(static_cast<float>(std::stoi(defVal)));
             break;
 
         case Type::String: 
         case Type::StringPath:
-            mVal.sP = static_cast<std::string*>(valPtr); 
+            mVal.sP = static_cast<std::string*>(valPtr);
             setString(defVal); 
             break;
 
         case Type::Color: 
             mVal.cP = static_cast<sf::Color*>(valPtr); 
-            setColor(ConfigHelper::readColorParameter(*this, defVal)); 
+            setColor(ConfigHelper::readColorParameter(*this, defVal));
             break;
 
         case Type::VectorU: 
             mVal.vUp = static_cast<sf::Vector2u*>(valPtr); 
-            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal));
             break;
 
         case Type::VectorI: 
             mVal.vIp = static_cast<sf::Vector2i*>(valPtr); 
-            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal));
             break;
 
         case Type::VectorF: 
             mVal.vFp = static_cast<sf::Vector2f*>(valPtr); 
-            setVector(ConfigHelper::readVectorParameter(*this, defVal)); 
+            setVector(ConfigHelper::readVectorParameter(*this, defVal));
             break;
 
         default: break; // Empty or Collection
@@ -77,14 +77,18 @@ void LogicalParameter::setColor(sf::Color color)
 
     *mVal.cP = color;
 
-    mValStr = std::to_string(mVal.cP->r) + ',' + std::to_string(mVal.cP->g) + ',' + std::to_string(mVal.cP->b) + ',' + std::to_string(mVal.cP->a);
+    mValStr = 
+        std::to_string(static_cast<int>(mVal.cP->r)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->g)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->b)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->a));
     mChanged = true;
 }
 
 void LogicalParameter::setColor(const std::string &str, unsigned idx)
 {
     assert(mType == Type::Color);
-    assert(idx >= 0 && idx <= 3);
+    assert(idx >= 0u && idx <= 3u);
 
     unsigned char c = static_cast<unsigned char>(std::stoi(str));
     switch (idx)
@@ -93,23 +97,28 @@ void LogicalParameter::setColor(const std::string &str, unsigned idx)
         case 1: mVal.cP->g = c; break;
         case 2: mVal.cP->b = c; break;
         case 3: mVal.cP->a = c; break;
+        default: break;
     }
-    mValStr = std::to_string(mVal.cP->r) + ',' + std::to_string(mVal.cP->g) + ',' + std::to_string(mVal.cP->b) + ',' + std::to_string(mVal.cP->a);
+    mValStr = 
+        std::to_string(static_cast<int>(mVal.cP->r)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->g)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->b)) + ',' + 
+        std::to_string(static_cast<int>(mVal.cP->a));
     mChanged = true;
 }
 
 void LogicalParameter::setVector(const std::string &str, unsigned idx)
 {
     assert(mType == Type::VectorU || mType == Type::VectorI || mType == Type::VectorF);
-    assert(idx == 0 || idx == 1);
+    assert(idx == 0u || idx == 1u);
 
     switch(mType)
     {
         case Type::VectorU: 
             switch(idx)
             {
-                case 0: mVal.vUp->x = std::stoi(str); break;
-                case 1: mVal.vUp->y = std::stoi(str); break;
+                case 0: mVal.vUp->x = static_cast<unsigned>(std::stoi(str)); break;
+                case 1: mVal.vUp->y = static_cast<unsigned>(std::stoi(str)); break;
             }
             mValStr = std::to_string(mVal.vUp->x) + ',' + std::to_string(mVal.vUp->y);
             break;
@@ -124,11 +133,12 @@ void LogicalParameter::setVector(const std::string &str, unsigned idx)
         case Type::VectorF: 
             switch(idx)
             {
-                case 0: mVal.vFp->x = std::stoi(str); break;
-                case 1: mVal.vFp->y = std::stoi(str); break;
+                case 0: mVal.vFp->x = static_cast<float>(std::stoi(str)); break;
+                case 1: mVal.vFp->y = static_cast<float>(std::stoi(str)); break;
             }
             mValStr = std::to_string(static_cast<int>(mVal.vFp->x)) + ',' + std::to_string(static_cast<int>(mVal.vFp->y));
             break;
+        default: break;
     }
     mChanged = true;
 }
@@ -216,6 +226,7 @@ void LogicalParameter::setValStr(const std::string &str, unsigned idx)
         case LogicalParameter::Type::VectorU:
         case LogicalParameter::Type::VectorI:
         case LogicalParameter::Type::VectorF: setVector(str, idx); break;
+        default: break;
     }
 }
 
@@ -246,7 +257,7 @@ void LogicalParameter::resetToDefaultValue()
     switch(mType)
     {
         case Type::Unsigned: 
-            setDigit<unsigned>(std::stoi(mDefValStr)); 
+            setDigit<unsigned>(static_cast<unsigned>(std::stoi(mDefValStr)));
             break;
             
         case Type::Int: 
@@ -258,7 +269,7 @@ void LogicalParameter::resetToDefaultValue()
             break;
 
         case Type::Float: 
-            setDigit<float>(std::stoi(mDefValStr)); 
+            setDigit<float>(static_cast<float>(std::stoi(mDefValStr))); 
             break;
 
         case Type::String: 

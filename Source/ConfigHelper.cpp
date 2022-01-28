@@ -321,7 +321,7 @@ sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string 
         }
 
         // Move index on next value
-        strIdx += valStr.substr(strIdx).find(',') + 1;
+        strIdx += valStr.substr(strIdx).find(',') + 1lu;
     }
 
     return { vec[0], vec[1] };
@@ -334,8 +334,9 @@ sf::Color readColorParameter(const LogicalParameter &par, const std::string &val
     {
         // std::stoi transforms a string into int until it encounters any non numerical character, such as ','
         int tmp = std::stoi(valStr.substr(strIdx, 81));
+        float tmpF = static_cast<float>(tmp);
 
-        if ((tmp < par.mLowLimits || tmp > par.mHighLimits)
+        if ((tmpF < par.mLowLimits || tmpF > par.mHighLimits)
         && ofErrLog.is_open())
         {
             ofErrLog << getOutOfBoundsErrMsg(par);
@@ -362,7 +363,7 @@ sf::Color readColorParameter(const LogicalParameter &par, const std::string &val
         else
         {
             // Move index on next value
-            strIdx += valStr.substr(strIdx).find(',') + 1;
+            strIdx += valStr.substr(strIdx).find(',') + 1lu;
         }
     }
     
@@ -444,8 +445,8 @@ void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParamet
 std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visualKeysStr)
 {
     std::queue<LogKey> logKeysQueue;
-    unsigned strIdx1 = 0, strIdx2 = 0;
-    const unsigned len = ConfigHelper::separationSign.length();
+    auto strIdx1 = 0lu, strIdx2 = 0lu;
+    const auto len = ConfigHelper::separationSign.length();
 
     for (unsigned i = 0; strIdx1 < keysStr.size(); ++i)
     {
@@ -482,6 +483,7 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
         if (visualKeyStr.size() > maxLength || visualKeyStr.size() == 0)
             visualKeyStr = checkStr;
 
+        // TODO remove *new LogKey, use smart ptrs instead
         if (isKeyB)
             logKeysQueue.emplace(*new LogKey(keyStr, visualKeyStr, new sf::Keyboard::Key(key), nullptr));
         else

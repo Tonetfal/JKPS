@@ -125,7 +125,7 @@ namespace Settings
 
     // [Other]
     extern bool SaveStats;
-    extern int ButtonPressMultiplier;
+    extern unsigned ButtonPressMultiplier;
 
     // Default assets
     extern unsigned char* KeyCountersDefaultFont;
@@ -154,4 +154,4 @@ namespace Settings
     extern float MaxKPS;
     extern unsigned Total;
     extern std::array<unsigned, 15> KeysTotal;
-};
+}

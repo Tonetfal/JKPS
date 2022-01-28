@@ -4,7 +4,7 @@
 #include "../Headers/StringHelper.hpp"
 
 
-unsigned Button::mSize(0);
+unsigned Button::mSize(0u);
 
 Button::Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder &fontHolder)
 : LogButton(mSize, key)

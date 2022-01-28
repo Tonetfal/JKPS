@@ -20,7 +20,7 @@ struct GfxParameter : public sf::Drawable, public sf::Transformable
     public:
         GfxParameter(const ParameterLine *parent, const std::string &str, unsigned n, sf::Vector2f rectSize = sf::Vector2f(70.f, 25.f));
         GfxParameter(const ParameterLine *parent, bool b);
-        GfxParameter(const std::string &str, unsigned nTab);
+        GfxParameter(const std::string &str, sf::Vector2f rectSize);
         GfxParameter(const ParameterLine *parent);
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;

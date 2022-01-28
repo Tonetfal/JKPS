@@ -6,7 +6,7 @@
 #include "LogicalParameter.hpp"
 
 
-class Button : public GfxButton, public LogButton
+class Button : public LogButton, public GfxButton
 {
     public:
         Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder &fontHolder);
@@ -31,9 +31,10 @@ class Button : public GfxButton, public LogButton
 
 
     private:
+        static unsigned mSize;
+        
         const TextureHolder &mTextures;
         const FontHolder &mFonts;
 
         const unsigned mBtnIdx;
-        static unsigned mSize;
 };

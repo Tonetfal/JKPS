@@ -12,10 +12,10 @@ unsigned LogButton::statTotal(0);
 float LogButton::statBeatsPerMinute(0);
 
 LogButton::LogButton(const unsigned idx, LogKey &key)
-: mBtnIdx(idx)
-, mKey(key)
+: mKey(key)
 , mKeysPerSecond(0)
 , mTotal(0)
+, mBtnIdx(idx)
 {
     statMaxKeysPerSecond = Settings::MaxKPS;
     statTotal = Settings::Total;
@@ -32,7 +32,7 @@ void LogButton::processRealtimeInput()
 
     if (bufferElem > 0)
     {
-        mKeysPerSecond -= bufferElem;
+        mKeysPerSecond -= static_cast<float>(bufferElem);
         --bufferElem;
         --statKeysPerSecond;
         assert(bufferElem == 0);

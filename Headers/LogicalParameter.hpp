@@ -259,8 +259,8 @@ struct LogicalParameter
         
 
     public:
-        const std::string mParName;
         const Type mType;
+        const std::string mParName;
         float mLowLimits, mHighLimits;
         bool mChanged;
 

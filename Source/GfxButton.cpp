@@ -113,7 +113,7 @@ void GfxButton::fadeKey()
     if (scale.x == 1.f && scale.y == 1.f && color.a == 0.f)
         return;
 
-    const sf::Color animationStep(0, 0, 0, 255 / Settings::AnimationFrames);
+    const sf::Color animationStep(0, 0, 0, static_cast<sf::Uint8>(255 / Settings::AnimationFrames));
     const auto scaleStep = getScaleStep();
 
     animationSprite.setColor(color - animationStep);

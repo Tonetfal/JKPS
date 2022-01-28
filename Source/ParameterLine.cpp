@@ -34,7 +34,7 @@ ParameterLine::ParameterLine(
 : mWindow(window)
 , mType(parameter->mType)
 , mParameter(parameter)
-, mRectLine(sf::Vector2f(800, 40))
+, mRectLine(sf::Vector2f(785.f, 40.f))
 , mColorButtonP(nullptr)
 , paramValWasChanged(false)
 , mIsThRunning(false)
@@ -463,15 +463,15 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
 
     if (mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath)
     {
-        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0), 0, sf::Vector2f(250.f, 25.f));
-        val->setPosition(605, mRectLine.getSize().y / 2);
+        val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0), 0, sf::Vector2f(265.f, 25.f));
+        val->setPosition(598.f, mRectLine.getSize().y / 2.f);
 
         mParameterValues.emplace_back(std::move(val));
 
         if (mType == LogicalParameter::Type::StringPath)
         {
             val = std::make_shared<GfxParameter>(this);
-            val->setPosition(760, mRectLine.getSize().y / 2);
+            val->setPosition(765.f, mRectLine.getSize().y / 2.f);
 
             mParameterValues.emplace_back(std::move(val));
         }

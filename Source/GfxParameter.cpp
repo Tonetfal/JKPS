@@ -9,11 +9,11 @@
 #include <cassert>
 
 
-const sf::Color GfxParameter::defaultRectColor(sf::Color(120,120,120));
-const sf::Color GfxParameter::defaultAimedRectColor(sf::Color(160,160,160));
-const sf::Color GfxParameter::defaultSelectedRectColor(sf::Color(200,200,200));
-const TextureHolder *GfxParameter::mTextures(nullptr);
-const FontHolder *GfxParameter::mFonts(nullptr);
+const sf::Color GfxParameter::defaultRectColor(120, 120, 120);
+const sf::Color GfxParameter::defaultAimedRectColor(160, 160, 160);
+const sf::Color GfxParameter::defaultSelectedRectColor(200, 200, 200);
+const TextureHolder *GfxParameter::mTextures = nullptr;
+const FontHolder *GfxParameter::mFonts = nullptr;
 
 // All types, except Bool
 GfxParameter::GfxParameter(const ParameterLine *parent, const std::string &str, unsigned n, sf::Vector2f rectSize)
@@ -30,7 +30,7 @@ GfxParameter::GfxParameter(const ParameterLine *parent, const std::string &str, 
     setupValPos();
 
     float distance = 80;
-    setPosition(distance * n, 0);
+    setPosition(distance * static_cast<float>(n), 0);
 }
 
 // Bool type
@@ -43,20 +43,21 @@ GfxParameter::GfxParameter(const ParameterLine *parent, bool b)
 }
 
 // Tab
-GfxParameter::GfxParameter(const std::string &str, unsigned nTab)
+GfxParameter::GfxParameter(const std::string &str, sf::Vector2f rectSize)
 : mParent(nullptr)
 {
-    mRect.setSize(sf::Vector2f(129.133f, 25.f));
+    mRect.setSize(rectSize);
+    mRect.setOrigin(rectSize / 2.f);
     mRect.setFillColor(defaultRectColor);
+
     mValText.setFont(mFonts->get(Fonts::Value));
     mValText.setString(str);
     mValText.setCharacterSize(16);
-    mValText.setOrigin(
-        mValText.getLocalBounds().left + mValText.getLocalBounds().width  / 2,
-        mValText.getLocalBounds().top  + mValText.getLocalBounds().height / 2);
 
-    setPosition(129.133f * nTab, 0);
-    mValText.setPosition(mRect.getSize() / 2.f);
+    auto rect = mValText.getLocalBounds();
+    mValText.setOrigin(
+        rect.left + rect.width / 2,
+        rect.top  + rect.height / 2);
 }
 
 GfxParameter::GfxParameter(const ParameterLine *parent)
@@ -92,7 +93,7 @@ void GfxParameter::setupValPos()
 
 float GfxParameter::getPosX()
 {
-    unsigned maxValues = 4, valRectWidth = 70, distBetweenEdges = 10, distBetweenOrigins = 80;
+    float maxValues = 4.f, valRectWidth = 70.f, distBetweenEdges = 10.f, distBetweenOrigins = 80.f;
     return distBetweenOrigins * (maxValues - 1) + valRectWidth / 2 + distBetweenEdges;
 }
 

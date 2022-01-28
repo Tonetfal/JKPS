@@ -14,11 +14,11 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.1-pre-release");
+std::string Menu::mProgramVersion("v0.1");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
-, mSliderBar(sf::Vector2f(10, 200))
+, mSliderBar(sf::Vector2f(10.f, 200.f))
 , mSliderBarDefaultColor(sf::Color(103,103,103))
 , mSliderBarAimedColor(sf::Color(123,123,123))
 , mSliderBarPressedColor(sf::Color(161,161,161))
@@ -36,7 +36,7 @@ Menu::Menu()
         ConfigHelper::saveConfig(mParameters, mParameterLines, nullptr, false);
 
     mSliderBar.setOrigin(mSliderBar.getSize() / 2.f);
-    mSliderBar.setPosition(806, 100);
+    mSliderBar.setPosition(949.f, 100.f);
     mSliderBar.setFillColor(mSliderBarDefaultColor);
 }
 
@@ -56,6 +56,13 @@ void Menu::handleEvent()
         ||  event.type == sf::Event::KeyPressed
         ||  event.type == sf::Event::MouseWheelScrolled)
         {
+            if (event.type == sf::Event::KeyPressed 
+            &&  event.key.code == sf::Keyboard::Escape)
+            {
+                ParameterLine::deselectValue();
+                continue;
+            }
+
             bool isAnyLineSelected = false;
             for (auto &pair : mParameterLines)
             {
@@ -67,12 +74,12 @@ void Menu::handleEvent()
             if (!isAnyLineSelected)
             {
                 // If a key was pressed, but mouse aims at no box - deselect
-                ParameterLine::deselectValue();
+                if (event.type != sf::Event::MouseWheelScrolled)
+                    ParameterLine::deselectValue();
 
                 // If the mouse wheel was scrolled and no value is selected - scroll
                 if (event.type == sf::Event::MouseWheelScrolled || event.type == sf::Event::KeyPressed)
                 {
-                    const sf::Vector2f viewCenter = mView.getCenter();
                     float offset = 0.f;
 
                     if (event.type == sf::Event::MouseWheelScrolled)
@@ -127,10 +134,8 @@ void Menu::handleEvent()
         ||  event.type == sf::Event::MouseButtonReleased
         ||  event.type == sf::Event::MouseMoved)
         {
-            const sf::Vector2f halfWindowSize(mWindow.getSize() / 2U);
-            const sf::Vector2f rectSize(mTabs.front()->mRect.getSize());
-            const sf::Vector2f relMousePos(sf::Mouse::getPosition(mWindow));
-            const sf::Vector2f mousePos(relMousePos.x - rectSize.x / 2, relMousePos.y - halfWindowSize.y - rectSize.y / 2);
+            const auto halfWindowSize = static_cast<sf::Vector2f>(mWindow.getSize()) / 2.f;
+            const auto mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
 
             unsigned idx = 0;
             for (auto &tab : mTabs)
@@ -141,10 +146,6 @@ void Menu::handleEvent()
                     color = GfxParameter::defaultAimedRectColor;
                     if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
                     {
-                        const sf::Vector2f barSize = mSliderBar.getSize();
-                        const float bounds = mBounds[mCurrentTab];
-                        float heightToSet = 0;
-
                         mView.setCenter(1000 * idx + halfWindowSize.x, 0);
                         mSliderBar.setPosition(mSliderBar.getPosition().x, 100);
                         mCurrentTab = idx;
@@ -208,7 +209,6 @@ void Menu::render()
         mWindow.draw(*pair.second);
 
     auto transform = sf::Transform::Identity;
-    transform.translate(0, -mTabs.front()->getPosition().y);
     mWindow.setView(mWindow.getDefaultView());
 
     mWindow.draw(mTabsBackground);
@@ -223,9 +223,9 @@ void Menu::render()
 
 void Menu::openWindow()
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    auto desktop = sf::VideoMode::getDesktopMode();
 
-    mWindow.create(sf::VideoMode(812, 600), "JKPS Menu", sf::Style::Close);
+    mWindow.create(sf::VideoMode(959, 700), "JKPS Menu", sf::Style::Close);
     mWindow.setPosition(sf::Vector2i(
         desktop.width  / 2 - mWindow.getSize().x / 2, 
         desktop.height / 2 - mWindow.getSize().y / 2));
@@ -292,62 +292,41 @@ void Menu::initCollectionNames()
 
 void Menu::buildMenuTabs()
 {
-    // Font has to be loaded before tabs can be constructed
+    // Font must be loaded before tabs can be constructed
 
-    using Ptr = std::unique_ptr<GfxParameter>;
-    Ptr tabPtr;
-    const sf::Vector2f topLeftAngle(0.f, 300.f);
-    const sf::Vector2f distBtw(5.f, 0.f);
-    unsigned idx = 0;
+    std::unique_ptr<GfxParameter> tabPtr = nullptr;
+    const sf::Vector2f offset(5.f, 5.f);
+    const sf::Vector2f distBtw(0.f, 5.f);
+    const sf::Vector2f tabSize(140.f, 25.f);
+    const sf::Vector2f highTabSize(140.f, 50.f);
 
-    tabPtr = Ptr(new GfxParameter("Stats text", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
+    auto addTab = [&] (const auto &str, sf::Vector2f tabSize)
+        {
+            auto ptr = std::make_unique<GfxParameter>(str, tabSize);
+            sf::Vector2f prevTabPos = offset + tabSize / 2.f;
+            sf::Vector2f prevTabSize = -tabSize;
+            if (!mTabs.empty())
+            {
+                prevTabPos = mTabs.back()->getPosition();
+                prevTabSize = mTabs.back()->mRect.getSize();
+            }
 
-    tabPtr = Ptr(new GfxParameter("Buttons text", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
+            ptr->setPosition(prevTabPos + sf::Vector2f(0.f, tabSize.y / 2.f + prevTabSize.y / 2.f) + distBtw);
+            mTabs.push_back(std::move(ptr));
+        };
 
-    tabPtr = Ptr(new GfxParameter("Buttons gfx", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
+    addTab("Stats text", tabSize);
+    addTab("Buttons text", tabSize);
+    addTab(" Button\ngraphics", highTabSize);
+    addTab("Animation\ngraphics", highTabSize);
+    addTab("Main window", tabSize);
+    addTab("Extra KPS\n  window", highTabSize);
+    addTab("    Press\nvisualization", highTabSize);
+    addTab("Other", tabSize);
+    addTab("Main info", tabSize);
 
-    tabPtr = Ptr(new GfxParameter("Animation gfx", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    tabPtr = Ptr(new GfxParameter("Main window", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    tabPtr = Ptr(new GfxParameter("Extra KPS w.", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    idx = 0;
-    tabPtr = Ptr(new GfxParameter("Press visual.", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx) + sf::Vector2f(0, 30));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    tabPtr = Ptr(new GfxParameter("Other", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx) + sf::Vector2f(0, 30));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    tabPtr = Ptr(new GfxParameter("Main info", idx));
-    tabPtr->setPosition(tabPtr->getPosition() - topLeftAngle + distBtw * float(idx) + sf::Vector2f(0, 30));
-    mTabs.push_back(std::move(tabPtr));
-    ++idx;
-
-    mTabsBackground.setSize(sf::Vector2f(800, 60));
-    mTabsBackground.setFillColor(sf::Color(50, 50, 50));
+    mTabsBackground.setSize(sf::Vector2f(tabSize.x + offset.x * 2.f, 700.f));
+    mTabsBackground.setFillColor(sf::Color(35, 35, 35));
 }
 
 void Menu::buildParametersMap()
@@ -406,7 +385,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement,  new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::BtnTextIgnoreBtnMovement,                    "Ignore button movement", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextBold,                              "Bold", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextItalic,                            "Italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Enabled", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Shot key labels", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowTot,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowTotal,                         "Show key counters", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowKPS,                           "Show key KPS", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowBpm,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowBPM,                           "Show key BPM", "False")));
@@ -595,8 +574,9 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
     const float stepX = 1000, stepY = 50;
-    const unsigned halfWindowSize = 300;
-    const float padding = 10.f;
+    const float halfWindowSize = 400.f;
+    const float padding = 5.f;
+    const sf::Vector2f offset(155.f, 0.f);
     unsigned row = 1, column = 0;;
     for (auto &pair : mParameterLines)
     {
@@ -612,13 +592,13 @@ void Menu::buildParameterLines()
             if (pair.first == ParameterLine::ID::LastLine)
             {
                 mParameterLines.at(ParameterLine::ID::ProgramVersion)
-                    ->move(0.f, static_cast<float>(halfWindowSize) - stepY * 2.f + padding);
+                    ->move(0.f, halfWindowSize - stepY * 3.f + padding);
             }
             mBounds.push_back(stepY * (row - 2) - halfWindowSize + padding);
             row = 0;
             ++column;
         }
-        pair.second->setPosition(stepX * column, stepY * row - halfWindowSize + padding);
+        pair.second->setPosition(stepX * column + offset.x, stepY * row - halfWindowSize + padding);
         ++row;
     }
 }
