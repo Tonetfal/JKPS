@@ -135,6 +135,7 @@ namespace Settings
     extern unsigned char* DefaultBackgroundTexture;
     extern unsigned char* DefaultGreenscreenBackgroundTexture;
     extern unsigned char* DefaultKPSWindowFont;
+    extern unsigned char* KeyPressVisTexture;
 
     // Hot keys
     extern sf::Keyboard::Key KeyToIncreaseKeys;

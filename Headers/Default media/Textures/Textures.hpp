@@ -5,3 +5,4 @@
 #include "GreenscreenBGTexture.hpp"
 #include "ButtonTexture.hpp"
 #include "IconTexture.hpp"
+#include "KeyPressVisTexture.hpp"

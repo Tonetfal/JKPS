@@ -11,7 +11,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
 
 Application::Application()
 {
@@ -321,6 +321,7 @@ void Application::loadTextures()
     if (!mTextures.loadFromFile(Textures::Animation, Settings::AnimationTexturePath))
         mTextures.loadFromMemory(Textures::Animation, Settings::DefaultAnimationTexture, 15800);
 
+    // mTextures.loadFromMemory(Textures::KeyPressVis, Settings::KeyPressVisTexture, 4200);
 
     Settings::isGreenscreenSet = Settings::BackgroundTexturePath == "GreenscreenBG.png";
     if (Settings::isGreenscreenSet)

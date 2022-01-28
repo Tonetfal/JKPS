@@ -81,6 +81,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         class RectEmitter : public sf::Drawable
         {
             public:
+                // RectEmitter(const sf::Texture &texture);
                 RectEmitter();
 
                 void update(bool buttonPressed);
@@ -89,15 +90,22 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 void setPosition(sf::Vector2f position);
                 void create(sf::Vector2f buttonSize);
 
+                void scaleTexture(sf::Vector2f buttonSize);
+
 
             private:
                 sf::Transform getPressRectTransform(sf::Transform transform) const;
                 float getVertexProgress(size_t vertexNumber, float vertexHeight) const;
-                sf::Color getVertexColor(size_t vertexIndex) const;
+                sf::Color getVertexColor(const sf::VertexArray &vertexArray, size_t vertexIndex) const;
+                void pushVertecies(sf::VertexArray &vertexArray, sf::Vertex *toPush, size_t offset, sf::Vector2f buttonSize);
 
 
             private:
-                sf::VertexArray mVertecies;
+                // const sf::Texture &mTexture;
+                sf::Vector2f mTextureScale;
+                sf::VertexArray mMiddleVertecies;
+                sf::VertexArray mTopVertecies;
+                sf::VertexArray mBottomVertecies;
                 std::vector<size_t> mAvailableRectIndices;
                 std::vector<size_t> mUsedRectIndices;
                 sf::Vector2f mEmitterPosition;

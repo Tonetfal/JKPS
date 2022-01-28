@@ -11,6 +11,7 @@ namespace Textures
         vMark,
         xMark,
         Refresh,
+        KeyPressVis
     };
 }
 

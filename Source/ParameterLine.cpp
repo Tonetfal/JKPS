@@ -74,15 +74,16 @@ bool ParameterLine::handleEvent(sf::Event event)
 // Keyboard events which modify values
 bool ParameterLine::handleValueModEvent(sf::Event event)
 {
-    // Allow mouse wheel affect the values on scroll
-    if (event.type == sf::Event::MouseWheelScrolled)
-    {
-        sf::Event e;
-        e.type = sf::Event::KeyPressed;
-        e.key.code = (event.mouseWheelScroll.delta > 0 
-            ? sf::Keyboard::Up : sf::Keyboard::Down);
-        event = e;
-    }
+    // // Allow mouse wheel affect the values on scroll
+    // if (event.type == sf::Event::MouseWheelScrolled)
+    // {
+    //     // Create new event and swap it with the original one
+    //     sf::Event e;
+    //     e.type = sf::Event::KeyPressed;
+    //     e.key.code = (event.mouseWheelScroll.delta > 0 
+    //         ? sf::Keyboard::Up : sf::Keyboard::Down);
+    //     event = e;
+    // }
 
     if (event.type == sf::Event::KeyPressed)
     {
@@ -190,15 +191,12 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
         {
             if (mSelectedValueIndex != 0)
             {
-                if (!isStrType && str.size() == 1)
+                // "0" or "-0"
+                if ((!isStrType && str.size() == 1)
+                ||  (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 2))
                 {
                     str = "0";
                     mSelectedValueIndex = 1;
-                }
-                else if (str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 2)
-                {
-                    str = "-0";
-                    mSelectedValueIndex = 2;
                 }
                 else
                 {
@@ -217,15 +215,12 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
         {
             if (str.size() > mSelectedValueIndex)
             {
-                if (!isStrType && str.size() == 1)
+                // "0" or "-0"
+                if ((!isStrType && str.size() == 1) 
+                ||  (!isStrType && str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 0))
                 {
                     str = "0";
                     mSelectedValueIndex = 0;
-                }
-                else if (!isStrType && str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 1)
-                {
-                    str = "-0";
-                    mSelectedValueIndex = 1;
                 }
                 else
                 {

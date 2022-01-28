@@ -128,6 +128,7 @@ unsigned char* DefaultAnimationTexture = AnimationTexture;
 unsigned char* DefaultBackgroundTexture = BackgroundTexture;
 unsigned char* DefaultGreenscreenBackgroundTexture = GreenscreenTexture;
 unsigned char* DefaultKPSWindowFont = KPSWindowDefaultFont;
+unsigned char* KeyPressVisTexture = KeyPressVisTextureH;
 
 // Hot keys
 sf::Keyboard::Key KeyToIncreaseKeys(sf::Keyboard::Equal);
