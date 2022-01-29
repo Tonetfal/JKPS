@@ -195,6 +195,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             KPSWndwDistBtw,
             KPSWndwMty,
 
+            KeyPressVisHint,
             KeyPressVisColl,
             KeyPressVisToggle,
             KeyPressVisSpeed,
@@ -268,6 +269,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         bool resetState();
+        void setCharacterSize(unsigned size);
 
         const std::shared_ptr<LogicalParameter> getParameter() const;
         LogicalParameter::Type getType() const;

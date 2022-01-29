@@ -24,24 +24,24 @@ Application::Application()
     openWindow();
     loadIcon();
 
-    std::unique_ptr<GfxButtonSelector> keySelector(new GfxButtonSelector);
+    auto keySelector = std::make_unique<GfxButtonSelector>();
     mGfxButtonSelector = std::move(keySelector);
 
-    std::unique_ptr<ButtonPositioner> buttonPositioner(new ButtonPositioner(&mButtons));
+    auto buttonPositioner = std::make_unique<ButtonPositioner>(&mButtons);
     mButtonsPositioner = std::move(buttonPositioner);
     (*mButtonsPositioner)();
 
-    std::unique_ptr<StatisticsPositioner> statPositioner(new StatisticsPositioner(&mStatistics));
+    auto statPositioner = std::make_unique<StatisticsPositioner>(&mStatistics);
     mStatisticsPositioner = std::move(statPositioner);
     (*mStatisticsPositioner)();
 
-    std::unique_ptr<Background> bg(new Background(mTextures, mWindow));
+    auto bg = std::make_unique<Background>(mTextures, mWindow);
     mBackground = std::move(bg);
 
-    std::unique_ptr<KPSWindow> kpsWindow(new KPSWindow(mFonts));
+    auto kpsWindow = std::make_unique<KPSWindow>(mFonts);
     mKPSWindow = std::move(kpsWindow);
 
-    std::unique_ptr<KeysPerSecondGraph> graph(new KeysPerSecondGraph);
+    auto graph = std::make_unique<KeysPerSecondGraph>();
     mGraph = std::move(graph);
 
     mMenu.saveConfig(mButtons);
@@ -50,11 +50,11 @@ Application::Application()
 void Application::run()
 {
     sf::Clock clock;
-    sf::Time timeSinceLastUpdate = sf::Time::Zero;
+    auto timeSinceLastUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
-        sf::Time dt = clock.restart();
+        auto dt = clock.restart();
         timeSinceLastUpdate += dt;
         while (timeSinceLastUpdate > TimePerFrame)
         {
@@ -166,7 +166,6 @@ void Application::handleEvent()
                         mMenu.openWindow();
                 }
 
-                // Will be finished in next update :)
                 // if (key == Settings::KeyToOpenGraphWindow)
                 // {
                 //     if (mGraph->isOpen())
@@ -246,7 +245,7 @@ void Application::unloadChangesQueue()
     ChangedParametersQueue &queue = mMenu.getChangedParametersQueue();
     while (!queue.isEmpty())
     {
-        std::pair<const LogicalParameter::ID, std::shared_ptr<LogicalParameter>> pair = queue.pop();
+        auto pair = queue.pop();
 
         if (GfxStatisticsLine::parameterIdMatches(pair.first))
         {
@@ -357,7 +356,7 @@ void Application::loadIcon()
 
 void Application::buildStatistics()
 {
-    typedef std::unique_ptr<GfxStatisticsLine> Ptr;
+    using Ptr = std::unique_ptr<GfxStatisticsLine>;
     Ptr linePtr(nullptr);
     unsigned id = GfxStatisticsLine::StatisticsID::KPS;
     
@@ -392,6 +391,7 @@ void Application::buildButtons()
         logKeyQueue.pop();
     }
     
+    // TODO remove *new LogKey, use smart ptrs instead
     if (mButtons.empty())
     {
         addButton(*new LogKey("Z", "Z", new sf::Keyboard::Key(sf::Keyboard::Z), nullptr));
@@ -401,8 +401,8 @@ void Application::buildButtons()
 
 bool Application::isPressPerformedOnButton(unsigned &btnIdx) const
 {
-    const unsigned size = Button::size();
-    for (unsigned i = 0; i < size; ++i)
+    const auto size = Button::size();
+    for (size_t i = 0; i < size; ++i)
     {
         if (isMouseInRange(i))
         {
@@ -415,19 +415,18 @@ bool Application::isPressPerformedOnButton(unsigned &btnIdx) const
 
 bool Application::isMouseInRange(unsigned idx) const
 {
-    const sf::Vector2i mousePosition(sf::Mouse::getPosition(mWindow));
-    const sf::Vector2f textureSize = static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize);
-    const Button &button = *mButtons[idx];
-    const sf::Vector2f buttonPosition = button.getPosition() - textureSize / 2.f;
+    const auto mousePosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
+    const auto textureSize = static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize);
+    const auto &button = *mButtons[idx];
+    const auto buttonPosition = button.getPosition() - textureSize / 2.f;
     const sf::FloatRect buttonRectangle(buttonPosition, textureSize);
 
-    return buttonRectangle.contains(static_cast<sf::Vector2f>(mousePosition));
+    return buttonRectangle.contains(mousePosition);
 }
 
 void Application::addButton(LogKey &logKey)
 {
-    std::unique_ptr<Button> buttonPtr(new Button(logKey, mTextures, mFonts));
-    mButtons.push_back(std::move(buttonPtr));
+    mButtons.emplace_back(std::make_unique<Button>(logKey, mTextures, mFonts));
 }
 
 void Application::removeButton()
@@ -437,7 +436,7 @@ void Application::removeButton()
 
 void Application::openWindow()
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    auto desktop = sf::VideoMode::getDesktopMode();
 
     mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), 
         "JKPS", Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None);
@@ -445,7 +444,7 @@ void Application::openWindow()
         desktop.width / 2  - mWindow.getSize().x / 2, 
         desktop.height / 2 - mWindow.getSize().y / 2));
     mWindow.setKeyRepeatEnabled(false);
-    mWindow.setFramerateLimit(60);
+    // mWindow.setFramerateLimit(60);
 }
 
 void Application::resizeWindow()
@@ -475,7 +474,7 @@ unsigned Application::getWindowWidth()
         (Button::size() - 1) * Settings::GfxButtonDistance + 
         Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight;
     
-    return width > 0 ? width : 100; 
+    return width > 0u ? width : 100u; 
 }
 
 unsigned Application::getWindowHeight()
@@ -484,14 +483,13 @@ unsigned Application::getWindowHeight()
         Settings::GfxButtonTextureSize.y + Settings::WindowBonusSizeTop + 
         Settings::WindowBonusSizeBottom;
     
-    return height > 0 ? height : 100;
+    return height > 0u ? height : 100u;
 }
 
 sf::IntRect Application::getWindowRect()
 {
     return { { }, sf::Vector2i(getWindowWidth(), getWindowHeight()) };
 }
-
 
 bool Application::parameterIdMatches(LogicalParameter::ID id)
 {

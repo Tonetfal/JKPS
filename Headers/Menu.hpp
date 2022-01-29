@@ -14,8 +14,8 @@
 
 #include <vector>
 
-class Button;
 
+class Button;
 
 class Menu 
 {
@@ -73,7 +73,7 @@ class Menu
         const sf::Color mSliderBarAimedColor;
         const sf::Color mSliderBarPressedColor;
 
-        unsigned mCurrentTab;
+        unsigned mSelectedTab;
         std::vector<std::unique_ptr<GfxParameter>> mTabs;
         std::vector<float> mBounds;
         sf::RectangleShape mTabsBackground;

@@ -11,7 +11,7 @@
 
 const sf::Color GfxParameter::defaultRectColor(120, 120, 120);
 const sf::Color GfxParameter::defaultAimedRectColor(160, 160, 160);
-const sf::Color GfxParameter::defaultSelectedRectColor(200, 200, 200);
+const sf::Color GfxParameter::defaultSelectedRectColor(180, 180, 180);
 const TextureHolder *GfxParameter::mTextures = nullptr;
 const FontHolder *GfxParameter::mFonts = nullptr;
 
@@ -52,7 +52,7 @@ GfxParameter::GfxParameter(const std::string &str, sf::Vector2f rectSize)
 
     mValText.setFont(mFonts->get(Fonts::Value));
     mValText.setString(str);
-    mValText.setCharacterSize(16);
+    mValText.setCharacterSize(15);
 
     auto rect = mValText.getLocalBounds();
     mValText.setOrigin(

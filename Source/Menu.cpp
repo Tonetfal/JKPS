@@ -22,7 +22,7 @@ Menu::Menu()
 , mSliderBarDefaultColor(sf::Color(103,103,103))
 , mSliderBarAimedColor(sf::Color(123,123,123))
 , mSliderBarPressedColor(sf::Color(161,161,161))
-, mCurrentTab(0)
+, mSelectedTab(0u)
 {
     loadFonts();
     loadTextures();
@@ -38,6 +38,8 @@ Menu::Menu()
     mSliderBar.setOrigin(mSliderBar.getSize() / 2.f);
     mSliderBar.setPosition(949.f, 100.f);
     mSliderBar.setFillColor(mSliderBarDefaultColor);
+
+    mTabs.at(mSelectedTab)->mRect.setFillColor(GfxParameter::defaultSelectedRectColor);
 }
 
 void Menu::processInput()
@@ -137,20 +139,31 @@ void Menu::handleEvent()
             const auto halfWindowSize = static_cast<sf::Vector2f>(mWindow.getSize()) / 2.f;
             const auto mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
 
-            unsigned idx = 0;
+            unsigned idx = 0u;
             for (auto &tab : mTabs)
             {
-                sf::Color color = GfxParameter::defaultRectColor;
+                auto color = GfxParameter::defaultRectColor;
                 if (tab->contains(mousePos))
                 {
                     color = GfxParameter::defaultAimedRectColor;
-                    if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+                    if (event.type == sf::Event::MouseButtonPressed)
                     {
-                        mView.setCenter(1000 * idx + halfWindowSize.x, 0);
+                        // Move view on new tab position
+                        mView.setCenter(1000.f * idx + halfWindowSize.x, 0.f);
+
+                        // Reset slider
                         mSliderBar.setPosition(mSliderBar.getPosition().x, 100);
-                        mCurrentTab = idx;
+
+                        // Deselect old tab
+                        mTabs[mSelectedTab]->mRect.setFillColor(GfxParameter::defaultRectColor);
+
+                        // Select new tab
+                        mSelectedTab = idx;
                     }
                 }
+
+                if (mSelectedTab == idx)
+                    color = GfxParameter::defaultSelectedRectColor;
 
                 tab->mRect.setFillColor(color);
                 ++idx;
@@ -195,8 +208,8 @@ void Menu::handleRealtimeInput()
 }
 
 void Menu::update()
-{    
-    
+{
+
 }
 
 void Menu::render() 
@@ -315,13 +328,13 @@ void Menu::buildMenuTabs()
             mTabs.push_back(std::move(ptr));
         };
 
-    addTab("Stats text", tabSize);
+    addTab("Statistics text", tabSize);
     addTab("Buttons text", tabSize);
     addTab(" Button\ngraphics", highTabSize);
     addTab("Animation\ngraphics", highTabSize);
     addTab("Main window", tabSize);
     addTab("Extra KPS\n  window", highTabSize);
-    addTab("    Press\nvisualization", highTabSize);
+    addTab("  Key press\nvisualization", highTabSize);
     addTab("Other", tabSize);
     addTab("Main info", tabSize);
 
@@ -385,7 +398,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement,  new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::BtnTextIgnoreBtnMovement,                    "Ignore button movement", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextBold,                              "Bold", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextItalic,                            "Italic", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Shot key labels", "True")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Show key labels", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowTot,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowTotal,                         "Show key counters", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowKPS,                           "Show key KPS", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowBpm,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowBPM,                           "Show key BPM", "False")));
@@ -514,6 +527,10 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KPSWndwMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Hint, nullptr, "Hint: Increase window size in \"Main window\" to see effect of this feature!"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisHint, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines[ParameterLine::ID::KeyPressVisHint]->setCharacterSize(17u);
+
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
@@ -568,22 +585,22 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Alt (hold) - Show opposite buttons values"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version " + mProgramVersion));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version: " + mProgramVersion));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ProgramVersion, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    const float stepX = 1000, stepY = 50;
+    const float stepX = 1000.f, stepY = 50.f;
     const float halfWindowSize = 400.f;
     const float padding = 5.f;
     const sf::Vector2f offset(155.f, 0.f);
-    unsigned row = 1, column = 0;;
+    unsigned row = 1u, column = 0u;
     for (auto &pair : mParameterLines)
     {
         if (pair.first >= ParameterLine::ID::SaveStatColl && pair.first <= ParameterLine::ID::SaveStatMty)
         {
             // Hide them
-            pair.second->setPosition(-1000, -1000);
+            pair.second->setPosition(-1000.f, -1000.f);
             continue;
         }
 
@@ -609,16 +626,16 @@ void Menu::buildParameterLines()
 // and then project the sum on the window
 void Menu::moveSliderBarButtons(float offset)
 {
-    if (mBounds[mCurrentTab] < mView.getSize().y / 4)
+    if (mBounds[mSelectedTab] < mView.getSize().y / 4.f)
         return;
 
     const sf::Vector2f sliderbarSize = mSliderBar.getSize();
     const sf::Vector2f sliberbarPosition = mSliderBar.getPosition();
     const sf::Vector2u windowSize = mWindow.getSize();
     const float highBounds = sliderbarSize.y / 2;
-    const float lowBounds = mWindow.getSize().y - sliderbarSize.y / 2;
+    const float lowBounds = mWindow.getSize().y - sliderbarSize.y / 2.f;
 
-    const float normilizedOffset = offset / mBounds[mCurrentTab] / 1.5f;
+    const float normilizedOffset = offset / mBounds[mSelectedTab] / 1.5f;
     const float normilizedCursorPosition = sliberbarPosition.y / windowSize.y;
     float projectedSliderbarPositionY = windowSize.y * (normilizedCursorPosition + normilizedOffset);
 
@@ -641,7 +658,7 @@ void Menu::moveSliderBarButtons(float offset)
 // The sliderbar height has to be normilized and projected on the real window
 void Menu::moveSliderBarMouse(sf::Vector2i mousePos)
 {
-    if (mBounds[mCurrentTab] < mView.getSize().y / 4)
+    if (mBounds[mSelectedTab] < mView.getSize().y / 4)
         return;
         
     const sf::Vector2f sliderbarSize = mSliderBar.getSize();
@@ -659,15 +676,15 @@ void Menu::moveSliderBarMouse(sf::Vector2i mousePos)
     const float normilizedViewHeight = virtualCursorPositionY / virtualWindowHeight;
 
     mSliderBar.setPosition(sliderbarX, sliderbarY);
-    mView.setCenter(mView.getCenter().x, mBounds[mCurrentTab] * normilizedViewHeight);
+    mView.setCenter(mView.getCenter().x, mBounds[mSelectedTab] * normilizedViewHeight);
 }
 
 void Menu::returnViewInBounds()
 {
     const bool tooHigh = mView.getCenter().y < mHighViewBounds;
-    const bool tooLow = mView.getCenter().y > mBounds[mCurrentTab];
+    const bool tooLow = mView.getCenter().y > mBounds[mSelectedTab];
 
-    if (mBounds[mCurrentTab] < mView.getSize().y / 4)
+    if (mBounds[mSelectedTab] < mView.getSize().y / 4)
     {
         mView.setCenter(mView.getCenter().x, 0);
         return;
@@ -676,7 +693,7 @@ void Menu::returnViewInBounds()
     if (tooHigh)
         mView.setCenter(mView.getCenter().x, mHighViewBounds);
     if (tooLow)
-        mView.setCenter(mView.getCenter().x, mBounds[mCurrentTab]);
+        mView.setCenter(mView.getCenter().x, mBounds[mSelectedTab]);
 }
 
 void Menu::saveConfig(const std::vector<std::unique_ptr<Button>> &mKeys)

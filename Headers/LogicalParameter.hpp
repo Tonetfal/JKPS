@@ -14,6 +14,7 @@ struct LogicalParameter
         {
             Empty,
             Collection,
+            Hint,
             Unsigned,
             Int,
             Bool,
@@ -176,6 +177,7 @@ struct LogicalParameter
             KPSWndwTopPadding,
             KPSWndwDistBtw,
 
+            KeyPressVisHint,
             KeyPressVisToggle,
             KeyPressVisSpeed,
             KeyPressVisRotation,

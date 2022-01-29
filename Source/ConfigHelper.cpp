@@ -603,7 +603,7 @@ void saveConfig(
     auto parmLinePair = parameterLines.begin();
     while (parmPair != parameters.end() || parmLinePair != parameterLines.end())
     {
-        typedef std::shared_ptr<LogicalParameter> Ptr;
+        using Ptr = std::shared_ptr<LogicalParameter>;
         Ptr parP = parmPair != parameters.end() ? parmPair->second : nullptr;
         Ptr parP2 = parmLinePair != parameterLines.end() ? parmLinePair->second->getParameter() : nullptr;
         Ptr mainParP = nullptr;
@@ -613,11 +613,13 @@ void saveConfig(
             mainParP = parP;
             ++parmPair; ++parmLinePair;
         } 
+
         
         // Write Empty or Collection first, since any collection doesn't end up with a String
         if (parmLinePair != parameterLines.end()
-        &&  parP2->mType == LogicalParameter::Type::Empty 
-        ||  parP2->mType == LogicalParameter::Type::Collection)
+        && (parP2->mType == LogicalParameter::Type::Empty 
+        ||  parP2->mType == LogicalParameter::Type::Collection
+        ||  parP2->mType == LogicalParameter::Type::Hint))
         {
             mainParP = parP2;
             ++parmLinePair;
@@ -632,7 +634,8 @@ void saveConfig(
             ofCfg << "# ";
         ofCfg << mainParP->mParName;
         if (mainParP->mType != LogicalParameter::Type::Empty 
-        &&  mainParP->mType != LogicalParameter::Type::Collection)
+        &&  mainParP->mType != LogicalParameter::Type::Collection
+        &&  mainParP->mType != LogicalParameter::Type::Hint)
             ofCfg << ": " << mainParP->getValStr();
         ofCfg << "\n";
 

@@ -42,13 +42,7 @@ ParameterLine::ParameterLine(
     mRectLine.setFillColor(pickColor(mType));
     mParameterName.setString(parameter->mParName);
     mParameterName.setFont(fonts.get(Fonts::Parameter));
-    mParameterName.setCharacterSize(20);
-    // Don't let text go beyound 1.8 of the button width
-    while (mType != LogicalParameter::Type::Collection && mType != LogicalParameter::Type::Empty
-    && mParameterName.getLocalBounds().width >= mRectLine.getSize().x / 1.8)
-    {
-        mParameterName.setCharacterSize(mParameterName.getCharacterSize() - 1);
-    }
+    setCharacterSize(20);
 
     buildButtons(parameter->getValStr(), fonts, textures);
     buildLimits(fonts);
@@ -583,6 +577,7 @@ sf::Color ParameterLine::pickColor(LogicalParameter::Type type) const
     {
         case LogicalParameter::Type::Empty: return sf::Color::Transparent;
         case LogicalParameter::Type::Collection: return sf::Color(25,25,25);
+        case LogicalParameter::Type::Hint: return sf::Color(150, 0, 0);
         default: return sf::Color(30,30,30);
     }
 }
@@ -665,6 +660,20 @@ const std::shared_ptr<LogicalParameter> ParameterLine::getParameter() const
 bool ParameterLine::resetState()
 {
     return paramValWasChanged && !(paramValWasChanged = false);
+}
+
+void ParameterLine::setCharacterSize(unsigned size)
+{
+    mParameterName.setCharacterSize(size);
+    // Don't let text go beyound 1.8 of the button width
+    while (
+       mType != LogicalParameter::Type::Collection 
+    && mType != LogicalParameter::Type::Empty 
+    && mType != LogicalParameter::Type::Hint
+    && mParameterName.getLocalBounds().width >= mRectLine.getSize().x / 1.8)
+    {
+        mParameterName.setCharacterSize(mParameterName.getCharacterSize() - 1);
+    }
 }
 
 void ParameterLine::setColor(sf::Color color)
@@ -854,6 +863,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KPSWndwTopPadding: return ParameterLine::ID::KPSWndwTopPadding;
         case LogicalParameter::ID::KPSWndwDistBtw: return ParameterLine::ID::KPSWndwDistBtw;
 
+        case LogicalParameter::ID::KeyPressVisHint: return ParameterLine::ID::KeyPressVisHint;
         case LogicalParameter::ID::KeyPressVisToggle: return ParameterLine::ID::KeyPressVisToggle;
         case LogicalParameter::ID::KeyPressVisSpeed: return ParameterLine::ID::KeyPressVisSpeed; 
         case LogicalParameter::ID::KeyPressVisRotation: return ParameterLine::ID::KeyPressVisRotation;
