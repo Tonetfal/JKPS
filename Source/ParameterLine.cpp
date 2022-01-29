@@ -931,6 +931,7 @@ void ParameterLine::deselectValue()
     mSelectedLine = nullptr;
     mSelectedValue = nullptr;
     mSelectedValueIndex = -1;
+    mPalette.closeWindow();
 }
 
 bool ParameterLine::isValueSelected()

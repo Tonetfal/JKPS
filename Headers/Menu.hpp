@@ -46,6 +46,8 @@ class Menu
         void loadFonts();
         void loadTextures();
 
+        void selectTab(unsigned idx);
+
         void initCollectionNames();
         void buildMenuTabs();
         void buildParametersMap();

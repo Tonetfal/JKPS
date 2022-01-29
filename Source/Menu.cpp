@@ -148,8 +148,6 @@ void Menu::handleEvent()
                     color = GfxParameter::defaultAimedRectColor;
                     if (event.type == sf::Event::MouseButtonPressed)
                     {
-                        // Move view on new tab position
-                        mView.setCenter(1000.f * idx + halfWindowSize.x, 0.f);
 
                         // Reset slider
                         mSliderBar.setPosition(mSliderBar.getPosition().x, 100);
@@ -159,6 +157,7 @@ void Menu::handleEvent()
 
                         // Select new tab
                         mSelectedTab = idx;
+                        selectTab(idx);
                     }
                 }
 
@@ -246,10 +245,8 @@ void Menu::openWindow()
 #endif
 
     mWindow.create(sf::VideoMode(959, 700), "JKPS Menu", style);
-
     mView = mWindow.getView();
-    mView.setCenter(mView.getCenter().x, 0);
-
+    selectTab(mSelectedTab);
     mSliderBar.setPosition(mSliderBar.getPosition().x, mSliderBar.getSize().y / 2);
 }
 
@@ -289,6 +286,12 @@ void Menu::loadTextures()
     mTextures.loadFromMemory(Textures::vMark, vMark, 6000);
     mTextures.loadFromMemory(Textures::xMark, xMark, 6100);
     mTextures.loadFromMemory(Textures::Refresh, RefreshTexture, 6000);
+}
+
+void Menu::selectTab(unsigned idx)
+{
+    mView.setCenter(1000.f * idx + mWindow.getSize().x / 2.f, 0.f);
+    mWindow.setView(mView);
 }
 
 void Menu::initCollectionNames()
