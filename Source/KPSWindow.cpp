@@ -102,10 +102,10 @@ void KPSWindow::openWindow()
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
 
     mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
-        Settings::KPSWindowSize.y), "KPS Window", sf::Style::Close);
-    mWindow.setPosition(sf::Vector2i(
-        desktop.width / 1.5  - mWindow.getSize().x / 2, 
-        desktop.height / 2 - mWindow.getSize().y / 2));
+        Settings::KPSWindowSize.y), "KPS Window", sf::Style::Default);
+    // mWindow.setPosition(sf::Vector2i(
+    //     desktop.width / 1.5  - mWindow.getSize().x / 2, 
+    //     desktop.height / 2 - mWindow.getSize().y / 2));
 }
 
 void KPSWindow::closeWindow()

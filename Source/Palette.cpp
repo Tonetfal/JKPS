@@ -230,8 +230,8 @@ void Palette::openWindow(sf::Vector2i position)
         float width = 500 + mWindowOffset.x * 2;
         float height = mDistance * (mLineSize - 1) / 2 + mWindowOffset.y * 2;
 
-        mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", sf::Style::Close);
-        mWindow.setPosition(position - static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
+        mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", sf::Style::Default);
+        // mWindow.setPosition(position - static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
         mWindow.setKeyRepeatEnabled(false);
     }
 }
