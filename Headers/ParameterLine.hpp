@@ -161,14 +161,20 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnGfxAdvMty,
 
             AnimGfxColl,
-            AnimGfxLight,
-            AnimGfxPress,
-            AnimGfxTxtr,
             AnimGfxVel,
+            AnimGfxMty,
+
+            AnimGfxLightColl,
+            AnimGfxLight,
+            AnimGfxTxtr,
             AnimGfxScl,
             AnimGfxClr,
+            AnimGfxLightMty,
+
+            AnimGfxPressColl,
+            AnimGfxPress,
             AnimGfxOffset,
-            AnimGfxMty,
+            AnimGfxPressMty,
 
             MainWndwColl,
             BgTxtr,

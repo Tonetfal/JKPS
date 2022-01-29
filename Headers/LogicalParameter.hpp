@@ -148,12 +148,13 @@ struct LogicalParameter
             BtnGfxBtnos15,
             BtnGfxSz15,
             
-            AnimGfxLight,
-            AnimGfxPress,
-            AnimGfxTxtr,
             AnimGfxVel,
+            
+            AnimGfxLight,
+            AnimGfxTxtr,
             AnimGfxScl,
             AnimGfxClr,
+            AnimGfxPress,
             AnimGfxOffset,
 
             BgTxtr,

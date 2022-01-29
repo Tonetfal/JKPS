@@ -299,7 +299,9 @@ void Menu::initCollectionNames()
     mCollectionNames.emplace_back("[Buttons text advanced settings]");
     mCollectionNames.emplace_back("[Button graphics]");
     mCollectionNames.emplace_back("[Button graphics advanced settings]");
-    mCollectionNames.emplace_back("[Animation graphics]");
+    mCollectionNames.emplace_back("[Common parameters]");
+    mCollectionNames.emplace_back("[Light animation]");
+    mCollectionNames.emplace_back("[Press animation]");
     mCollectionNames.emplace_back("[Main window]");
     mCollectionNames.emplace_back("[Extra KPS window]");
     mCollectionNames.emplace_back("[Key press visualization]");
@@ -335,7 +337,7 @@ void Menu::buildMenuTabs()
     addTab("Statistics text", tabSize);
     addTab("Buttons text", tabSize);
     addTab(" Button\ngraphics", highTabSize);
-    addTab("Animation\ngraphics", highTabSize);
+    addTab("Animations", tabSize);
     addTab("Main window", tabSize);
     addTab("Extra KPS\n  window", highTabSize);
     addTab("  Key press\nvisualization", highTabSize);
@@ -433,13 +435,15 @@ void Menu::buildParametersMap()
         mParameters.emplace(std::make_pair(btnPosId,                                    new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::GfxButtonsBtnPositions[idx],                ("Button " + std::to_string(idx + 1) + " position offset"), "0,0", -1000, 1000)));
         mParameters.emplace(std::make_pair(btnSzId,                                     new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::GfxButtonsSizes[idx],                       ("Button " + std::to_string(idx + 1) + " size"), "60,60", -1000, 1000)));
     }
+    
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxVel,                new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::AnimationFrames,                             "Animation duration (frames)", "5", 1, 120)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxLight,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::LightAnimation,                              "Light animation enabled", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxPress,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::PressAnimation,                              "Press animation enabled", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxLight,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::LightAnimation,                              "Enabled", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxTxtr,               new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::AnimationTexturePath,                        "Texture filepath", "Default")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxVel,                new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::AnimationFrames,                             "Animation frames", "5", 1, 120)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxScl,                new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::AnimationScale,                              "Scale on click (%)", "100,100", 0, 200)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxClr,                new LogicalParameter(LogicalParameter::Type::Color,         &Settings::AnimationColor,                              "Color", "255,180,0,255")));
+
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxPress,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::PressAnimation,                              "Enabled", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::AnimGfxOffset,             new LogicalParameter(LogicalParameter::Type::Float,         &Settings::AnimationOffset,                             "Offset", "3", -100, 100)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgTxtr,                    new LogicalParameter(LogicalParameter::Type::StringPath,    &Settings::BackgroundTexturePath,                       "Background texture filepath", "Default")));
@@ -522,6 +526,14 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxLightColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxLightMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxPressColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::AnimGfxPressMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::MainWndwColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));

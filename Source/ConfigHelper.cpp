@@ -25,13 +25,13 @@ std::string getOutOfBoundsErrMsg(const LogicalParameter &par)
 
 std::string getOldParName(std::string_view newParName, std::string_view collection);
 
-static std::string cfgPath("JKPS.cfg");
-static std::string tmpCfgPath("tmpJKPS.cfg");
-static std::string errLogPath("JKPS Error Log.txt");
-static std::ifstream ifCfg;
-static std::ofstream ofCfg;
-static std::ifstream ifErrLog;
-static std::ofstream ofErrLog;
+std::string cfgPath("JKPS.cfg");
+std::string tmpCfgPath("tmpJKPS.cfg");
+std::string errLogPath("JKPS_errlog.txt");
+std::ifstream ifCfg;
+std::ofstream ofCfg;
+std::ifstream ifErrLog;
+std::ofstream ofErrLog;
 
 namespace ConfigHelper
 {
@@ -97,7 +97,9 @@ void readParameters(
             pair.first == LogicalParameter::ID::BtnGfxDist ||
             pair.first == LogicalParameter::ID::BtnTextSepPosAdvMode ||
             pair.first == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
+            pair.first == LogicalParameter::ID::AnimGfxVel ||
             pair.first == LogicalParameter::ID::AnimGfxLight ||
+            pair.first == LogicalParameter::ID::AnimGfxPress ||
             pair.first == LogicalParameter::ID::BgTxtr ||
             pair.first == LogicalParameter::ID::KPSWndwEn ||
             pair.first == LogicalParameter::ID::KeyPressVisToggle ||
@@ -234,6 +236,14 @@ void readParameter(LogicalParameter &par, std::string_view collection)
         if (parName = getOldParName(parName, collection); parName != "")
         {
             valStr = scanParameter(parName, parameterFound, parameterEmpty, collection);
+            if (valStr == "" 
+            && (collection == "[Common parameters]"
+             || collection == "[Light animation]"
+             || collection == "[Press animation]"))
+            {
+                valStr = scanParameter(parName, parameterFound, parameterEmpty, "[Animation graphics]");
+            }
+
             // if (valStr == "")
             //     std::cout << parName << " was not found even with old version support\n";
         }
@@ -601,19 +611,22 @@ void saveConfig(
     bool commentsSection = false;
     auto parmPair = parameters.begin();
     auto parmLinePair = parameterLines.begin();
+    int i = 0;
     while (parmPair != parameters.end() || parmLinePair != parameterLines.end())
     {
         using Ptr = std::shared_ptr<LogicalParameter>;
         Ptr parP = parmPair != parameters.end() ? parmPair->second : nullptr;
         Ptr parP2 = parmLinePair != parameterLines.end() ? parmLinePair->second->getParameter() : nullptr;
         Ptr mainParP = nullptr;
+        ++i;
+        if (i >= 127)
+            int a = 5;
 
         if (parP == parP2)
         {
             mainParP = parP;
             ++parmPair; ++parmLinePair;
-        } 
-
+        }
         
         // Write Empty or Collection first, since any collection doesn't end up with a String
         if (parmLinePair != parameterLines.end()
@@ -676,7 +689,7 @@ std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, bool r
     return str;
 }
 
-} // !namespace ConfigHelper
+} // namespace ConfigHelper
 
 
 std::string getOldParName(std::string_view newParName, std::string_view collection)
@@ -767,7 +780,7 @@ std::string getOldParName(std::string_view newParName, std::string_view collecti
         return 			   "Buttons text bold";
     else if (newParName == "Italic" && collection == "[Buttons text]")
         return 			   "Buttons text italic";
-    else if (newParName == "Enabled" && collection == "[Buttons text]")
+    else if (newParName == "Show key labels" && collection == "[Buttons text]")
         return 			   "Show visual keys";
 
     // else if (newParName == "Enable advanced mode for separate button text positions" && collection == "[Button text advanced settings]")
@@ -855,17 +868,25 @@ std::string getOldParName(std::string_view newParName, std::string_view collecti
     else if (newParName == "Button 15 position offset" && collection == "[Button graphics advanced settings]")
         return 			   "Button 15 position";
 
-    else if (newParName == "Light animation enabled" && collection == "[Animation graphics]")
-        return 			   "Light animation";
-    else if (newParName == "Press animation enabled" && collection == "[Animation graphics]")
-        return 			   "Press animation";
-    else if (newParName == "Texture filepath" && collection == "[Animation graphics]")
+    else if (newParName == "Animation duration (frames)" && collection == "[Common parameters]")
+        return 			   "Animation frames";
+
+    else if (newParName == "Enabled" && collection == "[Light animation]")
+        return             "Light animation enabled";
+    else if (newParName == "Light animation enabled")
+        return             "Light animation";
+    else if (newParName == "Texture filepath" && collection == "[Light animation]")
         return 			   "Animation texture";
-    else if (newParName == "Scale on click (%)" && collection == "[Animation graphics]")
+    else if (newParName == "Scale on click (%)" && collection == "[Light animation]")
         return 			   "Animation scale on click (%)";
-    else if (newParName == "Color" && collection == "[Animation graphics]")
+    else if (newParName == "Color" && collection == "[Light animation]")
         return 			   "Animation color";
-    else if (newParName == "Offset" && collection == "[Animation graphics]")
+
+    else if (newParName == "Enabled" && collection == "[Press animation]")
+        return             "Press animation enabled";
+    else if (newParName == "Press animation enabled")
+        return             "Press animation";
+    else if (newParName == "Offset" && collection == "[Press graphics]")
         return 			   "Animation offset";
 
     else if (newParName == "Background texture filepath" && collection == "[Main window]")

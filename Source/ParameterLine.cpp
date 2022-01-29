@@ -834,11 +834,12 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BtnGfxSz15: return ParameterLine::ID::BtnGfxSz15;
         
         case LogicalParameter::ID::AnimGfxLight: return ParameterLine::ID::AnimGfxLight;
-        case LogicalParameter::ID::AnimGfxPress: return ParameterLine::ID::AnimGfxPress;
         case LogicalParameter::ID::AnimGfxTxtr: return ParameterLine::ID::AnimGfxTxtr;
         case LogicalParameter::ID::AnimGfxVel: return ParameterLine::ID::AnimGfxVel;
         case LogicalParameter::ID::AnimGfxScl: return ParameterLine::ID::AnimGfxScl;
         case LogicalParameter::ID::AnimGfxClr: return ParameterLine::ID::AnimGfxClr;
+        
+        case LogicalParameter::ID::AnimGfxPress: return ParameterLine::ID::AnimGfxPress;
         case LogicalParameter::ID::AnimGfxOffset: return ParameterLine::ID::AnimGfxOffset;
 
         case LogicalParameter::ID::BgTxtr: return ParameterLine::ID::BgTxtr;
@@ -908,7 +909,8 @@ bool ParameterLine::isEmpty(ParameterLine::ID id)
         id == ParameterLine::ID::BtnTextAdvMty ||
         // id == ParameterLine::ID::BtnGfxMty ||
         id == ParameterLine::ID::BtnGfxAdvMty ||
-        id == ParameterLine::ID::AnimGfxMty ||
+        // id == ParameterLine::ID::AnimGfxLightMty ||
+        id == ParameterLine::ID::AnimGfxPressMty ||
         id == ParameterLine::ID::MainWndwMty ||
         id == ParameterLine::ID::KPSWndwMty ||
         id == ParameterLine::ID::KeyPressVisMty ||
