@@ -10,15 +10,15 @@ float Palette::mDistance(0.3f);
 Palette::Palette(int)
 : mWindowOffset(10.f, 20.f)
 , mLineSize(mLine.size())
-, mNormilizedMouseVec(1.f, 0.f)
-, mIndicatorColor(sf::Color::Red)
+, mNormilizedMousePos(0.f, 0.f)
+, mIndicatorColor(sf::Color::White)
 , mLineElemIdx(mLineSize - 1)
 , wasButtonPressedOnLine(false)
 , wasButtonPressedOnCanvas(false)
 {
     mWindow.setFramerateLimit(60);
 
-    sf::Color color(sf::Color::Red);
+    auto color = sf::Color::Red;
     float colorStep = mLineSize / 2, leftSide = 10.f, rightSide = 50.f;
     for (unsigned i = 0; i < mLineSize; i += 2)
     {
@@ -64,7 +64,7 @@ Palette::Palette(int)
     mCanvasIndicator.setFillColor(sf::Color::Transparent);
     mCanvasIndicator.setOutlineThickness(3.f);
     mCanvasIndicator.setOrigin(sf::Vector2f(r, r));
-    mCanvasIndicator.setPosition(mCanvas[3].position);
+    mCanvasIndicator.setPosition(mCanvas[0].position);
 }
 
 void Palette::processInput()
@@ -86,8 +86,8 @@ void Palette::processInput()
 
 void Palette::moveLineIndicator()
 {
-    sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
-        static_cast<sf::Vector2i>(mWindowOffset));
+    auto mousePos = sf::Mouse::getPosition(mWindow) -
+        static_cast<sf::Vector2i>(mWindowOffset);
 
     if (wasButtonPressedOnLine)
     {
@@ -128,8 +128,8 @@ void Palette::goDown()
 
 void Palette::moveCanvasIndicator()
 {
-    sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
-        static_cast<sf::Vector2i>(mWindowOffset));
+    auto mousePos = sf::Mouse::getPosition(mWindow) -
+        static_cast<sf::Vector2i>(mWindowOffset);
 
     // Make canvas indicator move even if cursor is outside the palette
     if (mousePos.x < mCanvasRect.left)
@@ -144,7 +144,7 @@ void Palette::moveCanvasIndicator()
     if (mousePos.y > mCanvasRect.height)
         mousePos.y = mCanvasRect.height;
 
-    mNormilizedMouseVec = sf::Vector2f(
+    mNormilizedMousePos = sf::Vector2f(
         (mousePos.x - mCanvasRect.left) / mCanvasRect.width, 
         (mousePos.y - mCanvasRect.top) / mCanvasRect.height);
     
@@ -160,7 +160,7 @@ void Palette::setColor()
         mCanvas[1].color,
         mCanvas[2].color,
         mCanvas[3].color,
-        mNormilizedMouseVec));
+        mNormilizedMousePos));
 
     ParameterLine::setColor(mIndicatorColor);
 }
@@ -173,11 +173,23 @@ void Palette::processOwnEvents()
         // Move on the line by only one step
         if (event.type == sf::Event::KeyPressed)
         {
-            if (event.key.code == sf::Keyboard::Left)
-                goUp();
+            auto key = event.key.code;
 
-            if (event.key.code == sf::Keyboard::Right)
+            if (key == sf::Keyboard::Left)
+            {
+                goUp();
+            }
+            else if (key == sf::Keyboard::Right)
+            {
                 goDown();
+            }
+            else if (key == sf::Keyboard::W
+            &&  sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            {
+                closeWindow();
+                return;
+            }
+
 
             mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
             setColor();
@@ -207,7 +219,7 @@ void Palette::render()
 {
     mWindow.clear(sf::Color(40,40,40));
 
-    sf::Transform transform = sf::Transform::Identity;
+    auto transform = sf::Transform::Identity;
     transform.translate(mWindowOffset);
 
     mWindow.draw(mLine.data(), mLineSize, sf::TriangleStrip, transform);
@@ -253,7 +265,6 @@ bool Palette::isWindowOpen() const
 {
     return mWindow.isOpen();
 }
-
 
 sf::Color Palette::rgb(double ratio)
 {

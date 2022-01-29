@@ -54,7 +54,7 @@ class Palette
         sf::CircleShape mCanvasIndicator;
         bool wasButtonPressedOnCanvas;
 
-        sf::Vector2f mNormilizedMouseVec;
+        sf::Vector2f mNormilizedMousePos;
 
         static float mDistance;
 };
