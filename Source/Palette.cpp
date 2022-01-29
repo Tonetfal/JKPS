@@ -227,11 +227,19 @@ void Palette::openWindow(sf::Vector2i position)
 {
     if (!mWindow.isOpen())
     {
+        sf::Uint32 style;
+#ifdef _WIN32
+        style = sf::Style::Close;
+#elif linux
+        style = sf::Style::Default;
+#else
+#error Unsupported platform
+#endif
+
         float width = 500 + mWindowOffset.x * 2;
         float height = mDistance * (mLineSize - 1) / 2 + mWindowOffset.y * 2;
 
-        mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", sf::Style::Default);
-        // mWindow.setPosition(position - static_cast<sf::Vector2i>(mWindow.getSize() / 2U));
+        mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", style);
         mWindow.setKeyRepeatEnabled(false);
     }
 }

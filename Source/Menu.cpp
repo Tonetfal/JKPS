@@ -236,12 +236,16 @@ void Menu::render()
 
 void Menu::openWindow()
 {
-    auto desktop = sf::VideoMode::getDesktopMode();
+    sf::Uint32 style;
+#ifdef _WIN32
+    style = sf::Style::Close;
+#elif linux
+    style = sf::Style::Default;
+#else
+#error Unsupported platform
+#endif
 
-    mWindow.create(sf::VideoMode(959, 700), "JKPS Menu", sf::Style::Default);
-    // mWindow.setPosition(sf::Vector2i(
-    //     desktop.width  / 2 - mWindow.getSize().x / 2, 
-    //     desktop.height / 2 - mWindow.getSize().y / 2));
+    mWindow.create(sf::VideoMode(959, 700), "JKPS Menu", style);
 
     mView = mWindow.getView();
     mView.setCenter(mView.getCenter().x, 0);

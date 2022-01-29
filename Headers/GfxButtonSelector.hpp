@@ -41,7 +41,7 @@ class GfxButtonSelector
         void render();
 
         void setKey(LogKey *logKey);
-        void openWindow(sf::Vector2i spawnPosition);
+        void openWindow();
         bool isOpen();
         
         static bool isCharacter(sf::Keyboard::Key key);

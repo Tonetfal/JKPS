@@ -99,13 +99,24 @@ void KPSWindow::updateAssets()
 
 void KPSWindow::openWindow()
 {
-    sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
+    sf::Uint32 style;
+#ifdef _WIN32
+    style = sf::Style::Close;
+#elif linux
+    style = sf::Style::Default;
+#else
+#error Unsupported platform
+#endif
 
     mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 
-        Settings::KPSWindowSize.y), "KPS Window", sf::Style::Default);
-    // mWindow.setPosition(sf::Vector2i(
-    //     desktop.width / 1.5  - mWindow.getSize().x / 2, 
-    //     desktop.height / 2 - mWindow.getSize().y / 2));
+        Settings::KPSWindowSize.y), "KPS Window", style);
+
+#ifdef linux
+    auto desktop = sf::VideoMode::getDesktopMode();
+    mWindow.setPosition(sf::Vector2i(
+        desktop.width / 1.5  - mWindow.getSize().x / 2, 
+        desktop.height / 2 - mWindow.getSize().y / 2));
+#endif
 }
 
 void KPSWindow::closeWindow()

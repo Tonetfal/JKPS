@@ -254,14 +254,22 @@ void GfxButtonSelector::setKey(LogKey *logKey)
     select(mButtons[RealKeyButton].get());
 }
 
-void GfxButtonSelector::openWindow(sf::Vector2i spawnPosition)
+void GfxButtonSelector::openWindow()
 {
     if (!mWindow.isOpen())
     {
         std::string title = mKeyType == Keyboard ? "Keyboard key selector" : "Mouse button selector";
-        // spawnPosition -= sf::Vector2i(150, 75);
-        mWindow.create(sf::VideoMode(300, 150), title, sf::Style::Default);
-        // mWindow.setPosition(spawnPosition);
+
+        sf::Uint32 style;
+#ifdef _WIN32
+        style = sf::Style::Close;
+#elif linux
+        style = sf::Style::Default;
+#else
+#error Unsupported platform
+#endif
+
+        mWindow.create(sf::VideoMode(300, 150), title, style);
         mWindow.requestFocus();
     }
 }

@@ -112,11 +112,8 @@ void Application::handleEvent()
                 unsigned idx;
                 if (isPressPerformedOnButton(idx))
                 {
-                    auto windowSize = static_cast<sf::Vector2i>(mWindow.getSize());
-                    auto windowPosition = mWindow.getPosition();
-
                     mGfxButtonSelector->setKey(mButtons[idx]->getLogKey());
-                    mGfxButtonSelector->openWindow(windowPosition + windowSize / 2);
+                    mGfxButtonSelector->openWindow();
                 }
             }
         }
@@ -439,14 +436,29 @@ void Application::removeButton()
 
 void Application::openWindow()
 {
-    auto desktop = sf::VideoMode::getDesktopMode();
+    sf::Uint32 style;
+#ifdef _WIN32
+    style = Settings::WindowTitleBar ? sf::Style::Close : sf::Style::None;
+#elif linux
+    style = Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None;
+#else
+#error Unsupported platform
+#endif
 
-    mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), 
-        "JKPS", Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None);
-    // mWindow.setPosition(sf::Vector2i(
-    //     desktop.width  / 2 - mWindow.getSize().x / 2, 
-    //     desktop.height / 2 - mWindow.getSize().y / 2));
+    if (mWindow.isOpen())
+        mWindow.close();
+    mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), "JKPS", style);
     mWindow.setKeyRepeatEnabled(false);
+#ifdef linux
+    if (style == sf::Style::None)
+    {
+        auto desktop = sf::VideoMode::getDesktopMode();
+        auto windowSize = static_cast<sf::Vector2i>(mWindow.getSize());
+        mWindow.setPosition(sf::Vector2i(
+            desktop.width  / 2 - windowSize.x / 2, 
+            desktop.height / 2 - windowSize.y / 2));
+    }
+#endif
 }
 
 void Application::resizeWindow()
