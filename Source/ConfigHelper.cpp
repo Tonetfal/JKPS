@@ -886,7 +886,7 @@ std::string getOldParName(std::string_view newParName, std::string_view collecti
         return             "Press animation enabled";
     else if (newParName == "Press animation enabled")
         return             "Press animation";
-    else if (newParName == "Offset" && collection == "[Press graphics]")
+    else if (newParName == "Offset" && collection == "[Press animation]")
         return 			   "Animation offset";
 
     else if (newParName == "Background texture filepath" && collection == "[Main window]")
