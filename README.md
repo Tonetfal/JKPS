@@ -42,6 +42,7 @@ Click with **right mouse button** on the button to edit it
 # Notes
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with greenscreen write **"GreenscreenBG.png"** in **"Main window" -> "Background texture filepath"** and press Enter or Refresh button.
+- For Linux users: [**SFML 2.5.1**](https://www.sfml-dev.org/) must be installed.
 
 # [Themes](Wiki/Themes.md)
 
