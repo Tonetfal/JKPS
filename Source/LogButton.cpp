@@ -4,15 +4,16 @@
 #include <cassert>
 
 
-unsigned LogButton::mBufferPointer(0);
-unsigned LogButton::mPrevKpsBufferPointer(0);
+unsigned LogButton::mBufferIndex(0);
+unsigned LogButton::mPrevKpsBufferIndex(0);
 float LogButton::statKeysPerSecond(0);
 float LogButton::statMaxKeysPerSecond(0);
 unsigned LogButton::statTotal(0);
 float LogButton::statBeatsPerMinute(0);
 
 LogButton::LogButton(const unsigned idx, LogKey &key)
-: mKey(key)
+: mState(false)
+, mKey(key)
 , mKeysPerSecond(0)
 , mTotal(0)
 , mBtnIdx(idx)
@@ -20,54 +21,54 @@ LogButton::LogButton(const unsigned idx, LogKey &key)
     statMaxKeysPerSecond = Settings::MaxKPS;
     statTotal = Settings::Total;
     for (auto &elem : mBuffer)
-        elem = 0;
+        elem = 0u;
     for (auto &elem : mPrevKpsBuffer)
-        elem = 0;
+        elem = 0.f;
 }
 
 void LogButton::processRealtimeInput()
 {
-    unsigned &bufferElem = mBuffer[mBufferPointer];
-    const bool keyPressed = mKey.isPressed();
+    auto &bufferElem = mBuffer[mBufferIndex];
+    const auto prevState = mState;
+    mState = mKey.isPressed();
 
-    if (bufferElem > 0)
+    if (bufferElem > 0u)
     {
         mKeysPerSecond -= static_cast<float>(bufferElem);
-        --bufferElem;
+        bufferElem = 0u;
         --statKeysPerSecond;
-        assert(bufferElem == 0);
+        assert(bufferElem == 0u);
     }
-    if (!mNeedToRelease && keyPressed)
+    if (!prevState && mState)
     {
-        ++bufferElem;
         ++mKeysPerSecond;
+        ++bufferElem;
         ++statKeysPerSecond;
         if (statKeysPerSecond > statMaxKeysPerSecond)
             statMaxKeysPerSecond = Settings::MaxKPS = statKeysPerSecond;
 
-        const unsigned amtToAdd = 1 * Settings::ButtonPressMultiplier;
+        const auto amtToAdd = 1u * Settings::ButtonPressMultiplier;
         mTotal += amtToAdd;
         statTotal += amtToAdd;
         Settings::Total += amtToAdd;
         Settings::KeysTotal[mBtnIdx] += amtToAdd;
     }
 
-    mPrevKpsBuffer[mPrevKpsBufferPointer] = mKeysPerSecond;
+    mPrevKpsBuffer[mPrevKpsBufferIndex] = mKeysPerSecond;
     statBeatsPerMinute += getLocalBeatsPerMinute();
-    mNeedToRelease = keyPressed;
 }
 
 bool LogButton::isButtonPressed() const
 {
-    return mKey.isPressed();
+    return mState;
 }
 
-void LogButton::movePointer()
+void LogButton::moveIndex()
 {
-    if (++mBufferPointer == 60)
-        mBufferPointer = 0;
-    if (++mPrevKpsBufferPointer == 9)
-        mPrevKpsBufferPointer = 0;
+    if (++mBufferIndex == 60)
+        mBufferIndex = 0;
+    if (++mPrevKpsBufferIndex == 9)
+        mPrevKpsBufferIndex = 0;
     
     statBeatsPerMinute = 0;
 }
@@ -107,7 +108,6 @@ float LogButton::getLocalBeatsPerMinute() const
     for (const auto &elem : mPrevKpsBuffer)
         prevKpsSum += elem;
 
-    // 9  = buffer size 
     // 15 = 60 (sec) / 4 (1/4 time signature for streams)
-    return prevKpsSum / 9 * 15;
+    return prevKpsSum / mPrevKpsBuffer.size() * 15;
 }

@@ -42,27 +42,27 @@ GfxButton::GfxButton(const unsigned idx, const TextureHolder &textureHolder, con
     mBounds.setOrigin(mBounds.getSize() / 2.f);
 }
 
-void GfxButton::update(bool buttonPressed)
+void GfxButton::update(bool keyState)
 {
     if (Settings::LightAnimation)
-        buttonPressed ? lightKey() : fadeKey();
+        keyState ? lightKey() : fadeKey();
     if (Settings::PressAnimation)
-        buttonPressed ? lowerKey() : raiseKey();
+        keyState ? lowerKey() : raiseKey();
 
     if (Settings::KeyPressVisToggle)
     {
         // Create a new rectangle on button press if last frame the button was not pressed
-        if (!mLastKeyState && buttonPressed)
+        if (keyState)
         {
             const auto &buttonSprite = *mSprites[ButtonSprite];
             const auto rect = buttonSprite.getGlobalBounds();
-            mEmitter.create({ rect.width, rect.height });
+            mEmitter.create({ rect.width, rect.height }, mLastKeyState);
         }
     }
 
-    mEmitter.update(buttonPressed);
+    mEmitter.update(keyState);
 
-    mLastKeyState = buttonPressed;
+    mLastKeyState = keyState;
 }
 
 void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -336,16 +336,16 @@ GfxButton::~GfxButton()
 // GfxButton::RectEmitter::RectEmitter(const sf::Texture &texture)
 GfxButton::RectEmitter::RectEmitter()
 : //mTexture(texture) 
-// , mTopVertecies(sf::Quads, 400u)
-mMiddleVertecies(sf::Quads, 400u)
-// , mBottomVertecies(sf::Quads, 400u)
+// , mTopVertecies(sf::Quads, 1000u)
+mMiddleVertecies(sf::Quads, 1000u)
+// , mBottomVertecies(sf::Quads, 1000u)
 {
     const auto count = mMiddleVertecies.getVertexCount() / 4.f;
     for (size_t i = 0; i < count; ++i)
         mAvailableRectIndices.emplace_back(i);
 }
 
-void GfxButton::RectEmitter::update(bool buttonPressed)
+void GfxButton::RectEmitter::update(bool keyState)
 {
     // Don't update anything if there is no active rectangles
     if (mUsedRectIndices.empty())
@@ -415,7 +415,7 @@ void GfxButton::RectEmitter::update(bool buttonPressed)
     }
 
     // If a button is pressed don't let the spawning rectangle go away from the spawn point
-    if (buttonPressed)
+    if (keyState)
     {
         const auto offset = mUsedRectIndices.back() * 4;
 
@@ -466,7 +466,7 @@ void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Ver
     }
 }
 
-void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
+void GfxButton::RectEmitter::create(sf::Vector2f buttonSize, bool lastKeyState)
 {
     const auto rectSize = sf::Vector2f(buttonSize.x, Settings::KeyPressVisSpeed / 10.f);
     const auto halfRectSize = rectSize / 2.f;
@@ -476,7 +476,15 @@ void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
     const auto rectIndex = mAvailableRectIndices.back();
     const auto firstVertexIndex = rectIndex * 4;
 
-    
+    // Move the nearest rectangle by speed if new press was performed without any free frame
+    if (lastKeyState && !mUsedRectIndices.empty())
+    {
+        const auto offset = mUsedRectIndices.back() * 4;
+
+        mMiddleVertecies[offset + 2].position.y = 
+        mMiddleVertecies[offset + 3].position.y -= Settings::KeyPressVisSpeed / 10.f;;
+    }
+
     // 0 Top left, 1 Top right, 2 Bottom right, 3 Bottom left
     sf::Vertex middleVertices[4];
 
@@ -561,7 +569,7 @@ float GfxButton::RectEmitter::getVertexProgress(size_t vertexNumber, float verte
 
 sf::Color GfxButton::RectEmitter::getVertexColor(const sf::VertexArray &vertexArray, size_t vertexIndex) const
 {
-    auto color = Settings::KeyPressVisColor;
+    auto color = Settings::KeyPressVisColor;    
     color.a -= color.a * getVertexProgress(vertexIndex, vertexArray[vertexIndex].position.y);
     return color;
 }

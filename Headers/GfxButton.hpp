@@ -36,7 +36,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
     public:
         GfxButton(const unsigned idx, const TextureHolder& textureHolder, const FontHolder& fontHolder);
 
-        void update(bool buttonPressed);
+        void update(bool keyState);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void updateAssets();
@@ -84,11 +84,11 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 // RectEmitter(const sf::Texture &texture);
                 RectEmitter();
 
-                void update(bool buttonPressed);
+                void update(bool keyState);
                 void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
                 void setPosition(sf::Vector2f position);
-                void create(sf::Vector2f buttonSize);
+                void create(sf::Vector2f buttonSize, bool lastKeyState);
 
                 void scaleTexture(sf::Vector2f buttonSize);
 
@@ -108,8 +108,10 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 sf::VertexArray mBottomVertecies;
                 std::vector<size_t> mAvailableRectIndices;
                 std::vector<size_t> mUsedRectIndices;
+                std::vector<sf::Text> mTexts;
                 sf::Vector2f mEmitterPosition;
                 sf::Vector2f mLastRectSize;
+
         };
 
 

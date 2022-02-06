@@ -13,7 +13,7 @@ class LogButton
 
         void processRealtimeInput();
 
-        static void movePointer();
+        static void moveIndex();
         static unsigned resetPressesInCurrentFrame();
         bool isButtonPressed() const;
 
@@ -44,12 +44,12 @@ class LogButton
 
     private:
         const unsigned mBtnIdx;
+        bool mState;
         
         // Calculation related
-        std::array<unsigned, 60> mBuffer;
-        std::array<unsigned, 9> mPrevKpsBuffer;
-        static unsigned mBufferPointer;
-        static unsigned mPrevKpsBufferPointer;
+        std::array<unsigned, 60lu> mBuffer;
+        std::array<float, 7lu> mPrevKpsBuffer;
+        static unsigned mBufferIndex;
+        static unsigned mPrevKpsBufferIndex;
     
-        bool mNeedToRelease;
 };

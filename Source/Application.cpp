@@ -211,10 +211,10 @@ void Application::update()
     if (mKPSWindow->isOpen())
         mKPSWindow->update();
 
-    if (mGraph->isOpen())
-        mGraph->update();
+    // if (mGraph->isOpen())
+    //     mGraph->update();
 
-    Button::movePointer();
+    Button::moveIndex();
 }
 
 void Application::render()
