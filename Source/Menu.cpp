@@ -14,7 +14,7 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.1");
+std::string Menu::mProgramVersion("v0.1-hotfix");
 
 Menu::Menu()
 : mScrollSpeed(40.f)

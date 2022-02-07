@@ -56,11 +56,11 @@ void GfxButton::update(bool keyState)
         {
             const auto &buttonSprite = *mSprites[ButtonSprite];
             const auto rect = buttonSprite.getGlobalBounds();
-            mEmitter.create({ rect.width, rect.height }, mLastKeyState);
+            mEmitter.create({ rect.width, rect.height });
         }
     }
 
-    mEmitter.update(keyState);
+    mEmitter.update(keyState, mLastKeyState);
 
     mLastKeyState = keyState;
 }
@@ -345,7 +345,7 @@ mMiddleVertecies(sf::Quads, 1000u)
         mAvailableRectIndices.emplace_back(i);
 }
 
-void GfxButton::RectEmitter::update(bool keyState)
+void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
 {
     // Don't update anything if there is no active rectangles
     if (mUsedRectIndices.empty())
@@ -428,6 +428,15 @@ void GfxButton::RectEmitter::update(bool keyState)
         // mBottomVertecies[offset + 2].position.y = 
         // mBottomVertecies[offset + 3].position.y -= speed;
     }
+
+    // Move the nearest rectangle up on release
+    if (prevKeyState && !keyState && !mUsedRectIndices.empty())
+    {
+        const auto offset = mUsedRectIndices.back() * 4;
+
+        mMiddleVertecies[offset + 2].position.y = 
+        mMiddleVertecies[offset + 3].position.y -= Settings::KeyPressVisSpeed / 10.f;;
+    }
 }
 
 void GfxButton::RectEmitter::draw(sf::RenderTarget &target, sf::RenderStates states) const
@@ -466,7 +475,7 @@ void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Ver
     }
 }
 
-void GfxButton::RectEmitter::create(sf::Vector2f buttonSize, bool lastKeyState)
+void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
 {
     const auto rectSize = sf::Vector2f(buttonSize.x, Settings::KeyPressVisSpeed / 10.f);
     const auto halfRectSize = rectSize / 2.f;
@@ -475,15 +484,6 @@ void GfxButton::RectEmitter::create(sf::Vector2f buttonSize, bool lastKeyState)
 
     const auto rectIndex = mAvailableRectIndices.back();
     const auto firstVertexIndex = rectIndex * 4;
-
-    // Move the nearest rectangle by speed if new press was performed without any free frame
-    if (lastKeyState && !mUsedRectIndices.empty())
-    {
-        const auto offset = mUsedRectIndices.back() * 4;
-
-        mMiddleVertecies[offset + 2].position.y = 
-        mMiddleVertecies[offset + 3].position.y -= Settings::KeyPressVisSpeed / 10.f;;
-    }
 
     // 0 Top left, 1 Top right, 2 Bottom right, 3 Bottom left
     sf::Vertex middleVertices[4];

@@ -84,11 +84,11 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 // RectEmitter(const sf::Texture &texture);
                 RectEmitter();
 
-                void update(bool keyState);
+                void update(bool keyState, bool prevKeyState);
                 void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
                 void setPosition(sf::Vector2f position);
-                void create(sf::Vector2f buttonSize, bool lastKeyState);
+                void create(sf::Vector2f buttonSize);
 
                 void scaleTexture(sf::Vector2f buttonSize);
 
