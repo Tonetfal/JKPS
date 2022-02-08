@@ -125,6 +125,7 @@ namespace Settings
 
     // [Other]
     extern bool SaveStats;
+    extern bool ShowOppOnAlt;
     extern unsigned ButtonPressMultiplier;
 
     // Default assets

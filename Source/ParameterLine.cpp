@@ -873,6 +873,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KeyPressVisColor: return ParameterLine::ID::KeyPressVisColor;
 
         case LogicalParameter::ID::OtherSaveStats: return ParameterLine::ID::OtherSaveStats;
+        case LogicalParameter::ID::OtherShowOppOnAlt: return ParameterLine::ID::OtherShowOppOnAlt;
         case LogicalParameter::ID::OtherMultpl: return ParameterLine::ID::OtherMultpl;
 
         case LogicalParameter::ID::SaveStatMaxKPS: return ParameterLine::ID::SaveStatMaxKPS;

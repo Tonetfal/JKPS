@@ -213,6 +213,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
 
             OtherColl,
             OtherSaveStats,
+            OtherShowOppOnAlt,
             OtherMultpl,
             OtherMty,
 

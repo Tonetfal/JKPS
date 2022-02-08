@@ -44,7 +44,7 @@ void Button::reset()
 
 void Button::setTextStrings()
 {
-    const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
+    const bool lAlt = Settings::ShowOppOnAlt && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
     const bool advMode = Settings::ButtonTextSepPosAdvancedMode;
 
     if (Settings::ButtonTextShowVisualKeys) 

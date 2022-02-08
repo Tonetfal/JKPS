@@ -187,6 +187,7 @@ struct LogicalParameter
             KeyPressVisColor,
 
             OtherSaveStats,
+            OtherShowOppOnAlt,
             OtherMultpl,
 
             SaveStatMaxKPS,

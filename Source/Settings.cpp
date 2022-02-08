@@ -118,6 +118,7 @@ sf::Color KeyPressVisColor;
 
 // [Other]
 bool SaveStats;
+bool ShowOppOnAlt;
 unsigned ButtonPressMultiplier;
 
 // Default assets

@@ -14,7 +14,7 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.1-hotfix-2");
+std::string Menu::mProgramVersion("v0.2");
 
 Menu::Menu()
 : mScrollSpeed(40.f)
@@ -478,13 +478,14 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor,          new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisColor,                            "Color", "255,255,255,255")));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::SaveStats,                                   "Update statistics on quit", "False")));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherShowOppOnAlt,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowOppOnAlt,                                "Show opposite key values on alt press", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonPressMultiplier,                       "Value to multiply on click", "1", 0, 1000000)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS,            new LogicalParameter(LogicalParameter::Type::Float,         &Settings::MaxKPS,                                      "Saved max KPS", "0", 0u, UINT_MAX)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal,             new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::Total,                                       "Saved total", "0", 0u, UINT_MAX)));
     for (unsigned idx = 0; idx < Settings::KeysTotal.size(); ++idx)
     {
-        auto id =                       LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + idx);
+        auto id =                      LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + idx);
         mParameters.emplace(std::make_pair(id,                                          new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KeysTotal[idx],                              "Saved total " + std::to_string(idx + 1), "0", 0, UINT_MAX)));
     }
 }
