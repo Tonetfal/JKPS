@@ -105,7 +105,7 @@ void KPSWindow::openWindow()
 #elif linux
     style = sf::Style::Default;
 #else
-#error Unsupported platform
+#error Unsupported compiler
 #endif
 
     mWindow.create(sf::VideoMode(Settings::KPSWindowSize.x, 

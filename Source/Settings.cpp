@@ -108,13 +108,21 @@ unsigned KPSNumberSize;
 float KPSWindowTopPadding;
 float KPSWindowDistanceBetween;
 
-// [Key presses visualizer]
+// [Key press visualization]
 bool KeyPressVisToggle;
 float KeyPressVisSpeed;
 float KeyPressVisRotation;
 float KeyPressVisFadeLineLen;
 sf::Vector2f KeyPressVisOrig;
 sf::Color KeyPressVisColor;
+
+// [Key press visualization advanced settings]
+bool KeyPressVisAdvSettingsMode;
+std::array<float, 15lu> KeyPressVisAdvSpeed;
+std::array<float, 15lu> KeyPressVisAdvRotation;
+std::array<float, 15lu> KeyPressVisAdvFadeLineLen;
+std::array<sf::Vector2f, 15lu> KeyPressVisAdvOrig;
+std::array<sf::Color, 15lu> KeyPressVisAdvColor;
 
 // [Other]
 bool SaveStats;

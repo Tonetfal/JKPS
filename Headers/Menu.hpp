@@ -47,11 +47,15 @@ class Menu
         void loadTextures();
 
         void selectTab(unsigned idx);
+        void selectAdvKeyPressVisKey(unsigned idx);
 
         void initCollectionNames();
         void buildMenuTabs();
         void buildParametersMap();
         void buildParameterLines();
+        void buildAdvKeyPressVisKeys();
+        
+        void positionMenuLines();
 
         void moveSliderBarButtons(float offset);
         void moveSliderBarMouse(sf::Vector2i mousePos);
@@ -77,6 +81,8 @@ class Menu
 
         unsigned mSelectedTab;
         std::vector<std::unique_ptr<GfxParameter>> mTabs;
+        unsigned mSelectedAdvKeyPressVisKey;
+        std::vector<std::unique_ptr<GfxParameter>> mAdvKeyPressVisKeys;
         std::vector<float> mBounds;
         sf::RectangleShape mTabsBackground;
 

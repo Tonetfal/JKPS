@@ -726,10 +726,12 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextOutClr: return ParameterLine::ID::StatTextOutClr;
         case LogicalParameter::ID::StatTextBold: return ParameterLine::ID::StatTextBold;
         case LogicalParameter::ID::StatTextItal: return ParameterLine::ID::StatTextItal;
+        case LogicalParameter::ID::BtnTextHint: return ParameterLine::ID::BtnTextHint;
         case LogicalParameter::ID::StatTextShow: return ParameterLine::ID::StatTextShow;
         case LogicalParameter::ID::StatTextShowKPS: return ParameterLine::ID::StatTextShowKPS;
         case LogicalParameter::ID::StatTextShowTotal: return ParameterLine::ID::StatTextShowTotal;
         case LogicalParameter::ID::StatTextShowBPM: return ParameterLine::ID::StatTextShowBPM;
+
         case LogicalParameter::ID::StatTextPosAdvMode: return ParameterLine::ID::StatTextPosAdvMode;
         case LogicalParameter::ID::StatTextPos1: return ParameterLine::ID::StatTextPos1;
         case LogicalParameter::ID::StatTextPos2: return ParameterLine::ID::StatTextPos2;
@@ -871,6 +873,83 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::KeyPressVisOrig: return ParameterLine::ID::KeyPressVisOrig;
         case LogicalParameter::ID::KeyPressVisFadeLineLen: return ParameterLine::ID::KeyPressVisFadeLineLen;
         case LogicalParameter::ID::KeyPressVisColor: return ParameterLine::ID::KeyPressVisColor;
+        
+        case LogicalParameter::ID::KeyPressVisAdvMode: return ParameterLine::ID::KeyPressVisAdvMode;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed1: return ParameterLine::ID::KeyPressVisAdvModeSpeed1;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation1: return ParameterLine::ID::KeyPressVisAdvModeRotation1;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen1: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen1;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig1: return ParameterLine::ID::KeyPressVisAdvModeOrig1;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor1: return ParameterLine::ID::KeyPressVisAdvModeColor1;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed2: return ParameterLine::ID::KeyPressVisAdvModeSpeed2;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation2: return ParameterLine::ID::KeyPressVisAdvModeRotation2;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen2: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen2;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig2: return ParameterLine::ID::KeyPressVisAdvModeOrig2;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor2: return ParameterLine::ID::KeyPressVisAdvModeColor2;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed3: return ParameterLine::ID::KeyPressVisAdvModeSpeed3;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation3: return ParameterLine::ID::KeyPressVisAdvModeRotation3;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen3: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen3;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig3: return ParameterLine::ID::KeyPressVisAdvModeOrig3;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor3: return ParameterLine::ID::KeyPressVisAdvModeColor3;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed4: return ParameterLine::ID::KeyPressVisAdvModeSpeed4;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation4: return ParameterLine::ID::KeyPressVisAdvModeRotation4;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen4: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen4;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig4: return ParameterLine::ID::KeyPressVisAdvModeOrig4;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor4: return ParameterLine::ID::KeyPressVisAdvModeColor4;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed5: return ParameterLine::ID::KeyPressVisAdvModeSpeed5;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation5: return ParameterLine::ID::KeyPressVisAdvModeRotation5;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen5: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen5;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig5: return ParameterLine::ID::KeyPressVisAdvModeOrig5;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor5: return ParameterLine::ID::KeyPressVisAdvModeColor5;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed6: return ParameterLine::ID::KeyPressVisAdvModeSpeed6;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation6: return ParameterLine::ID::KeyPressVisAdvModeRotation6;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen6: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen6;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig6: return ParameterLine::ID::KeyPressVisAdvModeOrig6;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor6: return ParameterLine::ID::KeyPressVisAdvModeColor6;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed7: return ParameterLine::ID::KeyPressVisAdvModeSpeed7;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation7: return ParameterLine::ID::KeyPressVisAdvModeRotation7;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen7: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen7;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig7: return ParameterLine::ID::KeyPressVisAdvModeOrig7;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor7: return ParameterLine::ID::KeyPressVisAdvModeColor7;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed8: return ParameterLine::ID::KeyPressVisAdvModeSpeed8;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation8: return ParameterLine::ID::KeyPressVisAdvModeRotation8;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen8: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen8;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig8: return ParameterLine::ID::KeyPressVisAdvModeOrig8;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor8: return ParameterLine::ID::KeyPressVisAdvModeColor8;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed9: return ParameterLine::ID::KeyPressVisAdvModeSpeed9;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation9: return ParameterLine::ID::KeyPressVisAdvModeRotation9;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen9: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen9;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig9: return ParameterLine::ID::KeyPressVisAdvModeOrig9;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor9: return ParameterLine::ID::KeyPressVisAdvModeColor9;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed10: return ParameterLine::ID::KeyPressVisAdvModeSpeed10;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation10: return ParameterLine::ID::KeyPressVisAdvModeRotation10;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen10: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen10;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig10: return ParameterLine::ID::KeyPressVisAdvModeOrig10;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor10: return ParameterLine::ID::KeyPressVisAdvModeColor10;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed11: return ParameterLine::ID::KeyPressVisAdvModeSpeed11;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation11: return ParameterLine::ID::KeyPressVisAdvModeRotation11;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen11: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen11;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig11: return ParameterLine::ID::KeyPressVisAdvModeOrig11;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor11: return ParameterLine::ID::KeyPressVisAdvModeColor11;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed12: return ParameterLine::ID::KeyPressVisAdvModeSpeed12;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation12: return ParameterLine::ID::KeyPressVisAdvModeRotation12;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen12: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen12;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig12: return ParameterLine::ID::KeyPressVisAdvModeOrig12;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor12: return ParameterLine::ID::KeyPressVisAdvModeColor12;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed13: return ParameterLine::ID::KeyPressVisAdvModeSpeed13;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation13: return ParameterLine::ID::KeyPressVisAdvModeRotation13;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen13: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen13;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig13: return ParameterLine::ID::KeyPressVisAdvModeOrig13;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor13: return ParameterLine::ID::KeyPressVisAdvModeColor13;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed14: return ParameterLine::ID::KeyPressVisAdvModeSpeed14;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation14: return ParameterLine::ID::KeyPressVisAdvModeRotation14;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen14: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen14;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig14: return ParameterLine::ID::KeyPressVisAdvModeOrig14;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor14: return ParameterLine::ID::KeyPressVisAdvModeColor14;
+        case LogicalParameter::ID::KeyPressVisAdvModeSpeed15: return ParameterLine::ID::KeyPressVisAdvModeSpeed15;
+        case LogicalParameter::ID::KeyPressVisAdvModeRotation15: return ParameterLine::ID::KeyPressVisAdvModeRotation15;
+        case LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen15: return ParameterLine::ID::KeyPressVisAdvModeFadeLineLen15;
+        case LogicalParameter::ID::KeyPressVisAdvModeOrig15: return ParameterLine::ID::KeyPressVisAdvModeOrig15;
+        case LogicalParameter::ID::KeyPressVisAdvModeColor15: return ParameterLine::ID::KeyPressVisAdvModeColor15;
 
         case LogicalParameter::ID::OtherSaveStats: return ParameterLine::ID::OtherSaveStats;
         case LogicalParameter::ID::OtherShowOppOnAlt: return ParameterLine::ID::OtherShowOppOnAlt;
@@ -914,10 +993,18 @@ bool ParameterLine::isEmpty(ParameterLine::ID id)
         id == ParameterLine::ID::AnimGfxPressMty ||
         id == ParameterLine::ID::MainWndwMty ||
         id == ParameterLine::ID::KPSWndwMty ||
-        id == ParameterLine::ID::KeyPressVisMty ||
+        // id == ParameterLine::ID::KeyPressVisMty ||
+        id == ParameterLine::ID::KeyPressVisAdvModeMty ||
         id == ParameterLine::ID::OtherMty ||
         // id == ParameterLine::ID::InfoMty ||
         id == ParameterLine::ID::LastLine;
+}
+
+bool ParameterLine::isToSkip(ParameterLine::ID id)
+{
+    return 
+        (id >= ParameterLine::ID::KeyPressVisAdvModeSpeed2 && id <= ParameterLine::ID::KeyPressVisAdvModeColor15) ||
+        (id >= ParameterLine::ID::SaveStatColl && id <= ParameterLine::ID::SaveStatMty);
 }
 
 void ParameterLine::deselectValue()

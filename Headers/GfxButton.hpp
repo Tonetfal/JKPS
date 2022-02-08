@@ -82,7 +82,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         {
             public:
                 // RectEmitter(const sf::Texture &texture);
-                RectEmitter();
+                RectEmitter(unsigned btnIdx);
 
                 void update(bool keyState, bool prevKeyState);
                 void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -101,6 +101,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
 
 
             private:
+                const unsigned mBtnIdx;
                 // const sf::Texture &mTexture;
                 sf::Vector2f mTextureScale;
                 sf::VertexArray mMiddleVertecies;

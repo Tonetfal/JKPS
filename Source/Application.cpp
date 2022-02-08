@@ -442,7 +442,7 @@ void Application::openWindow()
 #elif linux
     style = Settings::WindowTitleBar ? sf::Style::Default : sf::Style::None;
 #else
-#error Unsupported platform
+#error Unsupported compiler
 #endif
 
     if (mWindow.isOpen())

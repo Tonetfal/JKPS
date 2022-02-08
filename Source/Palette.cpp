@@ -245,7 +245,7 @@ void Palette::openWindow(sf::Vector2i position)
 #elif linux
         style = sf::Style::Default;
 #else
-#error Unsupported platform
+#error Unsupported compiler
 #endif
 
         float width = 500 + mWindowOffset.x * 2;

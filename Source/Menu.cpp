@@ -23,6 +23,7 @@ Menu::Menu()
 , mSliderBarAimedColor(sf::Color(123,123,123))
 , mSliderBarPressedColor(sf::Color(161,161,161))
 , mSelectedTab(0u)
+, mSelectedAdvKeyPressVisKey(0u)
 {
     loadFonts();
     loadTextures();
@@ -40,6 +41,8 @@ Menu::Menu()
     mSliderBar.setFillColor(mSliderBarDefaultColor);
 
     mTabs.at(mSelectedTab)->mRect.setFillColor(GfxParameter::defaultSelectedRectColor);
+
+    buildAdvKeyPressVisKeys();
 }
 
 void Menu::processInput()
@@ -136,19 +139,19 @@ void Menu::handleEvent()
         ||  event.type == sf::Event::MouseButtonReleased
         ||  event.type == sf::Event::MouseMoved)
         {
-            const auto halfWindowSize = static_cast<sf::Vector2f>(mWindow.getSize()) / 2.f;
-            const auto mousePos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
+            const auto viewOrigin = mView.getCenter() - mView.getSize() / 2.f;
+            const auto relCursorPos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
+            const auto absCursorPos = viewOrigin + relCursorPos;
 
             unsigned idx = 0u;
             for (auto &tab : mTabs)
             {
                 auto color = GfxParameter::defaultRectColor;
-                if (tab->contains(mousePos))
+                if (tab->contains(relCursorPos))
                 {
                     color = GfxParameter::defaultAimedRectColor;
                     if (event.type == sf::Event::MouseButtonPressed)
                     {
-
                         // Reset slider
                         mSliderBar.setPosition(mSliderBar.getPosition().x, 100);
 
@@ -156,8 +159,8 @@ void Menu::handleEvent()
                         mTabs[mSelectedTab]->mRect.setFillColor(GfxParameter::defaultRectColor);
 
                         // Select new tab
-                        mSelectedTab = idx;
                         selectTab(idx);
+                        mSelectedTab = idx;
                     }
                 }
 
@@ -165,6 +168,32 @@ void Menu::handleEvent()
                     color = GfxParameter::defaultSelectedRectColor;
 
                 tab->mRect.setFillColor(color);
+                ++idx;
+            }
+
+            idx = 0u;
+            for (auto &elem : mAdvKeyPressVisKeys)
+            {
+                auto color = GfxParameter::defaultRectColor;
+
+                if (elem->contains(absCursorPos))
+                {
+                    color = GfxParameter::defaultAimedRectColor;
+                    if (event.type == sf::Event::MouseButtonPressed)
+                    {
+                        // Deselect old tab
+                        mAdvKeyPressVisKeys[mSelectedAdvKeyPressVisKey]->mRect.setFillColor(GfxParameter::defaultRectColor);
+
+                        // Select new tab
+                        selectAdvKeyPressVisKey(idx);
+                        mSelectedAdvKeyPressVisKey = idx;
+                    }
+                }
+                
+                if (mSelectedAdvKeyPressVisKey == idx)
+                    color = GfxParameter::defaultSelectedRectColor;
+
+                elem->mRect.setFillColor(color);
                 ++idx;
             }
         }
@@ -208,7 +237,12 @@ void Menu::handleRealtimeInput()
 
 void Menu::update()
 {
+    // const auto viewOrigin = mView.getCenter() - mView.getSize() / 2.f;
+    // const auto relCursorPosition = static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow));
+    // const auto absCursorPosition = viewOrigin + relCursorPosition;
 
+    // std::cout << relCursorPosition.x << " " << relCursorPosition.y << "\n";
+    // std::cout << absCursorPosition.x << " " << absCursorPosition.y << "\n";
 }
 
 void Menu::render() 
@@ -219,6 +253,8 @@ void Menu::render()
 
     for (const auto &pair : mParameterLines)
         mWindow.draw(*pair.second);
+    for (const auto &elem : mAdvKeyPressVisKeys)
+        mWindow.draw(*elem);
 
     auto transform = sf::Transform::Identity;
     mWindow.setView(mWindow.getDefaultView());
@@ -241,7 +277,7 @@ void Menu::openWindow()
 #elif linux
     style = sf::Style::Default;
 #else
-#error Unsupported platform
+#error Unsupported compiler
 #endif
 
     mWindow.create(sf::VideoMode(959, 700), "JKPS Menu", style);
@@ -290,8 +326,32 @@ void Menu::loadTextures()
 
 void Menu::selectTab(unsigned idx)
 {
-    mView.setCenter(1000.f * idx + mWindow.getSize().x / 2.f, 0.f);
+    mView.setCenter(1000.f * static_cast<float>(idx) + static_cast<float>(mWindow.getSize().x) / 2.f, 0.f);
     mWindow.setView(mView);
+}
+
+void Menu::selectAdvKeyPressVisKey(unsigned idx)
+{
+    const auto prevIdx = mSelectedAdvKeyPressVisKey;
+    auto increment = [] (ParameterLine::ID id, int val)
+        {
+            return static_cast<ParameterLine::ID>(static_cast<int>(id) + val);
+        };
+    auto lineToHide = increment(ParameterLine::ID::KeyPressVisAdvModeSpeed1, static_cast<int>(prevIdx * 5u));
+    auto lineToShow = increment(ParameterLine::ID::KeyPressVisAdvModeSpeed1, static_cast<int>(idx * 5u));
+
+    for (size_t i = 0; i < 5lu; ++i)
+    {
+        auto toHideFound = mParameterLines.find(lineToHide);
+        auto toShowFound = mParameterLines.find(lineToShow);
+        assert(toHideFound != mParameterLines.end());
+        assert(toShowFound != mParameterLines.end());
+        toShowFound->second->setPosition(toHideFound->second->getPosition());
+        toHideFound->second->setPosition(sf::Vector2f(-1000.f, -1000.f));
+
+        lineToHide = increment(lineToHide, 1);
+        lineToShow = increment(lineToShow, 1);
+    }
 }
 
 void Menu::initCollectionNames()
@@ -308,6 +368,7 @@ void Menu::initCollectionNames()
     mCollectionNames.emplace_back("[Main window]");
     mCollectionNames.emplace_back("[Extra KPS window]");
     mCollectionNames.emplace_back("[Key press visualization]");
+    mCollectionNames.emplace_back("[Key press visualization advanced settings]");
     mCollectionNames.emplace_back("[Other]");
     mCollectionNames.emplace_back("[Statistics save]");
 }
@@ -351,8 +412,43 @@ void Menu::buildMenuTabs()
     mTabsBackground.setFillColor(sf::Color(35, 35, 35));
 }
 
+void Menu::buildAdvKeyPressVisKeys()
+{
+    // Font must be loaded before tabs can be constructed
+
+    std::unique_ptr<GfxParameter> tabPtr = nullptr;
+    const sf::Vector2f distBtw(5.f, 5.f);
+    const sf::Vector2f tabSize(80.f, 22.5f);
+    const sf::Vector2f offset(5.f + tabSize.x / 2.f, distBtw.y);
+    const auto found = mParameterLines.find(ParameterLine::ID::KeyPressVisAdvModeSpace);
+    assert(found != mParameterLines.end());
+    const auto origin = found->second->getPosition();
+    size_t key = 1lu;
+
+    auto addTab = [&] (sf::Vector2i tabCoords)
+        {
+            auto ptr = std::make_unique<GfxParameter>("Key " + std::to_string(key), tabSize);
+            const auto position = origin + offset + sf::Vector2f(
+                (tabSize.x + distBtw.x) * static_cast<float>(tabCoords.x), 
+                (tabSize.y + distBtw.y) * static_cast<float>(tabCoords.y));
+
+            ptr->setPosition(position);
+            mAdvKeyPressVisKeys.push_back(std::move(ptr));
+
+            ++key;
+        };
+
+    for (size_t i = 0lu; i < 9lu; i++)
+        addTab(sf::Vector2i(static_cast<int>(i), 0));
+    for (size_t i = 0lu; i < 6lu; i++)
+        addTab(sf::Vector2i(static_cast<int>(i), 1));
+}
+
 void Menu::buildParametersMap()
 {
+    using sPtr = std::shared_ptr<LogicalParameter>;
+    sPtr parP = nullptr;
+
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextDist,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::StatisticsTextDistance,                      "Distance between", "5", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatPos,                   new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextPosition,                      "Position offset", "5, 0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatValPos,                new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::StatisticsTextValuePosition,                 "Number position offset", "0, 0", -1000, 1000)));
@@ -407,6 +503,11 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextIgnoreBtnMovement,  new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::BtnTextIgnoreBtnMovement,                    "Ignore button movement", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBold,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextBold,                              "Bold", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextItal,               new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextItalic,                            "Italic", "False")));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Hint, nullptr, "Hint: Only the highest \"Show key X\" below will affect the text without using advanced settings!"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::BtnTextHint, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines[ParameterLine::ID::BtnTextHint]->setCharacterSize(14u);
+
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowVisKeys,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowVisualKeys,                    "Show key labels", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowTot,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowTotal,                         "Show key counters", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextShowKps,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextShowKPS,                           "Show key KPS", "False")));
@@ -418,7 +519,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextKPSPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonKPSTextPosition,                       "KPS text position offset", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextBPMPosition,        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonBPMTextPosition,                       "BPM text position offset", "0,0", -1000, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnTextPosAdvMode,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ButtonTextPosAdvancedMode,                   "Enable advanced mode for button text positions", "False")));
-    for (unsigned idx = 0; idx < 15; ++idx)
+    for (unsigned idx = 0; idx < Settings::SupportedAdvancedKeysNumber; ++idx)
     {
         auto textPosId =               LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnTextPos1) + idx);
         mParameters.emplace(std::make_pair(textPosId,                                   new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::ButtonsTextPositions[idx],                  ("Button " + std::to_string(idx + 1) + " text position offset"), "0,0", -1000, 1000)));
@@ -431,7 +532,7 @@ void Menu::buildParametersMap()
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxBtnPosAdvMode,       new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::GfxButtonBtnPositionsAdvancedMode,           "Enable advanced mode for button positions", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BtnGfxSzAdvMode,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::GfxButtonSizesAdvancedMode,                  "Enable advanced mode for button sizes", "False")));
-    for (unsigned idx = 0; idx < 15; ++idx)
+    for (unsigned idx = 0; idx < Settings::SupportedAdvancedKeysNumber; ++idx)
     {
         auto btnPosId =                LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxBtnPos1) + idx * 2);
         auto btnSzId =                 LogicalParameter::ID(unsigned(LogicalParameter::ID::BtnGfxSz1) + idx * 2);
@@ -453,10 +554,10 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr,                     new LogicalParameter(LogicalParameter::Type::Color,         &Settings::BackgroundColor,                             "Background color", "140,140,140,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale,                   new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ScaleBackground,                             "Scale background texture if it does not fit", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTitleBar,          new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::WindowTitleBar,                              "Title bar", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeTop,                          "Bonus size top", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeBottom,                       "Bonus size bottom", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeLeft,                         "Bonus size left", "6", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght,              new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeRight,                        "Bonus size right", "105", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeTop,                          "Bonus size top", "6", -0, 4094)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeBottom,                       "Bonus size bottom", "6", -0, 4094)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft,               new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeLeft,                         "Bonus size left", "6", -0, 4094)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwRght,              new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeRight,                        "Bonus size right", "105", -0, 4094)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwEn,                 new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KPSWindowEnabledFromStart,                   "Enable from start", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwSz,                 new LogicalParameter(LogicalParameter::Type::VectorU,       &Settings::KPSWindowSize,                               "Window size", "300,300", 0, 1000)));
@@ -473,9 +574,26 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KeyPressVisToggle,                           "Enabled", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed,          new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisSpeed,                            "Speed", "60", -500, 500)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation,       new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisRotation,                         "Movement rotation", "0", -360, 360)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisOrig,                             "Spawn position offset", "0,-5", -1000, 1000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig,           new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisOrig,                             "Spawn position offset", "0,-5", -4094, 4094)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen,    new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisFadeLineLen,                      "Fade out distance", "500", -16384, 16384)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor,          new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisColor,                            "Color", "255,255,255,255")));
+    
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisAdvMode,        new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KeyPressVisAdvSettingsMode,                  "Enable advanced mode for key press visualization", "False")));
+    for (size_t i = 0lu; i < Settings::SupportedAdvancedKeysNumber; ++i)
+    {
+        const auto speed =             LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeSpeed1) + i * 5lu);
+        const auto rot =               LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeRotation1) + i * 5lu);
+        const auto len =               LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeFadeLineLen1) + i * 5lu);
+        const auto orig =              LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeOrig1) + i * 5lu);
+        const auto clr =               LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeColor1) + i * 5lu);
+        const auto iStr = std::to_string(i + 1);
+
+        mParameters.emplace(std::make_pair(speed,                                       new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvSpeed[i],                      iStr + ". Speed", "60", -500, 500)));
+        mParameters.emplace(std::make_pair(rot,                                         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvRotation[i],                   iStr + ". Rotation", "0", -360, 360)));
+        mParameters.emplace(std::make_pair(orig,                                        new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisAdvOrig[i],                       iStr + ". Spawn position offset", "0, -5", -4094, 4094)));
+        mParameters.emplace(std::make_pair(len,                                         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvFadeLineLen[i],                iStr + ". Fade line length", "500", -16384, 16384)));
+        mParameters.emplace(std::make_pair(clr,                                         new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisAdvColor[i],                      iStr + ". Color", "255,255,255,255")));
+    }
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::SaveStats,                                   "Update statistics on quit", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherShowOppOnAlt,         new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowOppOnAlt,                                "Show opposite key values on alt press", "True")));
@@ -556,6 +674,11 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeSpace, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
@@ -610,33 +733,47 @@ void Menu::buildParameterLines()
 
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
 
-    const float stepX = 1000.f, stepY = 50.f;
+    positionMenuLines();
+}
+
+void Menu::positionMenuLines()
+{
+    const sf::Vector2f step(1000.f, 50.f);
     const float halfWindowSize = 400.f;
     const float padding = 5.f;
     const sf::Vector2f offset(155.f, 0.f);
     unsigned row = 1u, column = 0u;
-    for (auto &pair : mParameterLines)
-    {
-        if (pair.first >= ParameterLine::ID::SaveStatColl && pair.first <= ParameterLine::ID::SaveStatMty)
-        {
-            // Hide them
-            pair.second->setPosition(-1000.f, -1000.f);
-            continue;
-        }
 
-        if (ParameterLine::isEmpty(pair.first))
+    for (auto &[id, line] : mParameterLines)
+    {
+        if (ParameterLine::isEmpty(id))
         {
-            if (pair.first == ParameterLine::ID::LastLine)
+            if (id == ParameterLine::ID::LastLine)
             {
                 mParameterLines.at(ParameterLine::ID::ProgramVersion)
-                    ->move(0.f, halfWindowSize - stepY * 3.f + padding);
+                    ->move(0.f, halfWindowSize - step.y * 3.f + padding);
             }
-            mBounds.push_back(stepY * (row - 2) - halfWindowSize + padding);
+            mBounds.push_back(step.y * (row - 2) - halfWindowSize + padding);
             row = 0;
             ++column;
         }
-        pair.second->setPosition(stepX * column + offset.x, stepY * row - halfWindowSize + padding);
-        ++row;
+
+        if (!ParameterLine::isToSkip(id))
+        {
+            const auto position = sf::Vector2f(
+                step.x * static_cast<float>(column) + offset.x, 
+                step.y * static_cast<float>(row)    + offset.y - halfWindowSize + padding
+            );
+
+            line->setPosition(position);
+            ++row;
+        }
+        else
+        {
+            // Hide them
+            line->setPosition(-1000.f, -1000.f);
+            continue;
+        }
     }
 }
 

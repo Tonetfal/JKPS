@@ -12,6 +12,8 @@
 
 namespace Settings
 {
+    const size_t SupportedAdvancedKeysNumber = 15lu;
+
     // [Statistics text]
     extern float StatisticsTextDistance;
     extern sf::Vector2f StatisticsTextPosition;
@@ -66,7 +68,7 @@ namespace Settings
     extern sf::Vector2f ButtonKPSTextPosition;
     extern sf::Vector2f ButtonBPMTextPosition;
     extern bool ButtonTextPosAdvancedMode;
-    extern std::array<sf::Vector2f, 15> ButtonsTextPositions;
+    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> ButtonsTextPositions;
 
     // [Button graphics]
     extern float GfxButtonDistance;
@@ -74,9 +76,9 @@ namespace Settings
     extern sf::Vector2u GfxButtonTextureSize;
     extern sf::Color GfxButtonTextureColor;
     extern bool GfxButtonBtnPositionsAdvancedMode;
-    extern std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
+    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> GfxButtonsBtnPositions;
     extern bool GfxButtonSizesAdvancedMode;
-    extern std::array<sf::Vector2f, 15> GfxButtonsSizes;
+    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> GfxButtonsSizes;
 
     // [Animation graphics]
     extern bool LightAnimation;
@@ -115,13 +117,21 @@ namespace Settings
     extern unsigned KPSTextSize;
     extern unsigned KPSNumberSize;
 
-    // [Key presses visualizer]
+    // [Key press visualization]
     extern bool KeyPressVisToggle;
     extern float KeyPressVisSpeed;
     extern float KeyPressVisRotation;
     extern float KeyPressVisFadeLineLen;
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
+
+    // [Key press visualization advanced settings]
+    extern bool KeyPressVisAdvSettingsMode;
+    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvSpeed;
+    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvRotation;
+    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvFadeLineLen;
+    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> KeyPressVisAdvOrig;
+    extern std::array<sf::Color, SupportedAdvancedKeysNumber> KeyPressVisAdvColor;
 
     // [Other]
     extern bool SaveStats;
@@ -154,5 +164,5 @@ namespace Settings
     // Saved parameters
     extern float MaxKPS;
     extern unsigned Total;
-    extern std::array<unsigned, 15> KeysTotal;
+    extern std::array<unsigned, SupportedAdvancedKeysNumber> KeysTotal;
 }

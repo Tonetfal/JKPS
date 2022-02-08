@@ -16,6 +16,7 @@ GfxButton::GfxButton(const unsigned idx, const TextureHolder &textureHolder, con
 : mTextures(textureHolder)
 , mFonts(fontHolder)
 // , mEmitter(textureHolder.get(Textures::KeyPressVis))
+, mEmitter(idx)
 , mLastKeyState(false)
 , mButtonsHeightOffset(0.f)
 , mBtnIdx(idx)
@@ -52,7 +53,7 @@ void GfxButton::update(bool keyState)
     if (Settings::KeyPressVisToggle)
     {
         // Create a new rectangle on button press if last frame the button was not pressed
-        if (keyState)
+        if (!mLastKeyState && keyState)
         {
             const auto &buttonSprite = *mSprites[ButtonSprite];
             const auto rect = buttonSprite.getGlobalBounds();
@@ -334,13 +335,14 @@ GfxButton::~GfxButton()
 }
 
 // GfxButton::RectEmitter::RectEmitter(const sf::Texture &texture)
-GfxButton::RectEmitter::RectEmitter()
-: //mTexture(texture) 
+GfxButton::RectEmitter::RectEmitter(unsigned btnIdx)
+: mBtnIdx(btnIdx)
+//, mTexture(texture) 
 // , mTopVertecies(sf::Quads, 1000u)
-mMiddleVertecies(sf::Quads, 1000u)
+, mMiddleVertecies(sf::Quads, 1000u)
 // , mBottomVertecies(sf::Quads, 1000u)
 {
-    const auto count = mMiddleVertecies.getVertexCount() / 4.f;
+    const auto count = mMiddleVertecies.getVertexCount() / 4;
     for (size_t i = 0; i < count; ++i)
         mAvailableRectIndices.emplace_back(i);
 }
@@ -352,17 +354,23 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
         return;
 
     std::vector<size_t> toRemove;
-    float speed = -Settings::KeyPressVisSpeed / 10.f;
+
+    const auto advMode = Settings::KeyPressVisAdvSettingsMode;
+    const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
+        Settings::KeyPressVisAdvSpeed[mBtnIdx];
+    const auto speed = -origSpeed / 10.f;
+    const auto len = !advMode ? Settings::KeyPressVisFadeLineLen : 
+        Settings::KeyPressVisAdvFadeLineLen[mBtnIdx];
 
     // Iterate through all rectangles
     for (auto i : mUsedRectIndices)
     {
         // Flag which identifies if all the rectangle vertices are on the same height
-        bool eachVertexIsOnLimit = true;
+        auto eachVertexIsOnLimit = true;
 
         // Iterate through all the rectangle vertices
-        const auto vertexIndex = i * 4;
-        for (size_t j = vertexIndex; j < vertexIndex + 4; ++j)
+        const auto vertexIndex = i * 4lu;
+        for (size_t j = vertexIndex; j < vertexIndex + 4lu; ++j)
         {
             // Take vertex reference
             // auto &topSideVertex = mTopVertecies[j];
@@ -370,9 +378,9 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
             // auto &bottomSideVertex = mBottomVertecies[j];
 
             // Limit the square to go beyond the line length
-            auto move = [speed](sf::Vertex &vertex) 
+            auto move = [len, speed] (sf::Vertex &vertex) 
                 { 
-                    vertex.position.y = -std::min(std::abs(vertex.position.y + speed), Settings::KeyPressVisFadeLineLen);
+                    vertex.position.y = -std::min(std::abs(vertex.position.y + speed), len);
                 };
             // move(topSideVertex);
             move(middleVertex);
@@ -382,12 +390,11 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
             // if (eachVertexIsOnLimit)
             // {
             //     eachVertexIsOnLimit = std::abs(bottomSideVertex.position.y) 
-            //         == Settings::KeyPressVisFadeLineLen;
+            //         == len;
             // }
             if (eachVertexIsOnLimit)
             {
-                eachVertexIsOnLimit = std::abs(middleVertex.position.y) 
-                    == Settings::KeyPressVisFadeLineLen;
+                eachVertexIsOnLimit = std::abs(middleVertex.position.y) == len;
             }
 
             // Set the right alpha channel depending on the progress to the end of the fade out length line
@@ -429,13 +436,13 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
         // mBottomVertecies[offset + 3].position.y -= speed;
     }
 
-    // Move the nearest rectangle up on release
+    // // Move the nearest rectangle up on release
     if (prevKeyState && !keyState && !mUsedRectIndices.empty())
     {
         const auto offset = mUsedRectIndices.back() * 4;
 
         mMiddleVertecies[offset + 2].position.y = 
-        mMiddleVertecies[offset + 3].position.y -= Settings::KeyPressVisSpeed / 10.f;;
+        mMiddleVertecies[offset + 3].position.y -= speed;
     }
 }
 
@@ -477,7 +484,12 @@ void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Ver
 
 void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
 {
-    const auto rectSize = sf::Vector2f(buttonSize.x, Settings::KeyPressVisSpeed / 10.f);
+    const auto advMode = Settings::KeyPressVisAdvSettingsMode;
+    const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
+        Settings::KeyPressVisAdvSpeed[mBtnIdx];
+    const auto speed = -origSpeed / 10.f;
+
+    const auto rectSize = sf::Vector2f(buttonSize.x, speed);
     const auto halfRectSize = rectSize / 2.f;
 
     // const auto textureSize = static_cast<sf::Vector2f>(mTexture.getSize());
@@ -546,30 +558,32 @@ void GfxButton::RectEmitter::scaleTexture(sf::Vector2f buttonSize)
 
 sf::Transform GfxButton::RectEmitter::getPressRectTransform(sf::Transform transform) const
 {
-    transform.rotate(-Settings::KeyPressVisRotation);
-    transform = transform.translate(Settings::KeyPressVisOrig.x, -Settings::KeyPressVisOrig.y);
+    const auto advMode = Settings::KeyPressVisAdvSettingsMode;
+    const auto rot = !advMode ? Settings::KeyPressVisRotation : 
+        Settings::KeyPressVisAdvRotation[mBtnIdx];
+    const auto orig = !advMode ? Settings::KeyPressVisOrig : 
+        Settings::KeyPressVisAdvOrig[mBtnIdx];
+
+    transform.rotate(-rot);
+    transform = transform.translate(orig.x, -orig.y);
     return transform;
 }
 
 float GfxButton::RectEmitter::getVertexProgress(size_t vertexNumber, float vertexHeight) const
 {
-    float originOffset;
-    float height = mLastRectSize.y / 2.f;
-    if (vertexNumber % 4 == 0)
-        originOffset = -height;
-    else if (vertexNumber % 5 == 0)
-        originOffset = -height;
-    else if (vertexNumber % 6 == 0)
-        originOffset = +height;
-    else 
-        originOffset = +height;
+    const auto advMode = Settings::KeyPressVisAdvSettingsMode;
+    const auto len = !advMode ? Settings::KeyPressVisFadeLineLen : 
+        Settings::KeyPressVisAdvFadeLineLen[mBtnIdx];
 
-    return std::min(mEmitterPosition.y - vertexHeight / Settings::KeyPressVisFadeLineLen, 1.f);
+    return std::min(mEmitterPosition.y - vertexHeight / len, 1.f);
 }
 
 sf::Color GfxButton::RectEmitter::getVertexColor(const sf::VertexArray &vertexArray, size_t vertexIndex) const
 {
-    auto color = Settings::KeyPressVisColor;    
+    const auto advMode = Settings::KeyPressVisAdvSettingsMode;
+    auto color = !advMode ? Settings::KeyPressVisColor : 
+        Settings::KeyPressVisAdvColor[mBtnIdx];
+
     color.a -= color.a * getVertexProgress(vertexIndex, vertexArray[vertexIndex].position.y);
     return color;
 }

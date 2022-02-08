@@ -266,7 +266,7 @@ void GfxButtonSelector::openWindow()
 #elif linux
         style = sf::Style::Default;
 #else
-#error Unsupported platform
+#error Unsupported compiler
 #endif
 
         mWindow.create(sf::VideoMode(300, 150), title, style);
