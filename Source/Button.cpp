@@ -127,6 +127,11 @@ unsigned Button::size()
 bool Button::parameterIdMatches(LogicalParameter::ID id)
 {
     const auto idU = static_cast<unsigned>(id);
+    
+    const auto textSepValAdvParms = 4ul;
+    const auto firstTextSepValAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnTextAdvVisPosition1);
+    const auto lastTextSepValAdvPar = firstTextSepValAdvPar + textSepValAdvParms * Settings::SupportedAdvancedKeysNumber - 1u;
+
     const auto textAdvParms = 8ul;
     const auto firstTextAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnTextAdvClr1);
     const auto lastTextAdvPar = firstTextAdvPar + textAdvParms * Settings::SupportedAdvancedKeysNumber - 1u;
@@ -169,6 +174,7 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
 
         id == LogicalParameter::ID::BtnGfxTxtrClr ||
         id == LogicalParameter::ID::BtnTextPosAdvMode ||
+        (idU >= firstTextSepValAdvPar && idU <= lastTextSepValAdvPar) ||
         (idU >= firstTextAdvPar && idU <= lastTextAdvPar) ||
         (idU >= firstGfxBtnAdvPar && idU <= lastGfxBtnAdvPar);
 }
