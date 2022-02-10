@@ -89,27 +89,28 @@ void readParameters(
     const std::vector<std::string> &collectionNames)
 {
     auto it = collectionNames.begin();
-    for (auto &pair : parameters)
+    for (auto &[id, par] : parameters)
     {
         if (// the first will  pair.first == LogicalParameter::ID::StatTextDist ||
-            pair.first == LogicalParameter::ID::StatTextPosAdvMode ||
-            pair.first == LogicalParameter::ID::BtnTextFont ||
-            pair.first == LogicalParameter::ID::BtnGfxDist ||
-            pair.first == LogicalParameter::ID::BtnTextSepPosAdvMode ||
-            pair.first == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
-            pair.first == LogicalParameter::ID::AnimGfxVel ||
-            pair.first == LogicalParameter::ID::AnimGfxLight ||
-            pair.first == LogicalParameter::ID::AnimGfxPress ||
-            pair.first == LogicalParameter::ID::BgTxtr ||
-            pair.first == LogicalParameter::ID::KPSWndwEn ||
-            pair.first == LogicalParameter::ID::KeyPressVisToggle ||
-            pair.first == LogicalParameter::ID::OtherSaveStats ||
-            pair.first == LogicalParameter::ID::SaveStatMaxKPS)
+            id == LogicalParameter::ID::StatTextPosAdvMode ||
+            id == LogicalParameter::ID::BtnTextFont ||
+            id == LogicalParameter::ID::BtnGfxDist ||
+            id == LogicalParameter::ID::BtnTextSepPosAdvMode ||
+            id == LogicalParameter::ID::BtnGfxAdvMode ||
+            id == LogicalParameter::ID::AnimGfxVel ||
+            id == LogicalParameter::ID::AnimGfxLight ||
+            id == LogicalParameter::ID::AnimGfxPress ||
+            id == LogicalParameter::ID::BgTxtr ||
+            id == LogicalParameter::ID::KPSWndwEn ||
+            id == LogicalParameter::ID::KeyPressVisToggle ||
+            id == LogicalParameter::ID::KeyPressVisAdvMode ||
+            id == LogicalParameter::ID::OtherSaveStats ||
+            id == LogicalParameter::ID::SaveStatMaxKPS)
         {
             ++it;
         }
 
-        readParameter(*pair.second, *it);
+        readParameter(*par, *it);
     }
 }
 

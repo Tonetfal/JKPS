@@ -206,6 +206,11 @@ std::string GfxStatisticsLine::getStatValueString(StatisticsID id)
 
 bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
 {
+    // const auto idU = static_cast<unsigned>(id);
+    // const auto advParms = 8ul;
+    // const auto firstAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnTextAdvClr1);
+    // const auto lastAdvPar = firstAdvPar + advParms * Settings::SupportedAdvancedKeysNumber - 1u;
+
     return 
         id == LogicalParameter::ID::StatTextDist ||
         id == LogicalParameter::ID::StatPos ||
@@ -249,38 +254,67 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextKPS2Text ||
         id == LogicalParameter::ID::StatTextTotalText ||
         id == LogicalParameter::ID::StatTextBPMText ||
-        id == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
-        id == LogicalParameter::ID::BtnGfxSzAdvMode ||
+        id == LogicalParameter::ID::BtnGfxAdvMode ||
         id == LogicalParameter::ID::BtnGfxBtnPos1 ||
         id == LogicalParameter::ID::BtnGfxSz1 ||
+        id == LogicalParameter::ID::BtnGfxClr1 ||
         id == LogicalParameter::ID::BtnGfxBtnPos2 ||
         id == LogicalParameter::ID::BtnGfxSz2 ||
+        id == LogicalParameter::ID::BtnGfxClr2 ||
         id == LogicalParameter::ID::BtnGfxBtnPos3 ||
         id == LogicalParameter::ID::BtnGfxSz3 ||
+        id == LogicalParameter::ID::BtnGfxClr3 ||
         id == LogicalParameter::ID::BtnGfxBtnPos4 ||
         id == LogicalParameter::ID::BtnGfxSz4 ||
+        id == LogicalParameter::ID::BtnGfxClr4 ||
         id == LogicalParameter::ID::BtnGfxBtnPos5 ||
         id == LogicalParameter::ID::BtnGfxSz5 ||
+        id == LogicalParameter::ID::BtnGfxClr5 ||
         id == LogicalParameter::ID::BtnGfxBtnPos6 ||
         id == LogicalParameter::ID::BtnGfxSz6 ||
+        id == LogicalParameter::ID::BtnGfxClr6 ||
         id == LogicalParameter::ID::BtnGfxBtnPos7 ||
         id == LogicalParameter::ID::BtnGfxSz7 ||
+        id == LogicalParameter::ID::BtnGfxClr7 ||
         id == LogicalParameter::ID::BtnGfxBtnPos8 ||
         id == LogicalParameter::ID::BtnGfxSz8 ||
+        id == LogicalParameter::ID::BtnGfxClr8 ||
         id == LogicalParameter::ID::BtnGfxBtnPos9 ||
         id == LogicalParameter::ID::BtnGfxSz9 ||
-        id == LogicalParameter::ID::BtnGfxBtnos10 ||
+        id == LogicalParameter::ID::BtnGfxClr9 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos10 ||
         id == LogicalParameter::ID::BtnGfxSz10 ||
-        id == LogicalParameter::ID::BtnGfxBtnos11 ||
+        id == LogicalParameter::ID::BtnGfxClr10 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos11 ||
         id == LogicalParameter::ID::BtnGfxSz11 ||
-        id == LogicalParameter::ID::BtnGfxBtnos12 ||
+        id == LogicalParameter::ID::BtnGfxClr11 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos12 ||
         id == LogicalParameter::ID::BtnGfxSz12 ||
-        id == LogicalParameter::ID::BtnGfxBtnos13 ||
+        id == LogicalParameter::ID::BtnGfxClr12 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos13 ||
         id == LogicalParameter::ID::BtnGfxSz13 ||
-        id == LogicalParameter::ID::BtnGfxBtnos14 ||
+        id == LogicalParameter::ID::BtnGfxClr13 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos14 ||
         id == LogicalParameter::ID::BtnGfxSz14 ||
-        id == LogicalParameter::ID::BtnGfxBtnos15 ||
+        id == LogicalParameter::ID::BtnGfxClr14 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos15 ||
         id == LogicalParameter::ID::BtnGfxSz15 ||
+        id == LogicalParameter::ID::BtnGfxClr15 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos16 ||
+        id == LogicalParameter::ID::BtnGfxSz16 ||
+        id == LogicalParameter::ID::BtnGfxClr16 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos17 ||
+        id == LogicalParameter::ID::BtnGfxSz17 ||
+        id == LogicalParameter::ID::BtnGfxClr17 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos18 ||
+        id == LogicalParameter::ID::BtnGfxSz18 ||
+        id == LogicalParameter::ID::BtnGfxClr18 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos19 ||
+        id == LogicalParameter::ID::BtnGfxSz19 ||
+        id == LogicalParameter::ID::BtnGfxClr19 ||
+        id == LogicalParameter::ID::BtnGfxBtnPos20 ||
+        id == LogicalParameter::ID::BtnGfxSz20 ||
+        id == LogicalParameter::ID::BtnGfxClr20 ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
         id == LogicalParameter::ID::BtnGfxDist ||
         id == LogicalParameter::ID::MainWndwTop ||

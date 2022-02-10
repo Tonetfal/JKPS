@@ -20,6 +20,10 @@ class Button;
 class Menu 
 {
     public:
+        using ParameterLinesContainer = std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>>;
+        using ParametersContainer = std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>>;
+
+    public:
         Menu();
 
         void processInput();
@@ -48,12 +52,14 @@ class Menu
 
         void selectTab(unsigned idx);
         void selectAdvKeyPressVisKey(unsigned idx);
+        void selectAdvBtnTextSepValKeys(unsigned idx);
+        void selectAdvBtnTextKeys(unsigned idx);
 
         void initCollectionNames();
         void buildMenuTabs();
         void buildParametersMap();
         void buildParameterLines();
-        void buildAdvKeyPressVisKeys();
+        void buildAdvKeys();
         
         void positionMenuLines();
 
@@ -62,6 +68,46 @@ class Menu
         void returnViewInBounds();
 
         void updateSaveStatsStrings();
+
+    public:
+        class KeyBlock : public sf::Drawable, public sf::Transformable, private sf::NonCopyable
+        {
+            public:
+                using Ptr = std::unique_ptr<GfxParameter>;
+                using Container = std::vector<Ptr>;
+
+
+            public:
+                KeyBlock(ParameterLinesContainer &parameterLines, ParameterLine::ID placeHolder, size_t parametersNumber);
+
+                GfxParameter &current();
+                void push(Ptr ptr);
+                void select(unsigned idx);
+
+                void setContainingTab(unsigned idx);
+                unsigned getContainingTab() const;
+
+                void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+                void handleEvent(sf::Event event, sf::Vector2f absCursorPos);
+
+
+            private:
+                ParameterLinesContainer &mParameterLines;
+                ParameterLine::ID mFirstParameterLineId;
+                size_t mParametersNumber;
+
+                Container mContainer;
+                unsigned mSelectedKeyIdx;
+                unsigned mContainingTabIdx;
+        };
+
+        enum class AdvancedKeys
+        {
+            BtnTextSepVal,
+            BtnText,
+            GfxBtn,
+            KeyPressVis
+        };
 
 
     private:
@@ -81,13 +127,14 @@ class Menu
 
         unsigned mSelectedTab;
         std::vector<std::unique_ptr<GfxParameter>> mTabs;
+        std::map<unsigned, std::vector<ParameterLine::ID>> mTabParameters;
         unsigned mSelectedAdvKeyPressVisKey;
-        std::vector<std::unique_ptr<GfxParameter>> mAdvKeyPressVisKeys;
+        std::map<AdvancedKeys, std::unique_ptr<KeyBlock>> mKeyBlocks;
         std::vector<float> mBounds;
         sf::RectangleShape mTabsBackground;
 
-        std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> mParameters;
-        std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> mParameterLines;
+        ParametersContainer mParameters;
+        ParameterLinesContainer mParameterLines;
         std::vector<std::string> mCollectionNames;
         ChangedParametersQueue mChangedParametersQueue;
 

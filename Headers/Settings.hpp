@@ -12,7 +12,9 @@
 
 namespace Settings
 {
-    const size_t SupportedAdvancedKeysNumber = 15lu;
+    const size_t SupportedAdvancedKeysNumber = 20ul;
+    template <typename T>
+    using Container = std::array<T, SupportedAdvancedKeysNumber>;
 
     // [Statistics text]
     extern float StatisticsTextDistance;
@@ -54,31 +56,48 @@ namespace Settings
     extern unsigned ButtonTextOutlineThickness;
     extern sf::Color ButtonTextOutlineColor;
     extern sf::Vector2f ButtonTextPosition;
+    extern bool ButtonTextBoundsToggle;
     extern sf::Vector2f ButtonTextBounds;
-    extern bool BtnTextIgnoreBtnMovement;
+    extern bool ButtonTextIgnoreBtnMovement;
     extern bool ButtonTextBold;
     extern bool ButtonTextItalic;
     extern bool ButtonTextShowVisualKeys;
+    extern sf::Vector2f ButtonTextVisualKeysTextPosition;
     extern bool ButtonTextShowTotal;
+    extern sf::Vector2f ButtonTextTotalTextPosition;
     extern bool ButtonTextShowKPS;
+    extern sf::Vector2f ButtonTextKPSTextPosition;
     extern bool ButtonTextShowBPM;
+    extern sf::Vector2f ButtonTextBPMTextPosition;
+
+    // [Buttons text advanced settings]
     extern bool ButtonTextSepPosAdvancedMode;
-    extern sf::Vector2f ButtonVisualKeysTextPosition;
-    extern sf::Vector2f ButtonTotalTextPosition;
-    extern sf::Vector2f ButtonKPSTextPosition;
-    extern sf::Vector2f ButtonBPMTextPosition;
-    extern bool ButtonTextPosAdvancedMode;
-    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> ButtonsTextPositions;
+    extern Container<sf::Vector2f> ButtonTextAdvVisualKeysTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvTotalTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvKPSTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvBPMTextPosition;
+    
+    extern bool ButtonTextAdvancedMode;
+    extern Container<sf::Color> ButtonTextAdvColor;
+    extern Container<unsigned> ButtonTextAdvCharacterSize;
+    extern Container<unsigned> ButtonTextAdvOutlineThickness;
+    extern Container<sf::Color> ButtonTextAdvOutlineColor;
+    extern Container<sf::Vector2f> ButtonsTextAdvPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvBounds;
+    extern Container<bool> ButtonTextAdvBold;
+    extern Container<bool> ButtonTextAdvItalic;
 
     // [Button graphics]
     extern float GfxButtonDistance;
     extern std::string GfxButtonTexturePath;
     extern sf::Vector2u GfxButtonTextureSize;
     extern sf::Color GfxButtonTextureColor;
-    extern bool GfxButtonBtnPositionsAdvancedMode;
-    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> GfxButtonsBtnPositions;
-    extern bool GfxButtonSizesAdvancedMode;
-    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> GfxButtonsSizes;
+
+    // [Button graphics advanced settings]
+    extern bool GfxButtonAdvancedMode;
+    extern Container<sf::Vector2f> GfxButtonsBtnPositions;
+    extern Container<sf::Vector2f> GfxButtonsSizes;
+    extern Container<sf::Color> GfxButtonsColor;
 
     // [Animation graphics]
     extern bool LightAnimation;
@@ -127,11 +146,11 @@ namespace Settings
 
     // [Key press visualization advanced settings]
     extern bool KeyPressVisAdvSettingsMode;
-    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvSpeed;
-    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvRotation;
-    extern std::array<float, SupportedAdvancedKeysNumber> KeyPressVisAdvFadeLineLen;
-    extern std::array<sf::Vector2f, SupportedAdvancedKeysNumber> KeyPressVisAdvOrig;
-    extern std::array<sf::Color, SupportedAdvancedKeysNumber> KeyPressVisAdvColor;
+    extern Container<float> KeyPressVisAdvSpeed;
+    extern Container<float> KeyPressVisAdvRotation;
+    extern Container<float> KeyPressVisAdvFadeLineLen;
+    extern Container<sf::Vector2f> KeyPressVisAdvOrig;
+    extern Container<sf::Color> KeyPressVisAdvColor;
 
     // [Other]
     extern bool SaveStats;
@@ -164,5 +183,5 @@ namespace Settings
     // Saved parameters
     extern float MaxKPS;
     extern unsigned Total;
-    extern std::array<unsigned, SupportedAdvancedKeysNumber> KeysTotal;
+    extern Container<unsigned> KeysTotal;
 }

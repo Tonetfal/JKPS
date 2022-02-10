@@ -45,31 +45,47 @@ unsigned ButtonTextCharacterSize;
 unsigned ButtonTextOutlineThickness;
 sf::Color ButtonTextOutlineColor;
 sf::Vector2f ButtonTextPosition;
+bool ButtonTextBoundsToggle;
 sf::Vector2f ButtonTextBounds;
-bool BtnTextIgnoreBtnMovement;
+bool ButtonTextIgnoreBtnMovement;
 bool ButtonTextBold;
 bool ButtonTextItalic;
 bool ButtonTextShowVisualKeys;
+sf::Vector2f ButtonTextVisualKeysTextPosition;
 bool ButtonTextShowTotal;
+sf::Vector2f ButtonTextTotalTextPosition;
 bool ButtonTextShowKPS;
+sf::Vector2f ButtonTextKPSTextPosition;
 bool ButtonTextShowBPM;
+sf::Vector2f ButtonTextBPMTextPosition;
+
+// [Buttons text advanced settings]
 bool ButtonTextSepPosAdvancedMode;
-sf::Vector2f ButtonVisualKeysTextPosition;
-sf::Vector2f ButtonTotalTextPosition;
-sf::Vector2f ButtonKPSTextPosition;
-sf::Vector2f ButtonBPMTextPosition;
-bool ButtonTextPosAdvancedMode;
-std::array<sf::Vector2f, 15> ButtonsTextPositions;
+Container<sf::Vector2f> ButtonTextAdvVisualKeysTextPosition;
+Container<sf::Vector2f> ButtonTextAdvTotalTextPosition;
+Container<sf::Vector2f> ButtonTextAdvKPSTextPosition;
+Container<sf::Vector2f> ButtonTextAdvBPMTextPosition;
+
+bool ButtonTextAdvancedMode;
+Container<sf::Color> ButtonTextAdvColor;
+Container<unsigned> ButtonTextAdvCharacterSize;
+Container<unsigned> ButtonTextAdvOutlineThickness;
+Container<sf::Color> ButtonTextAdvOutlineColor;
+Container<sf::Vector2f> ButtonsTextAdvPosition;
+Container<sf::Vector2f> ButtonTextAdvBounds;
+Container<bool> ButtonTextAdvIgnoreBtnMovement;
+Container<bool> ButtonTextAdvBold;
+Container<bool> ButtonTextAdvItalic;
 
 // [Button graphics]
 float GfxButtonDistance;
 std::string GfxButtonTexturePath;
 sf::Vector2u GfxButtonTextureSize;
 sf::Color GfxButtonTextureColor;
-bool GfxButtonBtnPositionsAdvancedMode;
-std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
-bool GfxButtonSizesAdvancedMode;
-std::array<sf::Vector2f, 15> GfxButtonsSizes;
+bool GfxButtonAdvancedMode;
+Container<sf::Vector2f> GfxButtonsBtnPositions;
+Container<sf::Vector2f> GfxButtonsSizes;
+Container<sf::Color> GfxButtonsColor;
 
 // [Animation graphics]
 bool LightAnimation;
@@ -118,11 +134,11 @@ sf::Color KeyPressVisColor;
 
 // [Key press visualization advanced settings]
 bool KeyPressVisAdvSettingsMode;
-std::array<float, 15lu> KeyPressVisAdvSpeed;
-std::array<float, 15lu> KeyPressVisAdvRotation;
-std::array<float, 15lu> KeyPressVisAdvFadeLineLen;
-std::array<sf::Vector2f, 15lu> KeyPressVisAdvOrig;
-std::array<sf::Color, 15lu> KeyPressVisAdvColor;
+Container<float> KeyPressVisAdvSpeed;
+Container<float> KeyPressVisAdvRotation;
+Container<float> KeyPressVisAdvFadeLineLen;
+Container<sf::Vector2f> KeyPressVisAdvOrig;
+Container<sf::Color> KeyPressVisAdvColor;
 
 // [Other]
 bool SaveStats;
@@ -140,22 +156,21 @@ unsigned char* DefaultKPSWindowFont = KPSWindowDefaultFont;
 unsigned char* KeyPressVisTexture = KeyPressVisTextureH;
 
 // Hot keys
-sf::Keyboard::Key KeyToIncreaseKeys(sf::Keyboard::Equal);
-sf::Keyboard::Key AltKeyToIncreaseKeys(sf::Keyboard::Add);
-sf::Keyboard::Key KeyToDecreaseKeys(sf::Keyboard::Dash);
-sf::Keyboard::Key AltKeyToDecreaseKeys(sf::Keyboard::Subtract);
-sf::Keyboard::Key KeyToIncreaseButtons(sf::Keyboard::Period);
-sf::Keyboard::Key KeyToDecreaseButtons(sf::Keyboard::Comma);
-sf::Keyboard::Key KeyToReset(sf::Keyboard::X);
-sf::Keyboard::Key KeyExit(sf::Keyboard::W);
-sf::Keyboard::Key KeyToOpenKPSWindow(sf::Keyboard::K);
-sf::Keyboard::Key KeyToOpenMenuWindow(sf::Keyboard::A);
-sf::Keyboard::Key KeyToOpenGraphWindow(sf::Keyboard::G);
+sf::Keyboard::Key KeyToIncreaseKeys = sf::Keyboard::Equal;
+sf::Keyboard::Key AltKeyToIncreaseKeys = sf::Keyboard::Add;
+sf::Keyboard::Key KeyToDecreaseKeys = sf::Keyboard::Dash;
+sf::Keyboard::Key AltKeyToDecreaseKeys = sf::Keyboard::Subtract;
+sf::Keyboard::Key KeyToIncreaseButtons = sf::Keyboard::Period;
+sf::Keyboard::Key KeyToDecreaseButtons = sf::Keyboard::Comma;
+sf::Keyboard::Key KeyToReset = sf::Keyboard::X;
+sf::Keyboard::Key KeyExit = sf::Keyboard::W;
+sf::Keyboard::Key KeyToOpenKPSWindow = sf::Keyboard::K;
+sf::Keyboard::Key KeyToOpenMenuWindow = sf::Keyboard::A;
+sf::Keyboard::Key KeyToOpenGraphWindow = sf::Keyboard::G;
 
 // Saved parameters
 float MaxKPS;
 unsigned Total;
-std::array<unsigned, 15> KeysTotal;
+Container<unsigned> KeysTotal;
 
 } // !namespace Settings
-
