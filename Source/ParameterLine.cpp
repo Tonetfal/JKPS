@@ -737,6 +737,7 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextDist: return ParameterLine::ID::StatTextDist;
         case LogicalParameter::ID::StatPos: return ParameterLine::ID::StatPos;
         case LogicalParameter::ID::StatValPos: return ParameterLine::ID::StatValPos;
+        case LogicalParameter::ID::StatTextCenterOrigin: return ParameterLine::ID::StatTextCenterOrigin;
         case LogicalParameter::ID::StatTextFont: return ParameterLine::ID::StatTextFont;
         case LogicalParameter::ID::StatTextClr: return ParameterLine::ID::StatTextClr;
         case LogicalParameter::ID::StatTextChSz: return ParameterLine::ID::StatTextChSz;
@@ -749,30 +750,28 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextShowTotal: return ParameterLine::ID::StatTextShowTotal;
         case LogicalParameter::ID::StatTextShowBPM: return ParameterLine::ID::StatTextShowBPM;
 
-        case LogicalParameter::ID::StatTextPosAdvMode: return ParameterLine::ID::StatTextPosAdvMode;
-        case LogicalParameter::ID::StatTextPos1: return ParameterLine::ID::StatTextPos1;
-        case LogicalParameter::ID::StatTextPos2: return ParameterLine::ID::StatTextPos2;
-        case LogicalParameter::ID::StatTextPos3: return ParameterLine::ID::StatTextPos3;
-        case LogicalParameter::ID::StatTextValPosAdvMode: return ParameterLine::ID::StatTextValPosAdvMode;
-        case LogicalParameter::ID::StatTextValPos1: return ParameterLine::ID::StatTextValPos1;
-        case LogicalParameter::ID::StatTextValPos2: return ParameterLine::ID::StatTextValPos2;
-        case LogicalParameter::ID::StatTextValPos3: return ParameterLine::ID::StatTextValPos3;
-        case LogicalParameter::ID::StatTextClrAdvMode: return ParameterLine::ID::StatTextClrAdvMode;
-        case LogicalParameter::ID::StatTextClr1: return ParameterLine::ID::StatTextClr1;
-        case LogicalParameter::ID::StatTextClr2: return ParameterLine::ID::StatTextClr2;
-        case LogicalParameter::ID::StatTextClr3: return ParameterLine::ID::StatTextClr3;
-        case LogicalParameter::ID::StatTextChSzAdvMode: return ParameterLine::ID::StatTextChSzAdvMode;
-        case LogicalParameter::ID::StatTextChSz1: return ParameterLine::ID::StatTextChSz1;
-        case LogicalParameter::ID::StatTextChSz2: return ParameterLine::ID::StatTextChSz2;
-        case LogicalParameter::ID::StatTextChSz3: return ParameterLine::ID::StatTextChSz3;
-        case LogicalParameter::ID::StatTextBoldAdvMode: return ParameterLine::ID::StatTextBoldAdvMode;
-        case LogicalParameter::ID::StatTextBold1: return ParameterLine::ID::StatTextBold1;
-        case LogicalParameter::ID::StatTextBold2: return ParameterLine::ID::StatTextBold2;
-        case LogicalParameter::ID::StatTextBold3: return ParameterLine::ID::StatTextBold3;
-        case LogicalParameter::ID::StatTextItalAdvMode: return ParameterLine::ID::StatTextItalAdvMode;
-        case LogicalParameter::ID::StatTextItal1: return ParameterLine::ID::StatTextItal1;
-        case LogicalParameter::ID::StatTextItal2: return ParameterLine::ID::StatTextItal2;
-        case LogicalParameter::ID::StatTextItal3: return ParameterLine::ID::StatTextItal3;
+        case LogicalParameter::ID::StatTextAdvMode: return ParameterLine::ID::StatTextAdvMode;
+        case LogicalParameter::ID::StatTextAdvPos1: return ParameterLine::ID::StatTextAdvPos1;
+        case LogicalParameter::ID::StatTextAdvValPos1: return ParameterLine::ID::StatTextAdvValPos1;
+        case LogicalParameter::ID::StatTextAdvCenterOrigin1: return ParameterLine::ID::StatTextAdvCenterOrigin1;
+        case LogicalParameter::ID::StatTextAdvClr1: return ParameterLine::ID::StatTextAdvClr1;
+        case LogicalParameter::ID::StatTextAdvChSz1: return ParameterLine::ID::StatTextAdvChSz1;
+        case LogicalParameter::ID::StatTextAdvBold1: return ParameterLine::ID::StatTextAdvBold1;
+        case LogicalParameter::ID::StatTextAdvItal1: return ParameterLine::ID::StatTextAdvItal1;
+        case LogicalParameter::ID::StatTextAdvPos2: return ParameterLine::ID::StatTextAdvPos2;
+        case LogicalParameter::ID::StatTextAdvCenterOrigin2: return ParameterLine::ID::StatTextAdvCenterOrigin2;
+        case LogicalParameter::ID::StatTextAdvClr2: return ParameterLine::ID::StatTextAdvClr2;
+        case LogicalParameter::ID::StatTextAdvValPos2: return ParameterLine::ID::StatTextAdvValPos2;
+        case LogicalParameter::ID::StatTextAdvChSz2: return ParameterLine::ID::StatTextAdvChSz2;
+        case LogicalParameter::ID::StatTextAdvBold2: return ParameterLine::ID::StatTextAdvBold2;
+        case LogicalParameter::ID::StatTextAdvItal2: return ParameterLine::ID::StatTextAdvItal2;
+        case LogicalParameter::ID::StatTextAdvPos3: return ParameterLine::ID::StatTextAdvPos3;
+        case LogicalParameter::ID::StatTextAdvCenterOrigin3: return ParameterLine::ID::StatTextAdvCenterOrigin3;
+        case LogicalParameter::ID::StatTextAdvValPos3: return ParameterLine::ID::StatTextAdvValPos3;
+        case LogicalParameter::ID::StatTextAdvClr3: return ParameterLine::ID::StatTextAdvClr3;
+        case LogicalParameter::ID::StatTextAdvChSz3: return ParameterLine::ID::StatTextAdvChSz3;
+        case LogicalParameter::ID::StatTextAdvBold3: return ParameterLine::ID::StatTextAdvBold3;
+        case LogicalParameter::ID::StatTextAdvItal3: return ParameterLine::ID::StatTextAdvItal3;
         case LogicalParameter::ID::StatTextKPSText: return ParameterLine::ID::StatTextKPSText;
         case LogicalParameter::ID::StatTextKPS2Text: return ParameterLine::ID::StatTextKPS2Text;
         case LogicalParameter::ID::StatTextTotalText: return ParameterLine::ID::StatTextTotalText;
@@ -882,7 +881,6 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
 
 
         case LogicalParameter::ID::BtnTextPosAdvMode: return ParameterLine::ID::BtnTextPosAdvMode;
-        case LogicalParameter::ID::BtnGfxSpace: return ParameterLine::ID::BtnGfxSpace;
         case LogicalParameter::ID::BtnTextAdvClr1: return ParameterLine::ID::BtnTextAdvClr1;
         case LogicalParameter::ID::BtnTextAdvChSz1: return ParameterLine::ID::BtnTextAdvChSz1;
         case LogicalParameter::ID::BtnTextAdvOutThck1: return ParameterLine::ID::BtnTextAdvOutThck1;
@@ -1290,7 +1288,8 @@ bool ParameterLine::isEmpty(ParameterLine::ID id)
 {
     return
         // id == ParameterLine::ID::StatTextMty ||
-        id == ParameterLine::ID::StatTextAdvMty ||
+        // id == ParameterLine::ID::StatTextAdvMty ||
+        id == ParameterLine::ID::StatTextAdvStrMty ||
         // id == ParameterLine::ID::BtnTextMty ||
         id == ParameterLine::ID::BtnTextAdvMty ||
         // id == ParameterLine::ID::BtnGfxMty ||
@@ -1327,7 +1326,8 @@ bool ParameterLine::isToSkip(ParameterLine::ID id)
         isInBounds(ParameterLine::ID::BtnTextAdvVisPosition1, difference(ParameterLine::ID::BtnTextAdvVisPosition1, ParameterLine::ID::BtnTextAdvVisPosition2)) ||
         isInBounds(ParameterLine::ID::BtnTextAdvClr1, difference(ParameterLine::ID::BtnTextAdvClr1, ParameterLine::ID::BtnTextAdvClr2)) ||
         isInBounds(ParameterLine::ID::BtnGfxBtnPos1, difference(ParameterLine::ID::BtnGfxBtnPos1, ParameterLine::ID::BtnGfxBtnPos2)) ||
-        isInBounds(ParameterLine::ID::KeyPressVisAdvModeSpeed1, difference(ParameterLine::ID::KeyPressVisAdvModeSpeed1, ParameterLine::ID::KeyPressVisAdvModeSpeed2));
+        isInBounds(ParameterLine::ID::KeyPressVisAdvModeSpeed1, difference(ParameterLine::ID::KeyPressVisAdvModeSpeed1, ParameterLine::ID::KeyPressVisAdvModeSpeed2)) ||
+        (id >= ParameterLine::ID::StatTextAdvPos2 && id <= ParameterLine::ID::StatTextAdvItal3);
 }
 
 void ParameterLine::deselectValue()

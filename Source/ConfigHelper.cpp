@@ -92,7 +92,7 @@ void readParameters(
     for (auto &[id, par] : parameters)
     {
         if (// the first will  pair.first == LogicalParameter::ID::StatTextDist ||
-            id == LogicalParameter::ID::StatTextPosAdvMode ||
+            id == LogicalParameter::ID::StatTextAdvMode ||
             id == LogicalParameter::ID::BtnTextFont ||
             id == LogicalParameter::ID::BtnGfxDist ||
             id == LogicalParameter::ID::BtnTextSepPosAdvMode ||

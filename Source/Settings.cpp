@@ -8,9 +8,10 @@ namespace Settings
 // [Statistics text]
 float StatisticsTextDistance;
 sf::Vector2f StatisticsTextPosition;
+sf::Vector2f StatisticsTextValuePosition;
+bool StatisticsTextCenterOrigin;
 std::string StatisticsTextFontPath;
 sf::Color StatisticsTextColor;
-sf::Vector2f StatisticsTextValuePosition;
 unsigned StatisticsTextCharacterSize;
 unsigned StatisticsTextOutlineThickness;
 sf::Color StatisticsTextOutlineColor;
@@ -21,18 +22,14 @@ bool ShowStatisticsKPS;
 bool ShowStatisticsTotal;
 bool ShowStatisticsBPM;
 
-bool StatisticsTextPositionsAdvancedMode;
-std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
-bool StatisticsTextValuePositionsAdvancedMode;
-std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextValuePositions;
-bool StatisticsTextColorsAdvancedMode;
-std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
-bool StatisticsTextChSzssAdvancedMode;
-std::array<unsigned, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextCharacterSizes;
-bool StatisticsTextBoldAdvancedMode;
-std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextBolds;
-bool StatisticsTextItalicAdvancedMode;
-std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextItalics;
+bool StatisticsTextAdvancedMode;
+StatisticsContainer<sf::Vector2f> StatisticsTextAdvPosition;
+StatisticsContainer<sf::Vector2f> StatisticsTextAdvValuePosition;
+StatisticsContainer<bool> StatisticsTextAdvCenterOrigin;
+StatisticsContainer<sf::Color> StatisticsTextAdvColor;
+StatisticsContainer<unsigned> StatisticsTextAdvCharacter;
+StatisticsContainer<bool> StatisticsTextAdvBold;
+StatisticsContainer<bool> StatisticsTextAdvItalic;
 std::string StatisticsKPSText;
 std::string StatisticsKPS2Text;
 std::string StatisticsTotalText;

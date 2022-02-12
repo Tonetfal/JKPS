@@ -15,11 +15,14 @@ namespace Settings
     const size_t SupportedAdvancedKeysNumber = 20ul;
     template <typename T>
     using Container = std::array<T, SupportedAdvancedKeysNumber>;
+    template <typename T>
+    using StatisticsContainer = std::array<T, GfxStatisticsLine::StatisticsIdCounter>;
 
     // [Statistics text]
     extern float StatisticsTextDistance;
     extern sf::Vector2f StatisticsTextPosition;
     extern sf::Vector2f StatisticsTextValuePosition;
+    extern bool StatisticsTextCenterOrigin;
     extern std::string StatisticsTextFontPath;
     extern sf::Color StatisticsTextColor;
     extern unsigned StatisticsTextCharacterSize;
@@ -32,18 +35,14 @@ namespace Settings
     extern bool ShowStatisticsTotal;
     extern bool ShowStatisticsBPM;
 
-    extern bool StatisticsTextPositionsAdvancedMode;
-    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
-    extern bool StatisticsTextValuePositionsAdvancedMode;
-    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextValuePositions;
-    extern bool StatisticsTextColorsAdvancedMode;
-    extern std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
-    extern bool StatisticsTextChSzssAdvancedMode;
-    extern std::array<unsigned, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextCharacterSizes;
-    extern bool StatisticsTextBoldAdvancedMode;
-    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextBolds;
-    extern bool StatisticsTextItalicAdvancedMode;
-    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextItalics;
+    extern bool StatisticsTextAdvancedMode;
+    extern StatisticsContainer<sf::Vector2f> StatisticsTextAdvPosition;
+    extern StatisticsContainer<sf::Vector2f> StatisticsTextAdvValuePosition;
+    extern StatisticsContainer<bool> StatisticsTextAdvCenterOrigin;
+    extern StatisticsContainer<sf::Color> StatisticsTextAdvColor;
+    extern StatisticsContainer<unsigned> StatisticsTextAdvCharacter;
+    extern StatisticsContainer<bool> StatisticsTextAdvBold;
+    extern StatisticsContainer<bool> StatisticsTextAdvItalic;
     extern std::string StatisticsKPSText;
     extern std::string StatisticsKPS2Text;
     extern std::string StatisticsTotalText;

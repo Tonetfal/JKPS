@@ -3,6 +3,7 @@
 #include "../Headers/Settings.hpp"
 #include "../Headers/StringHelper.hpp"
 #include "../Headers/Button.hpp"
+#include "../Headers/Utility.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -28,8 +29,11 @@ void GfxStatisticsLine::draw(sf::RenderTarget &target, sf::RenderStates states) 
     states.transform.combine(getTransform());
 
     target.draw(mStatLineText, states);
-    const sf::FloatRect rect(mStatLineText.getLocalBounds());
-    states.transform.translate(rect.left + rect.width, 0);
+
+    // Draw values in front of text string
+    const auto rect = mStatLineText.getLocalBounds();
+    states.transform.translate(rect.left + rect.width, 0.f);
+
     target.draw(mStatValueText, states);
 }
 
@@ -42,16 +46,12 @@ void GfxStatisticsLine::update()
     mStatValueText.setString(getStatValueString(mIdentifier));
     centerOrigin();
 
-    // Due to different text sizes of KPS and Max that change continuously
-    // value text position has to be updated. I've put it here cuz I'm lazy atm :(
-    if (Settings::StatisticsTextPositionsAdvancedMode
-    && !Settings::StatisticsTextValuePositionsAdvancedMode)
-    {
-        const sf::FloatRect bounds = mStatLineText.getLocalBounds();
-        float x = -bounds.width / 2.f;
-        float y = -bounds.height / 2.f;
-        mStatValueText.setPosition(x, y);
-    } 
+    const auto advMode = Settings::StatisticsTextAdvancedMode;
+    const auto origPos = Settings::StatisticsTextValuePosition;
+    const auto advPos = Settings::StatisticsTextAdvValuePosition.at(mIdentifier);
+    const auto pos = origPos + (advMode ? advPos : sf::Vector2f());
+
+    mStatValueText.setPosition(pos);
 }
 
 void GfxStatisticsLine::updateAsset()
@@ -62,19 +62,24 @@ void GfxStatisticsLine::updateAsset()
 
 void GfxStatisticsLine::updateParameters()
 {
-    const sf::Color color = !Settings::StatisticsTextColorsAdvancedMode ? 
-        Settings::StatisticsTextColor : Settings::StatisticsTextColors[mIdentifier];
+    const auto advMode = Settings::StatisticsTextAdvancedMode;
 
-    const unsigned chSz = !Settings::StatisticsTextChSzssAdvancedMode ?
-        Settings::StatisticsTextCharacterSize : Settings::StatisticsTextCharacterSizes[mIdentifier];
+    const auto color = !advMode ? Settings::StatisticsTextColor 
+        : Settings::StatisticsTextAdvColor[mIdentifier];
 
-    const bool bold = !Settings::StatisticsTextBoldAdvancedMode ?
-        Settings::StatisticsTextBold : Settings::StatisticsTextBolds[mIdentifier];
+    const auto chSz = !advMode ? Settings::StatisticsTextCharacterSize 
+        : Settings::StatisticsTextAdvCharacter[mIdentifier];
+
+    const auto outThck = static_cast<float>(Settings::StatisticsTextOutlineThickness) / 10.f;
+    const auto outColor = Settings::StatisticsTextOutlineColor;
+
+    const auto bold = !advMode ? Settings::StatisticsTextBold 
+        : Settings::StatisticsTextAdvBold[mIdentifier];
     
-    const bool italic = !Settings::StatisticsTextItalicAdvancedMode ?
-        Settings::StatisticsTextItalic : Settings::StatisticsTextItalics[mIdentifier];
+    const auto italic = !advMode ? Settings::StatisticsTextItalic 
+        : Settings::StatisticsTextAdvItalic[mIdentifier];
 
-    const sf::Uint32 style = (bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0);
+    const auto style = sf::Uint32(bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0);
 
     mStatLineText.setFillColor(color);
     mStatValueText.setFillColor(color);
@@ -85,30 +90,16 @@ void GfxStatisticsLine::updateParameters()
     mStatLineText.setStyle(style);
     mStatValueText.setStyle(style);
 
-    mStatLineText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
-    mStatValueText.setOutlineThickness(Settings::StatisticsTextOutlineThickness / 10.f);
+    mStatLineText.setOutlineThickness(outThck);
+    mStatValueText.setOutlineThickness(outThck);
 
-    mStatLineText.setOutlineColor(Settings::StatisticsTextOutlineColor);
-    mStatValueText.setOutlineColor(Settings::StatisticsTextOutlineColor);
+    mStatLineText.setOutlineColor(outColor);
+    mStatValueText.setOutlineColor(outColor);
 
-    sf::Vector2f pos;
-    if (Settings::StatisticsTextPositionsAdvancedMode
-    && !Settings::StatisticsTextValuePositionsAdvancedMode)
-    {
-        const sf::FloatRect bounds = mStatLineText.getLocalBounds();
-        pos.x = -bounds.width / 2.f;
-        pos.y = -bounds.height / 2.f;
-    } 
-    else if (!Settings::StatisticsTextValuePositionsAdvancedMode)
-    {
-        pos.x = Settings::StatisticsTextValuePosition.x;
-        pos.y = -Settings::StatisticsTextValuePosition.y;
-    } 
-    else
-    {
-        pos.x = Settings::StatisticsTextValuePositions[mIdentifier].x;
-        pos.y = -Settings::StatisticsTextValuePositions[mIdentifier].y;
-    }
+    const auto origPos = Settings::StatisticsTextValuePosition;
+    const auto advPos = Settings::StatisticsTextAdvValuePosition.at(mIdentifier);
+    const auto pos = origPos + (advMode ? advPos : sf::Vector2f());
+
     mStatValueText.setPosition(pos);
     centerOrigin();
 }
@@ -130,20 +121,30 @@ const sf::Text &GfxStatisticsLine::getValueText() const
 
 void GfxStatisticsLine::centerOrigin()
 {
-    const sf::FloatRect lineRect(mStatLineText.getLocalBounds());
-    const sf::Vector2f lineOrigin(lineRect.left + lineRect.width / 2, lineRect.top + lineRect.height / 2);
-    const sf::FloatRect valueRect(mStatValueText.getLocalBounds());
-    const sf::Vector2f valueOrigin(valueRect.left + valueRect.width / 2, valueRect.top + valueRect.height / 2);
+    const auto advMode = Settings::StatisticsTextAdvancedMode;
+    const auto centerOrigin = !advMode ? Settings::StatisticsTextCenterOrigin
+        : Settings::StatisticsTextAdvCenterOrigin.at(mIdentifier);
 
-    if (!Settings::StatisticsTextPositionsAdvancedMode)
-        mStatLineText.setOrigin(lineRect.left, lineRect.top);
-    else
-        mStatLineText.setOrigin(lineOrigin);
+    const auto lineRect = mStatLineText.getLocalBounds();
+    const auto valueRect = mStatValueText.getLocalBounds();
 
-    if (!Settings::StatisticsTextValuePositionsAdvancedMode)
-        mStatValueText.setOrigin(valueRect.left, valueRect.top);
-    else
+    mStatLineText.setOrigin(lineRect.left, lineRect.top);
+
+    // Origin center
+    if (centerOrigin)
+    {
+        const auto valueOrigin = sf::Vector2f(
+            valueRect.left + valueRect.width / 2.f, 
+            lineRect.top
+        );
+
         mStatValueText.setOrigin(valueOrigin);
+    }
+    // Origin left
+    else
+    {
+        mStatValueText.setOrigin(valueRect.left, valueRect.top);
+    }
 }
 
 std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
@@ -226,95 +227,8 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextShowKPS ||
         id == LogicalParameter::ID::StatTextShowTotal ||
         id == LogicalParameter::ID::StatTextShowBPM ||
-        id == LogicalParameter::ID::StatTextPosAdvMode ||
-        id == LogicalParameter::ID::StatTextPos1 ||
-        id == LogicalParameter::ID::StatTextPos2 ||
-        id == LogicalParameter::ID::StatTextPos3 ||
-        id == LogicalParameter::ID::StatTextValPosAdvMode ||
-        id == LogicalParameter::ID::StatTextValPos1 ||
-        id == LogicalParameter::ID::StatTextValPos2 ||
-        id == LogicalParameter::ID::StatTextValPos3 ||
-        id == LogicalParameter::ID::StatTextClrAdvMode ||
-        id == LogicalParameter::ID::StatTextClr1 ||
-        id == LogicalParameter::ID::StatTextClr2 ||
-        id == LogicalParameter::ID::StatTextClr3 ||
-        id == LogicalParameter::ID::StatTextChSzAdvMode ||
-        id == LogicalParameter::ID::StatTextChSz1 ||
-        id == LogicalParameter::ID::StatTextChSz2 ||
-        id == LogicalParameter::ID::StatTextChSz3 ||
-        id == LogicalParameter::ID::StatTextBoldAdvMode ||
-        id == LogicalParameter::ID::StatTextBold1 ||
-        id == LogicalParameter::ID::StatTextBold2 ||
-        id == LogicalParameter::ID::StatTextBold3 ||
-        id == LogicalParameter::ID::StatTextItalAdvMode ||
-        id == LogicalParameter::ID::StatTextItal1 ||
-        id == LogicalParameter::ID::StatTextItal2 ||
-        id == LogicalParameter::ID::StatTextItal3 ||
-        id == LogicalParameter::ID::StatTextKPSText ||
-        id == LogicalParameter::ID::StatTextKPS2Text ||
-        id == LogicalParameter::ID::StatTextTotalText ||
-        id == LogicalParameter::ID::StatTextBPMText ||
-        id == LogicalParameter::ID::BtnGfxAdvMode ||
-        id == LogicalParameter::ID::BtnGfxBtnPos1 ||
-        id == LogicalParameter::ID::BtnGfxSz1 ||
-        id == LogicalParameter::ID::BtnGfxClr1 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos2 ||
-        id == LogicalParameter::ID::BtnGfxSz2 ||
-        id == LogicalParameter::ID::BtnGfxClr2 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos3 ||
-        id == LogicalParameter::ID::BtnGfxSz3 ||
-        id == LogicalParameter::ID::BtnGfxClr3 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos4 ||
-        id == LogicalParameter::ID::BtnGfxSz4 ||
-        id == LogicalParameter::ID::BtnGfxClr4 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos5 ||
-        id == LogicalParameter::ID::BtnGfxSz5 ||
-        id == LogicalParameter::ID::BtnGfxClr5 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos6 ||
-        id == LogicalParameter::ID::BtnGfxSz6 ||
-        id == LogicalParameter::ID::BtnGfxClr6 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos7 ||
-        id == LogicalParameter::ID::BtnGfxSz7 ||
-        id == LogicalParameter::ID::BtnGfxClr7 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos8 ||
-        id == LogicalParameter::ID::BtnGfxSz8 ||
-        id == LogicalParameter::ID::BtnGfxClr8 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos9 ||
-        id == LogicalParameter::ID::BtnGfxSz9 ||
-        id == LogicalParameter::ID::BtnGfxClr9 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos10 ||
-        id == LogicalParameter::ID::BtnGfxSz10 ||
-        id == LogicalParameter::ID::BtnGfxClr10 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos11 ||
-        id == LogicalParameter::ID::BtnGfxSz11 ||
-        id == LogicalParameter::ID::BtnGfxClr11 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos12 ||
-        id == LogicalParameter::ID::BtnGfxSz12 ||
-        id == LogicalParameter::ID::BtnGfxClr12 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos13 ||
-        id == LogicalParameter::ID::BtnGfxSz13 ||
-        id == LogicalParameter::ID::BtnGfxClr13 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos14 ||
-        id == LogicalParameter::ID::BtnGfxSz14 ||
-        id == LogicalParameter::ID::BtnGfxClr14 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos15 ||
-        id == LogicalParameter::ID::BtnGfxSz15 ||
-        id == LogicalParameter::ID::BtnGfxClr15 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos16 ||
-        id == LogicalParameter::ID::BtnGfxSz16 ||
-        id == LogicalParameter::ID::BtnGfxClr16 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos17 ||
-        id == LogicalParameter::ID::BtnGfxSz17 ||
-        id == LogicalParameter::ID::BtnGfxClr17 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos18 ||
-        id == LogicalParameter::ID::BtnGfxSz18 ||
-        id == LogicalParameter::ID::BtnGfxClr18 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos19 ||
-        id == LogicalParameter::ID::BtnGfxSz19 ||
-        id == LogicalParameter::ID::BtnGfxClr19 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos20 ||
-        id == LogicalParameter::ID::BtnGfxSz20 ||
-        id == LogicalParameter::ID::BtnGfxClr20 ||
+        (id >= LogicalParameter::ID::StatTextAdvMode && id <= LogicalParameter::ID::StatTextBPMText) ||
+        (id >= LogicalParameter::ID::BtnGfxAdvMode   && id <= LogicalParameter::ID::BtnGfxClr20) ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
         id == LogicalParameter::ID::BtnGfxDist ||
         id == LogicalParameter::ID::MainWndwTop ||

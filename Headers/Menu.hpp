@@ -103,6 +103,7 @@ class Menu
 
         enum class AdvancedKeys
         {
+            StatText,
             BtnTextSepVal,
             BtnText,
             GfxBtn,
