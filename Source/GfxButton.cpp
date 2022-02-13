@@ -68,6 +68,16 @@ void GfxButton::update(bool keyState)
 
 void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
+    auto drawText = [this, &target] (const sf::Text &text, sf::RenderStates states)
+        {
+            target.draw(text, states);
+            const auto boundsStates = states.transform.translate(text.getPosition());
+
+            if (mShowBounds && (mSelectedKeyBounds == -1 || mSelectedKeyBounds == mBtnIdx))
+            {
+                target.draw(mBounds, boundsStates);
+            }
+        };
     states.transform *= getTransform();
 
     // Key visualizer's graphics
@@ -79,16 +89,14 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
 
     // Key's text
     if (Settings::ButtonTextShowVisualKeys) 
-        target.draw(*mTexts[VisualKey], states);
+        drawText(*mTexts[VisualKey], states);
     if (Settings::ButtonTextShowTotal)
-        target.draw(*mTexts[KeyCounter], states);
+        drawText(*mTexts[KeyCounter], states);
     if (Settings::ButtonTextShowKPS)
-        target.draw(*mTexts[KeyPerSecond], states);
+        drawText(*mTexts[KeyPerSecond], states);
     if (Settings::ButtonTextShowBPM)
-        target.draw(*mTexts[BeatsPerMinute], states);
+        drawText(*mTexts[BeatsPerMinute], states);
 
-    if (mShowBounds && (mSelectedKeyBounds == -1 || mSelectedKeyBounds == mBtnIdx))
-        target.draw(mBounds, states);
 }
 
 void GfxButton::lightKey()
@@ -145,7 +153,7 @@ void GfxButton::raiseKey()
     if (mButtonsHeightOffset <= 0.f)
         return;
 
-    const float step = std::min(getRiseStep(), mButtonsHeightOffset);
+    const auto step = std::min(getRiseStep(), mButtonsHeightOffset);
 
     for (auto &sprite : mSprites)
     {
@@ -194,12 +202,12 @@ void GfxButton::updateParameters()
     // Substraction by black (0,0,0,255) is needed to set alpha channel on 0 when any related animation key parameter is changed
     mSprites[AnimationSprite]->setColor(Settings::AnimationColor - sf::Color::Black);
 
-    size_t idx = 0ul;
+    auto idx = 0ul;
     for (auto &text : mTexts)
     {
         const auto color = !advTextMode ? Settings::ButtonTextColor : Settings::ButtonTextAdvColor[mBtnIdx];
         const auto chSz = !advTextMode ? Settings::ButtonTextCharacterSize : Settings::ButtonTextAdvCharacterSize[mBtnIdx];
-        const auto outThck = !advTextMode ? Settings::ButtonTextOutlineThickness : Settings::ButtonTextAdvOutlineThickness[mBtnIdx] / 10.f;
+        const auto outThck = (!advTextMode ? Settings::ButtonTextOutlineThickness : Settings::ButtonTextAdvOutlineThickness[mBtnIdx]) / 10.f;
         const auto outColor = !advTextMode ? Settings::ButtonTextOutlineColor : Settings::ButtonTextAdvOutlineColor[mBtnIdx];
         const auto bold = !advTextMode ? Settings::ButtonTextBold : Settings::ButtonTextAdvBold[mBtnIdx];
         const auto italic = !advTextMode ? Settings::ButtonTextItalic : Settings::ButtonTextAdvItalic[mBtnIdx];
@@ -233,17 +241,9 @@ void GfxButton::updateParameters()
         text->setFillColor(color);
         text->setCharacterSize(chSz);
         text->setPosition(pos);
-        text->setStyle((bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0));
+        text->setStyle(sf::Uint32((bold ? sf::Text::Bold : 0) | (italic ? sf::Text::Italic : 0)));
         text->setOutlineThickness(outThck);
         text->setOutlineColor(outColor);
-
-        switch(idx)
-        {
-            case VisualKey:      text->setPosition(pos); break;
-            case KeyCounter:     text->setPosition(pos); break;
-            case KeyPerSecond:   text->setPosition(pos); break;
-            case BeatsPerMinute: text->setPosition(pos); break;
-        }
 
         const auto lAlt = Settings::ShowOppOnAlt && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
         if ((lAlt && idx == VisualKey && Settings::ButtonTextShowVisualKeys && !Settings::ButtonTextShowTotal)
@@ -265,7 +265,7 @@ void GfxButton::resetAssets()
     mSprites[ButtonSprite]->setTexture(mTextures.get(Textures::Button), true);
     mSprites[AnimationSprite]->setTexture(mTextures.get(Textures::Animation), true);
 
-    const sf::Font &font(mFonts.get(Fonts::ButtonValue));
+    const auto &font = mFonts.get(Fonts::ButtonValue);
     for (auto &text : mTexts)
         text->setFont(font);
 }
@@ -300,7 +300,7 @@ void GfxButton::keepInBounds(sf::Text &text)
         return;
         
     const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
-    const auto advMode = isInSupportedRange && Settings::GfxButtonAdvancedMode;
+    const auto advMode = isInSupportedRange && Settings::ButtonTextAdvancedMode;
     const auto bounds = !advMode ? Settings::ButtonTextBounds : Settings::ButtonTextAdvBounds[mBtnIdx];
     auto rect = text.getLocalBounds();
 
@@ -362,7 +362,7 @@ GfxButton::TextID GfxButton::getTextIdToDisplay()
 
 void GfxButton::setShowBounds(bool flag, int idx)
 {
-    mShowBounds = Settings::ButtonTextBoundsToggle && flag;
+    mShowBounds = flag;
     mSelectedKeyBounds = idx;
 }
 
@@ -379,7 +379,7 @@ GfxButton::RectEmitter::RectEmitter(unsigned btnIdx)
 // , mBottomVertecies(sf::Quads, 1000u)
 {
     const auto count = mMiddleVertecies.getVertexCount() / 4;
-    for (size_t i = 0; i < count; ++i)
+    for (auto i = 0ul; i < count; ++i)
         mAvailableRectIndices.emplace_back(i);
 }
 
@@ -476,7 +476,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     // // Move the nearest rectangle up on release
     if (prevKeyState && !keyState && !mUsedRectIndices.empty())
     {
-        const auto offset = mUsedRectIndices.back() * 4;
+        const auto offset = mUsedRectIndices.back() * 4ul;
 
         mMiddleVertecies[offset + 2].position.y = 
         mMiddleVertecies[offset + 3].position.y -= speed;

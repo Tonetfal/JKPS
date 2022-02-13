@@ -11,8 +11,8 @@ float StatisticsPositioner::getTotalHeight()
     {
         if (text->getShowState())
         {
-            const float rectLineHeight(text->getLineText().getLocalBounds().height);
-            const float rectValHeight(text->getValueText().getLocalBounds().height);
+            const auto rectLineHeight = text->getLineText().getLocalBounds().height;
+            const auto rectValHeight = text->getValueText().getLocalBounds().height;
             totalLinesHeight += std::max(rectLineHeight, rectValHeight) + Settings::StatisticsTextDistance;
         }
     }

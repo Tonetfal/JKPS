@@ -683,7 +683,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
 
         bool checkLimits(float check) const;
         void runThread(std::string &curVal, const std::string &prevVal);
-        static void warningVisualization(bool *isRunning, ParameterLine *parLine);
+        static void warningVisualization(bool *isRunning);
 
         bool isHidden() const;
 

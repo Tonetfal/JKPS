@@ -7,6 +7,7 @@
 #include "../Headers/Menu.hpp"
 #include "../Headers/GfxButton.hpp"
 #include "../Headers/ConfigHelper.hpp"
+#include "../Headers/Utility.hpp"
 
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -33,8 +34,8 @@ ParameterLine::ParameterLine(
     sf::RenderWindow &window)
 : mWindow(window)
 , mType(parameter->mType)
-, mParameter(parameter)
 , mRectLine(sf::Vector2f(785.f, 40.f))
+, mParameter(parameter)
 , mColorButtonP(nullptr)
 , paramValWasChanged(false)
 , mIsThRunning(false)
@@ -42,7 +43,7 @@ ParameterLine::ParameterLine(
     mRectLine.setFillColor(pickColor(mType));
     mParameterName.setString(parameter->mParName);
     mParameterName.setFont(fonts.get(Fonts::Parameter));
-    setCharacterSize(20);
+    setCharacterSize(20u);
 
     buildButtons(parameter->getValStr(), fonts, textures);
     buildLimits(fonts);
@@ -90,15 +91,16 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
 
         auto str = static_cast<std::string>(mSelectedValue->mValText.getString());
         auto key = event.key.code;
-        bool isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
-        int btnIdx = 0;
+        auto isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
+        auto btnIdx = 0;
         if (mType == LogicalParameter::Type::Color
         ||  mType == LogicalParameter::Type::VectorU
         ||  mType == LogicalParameter::Type::VectorI
         ||  mType == LogicalParameter::Type::VectorF)
         {
             btnIdx = -1;
-            for (unsigned i = 0; i < mParameterValues.size(); ++i)
+            auto size = mParameterValues.size();
+            for (auto i = 0ul; i < size; ++i)
             {
                 if (mParameterValues[i] == mSelectedValue)
                 {
@@ -112,8 +114,8 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
         }
 
         if (!isStrType
-        && ((key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
-        || (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)))
+        && ((key >= sf::Keyboard::Num0    && key <= sf::Keyboard::Num9)
+         || (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)))
         {
             int n = 0;
             if (key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
@@ -124,18 +126,18 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             if (mSelectedValueIndex == 0 && (str[0] == '-' || n == 0))
                 return true;
 
-            if (str.size() == 1 && str[0] == '0'
-            ||  str.size() == 2 && str[1] == '0' && str[0] == '-')
+            const auto strSize = str.size();
+            if ((strSize == 1ul && str[0] == '0') || (strSize == 2ul && str[1] == '0'))
             {
                 str.back() = n + '0';
-                if (mSelectedValueIndex == str.size() - 1)
+                if (mSelectedValueIndex == strSize - 1ul)
                     ++mSelectedValueIndex;
             }
             else
             {
-                std::string prevVal = str;
+                const auto prevVal = str;
                 addChOnIdx(str, mSelectedValueIndex, n + '0');
-                float check = stof(str); 
+                const auto check = stof(str); 
                 str = std::to_string(static_cast<int>(check));
 
                 if (checkLimits(check))
@@ -149,29 +151,37 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
 
         if (!isStrType && key == sf::Keyboard::Up)
         {
-            std::string prevVal = str;
-            float check = stof(str) + 1; 
+            const auto prevVal = str;
+            const auto check = stof(str) + 1.f; 
             str = std::to_string(static_cast<int>(check));
 
             if (checkLimits(check))
                 runThread(str, prevVal);
-            mSelectedValueIndex += str.length() == prevVal.length() ? 0 : str.length() > prevVal.length() ? 1 : -1;
+
+            const auto strSize = str.size();
+            const auto prevValSize = prevVal.size();
+            mSelectedValueIndex += strSize == prevValSize ? 0 : strSize > prevValSize ? 1 : -1;
         }
 
         if (!isStrType && key == sf::Keyboard::Down)
         {
-            std::string prevVal = str;
-            float check = stof(str) - 1; 
+            const auto prevVal = str;
+            const auto check = stof(str) - 1.f; 
             str = std::to_string(static_cast<int>(check));
 
             if (checkLimits(check))
                 runThread(str, prevVal);
-            mSelectedValueIndex += str.length() == prevVal.length() ? 0 : str.length() > prevVal.length() ? 1 : -1;
+
+            const auto strSize = str.size();
+            const auto prevValSize = prevVal.size();
+            mSelectedValueIndex += strSize == prevValSize ? 0 : strSize > prevValSize ? 1 : -1;
         }
 
         if (!isStrType && (key == sf::Keyboard::Hyphen || key == sf::Keyboard::Subtract))
         {
-            if (mType == LogicalParameter::Type::Unsigned || mType == LogicalParameter::Type::Color)
+            if (mType == LogicalParameter::Type::Unsigned 
+            ||  mType == LogicalParameter::Type::Color 
+            ||  mType == LogicalParameter::Type::VectorU)
                 return true;
 
             if (str[0] == '-')
@@ -199,7 +209,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                 else
                 {
                     rmChOnIdx(str, mSelectedValueIndex - 1);
-                    if (!isStrType &&std::stoi(str) == 0)
+                    if (!isStrType && std::stoi(str) == 0)
                     {
                         // ex.: -500, remove 5, result "-0", if 500, then "0"
                         str = (str[0] == '-' ? "-0" : "0");
@@ -211,11 +221,13 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
         
         if (key == sf::Keyboard::Delete)
         {
-            if (str.size() > mSelectedValueIndex)
+            const auto strSize = str.size();
+
+            if (strSize > mSelectedValueIndex)
             {
                 // "0" or "-0"
-                if ((!isStrType && str.size() == 1) 
-                ||  (!isStrType && str.size() == 2 && str[0] == '-' && mSelectedValueIndex == 0))
+                if ((!isStrType && strSize == 1) 
+                ||  (!isStrType && strSize == 2 && str[0] == '-' && mSelectedValueIndex == 0))
                 {
                     str = "0";
                     mSelectedValueIndex = 0;
@@ -223,7 +235,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                 else
                 {
                     rmChOnIdx(str, mSelectedValueIndex);
-                    if (!isStrType &&std::stoi(str) == 0)
+                    if (!isStrType && std::stoi(str) == 0)
                     {
                         // ex.: -500, remove 5, result "-0", if 500, then "0"
                         str = (str[0] == '-' ? "-0" : "0");
@@ -257,7 +269,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
 
         if (isStrType && GfxButtonSelector::isCharacter(key))
         {
-            unsigned maxLength = 50;
+            const auto maxLength = 50u;
             if (str.size() < maxLength)
             {
                 addChOnIdx(str, mSelectedValueIndex, enumKeyToStr(key));
@@ -294,7 +306,7 @@ bool ParameterLine::handleButtonsInteractionEvent(sf::Event event)
         const auto absMousePos = static_cast<sf::Vector2f>(relMousePos) + viewOffset;
         const auto button = event.mouseButton.button;
         const auto key = event.key.code;
-        bool ret = false;
+        auto ret = false;
 
         // Check click on buttons
         for (const auto &elem : mParameterValues)
@@ -376,7 +388,7 @@ bool ParameterLine::tabulation()
             if (*it == mSelectedValue)
             {
                 deselect();
-                std::shared_ptr<GfxParameter> tabOn = nullptr;
+                auto tabOn = std::shared_ptr<GfxParameter>();
 
                 if (!sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
                     // tab forward
@@ -395,11 +407,12 @@ bool ParameterLine::tabulation()
 
 bool ParameterLine::selectRgbCircle(sf::Mouse::Button button, sf::Vector2f mousePos)
 {
-    const sf::Vector2f circleOrigin(mColorButtonP->getOrigin());
-    const sf::Vector2f circlePosition(mColorButtonP->getPosition());
-    sf::FloatRect circleRect(mColorButtonP->rgbCircleSprite.getGlobalBounds());
-    circleRect.left = getPosition().x + circlePosition.x - circleOrigin.x;
-    circleRect.top = getPosition().y + circlePosition.y - circleOrigin.y;
+    const auto circleOrigin = mColorButtonP->getOrigin();
+    const auto circlePosition = mColorButtonP->getPosition();
+    auto circleRect = sf::FloatRect(mColorButtonP->rgbCircleSprite.getGlobalBounds());
+    const auto position = getPosition();
+    circleRect.left = position.x + circlePosition.x - circleOrigin.x;
+    circleRect.top = position.y + circlePosition.y - circleOrigin.y;
 
     if (circleRect.contains(mousePos))
     {
@@ -457,7 +470,7 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
     GfxParameter::mTextures = &textures;
     GfxParameter::mFonts = &fonts;
 
-    std::shared_ptr<GfxParameter> val = nullptr; 
+    auto val = std::shared_ptr<GfxParameter>(); 
     if (mType == LogicalParameter::Type::Bool)
     {
         val = std::make_shared<GfxParameter>(this, readValue(valueStr, 0) == "True");
@@ -484,16 +497,17 @@ void ParameterLine::buildButtons(const std::string &valueStr, const FontHolder &
         return;
     }
 
-    for (unsigned i = 0; i < readAmountOfParms(valueStr); ++i)
+    const auto count = readAmountOfParms(valueStr);
+    for (auto i = 0ul; i < count; ++i)
     {
         val = std::make_shared<GfxParameter>(this, readValue(valueStr, i), i);
 
         val->setPosition(val->getPosition() + sf::Vector2f(mRectLine.getSize().x - 
             GfxParameter::getPosX(), mRectLine.getSize().y / 2));
         
-        if (mType == LogicalParameter::Type::Color && i == 0)
+        if (mType == LogicalParameter::Type::Color && i == 0ul)
         {
-            float dist = 65.f;
+            const auto dist = 65.f;
             mColorButtonP = std::make_unique<ColorButton>(textures.get(Textures::rgbCircle));
             mColorButtonP->setPosition(val->getPosition().x - dist, mRectLine.getSize().y / 2);
             mColorButtonP->setOrigin(static_cast<sf::Vector2f>(mColorButtonP->rgbCircleSprite.getTexture()->getSize()) / 2.f);
@@ -508,7 +522,7 @@ void ParameterLine::buildLimits(const FontHolder &fonts)
     if (mParameter->mLowLimits != mParameter->mHighLimits)
     {
         mLimits.setFont(fonts.get(Fonts::Parameter));
-        mLimits.setCharacterSize(10);
+        mLimits.setCharacterSize(10u);
         mLimits.setOrigin(mLimits.getLocalBounds().left, mLimits.getLocalBounds().top);
         mLimits.setPosition(mParameterName.getLocalBounds().left, mParameterName.getLocalBounds().top + 
             mParameterName.getLocalBounds().height + 4.f);
@@ -516,7 +530,6 @@ void ParameterLine::buildLimits(const FontHolder &fonts)
             " - " + std::to_string(static_cast<int>(mParameter->mHighLimits)));
     }
 }
-
 
 void ParameterLine::select(std::shared_ptr<GfxParameter> ptr)
 {
@@ -527,9 +540,13 @@ void ParameterLine::select(std::shared_ptr<GfxParameter> ptr)
     mSelectedValueIndex = mSelectedValue->mValText.getString().getSize();
     setCursorPos();
 
-    if (mSelectedParameter->mParName == "Text bounds")
+    const auto &parName = mSelectedParameter->mParName;
+    if (parName == "Text bounds")
         GfxButton::setShowBounds(true);
-    // TODO make a separate setShowBounds call for each adv key
+    if (const auto i = Utility::retrieveNumber(parName, "@. Text bounds"); i != -1)
+    {
+        GfxButton::setShowBounds(true, i - 1);
+    }
 } 
 
 void ParameterLine::deselect()
@@ -538,9 +555,9 @@ void ParameterLine::deselect()
         return;
 
     mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
-    if (mSelectedParameter->mParName == "Text bounds")
-        GfxButton::setShowBounds(false);
-    // TODO make a separate setShowBounds call for each adv key
+
+    // Hide always just in case
+    GfxButton::setShowBounds(false);
     mSelectedParameter = nullptr;
     mSelectedLine = nullptr;
     mSelectedValue = nullptr;
@@ -563,8 +580,8 @@ bool ParameterLine::isItSelectedLine(const std::shared_ptr<ParameterLine> val) c
 
 void ParameterLine::setCursorPos()
 {
-    static sf::Text text;
-    static sf::Vector2f chSz;
+    static auto text = sf::Text();
+    static auto chSz = sf::Vector2f();
     if (text.getFont() == nullptr)
     {
         text.setFont(*mSelectedValue->mValText.getFont());
@@ -577,10 +594,10 @@ void ParameterLine::setCursorPos()
     // then find the width of the part on the text left, and add it - the cursor is on the text left,
     // then take space in X axes for each character, substract it by 2 times spacing between them, 
     // and multiply by current cursor index - the cursor is on the index left
-    float x = mSelectedValue->getPosition().x - mSelectedValue->mRect.getSize().x / 2 + 
+    const auto x = mSelectedValue->getPosition().x - mSelectedValue->mRect.getSize().x / 2 + 
         (mSelectedValue->mRect.getSize().x - mSelectedValue->mValText.getLocalBounds().width) / 2 +
         mSelectedValueIndex * (chSz.x - text.getLetterSpacing() * 2);
-    float y = mCursor.getPosition().y;
+    const auto y = mCursor.getPosition().y;
 
     mCursor.setPosition(x, y);
 }
@@ -600,12 +617,17 @@ sf::Color ParameterLine::lineToColor(const std::shared_ptr<ParameterLine> linePt
 {
     assert(linePtr->mType == LogicalParameter::Type::Color);
 
-    sf::Uint8 r(std::stoi(static_cast<std::string>(linePtr->mParameterValues[0]->mValText.getString())));
-    sf::Uint8 g(std::stoi(static_cast<std::string>(linePtr->mParameterValues[1]->mValText.getString())));
-    sf::Uint8 b(std::stoi(static_cast<std::string>(linePtr->mParameterValues[2]->mValText.getString())));
-    sf::Uint8 a(std::stoi(static_cast<std::string>(linePtr->mParameterValues[3]->mValText.getString())));
+    const auto values = linePtr->mParameterValues;
+    sf::Uint8 rgba[4];
+    auto i = 0ul;
+    for (const auto &value : values)
+    {
+        const auto str = std::string(value->mValText.getString());
+        rgba[i] = static_cast<sf::Uint8>(std::stoi(str));
+        ++i;
+    }
 
-    return { r, g, b, a };
+    return { rgba[0], rgba[1], rgba[2], rgba[3] };
 }
 
 bool ParameterLine::checkLimits(float check) const
@@ -617,22 +639,23 @@ void ParameterLine::runThread(std::string &curVal, const std::string &prevVal)
 {
     if (!mIsThRunning)
     {
-        mWarningTh = std::thread(ParameterLine::warningVisualization, &mIsThRunning, this);
+        mWarningTh = std::thread(ParameterLine::warningVisualization, &mIsThRunning);
         mWarningTh.detach();
     }
     curVal = prevVal;
 }
 
-void ParameterLine::warningVisualization(bool *isRunning, ParameterLine *parLine)
+void ParameterLine::warningVisualization(bool *isRunning)
 {
     *isRunning = true;
     
-    std::mutex mtx;
-    std::shared_ptr<GfxParameter> gfxPar = mSelectedValue;
-    sf::Color red(sf::Color(170,0,0));
-    sf::Clock clock;
-    sf::Time elapsedTime = sf::Time::Zero, totalTime = sf::Time::Zero;
-    sf::Time timeToChange = sf::milliseconds(500);
+    auto mtx = std::mutex();
+    auto gfxPar = mSelectedValue;
+    const auto red = sf::Color(170,0,0);
+    auto clock = sf::Clock();
+    auto elapsedTime = sf::Time::Zero;
+    auto totalTime = sf::Time::Zero;
+    const auto timeToChange = sf::milliseconds(500);
 
     mtx.lock();
     // gfxPar->mValText.setFillColor(sf::Color::Red);
@@ -728,6 +751,78 @@ LogicalParameter::Type ParameterLine::getType() const
 bool ParameterLine::isHidden() const
 {
     return getPosition() == sf::Vector2f(-1000.f, -1000.f);
+}
+
+bool ParameterLine::isEmpty(ParameterLine::ID id)
+{
+    return
+        // id == ParameterLine::ID::StatTextMty ||
+        // id == ParameterLine::ID::StatTextAdvMty ||
+        id == ParameterLine::ID::StatTextAdvStrMty ||
+        // id == ParameterLine::ID::BtnTextMty ||
+        id == ParameterLine::ID::BtnTextAdvMty ||
+        // id == ParameterLine::ID::BtnGfxMty ||
+        id == ParameterLine::ID::BtnGfxAdvMty ||
+        // id == ParameterLine::ID::AnimGfxLightMty ||
+        id == ParameterLine::ID::AnimGfxPressMty ||
+        id == ParameterLine::ID::MainWndwMty ||
+        id == ParameterLine::ID::KPSWndwMty ||
+        // id == ParameterLine::ID::KeyPressVisMty ||
+        id == ParameterLine::ID::KeyPressVisAdvModeMty ||
+        id == ParameterLine::ID::OtherMty ||
+        // id == ParameterLine::ID::InfoMty ||
+        id == ParameterLine::ID::LastLine;
+}
+
+bool ParameterLine::isToSkip(ParameterLine::ID id)
+{
+    auto difference = [] (ParameterLine::ID lhs, ParameterLine::ID rhs)
+        {
+            return static_cast<int>(lhs) - static_cast<int>(rhs);
+        };
+    auto isInBounds = [id] (ParameterLine::ID start, int parametersNumber)
+        {
+            const auto numUl = static_cast<size_t>(std::abs(parametersNumber));
+            const auto endUl = static_cast<size_t>(start) + numUl * Settings::SupportedAdvancedKeysNumber - 1u;
+            const auto startUl = static_cast<size_t>(start) + numUl;
+            const auto idUl = static_cast<size_t>(id);
+
+            return idUl >= startUl && idUl <= endUl;
+        };
+
+    return 
+        (id >= ParameterLine::ID::SaveStatColl && id <= ParameterLine::ID::SaveStatMty) ||
+        isInBounds(ParameterLine::ID::BtnTextAdvVisPosition1, difference(ParameterLine::ID::BtnTextAdvVisPosition1, ParameterLine::ID::BtnTextAdvVisPosition2)) ||
+        isInBounds(ParameterLine::ID::BtnTextAdvClr1, difference(ParameterLine::ID::BtnTextAdvClr1, ParameterLine::ID::BtnTextAdvClr2)) ||
+        isInBounds(ParameterLine::ID::BtnGfxBtnPos1, difference(ParameterLine::ID::BtnGfxBtnPos1, ParameterLine::ID::BtnGfxBtnPos2)) ||
+        isInBounds(ParameterLine::ID::KeyPressVisAdvModeSpeed1, difference(ParameterLine::ID::KeyPressVisAdvModeSpeed1, ParameterLine::ID::KeyPressVisAdvModeSpeed2)) ||
+        (id >= ParameterLine::ID::StatTextAdvPos2 && id <= ParameterLine::ID::StatTextAdvItal3);
+}
+
+void ParameterLine::deselectValue()
+{
+    if (mSelectedValue == nullptr && mSelectedLine == nullptr)
+        return;
+
+    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
+
+    // Hide always just in case
+    GfxButton::setShowBounds(false);
+    mSelectedParameter = nullptr;
+    mSelectedLine = nullptr;
+    mSelectedValue = nullptr;
+    mSelectedValueIndex = -1;
+    mPalette.closeWindow();
+}
+
+bool ParameterLine::isValueSelected()
+{
+    return mSelectedValue.get();
+}
+
+bool ParameterLine::resetRefreshState()
+{
+    return mRefresh && !(mRefresh = false);
 }
 
 ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
@@ -1282,75 +1377,4 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
             assert(false);
             return ParameterLine::ID::StatTextColl;
     }
-}
-
-bool ParameterLine::isEmpty(ParameterLine::ID id)
-{
-    return
-        // id == ParameterLine::ID::StatTextMty ||
-        // id == ParameterLine::ID::StatTextAdvMty ||
-        id == ParameterLine::ID::StatTextAdvStrMty ||
-        // id == ParameterLine::ID::BtnTextMty ||
-        id == ParameterLine::ID::BtnTextAdvMty ||
-        // id == ParameterLine::ID::BtnGfxMty ||
-        id == ParameterLine::ID::BtnGfxAdvMty ||
-        // id == ParameterLine::ID::AnimGfxLightMty ||
-        id == ParameterLine::ID::AnimGfxPressMty ||
-        id == ParameterLine::ID::MainWndwMty ||
-        id == ParameterLine::ID::KPSWndwMty ||
-        // id == ParameterLine::ID::KeyPressVisMty ||
-        id == ParameterLine::ID::KeyPressVisAdvModeMty ||
-        id == ParameterLine::ID::OtherMty ||
-        // id == ParameterLine::ID::InfoMty ||
-        id == ParameterLine::ID::LastLine;
-}
-
-bool ParameterLine::isToSkip(ParameterLine::ID id)
-{
-    auto difference = [] (ParameterLine::ID lhs, ParameterLine::ID rhs)
-        {
-            return static_cast<int>(lhs) - static_cast<int>(rhs);
-        };
-    auto isInBounds = [id] (ParameterLine::ID start, int parametersNumber)
-        {
-            const auto numUl = static_cast<size_t>(std::abs(parametersNumber));
-            const auto endUl = static_cast<size_t>(start) + numUl * Settings::SupportedAdvancedKeysNumber - 1u;
-            const auto startUl = static_cast<size_t>(start) + numUl;
-            const auto idUl = static_cast<size_t>(id);
-
-            return idUl >= startUl && idUl <= endUl;
-        };
-
-    return 
-        (id >= ParameterLine::ID::SaveStatColl && id <= ParameterLine::ID::SaveStatMty) ||
-        isInBounds(ParameterLine::ID::BtnTextAdvVisPosition1, difference(ParameterLine::ID::BtnTextAdvVisPosition1, ParameterLine::ID::BtnTextAdvVisPosition2)) ||
-        isInBounds(ParameterLine::ID::BtnTextAdvClr1, difference(ParameterLine::ID::BtnTextAdvClr1, ParameterLine::ID::BtnTextAdvClr2)) ||
-        isInBounds(ParameterLine::ID::BtnGfxBtnPos1, difference(ParameterLine::ID::BtnGfxBtnPos1, ParameterLine::ID::BtnGfxBtnPos2)) ||
-        isInBounds(ParameterLine::ID::KeyPressVisAdvModeSpeed1, difference(ParameterLine::ID::KeyPressVisAdvModeSpeed1, ParameterLine::ID::KeyPressVisAdvModeSpeed2)) ||
-        (id >= ParameterLine::ID::StatTextAdvPos2 && id <= ParameterLine::ID::StatTextAdvItal3);
-}
-
-void ParameterLine::deselectValue()
-{
-    if (mSelectedValue == nullptr && mSelectedLine == nullptr)
-        return;
-
-    mSelectedValue->mRect.setFillColor(GfxParameter::defaultRectColor);
-    if (mSelectedParameter->mParName == "Buttons text bounds")
-        GfxButton::setShowBounds(false);
-    mSelectedParameter = nullptr;
-    mSelectedLine = nullptr;
-    mSelectedValue = nullptr;
-    mSelectedValueIndex = -1;
-    mPalette.closeWindow();
-}
-
-bool ParameterLine::isValueSelected()
-{
-    return mSelectedValue.get();
-}
-
-bool ParameterLine::resetRefreshState()
-{
-    return mRefresh && !(mRefresh = false);
 }

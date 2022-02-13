@@ -464,7 +464,9 @@ void Application::openWindow()
 
 void Application::resizeWindow()
 {
-    mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
+    const auto size = sf::Vector2u(getWindowWidth(), getWindowHeight());
+    std::cout << size.x << " " << size.y << "\n";
+    mWindow.setSize(size);
 
     auto windowSize = static_cast<sf::Vector2f>(mWindow.getSize());
     sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
@@ -485,21 +487,21 @@ void Application::moveWindow()
 unsigned Application::getWindowWidth()
 {
     const auto btnAmt = static_cast<int>(Button::size());
-    const auto width =  static_cast<unsigned>(
+    const auto width = static_cast<int>(
         Settings::GfxButtonTextureSize.x * btnAmt + 
         (btnAmt - 1) * Settings::GfxButtonDistance + 
         Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight);
     
-    return std::max(5u, width);
+    return std::max(5, width);
 }
 
 unsigned Application::getWindowHeight()
 {
-    const auto height = static_cast<unsigned>(
+    const auto height = static_cast<int>(
         Settings::GfxButtonTextureSize.y + Settings::WindowBonusSizeTop + 
         Settings::WindowBonusSizeBottom);
     
-    return std::max(5u, height);
+    return std::max(5, height);
 }
 
 sf::IntRect Application::getWindowRect()

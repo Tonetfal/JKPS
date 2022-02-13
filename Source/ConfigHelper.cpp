@@ -2,6 +2,7 @@
 #include "../Headers/StringHelper.hpp"
 #include "../Headers/DefStrs.hpp"
 #include "../Headers/Settings.hpp"
+#include "../Headers/Utility.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -39,9 +40,6 @@ bool operator==(const ParameterPath &lhs, const ParameterPath &rhs)
 }
 
 ParameterPath getOldParName(ParameterPath parPath);
-
-// Does not read numbers with a sign in front of it
-int retrieveNumber(std::string_view str, std::string_view templ);
 
 std::string cfgPath("JKPS.cfg");
 std::string tmpCfgPath("tmpJKPS.cfg");
@@ -319,14 +317,18 @@ void readParameter(LogicalParameter &par, std::string collection)
 {
     auto isParamFound = false, isValueNull = false;
 
+    const auto canBeNullB = canBeNull(par.mParName);
     auto curParPath = ParameterPath(par.mParName, collection);
     auto valStr = scanParameterValue(curParPath.name, isParamFound, isValueNull, curParPath.collection);
 
     // If no value was read try to check if current parameter name has an alternative in older versions
-    while (isValueNull && !canBeNull(par.mParName))
+    while (!isParamFound)
     {
         curParPath = getOldParName(curParPath);
         valStr = scanParameterValue(curParPath.name, isParamFound, isValueNull, curParPath.collection);
+
+        if (isParamFound && isValueNull && canBeNullB)
+            break;
 
         if (curParPath == ParameterPath())
         {
@@ -335,7 +337,7 @@ void readParameter(LogicalParameter &par, std::string collection)
         }
     }
 
-    if (isValueNull && !canBeNull(par.mParName))
+    if (isValueNull && !canBeNullB)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par, collection);
@@ -1088,7 +1090,7 @@ ParameterPath getOldParName(ParameterPath parPath)
         //     newPath.name = 		 "";
 
         // v0.2< supported only 15 keys, not 20
-        else if (const auto n = retrieveNumber(parPath.name, "@. Position offset"); 
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Position offset"); 
             n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
         {
             newPath.name = "Button text " + std::to_string(n) + " position";
@@ -1118,19 +1120,19 @@ ParameterPath getOldParName(ParameterPath parPath)
             newPath.name = 	"Enable advanced mode for button positions";
         
         // v0.2< supported only 15 keys, not 20
-        else if (const auto n = retrieveNumber(parPath.name, "@. Position offset"); 
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Position offset"); 
             n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
         {
             newPath.name = "Button " + std::to_string(n) + " position offset";
         }
-        else if (const auto n = retrieveNumber(parPath.name, "Button @ position offset"); 
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "Button @ position offset"); 
             n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
         {
             newPath.name = "Button " + std::to_string(n) + " position";
         }
 
         // v0.2< supported only 15 keys, not 20
-        else if (const auto n = retrieveNumber(parPath.name, "@. Size"); 
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Size"); 
             n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
         {
             newPath.name = "Button " + std::to_string(n) + " size";
@@ -1322,32 +1324,4 @@ ParameterPath getOldParName(ParameterPath parPath)
         newPath = ParameterPath();
 
     return newPath;
-}
-
-// Does not read numbers with a sign in front of it
-int retrieveNumber(std::string_view str, std::string_view templ)
-{
-    // str      "Something 1. Position offset"
-    // templ    "Something @. Position offset"
-    // Return 1
-
-    const auto found = templ.find("@");
-    assert(found != std::string::npos);
-
-    const auto remainder = std::string(str.begin() + found, str.end());
-    if (std::isdigit(remainder.front()))
-    {
-        const auto val = std::stoi(remainder);
-        const auto valStr = std::to_string(val);
-
-        const auto leftLhs = std::string(str.begin(), str.begin() + found);
-        const auto leftRhs = std::string(templ.begin(), templ.begin() + found);
-        const auto rightLhs = std::string(remainder.begin() + static_cast<long int>(valStr.length()), remainder.end());
-        const auto rightRhs = std::string(templ.begin() + 1ul, templ.end());
-
-        // Check if strings on both number sides match
-        return leftLhs == leftRhs && rightLhs == rightRhs ? val : -1;
-    }
-    else
-        return -1;
 }
