@@ -53,7 +53,7 @@ void Button::setTextStrings()
     const auto chSz = !advMode ? Settings::ButtonTextCharacterSize : Settings::ButtonTextAdvCharacterSize[mBtnIdx];
 
     const auto lAlt = Settings::ShowOppOnAlt && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
-    const auto sepValAdvMode = Settings::ButtonTextSepPosAdvancedMode;
+    const auto sepValAdvMode = isInSupportedRange && Settings::ButtonTextSepPosAdvancedMode;
 
     if (Settings::ButtonTextShowVisualKeys) 
     {
@@ -174,6 +174,7 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
 
         id == LogicalParameter::ID::BtnGfxTxtrClr ||
         id == LogicalParameter::ID::BtnTextPosAdvMode ||
+        id == LogicalParameter::ID::BtnGfxAdvMode ||
         (idU >= firstTextSepValAdvPar && idU <= lastTextSepValAdvPar) ||
         (idU >= firstTextAdvPar && idU <= lastTextAdvPar) ||
         (idU >= firstGfxBtnAdvPar && idU <= lastGfxBtnAdvPar);

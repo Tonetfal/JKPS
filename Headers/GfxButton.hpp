@@ -45,7 +45,6 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         static void setShowBounds(bool flag, int idx = -1);
         static float getWidth(unsigned idx);
         static float getHeight(unsigned idx);
-        static sf::Vector2f getTextCenter(const sf::Text &text);
         static TextID getTextIdToDisplay();
 
         virtual ~GfxButton();

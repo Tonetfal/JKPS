@@ -484,21 +484,22 @@ void Application::moveWindow()
 
 unsigned Application::getWindowWidth()
 {
-    const unsigned width =  
-        Settings::GfxButtonTextureSize.x * Button::size() + 
-        (Button::size() - 1) * Settings::GfxButtonDistance + 
-        Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight;
+    const auto btnAmt = static_cast<int>(Button::size());
+    const auto width =  static_cast<unsigned>(
+        Settings::GfxButtonTextureSize.x * btnAmt + 
+        (btnAmt - 1) * Settings::GfxButtonDistance + 
+        Settings::WindowBonusSizeLeft + Settings::WindowBonusSizeRight);
     
-    return width > 0u ? width : 100u; 
+    return std::max(5u, width);
 }
 
 unsigned Application::getWindowHeight()
 {
-    const unsigned height = 
+    const auto height = static_cast<unsigned>(
         Settings::GfxButtonTextureSize.y + Settings::WindowBonusSizeTop + 
-        Settings::WindowBonusSizeBottom;
+        Settings::WindowBonusSizeBottom);
     
-    return height > 0u ? height : 100u;
+    return std::max(5u, height);
 }
 
 sf::IntRect Application::getWindowRect()

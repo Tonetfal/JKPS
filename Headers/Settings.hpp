@@ -13,6 +13,7 @@
 namespace Settings
 {
     const size_t SupportedAdvancedKeysNumber = 20ul;
+    const size_t OldSupportedAdvancedKeysNumber = 15ul;
     template <typename T>
     using Container = std::array<T, SupportedAdvancedKeysNumber>;
     template <typename T>

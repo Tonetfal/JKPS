@@ -3,6 +3,7 @@
 #include "LogicalParameter.hpp"
 #include "ParameterLine.hpp"
 #include "Button.hpp"
+#include "Menu.hpp"
 
 #include <SFML/Window/Keyboard.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -18,22 +19,18 @@ namespace ConfigHelper
 
 extern const std::string separationSign;
     
-bool readConfig(
-    std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
-    const std::vector<std::string> &collectionNames);
-void readParameters(
-    std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters,
-    const std::vector<std::string> &collectionNames);
+bool readConfig(Menu::ParametersContainer &parameters, const std::vector<std::string> &collectionNames);
+void readParameters(Menu::ParametersContainer &parameters, const std::vector<std::string> &collectionNames);
 std::queue<LogKey> getLogKeys();
 std::queue<LogKey> oldGetLogKeys();
 std::queue<LogKey> oldGetLogButtons();
-std::string scanParameter(const std::string &par, bool &parameterFound, bool &parameterEmpty, std::string_view collection);
-void readParameter(LogicalParameter &par, std::string_view collection);
+std::string scanParameterValue(const std::string &par, bool &parameterFound, bool &parameterEmpty, std::string collection);
+void readParameter(LogicalParameter &par, std::string collection);
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr);
 bool readBoolParameter(const LogicalParameter &par, const std::string &valStr);
-void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters);
+void controlAssets(Menu::ParametersContainer &parameters);
 
 std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visualKeysStr);
 std::queue<LogKey> oldReadKeys(const std::string &keysStr, const std::string &visualKeysStr);
@@ -41,10 +38,8 @@ std::queue<LogKey> oldReadButtons(const std::string &valStr, const std::string &
 
 void createDefaultConfig();
 void saveConfig(
-    const std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
-    const std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines,
-    const std::vector<std::unique_ptr<Button>> *mKeys,
-    bool saveKeys);
+    const Menu::ParametersContainer &parameters, const Menu::ParameterLinesContainer &parameterLines,
+    const std::vector<std::unique_ptr<Button>> *mKeys, bool saveKeys);
 
 std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, bool readRealStr);
 

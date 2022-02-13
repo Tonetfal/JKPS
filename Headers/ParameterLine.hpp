@@ -101,8 +101,8 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BtnTextMty,
 
             BtnTextAdvColl,
-            BtnTextAdvSpace1,
             BtnTextSepPosAdvMode,
+            BtnTextAdvSpace1,
             BtnTextAdvVisPosition1,
             BtnTextAdvTotPosition1,
             BtnTextAdvKPSPosition1,
