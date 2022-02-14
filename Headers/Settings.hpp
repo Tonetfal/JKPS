@@ -143,6 +143,7 @@ namespace Settings
     extern float KeyPressVisFadeLineLen;
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
+    extern float KeyPressWidthScale;
 
     // [Key press visualization advanced settings]
     extern bool KeyPressVisAdvSettingsMode;
@@ -151,6 +152,7 @@ namespace Settings
     extern Container<float> KeyPressVisAdvFadeLineLen;
     extern Container<sf::Vector2f> KeyPressVisAdvOrig;
     extern Container<sf::Color> KeyPressVisAdvColor;
+    extern Container<float> KeyPressAdvWidthScale;
 
     // [Other]
     extern bool SaveStats;

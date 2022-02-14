@@ -282,8 +282,8 @@ void GfxButton::scaleSprites()
     const auto advMode = isInSupportedRange && Settings::GfxButtonAdvancedMode;
 
     const auto btnTxtrSz = !advMode ? static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize) : Settings::GfxButtonsSizes[mBtnIdx];
-    const sf::Vector2f btnTxtrScale(btnTxtrSz.x / origBtnTxtrSz.x, btnTxtrSz.y / origBtnTxtrSz.y);
-    const sf::Vector2f aniTxtrScale(btnTxtrSz.x / origAniTxtrSz.x, btnTxtrSz.y / origAniTxtrSz.y);
+    const auto btnTxtrScale = sf::Vector2f(btnTxtrSz.x / origBtnTxtrSz.x, btnTxtrSz.y / origBtnTxtrSz.y);
+    const auto aniTxtrScale = sf::Vector2f(btnTxtrSz.x / origAniTxtrSz.x, btnTxtrSz.y / origAniTxtrSz.y);
 
     buttonSprite.setScale(btnTxtrScale);
     animationSprite.setScale(aniTxtrScale);
@@ -501,7 +501,7 @@ void GfxButton::RectEmitter::setPosition(sf::Vector2f position)
 
 void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Vertex *toPush, size_t offset, sf::Vector2f buttonSize)
 {
-    for (size_t i = 0; i < 4 ; ++i)
+    for (auto i = 0ul; i < 4ul; ++i)
     {
         // Take reference
         auto &vertex = toPush[i];
@@ -522,10 +522,12 @@ void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Ver
 void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
 {
     const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
-    const auto advMode = isInSupportedRange && Settings::GfxButtonAdvancedMode;
+    const auto advMode = isInSupportedRange && Settings::KeyPressVisAdvSettingsMode;
     const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
         Settings::KeyPressVisAdvSpeed[mBtnIdx];
     const auto speed = -origSpeed / 10.f;
+    // const auto wScale = (!advMode ? Settings::KeyPressWidthScale : Settings::KeyPressAdvWidthScale[mBtnIdx]) / 100.f;
+    // buttonSize.x *= wScale;
 
     const auto rectSize = sf::Vector2f(buttonSize.x, speed);
     const auto halfRectSize = rectSize / 2.f;
@@ -602,9 +604,11 @@ sf::Transform GfxButton::RectEmitter::getPressRectTransform(sf::Transform transf
         Settings::KeyPressVisAdvRotation[mBtnIdx];
     const auto orig = Settings::KeyPressVisOrig + (advMode 
         ? Settings::KeyPressVisAdvOrig[mBtnIdx] : sf::Vector2f());
+    const auto wScale = (!advMode ? Settings::KeyPressWidthScale : Settings::KeyPressAdvWidthScale[mBtnIdx]) / 100.f;
 
     transform.rotate(-rot);
-    transform = transform.translate(orig.x, -orig.y);
+    transform.translate(Utility::swapY(orig));
+    transform.scale(wScale, 1.f);
     return transform;
 }
 

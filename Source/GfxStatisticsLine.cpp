@@ -49,7 +49,7 @@ void GfxStatisticsLine::update()
     const auto advMode = Settings::StatisticsTextAdvancedMode;
     const auto origPos = Settings::StatisticsTextValuePosition;
     const auto advPos = Settings::StatisticsTextAdvValuePosition.at(mIdentifier);
-    const auto pos = origPos + (advMode ? advPos : sf::Vector2f());
+    const auto pos = Utility::swapY(origPos + (advMode ? advPos : sf::Vector2f()));
 
     mStatValueText.setPosition(pos);
 }

@@ -465,7 +465,6 @@ void Application::openWindow()
 void Application::resizeWindow()
 {
     const auto size = sf::Vector2u(getWindowWidth(), getWindowHeight());
-    std::cout << size.x << " " << size.y << "\n";
     mWindow.setSize(size);
 
     auto windowSize = static_cast<sf::Vector2f>(mWindow.getSize());
