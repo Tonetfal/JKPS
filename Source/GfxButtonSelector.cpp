@@ -3,6 +3,7 @@
 #include "../Headers/StringHelper.hpp"
 #include "../Headers/Settings.hpp"
 
+#include <SFML/Window/Clipboard.hpp>
 #include <SFML/Window/Event.hpp>
 
 #include <cassert>
@@ -79,33 +80,30 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
         if (!mSelectedBtn || (mSelectedBtn == mButtons[RealKeyButton].get() 
         &&  mKeyType == Mouse))
             return;
-        std::string str = static_cast<std::string>(mSelectedBtn->mValText.getString());
 
-        const sf::Keyboard::Key key = event.key.code;
+        auto str = static_cast<std::string>(mSelectedBtn->mValText.getString());
+
+        const auto key = event.key;
 
         if (mSelectedBtn == mButtons[RealKeyButton].get())
         {
             const auto visualKeyChanged = mButtons[VisualKeyButton]->mValText.getString() != 
                 keyToStr(strToKey(std::string(mButtons[RealKeyButton]->mValText.getString())));
 
-            mButtons[RealKeyButton]->mValText.setString(key != sf::Keyboard::Unknown ? keyToStr(key, true) : "Unknown");
+            mButtons[RealKeyButton]->mValText.setString(key.code != sf::Keyboard::Unknown ? keyToStr(key.code, true) : "Unknown");
             mButtons[RealKeyButton]->setupValPos();
 
             if (!visualKeyChanged)
             {
-                mButtons[VisualKeyButton]->mValText.setString(key != sf::Keyboard::Unknown ? keyToStr(key) : "Unknown");
+                mButtons[VisualKeyButton]->mValText.setString(key.code != sf::Keyboard::Unknown ? keyToStr(key.code) : "Unknown");
                 mButtons[VisualKeyButton]->setupValPos();
             }
             deselect();
             return;
         }
 
-        const auto maxLength = 20ul;
-        if (mButtons[VisualKeyButton]->mValText.getString().getSize() >= maxLength)
-            return;
-
         auto strChanged = false;
-        if (key == sf::Keyboard::Backspace)
+        if (key.code == sf::Keyboard::Backspace)
         {
             if (mSelectedBtnTextIndex != 0)
             {
@@ -115,40 +113,61 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
             strChanged = true;
         }
 
-        if (key == sf::Keyboard::Delete)
+        if (key.code == sf::Keyboard::Delete)
         {
             if (str.size() > mSelectedBtnTextIndex)
                 rmChOnIdx(str, mSelectedBtnTextIndex);
             strChanged = true;
         }
         
-        if (key == sf::Keyboard::Left)
+        if (key.code == sf::Keyboard::Left)
         {
             if (mSelectedBtnTextIndex > 0)
                 --mSelectedBtnTextIndex;
         }
 
-        if (key == sf::Keyboard::Right)
+        if (key.code == sf::Keyboard::Right)
         {
             if (str.size() > mSelectedBtnTextIndex)
                 ++mSelectedBtnTextIndex;
         }
 
-        if (key == sf::Keyboard::Home)
+        if (key.code == sf::Keyboard::Home)
         {
             mSelectedBtnTextIndex = 0;
         }
 
-        if (key == sf::Keyboard::End)
+        if (key.code == sf::Keyboard::End)
         {
             mSelectedBtnTextIndex = str.size();
         }
-
-        if (isCharacter(key))
+     
+        if (isCharacter(key.code))
         {
-            addChOnIdx(str, mSelectedBtnTextIndex, enumKeyToStr(key));
-            ++mSelectedBtnTextIndex;
-            strChanged = true;
+            const auto maxLength = 20ul;
+            if (mButtons[VisualKeyButton]->mValText.getString().getSize() >= maxLength)
+                return;
+
+            if (key.control && key.code == sf::Keyboard::V)
+            {
+                const auto clipboardStr = std::string(sf::Clipboard::getString());
+                const auto lhs = std::string(str.begin(), str.begin() + mSelectedBtnTextIndex);
+                const auto rhs = std::string(str.begin() + mSelectedBtnTextIndex, str.end());
+                const auto newStr = lhs + clipboardStr + rhs;
+
+                if (maxLength >= newStr.length())
+                {
+                    str = newStr;
+                    mSelectedBtnTextIndex += static_cast<int>(clipboardStr.length());
+                    strChanged = true;
+                }
+            }
+            else
+            {
+                addChOnIdx(str, mSelectedBtnTextIndex, enumKeyToStr(key.code));
+                ++mSelectedBtnTextIndex;
+                strChanged = true;
+            }
         }
 
         // If user starts to write anything, then change text color and delete the hint
@@ -157,8 +176,8 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
             mButtons[VisualKeyButton]->mValText.setFillColor(sf::Color::White);
             mSelectedBtn->mValText.setString("");
             str = "";
-            if (isCharacter(key))
-                str += enumKeyToStr(key);
+            if (isCharacter(key.code))
+                str += enumKeyToStr(key.code);
             mSelectedBtnTextIndex = str.size();
         }
         mSelectedBtn->mValText.setString(str);
@@ -171,7 +190,7 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
         const auto button = event.mouseButton.button;
         if (mSelectedBtn == mButtons[RealKeyButton].get() && mKeyType == Mouse)
         {
-            bool visualKeyChanged = mButtons[VisualKeyButton]->mValText.getString() != mButtons[RealKeyButton]->mValText.getString();
+            const auto visualKeyChanged = mButtons[VisualKeyButton]->mValText.getString() != mButtons[RealKeyButton]->mValText.getString();
 
             mButtons[RealKeyButton]->mValText.setString(btnToStr(button));
             mButtons[RealKeyButton]->setupValPos();

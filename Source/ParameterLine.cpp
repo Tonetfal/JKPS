@@ -282,7 +282,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                 if (maxLength >= newStr.length())
                 {
                     str = newStr;
-                    mSelectedValueIndex = mSelectedValueIndex + static_cast<int>(clipboardStr.length());
+                    mSelectedValueIndex += static_cast<int>(clipboardStr.length());
                 }
             }
             else 
