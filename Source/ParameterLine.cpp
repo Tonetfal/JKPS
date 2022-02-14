@@ -9,6 +9,7 @@
 #include "../Headers/ConfigHelper.hpp"
 #include "../Headers/Utility.hpp"
 
+#include <SFML/Window/Clipboard.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -90,8 +91,9 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             return false;
 
         auto str = static_cast<std::string>(mSelectedValue->mValText.getString());
-        auto key = event.key.code;
-        auto isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
+        const auto key = event.key;
+        const auto keyCode = key.code;
+        const auto isStrType = mType == LogicalParameter::Type::String || mType == LogicalParameter::Type::StringPath;
         auto btnIdx = 0;
         if (mType == LogicalParameter::Type::Color
         ||  mType == LogicalParameter::Type::VectorU
@@ -114,14 +116,14 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
         }
 
         if (!isStrType
-        && ((key >= sf::Keyboard::Num0    && key <= sf::Keyboard::Num9)
-         || (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)))
+        && ((keyCode >= sf::Keyboard::Num0    && keyCode <= sf::Keyboard::Num9)
+         || (keyCode >= sf::Keyboard::Numpad0 && keyCode <= sf::Keyboard::Numpad9)))
         {
             int n = 0;
-            if (key >= sf::Keyboard::Num0 &&  key <= sf::Keyboard::Num9)
-                n = (key - sf::Keyboard::Num0);
-            if (key >= sf::Keyboard::Numpad0 && key <= sf::Keyboard::Numpad9)
-                n = (key - sf::Keyboard::Numpad0);
+            if (keyCode >= sf::Keyboard::Num0 &&  keyCode <= sf::Keyboard::Num9)
+                n = (keyCode - sf::Keyboard::Num0);
+            if (keyCode >= sf::Keyboard::Numpad0 && keyCode <= sf::Keyboard::Numpad9)
+                n = (keyCode - sf::Keyboard::Numpad0);
 
             if (mSelectedValueIndex == 0 && (str[0] == '-' || n == 0))
                 return true;
@@ -149,7 +151,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             }
         }
 
-        if (!isStrType && key == sf::Keyboard::Up)
+        if (!isStrType && keyCode == sf::Keyboard::Up)
         {
             const auto prevVal = str;
             const auto check = stof(str) + 1.f; 
@@ -163,7 +165,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex += strSize == prevValSize ? 0 : strSize > prevValSize ? 1 : -1;
         }
 
-        if (!isStrType && key == sf::Keyboard::Down)
+        if (!isStrType && keyCode == sf::Keyboard::Down)
         {
             const auto prevVal = str;
             const auto check = stof(str) - 1.f; 
@@ -177,7 +179,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             mSelectedValueIndex += strSize == prevValSize ? 0 : strSize > prevValSize ? 1 : -1;
         }
 
-        if (!isStrType && (key == sf::Keyboard::Hyphen || key == sf::Keyboard::Subtract))
+        if (!isStrType && (keyCode == sf::Keyboard::Hyphen || keyCode == sf::Keyboard::Subtract))
         {
             if (mType == LogicalParameter::Type::Unsigned 
             ||  mType == LogicalParameter::Type::Color 
@@ -195,7 +197,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             }
         }
 
-        if (key == sf::Keyboard::Backspace)
+        if (keyCode == sf::Keyboard::Backspace)
         {
             if (mSelectedValueIndex != 0)
             {
@@ -219,7 +221,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             }
         }
         
-        if (key == sf::Keyboard::Delete)
+        if (keyCode == sf::Keyboard::Delete)
         {
             const auto strSize = str.size();
 
@@ -245,35 +247,51 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             }
         }
 
-        if (key == sf::Keyboard::Left)
+        if (keyCode == sf::Keyboard::Left)
         {
             if (mSelectedValueIndex > 0)
                 --mSelectedValueIndex;
         }
 
-        if (key == sf::Keyboard::Right)
+        if (keyCode == sf::Keyboard::Right)
         {
             if (str.size() > mSelectedValueIndex)
                 ++mSelectedValueIndex;
         }
 
-        if (key == sf::Keyboard::Home)
+        if (keyCode == sf::Keyboard::Home)
         {
             mSelectedValueIndex = 0;
         }
 
-        if (key == sf::Keyboard::End)
+        if (keyCode == sf::Keyboard::End)
         {
             mSelectedValueIndex = str.size();
         }
 
-        if (isStrType && GfxButtonSelector::isCharacter(key))
+        if (isStrType && GfxButtonSelector::isCharacter(keyCode))
         {
-            const auto maxLength = 50u;
-            if (str.size() < maxLength)
+            const auto maxLength = 50ul;
+            if (key.control && keyCode == sf::Keyboard::V)
             {
-                addChOnIdx(str, mSelectedValueIndex, enumKeyToStr(key));
-                ++mSelectedValueIndex;
+                const auto clipboardStr = std::string(sf::Clipboard::getString());
+                const auto lhs = std::string(str.begin(), str.begin() + mSelectedValueIndex);
+                const auto rhs = std::string(str.begin() + mSelectedValueIndex, str.end());
+                const auto newStr = lhs + clipboardStr + rhs;
+
+                if (maxLength >= newStr.length())
+                {
+                    str = newStr;
+                    mSelectedValueIndex = mSelectedValueIndex + static_cast<int>(clipboardStr.length());
+                }
+            }
+            else 
+            {
+                if (maxLength >= str.length())
+                {
+                    addChOnIdx(str, mSelectedValueIndex, enumKeyToStr(keyCode));
+                    ++mSelectedValueIndex;
+                }
             }
         }
 
@@ -327,7 +345,7 @@ bool ParameterLine::handleButtonsInteractionEvent(sf::Event event)
                     ret = false;
                 }
                 // Refresh button has 0x0 rectangle shape 
-                else if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
+                else if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0.f)
                 {
                     mRefresh = true;
                     deselect();
@@ -346,7 +364,7 @@ bool ParameterLine::handleButtonsInteractionEvent(sf::Event event)
             if (event.type == sf::Event::KeyPressed && key == sf::Keyboard::Enter)
             {
                 // Refresh button has 0x0 rectangle shape 
-                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0)
+                if (mType == LogicalParameter::Type::StringPath && elem->mRect.getSize().x == 0.f)
                 {
                     mRefresh = true;
                     deselect();

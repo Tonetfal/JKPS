@@ -30,13 +30,17 @@ KeysPerSecondGraph::KeysPerSecondGraph()
 
 void KeysPerSecondGraph::handleOwnEvent()
 {
-    sf::Event event;
+    auto event = sf::Event();
     while (mWindow.pollEvent(event))
     { 
-        if (event.type == sf::Event::Closed
-        || (event.type == sf::Event::KeyPressed
-        && event.key.code == Settings::KeyExit
-        && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)))
+        if (event.type == sf::Event::KeyPressed)
+        {
+            const auto key = event.key;
+            if (key.control && key.code == Settings::KeyExit)
+                mWindow.close();
+        }
+
+        if (event.type == sf::Event::Closed)
         {
             mWindow.close();
         }

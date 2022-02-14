@@ -196,11 +196,11 @@ void Menu::handleEvent()
 
         if (event.type == sf::Event::KeyPressed)
         {
-            const auto key = event.key.code;
-            if (key == sf::Keyboard::Tab)
+            const auto key = event.key;
+            if (key.code == sf::Keyboard::Tab)
             {
-                const auto lCtrl = sf::Keyboard::isKeyPressed(sf::Keyboard::LControl);
-                const auto lShift = sf::Keyboard::isKeyPressed(sf::Keyboard::LShift);
+                const auto lCtrl = key.code;
+                const auto lShift = key.shift;
 
                 // Tab forward
                 if (!lShift && lCtrl)
@@ -218,11 +218,18 @@ void Menu::handleEvent()
                 }
             }
         }
+        
+        if (event.type == sf::Event::KeyPressed)
+        {
+            const auto key = event.key;
+            if (key.control && key.code == Settings::KeyExit)
+            {
+                closeWindow();
+                return;
+            }
+        }
 
-        if (event.type == sf::Event::Closed
-        || (event.type == sf::Event::KeyPressed
-        && event.key.code == Settings::KeyExit
-        && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)))
+        if (event.type == sf::Event::Closed)
         {
             closeWindow();
             return;
@@ -234,7 +241,7 @@ void Menu::handleRealtimeInput()
 {
     if (mWindow.hasFocus() && !ParameterLine::isValueSelected())
     {
-        float offset = 0.f;
+        auto offset = 0.f;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
             offset = -mScrollSpeed;
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))

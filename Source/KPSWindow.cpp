@@ -23,16 +23,18 @@ KPSWindow::KPSWindow(const FontHolder &fonts)
 
 void KPSWindow::handleOwnEvent()
 {
-    sf::Event event;
+    auto event = sf::Event();
     while (mWindow.pollEvent(event))
     { 
-        if (event.type == sf::Event::Closed
-        || (event.type == sf::Event::KeyPressed
-        && event.key.code == Settings::KeyExit
-        && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl)))
+        if (event.type == sf::Event::KeyPressed)
         {
-            mWindow.close();
+            const auto key = event.key;
+            if (key.control && key.code == Settings::KeyExit)
+                mWindow.close();
         }
+
+        if (event.type == sf::Event::Closed)
+            mWindow.close();
     }
 }
 
@@ -40,8 +42,8 @@ void KPSWindow::update()
 {
     if (mWindow.isOpen())
     {
-        std::string str;
-        const float kps = Button::getKeysPerSecond();
+        auto str = std::string();
+        const auto kps = Button::getKeysPerSecond();
         if (false)
             str = eraseDigitsOverHundredths(std::to_string(kps));
         else
@@ -57,8 +59,8 @@ void KPSWindow::render()
 {
     if (mWindow.isOpen())
     {
-        sf::Transform textTransform = sf::Transform::Identity;
-        sf::Transform numberTranform = sf::Transform::Identity;
+        auto textTransform = sf::Transform::Identity;
+        auto numberTranform = sf::Transform::Identity;
 
         textTransform.translate((mWindow.getSize().x - mKPSText.getLocalBounds().width + 
             mKPSText.getLocalBounds().left) / 2.f, Settings::KPSWindowTopPadding);

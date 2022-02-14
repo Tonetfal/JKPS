@@ -1,6 +1,7 @@
 #include "../Headers/Palette.hpp"
 #include "../Headers/MathHelper.hpp"
 #include "../Headers/ParameterLine.hpp"
+#include "../Headers/Settings.hpp"
 
 #include <SFML/Window/Event.hpp>
 
@@ -173,18 +174,18 @@ void Palette::processOwnEvents()
         // Move on the line by only one step
         if (event.type == sf::Event::KeyPressed)
         {
-            auto key = event.key.code;
+            const auto key = event.key;
 
-            if (key == sf::Keyboard::Left)
+            if (key.code == sf::Keyboard::Left)
             {
                 goUp();
             }
-            else if (key == sf::Keyboard::Right)
+            else if (key.code == sf::Keyboard::Right)
             {
                 goDown();
             }
-            else if (key == sf::Keyboard::W
-            &&  sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+
+            if (key.control && key.code == Settings::KeyExit)
             {
                 closeWindow();
                 return;

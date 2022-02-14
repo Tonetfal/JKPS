@@ -106,10 +106,10 @@ void Application::handleEvent()
     {
         if (event.type == sf::Event::MouseButtonPressed)
         {
-            const sf::Mouse::Button button = event.mouseButton.button;
+            const auto button = event.mouseButton.button;
             if (button == sf::Mouse::Right)
             {
-                unsigned idx;
+                auto idx = 0u;
                 if (isPressPerformedOnButton(idx))
                 {
                     mGfxButtonSelector->setKey(mButtons[idx]->getLogKey());
@@ -120,23 +120,23 @@ void Application::handleEvent()
         
         if (event.type == sf::Event::KeyPressed)
         {
-            const sf::Keyboard::Key key = event.key.code;
-            if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            const auto key = event.key;
+            if (key.control)
             {
-                bool btnAmtChanged = false;
-                if (key == Settings::KeyToIncreaseKeys || key == Settings::AltKeyToIncreaseKeys)
+                auto btnAmtChanged = false;
+                if (key.code == Settings::KeyToIncreaseKeys || key.code == Settings::AltKeyToIncreaseKeys)
                 {
                     addButton(*new LogKey("A", "A", new sf::Keyboard::Key(sf::Keyboard::A), nullptr));
                     btnAmtChanged = true;
                 }
 
-                if (key == Settings::KeyToIncreaseButtons)
+                if (key.code == Settings::KeyToIncreaseButtons)
                 {
                     addButton(*new LogKey("M Left", "M Left", nullptr, new sf::Mouse::Button(sf::Mouse::Left)));
                     btnAmtChanged = true;
                 }
 
-                if (key == Settings::KeyToDecreaseKeys || key == Settings::AltKeyToDecreaseKeys || key == Settings::KeyToDecreaseButtons)
+                if (key.code == Settings::KeyToDecreaseKeys || key.code == Settings::AltKeyToDecreaseKeys || key.code == Settings::KeyToDecreaseButtons)
                 {
                     removeButton();
                     btnAmtChanged = true;
@@ -150,7 +150,7 @@ void Application::handleEvent()
                     mBackground->rescale();
                 }
 
-                if (key == Settings::KeyToOpenKPSWindow)
+                if (key.code == Settings::KeyToOpenKPSWindow)
                 {
                     if (mKPSWindow->isOpen())
                         mKPSWindow->closeWindow();
@@ -158,7 +158,7 @@ void Application::handleEvent()
                         mKPSWindow->openWindow();
                 }
 
-                if (key == Settings::KeyToOpenMenuWindow)
+                if (key.code == Settings::KeyToOpenMenuWindow)
                 {
                     if (mMenu.isOpen())
                         mMenu.closeWindow();
@@ -174,13 +174,13 @@ void Application::handleEvent()
                 //         mGraph->openWindow();
                 // }
 
-                if (key == Settings::KeyToReset)
+                if (key.code == Settings::KeyToReset)
                 {
                     for (auto &button : mButtons)
                         button->reset();
                 }
 
-                if (key == Settings::KeyExit)
+                if (key.code == Settings::KeyExit)
                 {
                     mMenu.saveConfig(mButtons);
                     mWindow.close();
@@ -242,7 +242,7 @@ void Application::render()
 
 void Application::unloadChangesQueue()
 {
-    ChangedParametersQueue &queue = mMenu.getChangedParametersQueue();
+    auto &queue = mMenu.getChangedParametersQueue();
     while (!queue.isEmpty())
     {
         auto pair = queue.pop();
@@ -294,7 +294,7 @@ void Application::resetAssets()
     loadTextures();
     loadFonts();
 
-    unsigned idx = 0;
+    auto idx = 0u;
     for (auto &button : mButtons)
     {
         button->updateAssets();
@@ -357,8 +357,8 @@ void Application::loadIcon()
 void Application::buildStatistics()
 {
     using Ptr = std::unique_ptr<GfxStatisticsLine>;
-    Ptr linePtr(nullptr);
-    unsigned id = GfxStatisticsLine::StatisticsID::KPS;
+    auto linePtr = Ptr();
+    auto id = static_cast<unsigned>(GfxStatisticsLine::StatisticsID::KPS);
     
     linePtr = Ptr(new GfxStatisticsLine(mFonts, Settings::ShowStatisticsKPS, static_cast<GfxStatisticsLine::StatisticsID>(id)));
     mStatistics[id] = std::move(linePtr);
@@ -375,17 +375,18 @@ void Application::buildStatistics()
 
 void Application::buildButtons()
 {
-    std::queue<LogKey> logKeyQueue = ConfigHelper::oldGetLogKeys();
-    std::queue<LogKey> logKeyBtnsQueue = ConfigHelper::oldGetLogButtons();
+    auto logKeyQueue = ConfigHelper::oldGetLogKeys();
+    auto logKeyBtnsQueue = ConfigHelper::oldGetLogButtons();
+
     while (logKeyBtnsQueue.size())
     {
         logKeyQueue.push(logKeyBtnsQueue.front());
         logKeyBtnsQueue.pop();
     }
-    if (logKeyQueue.size() == 0)
+    if (logKeyQueue.empty())
         logKeyQueue = ConfigHelper::getLogKeys();
 
-    for (unsigned i = 0; logKeyQueue.size(); ++i)
+    for (auto i = 0ul; !logKeyQueue.empty(); ++i)
     {
         addButton(logKeyQueue.front());
         logKeyQueue.pop();
@@ -402,7 +403,7 @@ void Application::buildButtons()
 bool Application::isPressPerformedOnButton(unsigned &btnIdx) const
 {
     const auto size = Button::size();
-    for (size_t i = 0; i < size; ++i)
+    for (auto i = 0ul; i < size; ++i)
     {
         if (isMouseInRange(i))
         {
@@ -419,7 +420,7 @@ bool Application::isMouseInRange(unsigned idx) const
     const auto textureSize = static_cast<sf::Vector2f>(Settings::GfxButtonTextureSize);
     const auto &button = *mButtons[idx];
     const auto buttonPosition = button.getPosition() - textureSize / 2.f;
-    const sf::FloatRect buttonRectangle(buttonPosition, textureSize);
+    const auto buttonRectangle = sf::FloatRect(buttonPosition, textureSize);
 
     return buttonRectangle.contains(mousePosition);
 }
@@ -468,13 +469,13 @@ void Application::resizeWindow()
     mWindow.setSize(size);
 
     auto windowSize = static_cast<sf::Vector2f>(mWindow.getSize());
-    sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
+    auto view = sf::View(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
     mWindow.setView(view);
 }
 
 void Application::moveWindow()
 {
-    static sf::Vector2i mLastMousePosition;
+    static auto mLastMousePosition = sf::Vector2i();
     if (mWindow.hasFocus() && sf::Mouse::isButtonPressed(sf::Mouse::Left))
     {
         mWindow.setPosition(mWindow.getPosition() + 
