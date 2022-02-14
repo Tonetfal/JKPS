@@ -127,7 +127,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                 return true;
 
             const auto strSize = str.size();
-            if ((strSize == 1ul && str[0] == '0') || (strSize == 2ul && str[1] == '0'))
+            if ((strSize == 1ul && str[0] == '0') || (strSize == 2ul && !std::isdigit(str[0]) && str[1] == '0'))
             {
                 str.back() = n + '0';
                 if (mSelectedValueIndex == strSize - 1ul)
