@@ -80,8 +80,17 @@ void GfxButton::draw(sf::RenderTarget &target, sf::RenderStates states) const
         };
     states.transform *= getTransform();
 
+    // Nullify scaling for emitter draw
+    auto emitterStates = states;
+    
+    auto inverseScale = sf::Transform::Identity;
+    inverseScale.scale(getScale());
+    inverseScale = inverseScale.getInverse();
+
+    emitterStates.transform *= inverseScale;
+
     // Key visualizer's graphics
-    target.draw(mEmitter, states);
+    target.draw(mEmitter, emitterStates);
 
     // Key's graphics
     for (const auto &sprite : mSprites)
