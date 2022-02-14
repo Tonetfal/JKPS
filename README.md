@@ -35,6 +35,20 @@ Click with **right mouse button** on the button to edit it
 
 **Alt** (hold) - Show opposite button values
 
+## Menu hotkeys
+
+**Up arrow** (while a value is selected) - Increment a numeric value by 1
+
+**Down arrow** (while a value is selected) - Decrement a numeric value by 1
+
+**Tab** - Change cursor on next value (if there is any)
+
+**Tab + Shift** - Change cursor on previous value (if there is any)
+
+**Ctrl + Tab** - Forward tabulation
+
+**Ctrl + Shift + Tab** - Backward tabulation
+
 # Key press visualization
 
 ![](Wiki/Previews/key-press-visualization-preview.gif)

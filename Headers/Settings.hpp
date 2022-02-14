@@ -12,10 +12,18 @@
 
 namespace Settings
 {
+    const size_t SupportedAdvancedKeysNumber = 20ul;
+    const size_t OldSupportedAdvancedKeysNumber = 15ul;
+    template <typename T>
+    using Container = std::array<T, SupportedAdvancedKeysNumber>;
+    template <typename T>
+    using StatisticsContainer = std::array<T, GfxStatisticsLine::StatisticsIdCounter>;
+
     // [Statistics text]
     extern float StatisticsTextDistance;
     extern sf::Vector2f StatisticsTextPosition;
     extern sf::Vector2f StatisticsTextValuePosition;
+    extern bool StatisticsTextCenterOrigin;
     extern std::string StatisticsTextFontPath;
     extern sf::Color StatisticsTextColor;
     extern unsigned StatisticsTextCharacterSize;
@@ -28,18 +36,14 @@ namespace Settings
     extern bool ShowStatisticsTotal;
     extern bool ShowStatisticsBPM;
 
-    extern bool StatisticsTextPositionsAdvancedMode;
-    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextPositions;
-    extern bool StatisticsTextValuePositionsAdvancedMode;
-    extern std::array<sf::Vector2f, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextValuePositions;
-    extern bool StatisticsTextColorsAdvancedMode;
-    extern std::array<sf::Color, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextColors;
-    extern bool StatisticsTextChSzssAdvancedMode;
-    extern std::array<unsigned, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextCharacterSizes;
-    extern bool StatisticsTextBoldAdvancedMode;
-    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextBolds;
-    extern bool StatisticsTextItalicAdvancedMode;
-    extern std::array<bool, GfxStatisticsLine::StatisticsIdCounter> StatisticsTextItalics;
+    extern bool StatisticsTextAdvancedMode;
+    extern StatisticsContainer<sf::Vector2f> StatisticsTextAdvPosition;
+    extern StatisticsContainer<sf::Vector2f> StatisticsTextAdvValuePosition;
+    extern StatisticsContainer<bool> StatisticsTextAdvCenterOrigin;
+    extern StatisticsContainer<sf::Color> StatisticsTextAdvColor;
+    extern StatisticsContainer<unsigned> StatisticsTextAdvCharacter;
+    extern StatisticsContainer<bool> StatisticsTextAdvBold;
+    extern StatisticsContainer<bool> StatisticsTextAdvItalic;
     extern std::string StatisticsKPSText;
     extern std::string StatisticsKPS2Text;
     extern std::string StatisticsTotalText;
@@ -52,31 +56,48 @@ namespace Settings
     extern unsigned ButtonTextOutlineThickness;
     extern sf::Color ButtonTextOutlineColor;
     extern sf::Vector2f ButtonTextPosition;
+    extern bool ButtonTextBoundsToggle;
     extern sf::Vector2f ButtonTextBounds;
-    extern bool BtnTextIgnoreBtnMovement;
+    extern bool ButtonTextIgnoreBtnMovement;
     extern bool ButtonTextBold;
     extern bool ButtonTextItalic;
     extern bool ButtonTextShowVisualKeys;
+    extern sf::Vector2f ButtonTextVisualKeysTextPosition;
     extern bool ButtonTextShowTotal;
+    extern sf::Vector2f ButtonTextTotalTextPosition;
     extern bool ButtonTextShowKPS;
+    extern sf::Vector2f ButtonTextKPSTextPosition;
     extern bool ButtonTextShowBPM;
+    extern sf::Vector2f ButtonTextBPMTextPosition;
+
+    // [Buttons text advanced settings]
     extern bool ButtonTextSepPosAdvancedMode;
-    extern sf::Vector2f ButtonVisualKeysTextPosition;
-    extern sf::Vector2f ButtonTotalTextPosition;
-    extern sf::Vector2f ButtonKPSTextPosition;
-    extern sf::Vector2f ButtonBPMTextPosition;
-    extern bool ButtonTextPosAdvancedMode;
-    extern std::array<sf::Vector2f, 15> ButtonsTextPositions;
+    extern Container<sf::Vector2f> ButtonTextAdvVisualKeysTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvTotalTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvKPSTextPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvBPMTextPosition;
+    
+    extern bool ButtonTextAdvancedMode;
+    extern Container<sf::Color> ButtonTextAdvColor;
+    extern Container<unsigned> ButtonTextAdvCharacterSize;
+    extern Container<unsigned> ButtonTextAdvOutlineThickness;
+    extern Container<sf::Color> ButtonTextAdvOutlineColor;
+    extern Container<sf::Vector2f> ButtonsTextAdvPosition;
+    extern Container<sf::Vector2f> ButtonTextAdvBounds;
+    extern Container<bool> ButtonTextAdvBold;
+    extern Container<bool> ButtonTextAdvItalic;
 
     // [Button graphics]
     extern float GfxButtonDistance;
     extern std::string GfxButtonTexturePath;
     extern sf::Vector2u GfxButtonTextureSize;
     extern sf::Color GfxButtonTextureColor;
-    extern bool GfxButtonBtnPositionsAdvancedMode;
-    extern std::array<sf::Vector2f, 15> GfxButtonsBtnPositions;
-    extern bool GfxButtonSizesAdvancedMode;
-    extern std::array<sf::Vector2f, 15> GfxButtonsSizes;
+
+    // [Button graphics advanced settings]
+    extern bool GfxButtonAdvancedMode;
+    extern Container<sf::Vector2f> GfxButtonsBtnPositions;
+    extern Container<sf::Vector2f> GfxButtonsSizes;
+    extern Container<sf::Color> GfxButtonsColor;
 
     // [Animation graphics]
     extern bool LightAnimation;
@@ -115,16 +136,27 @@ namespace Settings
     extern unsigned KPSTextSize;
     extern unsigned KPSNumberSize;
 
-    // [Key presses visualizer]
+    // [Key press visualization]
     extern bool KeyPressVisToggle;
     extern float KeyPressVisSpeed;
     extern float KeyPressVisRotation;
     extern float KeyPressVisFadeLineLen;
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
+    extern float KeyPressWidthScale;
+
+    // [Key press visualization advanced settings]
+    extern bool KeyPressVisAdvSettingsMode;
+    extern Container<float> KeyPressVisAdvSpeed;
+    extern Container<float> KeyPressVisAdvRotation;
+    extern Container<float> KeyPressVisAdvFadeLineLen;
+    extern Container<sf::Vector2f> KeyPressVisAdvOrig;
+    extern Container<sf::Color> KeyPressVisAdvColor;
+    extern Container<float> KeyPressAdvWidthScale;
 
     // [Other]
     extern bool SaveStats;
+    extern bool ShowOppOnAlt;
     extern unsigned ButtonPressMultiplier;
 
     // Default assets
@@ -153,5 +185,5 @@ namespace Settings
     // Saved parameters
     extern float MaxKPS;
     extern unsigned Total;
-    extern std::array<unsigned, 15> KeysTotal;
+    extern Container<unsigned> KeysTotal;
 }

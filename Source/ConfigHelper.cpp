@@ -2,6 +2,7 @@
 #include "../Headers/StringHelper.hpp"
 #include "../Headers/DefStrs.hpp"
 #include "../Headers/Settings.hpp"
+#include "../Headers/Utility.hpp"
 
 #include <iostream>
 #include <stdexcept>
@@ -23,7 +24,22 @@ std::string getOutOfBoundsErrMsg(const LogicalParameter &par)
         " or more than " + std::to_string(par.mHighLimits) + ". Default value will be set.\n";
 }
 
-std::string getOldParName(std::string_view newParName, std::string_view collection);
+struct ParameterPath
+{
+    ParameterPath() = default;
+    ParameterPath(std::string name_, std::string collection_)
+        : name(name_), collection(collection_) { }
+
+    std::string name;
+    std::string collection;
+};
+
+bool operator==(const ParameterPath &lhs, const ParameterPath &rhs)
+{
+    return lhs.name == rhs.name && lhs.collection == rhs.collection;
+}
+
+ParameterPath getOldParName(ParameterPath parPath);
 
 std::string cfgPath("JKPS.cfg");
 std::string tmpCfgPath("tmpJKPS.cfg");
@@ -39,7 +55,7 @@ namespace ConfigHelper
 const std::string separationSign(" $SEPARATION$ ");
 
 bool readConfig(
-    std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
+    Menu::ParametersContainer &parameters, 
     const std::vector<std::string> &collectionNames)
 {
     // Remove error log if there is already one
@@ -84,65 +100,74 @@ bool readConfig(
     return true;
 }
 
-void readParameters(
-    std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters,
-    const std::vector<std::string> &collectionNames)
+bool isNextCollection(LogicalParameter::ID id)
+{
+    std::array collections {
+        // LogicalParameter::ID::StatTextDist // starts from this one
+        LogicalParameter::ID::StatTextAdvMode,
+        LogicalParameter::ID::StatTextKPSText,
+        LogicalParameter::ID::BtnTextFont,
+        LogicalParameter::ID::BtnTextSepPosAdvMode,
+        LogicalParameter::ID::BtnGfxDist,
+        LogicalParameter::ID::BtnGfxAdvMode,
+        LogicalParameter::ID::AnimGfxVel,
+        LogicalParameter::ID::AnimGfxLight,
+        LogicalParameter::ID::AnimGfxPress,
+        LogicalParameter::ID::BgTxtr,
+        LogicalParameter::ID::KPSWndwEn,
+        LogicalParameter::ID::KeyPressVisToggle,
+        LogicalParameter::ID::KeyPressVisAdvMode,
+        LogicalParameter::ID::OtherSaveStats,
+        LogicalParameter::ID::SaveStatMaxKPS
+    };
+    return std::find(collections.begin(), collections.end(), id) != collections.end();
+}
+
+void readParameters(Menu::ParametersContainer &parameters, const std::vector<std::string> &collectionNames)
 {
     auto it = collectionNames.begin();
-    for (auto &pair : parameters)
+    for (auto &[id, par] : parameters)
     {
-        if (// the first will  pair.first == LogicalParameter::ID::StatTextDist ||
-            pair.first == LogicalParameter::ID::StatTextPosAdvMode ||
-            pair.first == LogicalParameter::ID::BtnTextFont ||
-            pair.first == LogicalParameter::ID::BtnGfxDist ||
-            pair.first == LogicalParameter::ID::BtnTextSepPosAdvMode ||
-            pair.first == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
-            pair.first == LogicalParameter::ID::AnimGfxVel ||
-            pair.first == LogicalParameter::ID::AnimGfxLight ||
-            pair.first == LogicalParameter::ID::AnimGfxPress ||
-            pair.first == LogicalParameter::ID::BgTxtr ||
-            pair.first == LogicalParameter::ID::KPSWndwEn ||
-            pair.first == LogicalParameter::ID::KeyPressVisToggle ||
-            pair.first == LogicalParameter::ID::OtherSaveStats ||
-            pair.first == LogicalParameter::ID::SaveStatMaxKPS)
-        {
+        if (isNextCollection(id))
             ++it;
-        }
 
-        readParameter(*pair.second, *it);
+        readParameter(*par, *it);
     }
 }
 
 std::queue<LogKey> getLogKeys()
 {
-    static const std::string parName1 = "Real keys";
-    static const std::string parName2 = "Visual keys";
-    bool parameterFound1 = false, parameterEmpty1 = false, nothing;
+    static const auto parName1 = std::string("Real keys");
+    static const auto parName2 = std::string("Visual keys");
+    auto parameterFound1 = false, parameterEmpty1 = false, null = false;
 
-    std::string keysStr = scanParameter(parName1, parameterFound1, parameterEmpty1, "[" + parName1 + "]");
-    std::string visualKeysStr = scanParameter(parName2, nothing, nothing, "[" + parName2 + "]");
+    const auto keysStr = scanParameterValue(parName1, parameterFound1, parameterEmpty1, "[" + parName1 + "]");
+    const auto visualKeysStr = scanParameterValue(parName2, null, null, "[" + parName2 + "]");
          
     if (!parameterFound1 || parameterEmpty1 || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return { };
 
-    std::queue<LogKey> keyboardQueue = readKeys(keysStr, visualKeysStr);
+    auto keyboardQueue = readKeys(keysStr, visualKeysStr);
     
     return keyboardQueue;
 }
 
 std::queue<LogKey> oldGetLogKeys()
 {
-    static const std::string parName1 = "Keyboard keys";
-    static const std::string parName2 = "Visual keys";
+    static const auto parName1 = std::string("Keyboard keys");
+    static const auto parName2 = std::string("Visual keys");
+
     // This needs to support old versions, but it has to be removed later
-    static const std::string oldParName1 = "Keys";
-    bool parameterFound = false, parameterEmpty = false, nothing;
-    std::string keysStr = scanParameter(parName1, parameterFound, parameterEmpty, "[" + parName1 + "]");
-    std::string visualKeysStr = scanParameter(parName2, nothing, nothing, "[" + parName2 + "]");
-    if (!parameterFound)
-        keysStr = scanParameter(oldParName1, parameterFound, parameterEmpty, "[" + oldParName1 + "]");
+    static const auto oldParName1 = std::string("Keys");
+
+    auto isParamFound = false, isParamNull = false, null = false;
+    auto keysStr = scanParameterValue(parName1, isParamFound, isParamNull, "[" + parName1 + "]");
+    const auto visualKeysStr = scanParameterValue(parName2, null, null, "[" + parName2 + "]");
+
+    if (!isParamFound)
+        keysStr = scanParameterValue(oldParName1, isParamFound, isParamNull, "[" + oldParName1 + "]");
          
-    if (!parameterFound || parameterEmpty || keysStr == "No" || keysStr == "no" || keysStr == "NO")
+    if (!isParamFound || isParamNull || keysStr == "No" || keysStr == "no" || keysStr == "NO")
         return { };
 
     return oldReadKeys(keysStr, visualKeysStr);
@@ -150,120 +175,179 @@ std::queue<LogKey> oldGetLogKeys()
 
 std::queue<LogKey> oldGetLogButtons()
 {
-    static const std::string parName1 = "Mouse buttons";
-    static const std::string parName2 = "Visual buttons";
-    bool parameterFound = false, parameterEmpty = false, nothing;
-    std::string buttonsStr = scanParameter(parName1, parameterFound, parameterEmpty, "[" + parName1 + "]");
-    std::string visualButtonsStr = scanParameter(parName2, nothing, nothing, "[" + parName2 + "]");
+    static const auto parName1 = std::string("Mouse buttons");
+    static const auto parName2 = std::string("Visual buttons");
+    auto isParamFound = false, isParamNull = false, null = false;
 
-    if (!parameterFound || parameterEmpty || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
+    const auto buttonsStr = scanParameterValue(parName1, isParamFound, isParamNull, "[" + parName1 + "]");
+    const auto visualButtonsStr = scanParameterValue(parName2, null, null, "[" + parName2 + "]");
+
+    if (!isParamFound || isParamNull || buttonsStr == "No" || buttonsStr == "no" || buttonsStr == "NO")
         return { };
 
     return oldReadButtons(buttonsStr, visualButtonsStr);
 }
 
+bool isCollection(std::string_view str)
+{
+    if (str.empty())
+        return false;
+    return str.at(0ul) == '[';
+}
+
 // Finds the parameter and returns everything after its name and ": ", 
 // can also return empty string, if there is no such parameter or if there is no value
-std::string scanParameter(const std::string &parName, bool &parameterFound, bool &parameterEmpty, std::string_view collection)
+std::string scanParameterValue(const std::string &parName, bool &isParamFound, bool &isValueNull, std::string collection)
 {
     std::ifstream cfg(cfgPath);
     assert(cfg.is_open());
 
-    std::string line;
-    std::string_view curCollection;
-    unsigned i = 0;
+    auto line = std::string();
+    auto correntCollection = false;
+    auto i = 0ul;
 
-    while (!cfg.eof() && i != parName.length())
+    const auto parLen = parName.length();
+
+    while (!cfg.eof() && i != parLen)
     {
         getline(cfg, line);
 
-        // Make search only in the required collection
-        if (collection == line)
-            curCollection = collection;
-        // If current line is a collection which is not the required one, don't let to search into it
-        else if (line[0] == '[')
-            curCollection = "";
-
-        // If current collection is not the required one, procede on searching
-        if (curCollection.empty())
+        if (line.empty())
+            continue;
+        else if (collection == line)
+            correntCollection = true;
+        else if (correntCollection && isCollection(line))
+            correntCollection = false;
+        
+        if (!correntCollection)
             continue;
 
         // Compare the whole name, but not its value
-        for (i = 0; i < parName.length(); ++i)
+        for (i = 0ul; i < parLen; ++i)
         {
             if (line[i] != parName[i])
             {
-                i = 0;
+                i = 0ul;
                 break;
             }
         }
         if (line[i] != ':')
-            i = 0;
+            i = 0ul;
     }
 
     cfg.close();
 
     // If the loop finished with an invalid collection the parameter was not found
-    if (curCollection.empty())
-        return "";
-
-    if (line.compare(0, parName.size(), parName))
-        return "";
-    // Does it have 2 characters after? (": " have to be deleted)
-    if (line.length() <= parName.length() + 2)
+    if (!correntCollection)
     {
-        parameterFound = true;
-        parameterEmpty = true;
+        isParamFound = false;
+        isValueNull = true;
         return "";
     }
 
-    parameterFound = true;
-    parameterEmpty = false;
+    // Has it 2 characters afterwards? (": " has to be deleted)
+    if (line.length() <= parName.length() + 2ul)
+    {
+        isParamFound = true;
+        isValueNull = true;
+        return "";
+    }
+
+    isParamFound = true;
+    isValueNull = false;
     // Remove parameter name, ':' and space after it
-    return std::string(line, parName.length() + 2);
+    return std::string(line.begin() + parLen + 2ul, line.end());
 }
 
-void readParameter(LogicalParameter &par, std::string_view collection)
+bool isToCheck(LogicalParameter::Type type)
 {
-    bool parameterFound = false;
-    bool parameterEmpty = false;
-    auto valStr = scanParameter(par.mParName, parameterFound, parameterEmpty, collection);
+    std::array typesToCheck {
+        LogicalParameter::Type::Unsigned,
+        LogicalParameter::Type::Int,
+        LogicalParameter::Type::Float,
+        LogicalParameter::Type::Color,
+        LogicalParameter::Type::VectorU,
+        LogicalParameter::Type::VectorI,
+        LogicalParameter::Type::VectorF
+    };
 
-    auto parName = par.mParName;
-    // If no value was read try to check if current parameter name has an alternative in older versions
-    while (valStr == "" && parName != "")
+    return std::find(typesToCheck.begin(), typesToCheck.end(), type) != typesToCheck.end();
+}
+
+bool isNumber(std::string_view valStr)
+{
+    const auto len = valStr.length();
+    if (len == 0ul)
+        return false;
+
+    const auto ch = valStr.front();
+    
+    if (std::isdigit(ch))
     {
-        if (parName = getOldParName(parName, collection); parName != "")
+        return true;
+    }
+    else if (ch == '-' || ch == '+')
+    {
+        if (len <= 1ul)
         {
-            valStr = scanParameter(parName, parameterFound, parameterEmpty, collection);
-            if (valStr == "" 
-            && (collection == "[Common parameters]"
-             || collection == "[Light animation]"
-             || collection == "[Press animation]"))
-            {
-                valStr = scanParameter(parName, parameterFound, parameterEmpty, "[Animation graphics]");
-            }
+            return false;
+        }
+        else
+        {
+            return std::isdigit(valStr.at(1ul));
+        }
+    }
+    return false;
+}
 
-            // if (valStr == "")
-            //     std::cout << parName << " was not found even with old version support\n";
+bool canBeNull(std::string_view str)
+{
+    std::array strs {
+        std::string("KPS text"),
+        std::string("KPS text when it is 0"),
+        std::string("KPS text when 0"),
+        std::string("Total text"),
+        std::string("BPM text")
+    };
+
+    return std::find(strs.begin(), strs.end(), str) != strs.end();
+}
+
+void readParameter(LogicalParameter &par, std::string collection)
+{
+    auto isParamFound = false, isValueNull = false;
+
+    const auto canBeNullB = canBeNull(par.mParName);
+    auto curParPath = ParameterPath(par.mParName, collection);
+    auto valStr = scanParameterValue(curParPath.name, isParamFound, isValueNull, curParPath.collection);
+
+    // If no value was read try to check if current parameter name has an alternative in older versions
+    while (!isParamFound)
+    {
+        curParPath = getOldParName(curParPath);
+        valStr = scanParameterValue(curParPath.name, isParamFound, isValueNull, curParPath.collection);
+
+        if (isParamFound && isValueNull && canBeNullB)
+            break;
+
+        if (curParPath == ParameterPath())
+        {
+            std::cerr << "\"" << collection << " " << par.mParName << "\" has no alternatives on old versions\n";
+            break;
         }
     }
 
-    parName = par.mParName;
-    // only these 4 can be empty
-    if ((parameterEmpty && 
-            !( parName == "KPS text" 
-            || parName == "KPS text when it is 0" 
-            || parName == "Total text" 
-            || parName == "BPM text"))
-        ||  !parameterFound)
+    if (isValueNull && !canBeNullB)
     {
         if (ofErrLog.is_open())
             ofErrLog << getReadingErrMsg(par, collection);
         return;
     }
+
     if (valStr == "Default")
+    {
         return;
+    }
 
     switch(par.mType)
     {
@@ -302,154 +386,164 @@ void readParameter(LogicalParameter &par, std::string_view collection)
 
 float readDigitParameter(const LogicalParameter &par, const std::string &valStr)
 {
-    float val = std::stof(valStr);
+    auto handleError = [&] () 
+        { 
+            ofErrLog << getOutOfBoundsErrMsg(par);
+            return readDigitParameter(par, par.getDefValStr()); 
+        };
 
-    if ((val < par.mLowLimits || val > par.mHighLimits)
-    && ofErrLog.is_open())
-    {
-        ofErrLog << getOutOfBoundsErrMsg(par);
-        const std::string defVal = par.getDefValStr();
-        val = std::stof(defVal);
-    }
+    const auto lowLim = par.mLowLimits, highLim = par.mHighLimits;
+
+    if (!isNumber(valStr))
+        handleError();
+
+    const auto val = std::stof(valStr);
+
+    if ((val < lowLim || val > highLim) && ofErrLog.is_open())
+        return handleError();
+
     return val;
 }
 
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr)
 {
-    std::array<float, 2> vec;
-    for (unsigned i = 0, strIdx = 0; i < vec.size(); ++i)
-    {
-        // std::stoi transforms a string into int until it encounters any non numerical character, such as ','
-        vec[i] = std::stof(valStr.substr(strIdx, 81));
-
-        if ((vec[i] < par.mLowLimits || vec[i] > par.mHighLimits)
-        && ofErrLog.is_open())
-        {
+    auto handleError = [&] () 
+        { 
             ofErrLog << getOutOfBoundsErrMsg(par);
-            const std::string defVal = par.getDefValStr();
-            return { std::stof(defVal), std::stof(defVal.substr(defVal.find(','))) };
+            return readVectorParameter(par, par.getDefValStr()); 
+        };
+
+    const auto size = 2ul;
+    float vec[size];
+    const auto lowLim = par.mLowLimits, highLim = par.mHighLimits;
+    
+    for (auto i = 0ul, strIdx = 0ul; i < size; ++i)
+    {
+        const auto &substr = valStr.substr(strIdx, 81ul);
+        if (!isNumber(substr))
+            return handleError();
+
+        const auto val = std::stof(substr);
+        vec[i] = val;
+
+        if (i < size - 1ul)
+        {
+            const auto found = substr.find(',');
+            if (found == std::string::npos)
+                return handleError();
+
+            strIdx += found + 1ul;
         }
 
-        // Move index on next value
-        strIdx += valStr.substr(strIdx).find(',') + 1lu;
+        if (val < lowLim || val > highLim)
+            return handleError();
+
     }
 
-    return { vec[0], vec[1] };
+    return sf::Vector2f(vec[0], vec[1]);
 }
 
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr)
 {
-    std::array<unsigned char, 4> rgba;
-    for (unsigned i = 0, strIdx = 0; i < rgba.size(); ++i)
-    {
-        // std::stoi transforms a string into int until it encounters any non numerical character, such as ','
-        int tmp = std::stoi(valStr.substr(strIdx, 81));
-        float tmpF = static_cast<float>(tmp);
-
-        if ((tmpF < par.mLowLimits || tmpF > par.mHighLimits)
-        && ofErrLog.is_open())
-        {
+    auto handleError = [&] () 
+        { 
             ofErrLog << getOutOfBoundsErrMsg(par);
-            const std::string defVal = par.getDefValStr();
-            return {   
-                static_cast<unsigned char>(std::stoi(defVal)),
-                static_cast<unsigned char>(std::stoi(defVal.substr(defVal.find(',')))),
-                static_cast<unsigned char>(std::stoi(defVal.substr(defVal.find(',')).substr(defVal.find(',')))),
-                static_cast<unsigned char>(std::stoi(defVal.substr(defVal.find(',')).substr(defVal.find(',')).substr(defVal.find(','))))
-            };
-        }
-        rgba[i] = tmp;
+            return readColorParameter(par, par.getDefValStr()); 
+        };
 
-        // If there is no other values
-        if (valStr.substr(strIdx).find(',') == std::string::npos)
+    const auto size = 4ul;
+    sf::Uint8 rgba[size];
+    const auto lowLim = par.mLowLimits, highLim = par.mHighLimits;
+
+    for (auto i = 0ul, strIdx = 0ul; i < size; ++i)
+    {
+        const auto &substr = valStr.substr(strIdx, 81ul);
+
+        if (i <= size - 1ul)
         {
-            // If alpha channel wasn't written
-            if (i < 3) 
+            const auto found = substr.find(',');
+            if (found == std::string::npos && i == size - 1ul)
             {
-                rgba[3] = 255;
-                break;
+                // Alpha channel may be not written
+                if (substr.empty())
+                {
+                    rgba[i] = sf::Uint8(255);
+                    continue;
+                }
+
+                if (!isNumber(substr))
+                    return handleError();
+
+                const auto val = std::stof(substr);
+                rgba[i] = static_cast<sf::Uint8>(val);
+
+                continue;
             }
+            if (found == std::string::npos && ofErrLog.is_open())
+                return handleError();
+                
+            strIdx += found + 1ul;
         }
-        else
-        {
-            // Move index on next value
-            strIdx += valStr.substr(strIdx).find(',') + 1lu;
-        }
+        
+        if (!isNumber(substr))
+            return handleError();
+
+        const auto val = std::stof(substr);
+        rgba[i] = static_cast<sf::Uint8>(val);
+
+        if ((val < lowLim || val > highLim) && ofErrLog.is_open())
+            return handleError();
     }
-    
-    return { rgba[0], rgba[1], rgba[2], rgba[3] };
+
+    return sf::Color(rgba[0], rgba[1], rgba[2], rgba[3]);
 }
 
 bool readBoolParameter(const LogicalParameter &par, const std::string &valStr)
 {
-    // "true" - 4 characters. "false" - 5 characters
-    if (valStr == "true" || valStr == "false"
-    ||  valStr == "True" || valStr == "False"
-    ||  valStr == "TRUE" || valStr == "FALSE")
-    {
-        return valStr.size() == 4;
-    }
+    if (valStr == "true" || valStr == "True" || valStr == "TRUE")
+        return true;
+    else if (valStr == "false" || valStr == "False" || valStr == "FALSE")
+        return false;
     else if (ofErrLog.is_open())
         ofErrLog << getReadingErrMsg(par, "[Bool]");
+    else
+    {
+        // "true" is 4 characters long
+        return par.getDefValStr().size() == 4ul;
+    }
+}
 
-    return par.getDefValStr().size() == 4;
+template <typename T>
+void controlResource(Menu::ParametersContainer &parameters, std::string filepath, 
+    LogicalParameter::ID id, std::string collection)
+{
+    if (filepath != "Default")
+    {
+        if (T resource; !resource.loadFromFile(filepath))
+        {
+            auto found = parameters.find(id);
+            assert(found != parameters.end());
+            auto &parm = *found->second;
+            ofErrLog << getReadingErrMsg(parm, collection);
+            parm.resetToDefaultValue();
+        }
+    }
 }
 
 // Check if passed assets are right
-void controlAssets(std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters)
+void controlAssets(Menu::ParametersContainer &parameters)
 {
-    sf::Texture texture;
-    sf::Font font;
-    const std::string defAssetName = "Default";
-
     // Textures
-    if (Settings::GfxButtonTexturePath != defAssetName)
-        if (!texture.loadFromFile(Settings::GfxButtonTexturePath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second, "[Button graphics]");
-            parameters.find(LogicalParameter::ID::BtnGfxTxtr)->second->resetToDefaultValue();
-        }
-    if (Settings::AnimationTexturePath != defAssetName)
-        if (!texture.loadFromFile(Settings::AnimationTexturePath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second, "[Animation graphics]");
-            parameters.find(LogicalParameter::ID::AnimGfxTxtr)->second->resetToDefaultValue();
-        }
-    if (Settings::BackgroundTexturePath != defAssetName)
-    {
-        if (Settings::BackgroundTexturePath != "GreenscreenBG.png")
-        if (!texture.loadFromFile(Settings::BackgroundTexturePath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BgTxtr)->second, "[Main window]");
-            parameters.find(LogicalParameter::ID::BgTxtr)->second->resetToDefaultValue();
-        }
-    }
+    controlResource<sf::Texture>(parameters, Settings::GfxButtonTexturePath, LogicalParameter::ID::BtnGfxTxtr, "[Button graphics]");
+    controlResource<sf::Texture>(parameters, Settings::AnimationTexturePath, LogicalParameter::ID::AnimGfxTxtr, "[Animation graphics]");
+    if (Settings::BackgroundTexturePath != "GreenscreenBG.png")
+        controlResource<sf::Texture>(parameters, Settings::BackgroundTexturePath, LogicalParameter::ID::BgTxtr, "[Main window]");
 
     // Fonts
-    if (Settings::StatisticsTextFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::StatisticsTextFontPath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::StatTextFont)->second, "[Statistics text]");
-            parameters.find(LogicalParameter::ID::StatTextFont)->second->resetToDefaultValue();
-        }
-    if (Settings::ButtonTextFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::ButtonTextFontPath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::BtnTextFont)->second, "[Button text]");
-            parameters.find(LogicalParameter::ID::BtnTextFont)->second->resetToDefaultValue();
-        }
-    if (Settings::KPSWindowTextFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::KPSWindowTextFontPath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::KPSWndwTxtFont)->second, "[KPS window]");
-            parameters.find(LogicalParameter::ID::KPSWndwTxtFont)->second->resetToDefaultValue();
-        }
-    if (Settings::KPSWindowNumberFontPath != defAssetName)
-        if (!font.loadFromFile(Settings::KPSWindowNumberFontPath))
-        {
-            ofErrLog << getReadingErrMsg(*parameters.find(LogicalParameter::ID::KPSWndwNumFont)->second, "[KPS window]");
-            parameters.find(LogicalParameter::ID::KPSWndwNumFont)->second->resetToDefaultValue();
-        }
+    controlResource<sf::Font>(parameters, Settings::StatisticsTextFontPath, LogicalParameter::ID::StatTextFont, "[Statistics text]");
+    controlResource<sf::Font>(parameters, Settings::ButtonTextFontPath, LogicalParameter::ID::BtnTextFont, "[Button text]");
+    controlResource<sf::Font>(parameters, Settings::KPSWindowTextFontPath, LogicalParameter::ID::KPSWndwTxtFont, "[KPS window]");
+    controlResource<sf::Font>(parameters, Settings::KPSWindowNumberFontPath, LogicalParameter::ID::KPSWndwNumFont, "[KPS window]");
 }
 
 std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visualKeysStr)
@@ -489,7 +583,7 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
             checkStr = btnToStr(button);
         }
             
-        unsigned maxLength = 20;
+        unsigned maxLength = 20u;
         if (visualKeyStr.size() > maxLength || visualKeyStr.size() == 0)
             visualKeyStr = checkStr;
 
@@ -516,9 +610,9 @@ std::queue<LogKey> readKeys(const std::string &keysStr, const std::string &visua
 std::queue<LogKey> oldReadKeys(const std::string &keysStr, const std::string &visualKeysStr)
 {
     std::queue<LogKey> logKeysQueue;
-    unsigned strIdx1 = 0, strIdx2 = 0;
+    unsigned strIdx1 = 0u, strIdx2 = 0u;
 
-    for (unsigned i = 0; strIdx1 < keysStr.size(); ++i)
+    for (unsigned i = 0u; strIdx1 < keysStr.size(); ++i)
     {
         std::string keyStr(keysStr, strIdx1, keysStr.substr(strIdx1).find(','));
         std::string visualKeyStr(visualKeysStr, strIdx2, visualKeysStr.substr(strIdx2).find(','));
@@ -587,10 +681,8 @@ std::queue<LogKey> oldReadButtons(const std::string &buttonsStr, const std::stri
 }
 
 void saveConfig(
-    const std::map<LogicalParameter::ID, std::shared_ptr<LogicalParameter>> &parameters, 
-    const std::map<ParameterLine::ID, std::shared_ptr<ParameterLine>> &parameterLines,
-    const std::vector<std::unique_ptr<Button>> *mKeys,
-    bool saveKeys)
+    const Menu::ParametersContainer &parameters, const Menu::ParameterLinesContainer &parameterLines,
+    const std::vector<std::unique_ptr<Button>> *mKeys, bool saveKeys)
 {
     ofCfg.open(tmpCfgPath);
 
@@ -611,16 +703,12 @@ void saveConfig(
     bool commentsSection = false;
     auto parmPair = parameters.begin();
     auto parmLinePair = parameterLines.begin();
-    int i = 0;
     while (parmPair != parameters.end() || parmLinePair != parameterLines.end())
     {
         using Ptr = std::shared_ptr<LogicalParameter>;
         Ptr parP = parmPair != parameters.end() ? parmPair->second : nullptr;
         Ptr parP2 = parmLinePair != parameterLines.end() ? parmLinePair->second->getParameter() : nullptr;
         Ptr mainParP = nullptr;
-        ++i;
-        if (i >= 127)
-            int a = 5;
 
         if (parP == parP2)
         {
@@ -692,232 +780,548 @@ std::string getKeysStr(const std::vector<std::unique_ptr<Button>> &mKeys, bool r
 } // namespace ConfigHelper
 
 
-std::string getOldParName(std::string_view newParName, std::string_view collection)
+ParameterPath getOldParName(ParameterPath parPath)
 {
-         if (newParName == "Distance between" && collection == "[Statistics text]")
-        return 			   "Statistics text distance";
-    else if (newParName == "Position offset" && collection == "[Statistics text]")
-        return 			   "Statistics text position";
-    else if (newParName == "Number position offset" && collection == "[Statistics text]")
-        return 			   "Statistics value text position";
-    else if (newParName == "Font filepath" && collection == "[Statistics text]")
-        return 			   "Statistics text font";
-    else if (newParName == "Text color" && collection == "[Statistics text]")
-        return 			   "Statistics text color";
-    else if (newParName == "Character size" && collection == "[Statistics text]")
-        return 			   "Statistics text character size";
-    else if (newParName == "Outline thickness" && collection == "[Statistics text]")
-        return 			   "Statistics text outline thickness";
-    else if (newParName == "Outline color" && collection == "[Statistics text]")
-        return 			   "Statistics text outline color";
-    else if (newParName == "Bold" && collection == "[Statistics text]")
-        return 			   "Statistics text bold";
-    else if (newParName == "Italic" && collection == "[Statistics text]")
-        return 			   "Statistics text italic";
-    else if (newParName == "Enabled" && collection == "[Statistics text]")
-        return 			   "Show statistics text";
+    auto newPath = parPath;
 
-    else if (newParName == "Enable advanced mode for text positions" && collection == "[Statistics text advanced settings]")
-        return             "Enable advanced mode for stats text positions";
-    else if (newParName == "KPS text position offset" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics KPS text position";
-    else if (newParName == "Total text position offset" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics total text position";
-    else if (newParName == "BPM text position offset" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics BPM text position";
-    else if (newParName == "Enable advanced mode for number text positions" && collection == "[Statistics text advanced settings]")
-        return             "Enable advanced mode for stats value text positions";
+    if (parPath.collection == "[Statistics text]")
+    {
+        if (parPath.name == "Distance between lines")
+            newPath.name =  "Distance between";
+        else if (parPath.name == "Distance between")
+            newPath.name =       "Statistics text distance";
+        else if (parPath.name == "Position offset")
+            newPath.name =       "Statistics text position";
 
-    else if (newParName == "KPS number text position offset" && collection == "[Statistics text advanced settings]")
-        return             "Statistics KPS value text position";
-    else if (newParName == "Total number text position offset" && collection == "[Statistics text advanced settings]")
-        return             "Statistics total value text position";
-    else if (newParName == "BPM number text position offset" && collection == "[Statistics text advanced settings]")
-        return             "Statistics BPM value text position";
+        else if (parPath.name == "Text position offset")
+            newPath.name =       "Position offset";
 
-    else if (newParName == "Enable advanced mode for text colors" && collection == "[Statistics text advanced settings]")
-        return 			   "Enable advanced mode for stats text colors";
-    else if (newParName == "KPS text color" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics KPS text color";
-    else if (newParName == "Total text color" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics total text color";
-    else if (newParName == "BPM text color" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics BPM text color";
-    else if (newParName == "KPS text character size" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics KPS text character size";
-    else if (newParName == "Total text character size" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics total text character size";
-    else if (newParName == "BPM text character size" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics BPM text character size";
-    else if (newParName == "KPS bold" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics KPS bold";
-    else if (newParName == "Total bold" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics total bold";
-    else if (newParName == "BPM bold" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics BPM bold";
-    else if (newParName == "KPS italic" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics KPS italic";
-    else if (newParName == "Total italic" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics total italic";
-    else if (newParName == "BPM italic" && collection == "[Statistics text advanced settings]")
-        return 			   "Statistics BPM italic";
+        else if (parPath.name == "Value position offset")
+            newPath.name =       "Number position offset";
+        else if (parPath.name == "Number position offset")
+            newPath.name =       "Statistics value text position";
 
-    else if (newParName == "Font filepath" && collection == "[Buttons text]")
-        return 			   "Buttons text font";
-    else if (newParName == "Text color" && collection == "[Buttons text]")
-        return 			   "Buttons text color";
-    else if (newParName == "Character size" && collection == "[Buttons text]")
-        return 			   "Buttons text character size";
-    else if (newParName == "Outline thickness" && collection == "[Buttons text]")
-        return 			   "Buttons text outline thickness";
-    else if (newParName == "Outline color" && collection == "[Buttons text]")
-        return 			   "Buttons text outline color";
-    else if (newParName == "Position offset" && collection == "[Buttons text]")
-        return 			   "Buttons text position";
-    else if (newParName == "Text bounds" && collection == "[Buttons text]")
-        return 			   "Buttons text bounds";
-    else if (newParName == "Bold" && collection == "[Buttons text]")
-        return 			   "Buttons text bold";
-    else if (newParName == "Italic" && collection == "[Buttons text]")
-        return 			   "Buttons text italic";
-    else if (newParName == "Show key labels" && collection == "[Buttons text]")
-        return 			   "Show visual keys";
+        // UP TO DATE
+        // else if (parPath.name == "Fixed position on value variation")
+        // newPath.name = 		 "";
+            
+        else if (parPath.name == "Font filepath")
+            newPath.name =       "Statistics text font";
 
-    // else if (newParName == "Enable advanced mode for separate button text positions" && collection == "[Button text advanced settings]")
-    //     return             "Enable advanced mode for separate button text positions"
-    else if (newParName == "Visual keys text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Buttons visual keys text position";
-    else if (newParName == "Key counters text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Buttons key counters text position";
-    else if (newParName == "KPS text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Buttons KPS text position";
-    else if (newParName == "BPM text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Buttons BPM text position";
-    else if (newParName == "Enable advanced mode for button text position" && collection == "[Buttons text advanced settings]")
-        return 			   "Enable advanced mode for button text positions";
-    else if (newParName == "Button 1 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 1 position";
-    else if (newParName == "Button 2 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 2 position";
-    else if (newParName == "Button 3 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 3 position";
-    else if (newParName == "Button 4 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 4 position";
-    else if (newParName == "Button 5 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 5 position";
-    else if (newParName == "Button 6 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 6 position";
-    else if (newParName == "Button 7 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 7 position";
-    else if (newParName == "Button 8 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 8 position";
-    else if (newParName == "Button 9 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 9 position";
-    else if (newParName == "Button 10 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 10 position";
-    else if (newParName == "Button 11 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 11 position";
-    else if (newParName == "Button 12 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 12 position";
-    else if (newParName == "Button 13 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 13 position";
-    else if (newParName == "Button 14 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 14 position";
-    else if (newParName == "Button 15 text position offset" && collection == "[Buttons text advanced settings]")
-        return 			   "Button text 15 position";
+        else if (parPath.name == "Text color")
+            newPath.name =       "Statistics text color";
 
-    else if (newParName == "Distance" && collection == "[Button graphics]")
-        return 			   "Button distance";
-    else if (newParName == "Texture filepath" && collection == "[Button graphics]")
-        return 			   "Button texture";
-    else if (newParName == "Texture size" && collection == "[Button graphics]")
-        return 			   "Button texture size";
-    else if (newParName == "Texture color" && collection == "[Button graphics]")
-        return 			   "Button texture color";
+        else if (parPath.name == "Character size")
+            newPath.name =       "Statistics text character size";
 
-    // else if (newParName == "Enable advanced mode for button positions" && collection == "[Button graphics advanced settings]")
-    //     return 			   "Enable advanced mode for button positions";
-    else if (newParName == "Button 1 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 1 position";
-    else if (newParName == "Button 2 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 2 position";
-    else if (newParName == "Button 3 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 3 position";
-    else if (newParName == "Button 4 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 4 position";
-    else if (newParName == "Button 5 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 5 position";
-    else if (newParName == "Button 6 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 6 position";
-    else if (newParName == "Button 7 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 7 position";
-    else if (newParName == "Button 8 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 8 position";
-    else if (newParName == "Button 9 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 9 position";
-    else if (newParName == "Button 10 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 10 position";
-    else if (newParName == "Button 11 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 11 position";
-    else if (newParName == "Button 12 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 12 position";
-    else if (newParName == "Button 13 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 13 position";
-    else if (newParName == "Button 14 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 14 position";
-    else if (newParName == "Button 15 position offset" && collection == "[Button graphics advanced settings]")
-        return 			   "Button 15 position";
+        else if (parPath.name == "Outline thickness")
+            newPath.name =       "Statistics text outline thickness";
 
-    else if (newParName == "Animation duration (frames)" && collection == "[Common parameters]")
-        return 			   "Animation frames";
+        else if (parPath.name == "Outline color")
+            newPath.name =       "Statistics text outline color";
 
-    else if (newParName == "Enabled" && collection == "[Light animation]")
-        return             "Light animation enabled";
-    else if (newParName == "Light animation enabled")
-        return             "Light animation";
-    else if (newParName == "Texture filepath" && collection == "[Light animation]")
-        return 			   "Animation texture";
-    else if (newParName == "Scale on click (%)" && collection == "[Light animation]")
-        return 			   "Animation scale on click (%)";
-    else if (newParName == "Color" && collection == "[Light animation]")
-        return 			   "Animation color";
+        else if (parPath.name == "Bold")
+            newPath.name =       "Statistics text bold";
 
-    else if (newParName == "Enabled" && collection == "[Press animation]")
-        return             "Press animation enabled";
-    else if (newParName == "Press animation enabled")
-        return             "Press animation";
-    else if (newParName == "Offset" && collection == "[Press animation]")
-        return 			   "Animation offset";
+        else if (parPath.name == "Italic")
+            newPath.name =       "Statistics text italic";
 
-    else if (newParName == "Background texture filepath" && collection == "[Main window]")
-        return 			   "Background texture";
-    else if (newParName == "Title bar" && collection == "[Main window]")
-        return 			   "Window title bar";
-    else if (newParName == "Bonus size top" && collection == "[Main window]")
-        return 			   "Window bonus size top";
-    else if (newParName == "Bonus size bottom" && collection == "[Main window]")
-        return 			   "Window bonus size bottom";
-    else if (newParName == "Bonus size left" && collection == "[Main window]")
-        return 			   "Window bonus size left";
-    else if (newParName == "Bonus size right" && collection == "[Main window]")
-        return 			   "Window bonus size right";
+        else if (parPath.name == "Enabled")
+            newPath.name =       "Show statistics text";
+    }
 
-    else if (newParName == "Background color" && collection == "[Extra KPS window]")
-        return 			   "KPS Background color";
-    else if (newParName == "Text color" && collection == "[Extra KPS window]")
-        return 			   "KPS text color";
-    else if (newParName == "Number color" && collection == "[Extra KPS window]")
-        return 			   "KPS number color";
-    else if (newParName == "Text font filepath" && collection == "[Extra KPS window]")
-        return 			   "KPS window text font";
-    else if (newParName == "Number font filepaht" && collection == "[Extra KPS window]")
-        return 			   "KPS window number font";
-    else if (newParName == "Top padding" && collection == "[Extra KPS window]")
-        return 			   "KPS top padding";
-    else if (newParName == "Distance between text" && collection == "[Extra KPS window]")
-        return 			   "KPS extra window distance between text";
-    else if (newParName == "Spawn position offset" && collection == "[Key press visualization]")
-        return 			   "Origin";
-    else
-        return "";
+
+
+
+
+    else if (parPath.collection ==  "[Statistics text advanced settings]")
+    {
+        // UP TO DATE
+        // else if (parPath.name == "Enable advanced mode for statistics text")
+        // newPath.name = 		 "";
+
+        // else if (parPath.name == "Enable advanced mode for text positions")
+        //     newPath.name = 		 "DELETED PARAMETER"; //"Enable advanced mode for stats text positions";
+
+        if (parPath.name == "KPS text position offset")
+            newPath.name =  "Statistics KPS text position";
+
+        else if (parPath.name == "KPS value position offset")
+            newPath.name = 		 "KPS number text position offset";
+        else if (parPath.name == "KPS number text position offset")
+            newPath.name = 		 "Statistics KPS value text position";
+
+        // UP TO DATE
+        // else if (parPath.name == "KPS fixed position on value variation")
+        //     newPath.name = 		 "";
+            
+        else if (parPath.name == "KPS text color")
+            newPath.name = 		 "Statistics KPS text color";
+
+        else if (parPath.name == "KPS text character size")
+            newPath.name = 		 "Statistics KPS text character size";
+
+        else if (parPath.name == "KPS bold")
+            newPath.name = 		 "Statistics KPS bold";
+
+        else if (parPath.name == "KPS italic")
+            newPath.name = 		 "Statistics KPS italic";
+
+
+        else if (parPath.name == "Total text position offset")
+            newPath.name = 		 "Statistics total text position";
+
+        else if (parPath.name == "Total value position offset")
+            newPath.name = 		 "Total number text position offset";
+        else if (parPath.name == "Total number text position offset")
+            newPath.name = 		 "Statistics total value text position";
+
+        // UP TO DATE
+        // else if (parPath.name == "Total fixed position on value variation")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "Total text color")
+            newPath.name = 		 "Statistics total text color";
+
+        else if (parPath.name == "Total text character size")
+            newPath.name = 		 "Statistics total text character size";
+
+        else if (parPath.name == "Total bold")
+            newPath.name = 		 "Statistics total bold";
+
+        else if (parPath.name == "Total italic")
+            newPath.name = 		 "Statistics total italic";
+
+
+        else if (parPath.name == "BPM text position offset")
+            newPath.name = 		 "Statistics BPM text position";
+
+        else if (parPath.name == "BPM value position offset")
+            newPath.name = 		 "BPM number text position offset";
+        else if (parPath.name == "BPM number text position offset")
+            newPath.name = 		 "Statistics BPM value text position";
+
+        // UP TO DATE
+        // else if (parPath.name == "BPM fixed position on value variation")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "BPM text color")
+            newPath.name = 		 "Statistics BPM text color";
+
+        else if (parPath.name == "BPM text character size")
+            newPath.name = 		 "Statistics BPM text character size";
+
+        else if (parPath.name == "BPM bold")
+            newPath.name = 		 "Statistics BPM bold";
+
+        else if (parPath.name == "BPM italic")
+            newPath.name = 		 "Statistics BPM italic";
+
+        // DELETED PARAMETER
+        // else if (parPath.name == "Enable advanced mode for number text positions")
+        //     newPath.name = 		 "Enable advanced mode for stats value text positions";
+
+        // DELETED PARAMETER
+        // else if (parPath.name == "Enable advanced mode for text colors")
+        //     newPath.name = 		 "Enable advanced mode for stats text colors";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Statistics text strings]")
+    {
+        if (parPath.name == "KPS text" 
+        ||  parPath.name == "Total text" 
+        ||  parPath.name == "BPM text")
+        {
+            newPath.collection = "[Statistics text advanced settings]";
+        }
+
+        else if (parPath.name == "KPS text when 0")
+        {
+            newPath.name = "KPS text when it is 0";
+            newPath.collection = "[Statistics text advanced settings]";
+        }        
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Buttons text]")
+    {
+             if (parPath.name == "Font filepath")
+            newPath.name = 		 "Buttons text font";
+
+        else if (parPath.name == "Text color")
+            newPath.name = 		 "Buttons text color";
+
+        else if (parPath.name == "Character size")
+            newPath.name = 		 "Buttons text character size";
+
+        else if (parPath.name == "Outline thickness")
+            newPath.name = 		 "Buttons text outline thickness";
+
+        else if (parPath.name == "Outline color")
+            newPath.name = 		 "Buttons text outline color";
+
+        else if (parPath.name == "Position offset")
+            newPath.name = 		 "Buttons text position";
+
+        else if (parPath.name == "Text bounds")
+            newPath.name = 		 "Buttons text bounds";
+        
+        // UP TO DATE
+        // else if (parPath.name == "Ignore button movement")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "Bold")
+            newPath.name = 		 "Buttons text bold";
+
+        else if (parPath.name == "Italic")
+            newPath.name = 		 "Buttons text italic";
+
+        else if (parPath.name == "Show key labels")
+            newPath.name = 		 "Show visual keys";
+
+        else if (parPath.name == "Visual keys text position offset")
+        {
+            newPath.name = 		 "Visual keys text position offset";
+            newPath.collection = "[Buttons text advanced settings]";
+        }
+
+        // UP TO DATE
+        // else if (parPath.name == "Show key counters")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "Key counters text position offset")
+        {
+            newPath.name = 		 "Key counters text position offset";
+            newPath.collection = "[Buttons text advanced settings]";
+        }
+
+        // UP TO DATE
+        // else if (parPath.name == "Show key KPS")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "KPS text position offset")
+        {
+            newPath.name = 		 "KPS text position offset";
+            newPath.collection = "[Buttons text advanced settings]";
+        }
+
+        // UP TO DATE
+        // else if (parPath.name == "Show key BPM")
+        //     newPath.name = 		 "";
+
+        else if (parPath.name == "BPM text position offset")
+        {
+            newPath.name = 		 "BPM text position offset";
+            newPath.collection = "[Buttons text advanced settings]";
+        }
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Buttons text advanced settings]")
+    {
+        if (parPath.name == "Enable advanced mode for separate button value positions")
+            newPath.name = 	"Enable advanced mode for separate button text positions";
+        else if (parPath.name == "Enable advanced mode for button text positions")
+            newPath.name = 		 "Enable advanced mode for button text position";
+
+        else if (parPath.name == "Visual keys text position offset")
+            newPath.name =       "Buttons visual keys text position";
+
+        else if (parPath.name == "Key counters text position offset")
+            newPath.name =       "Buttons key counters text position";
+
+        else if (parPath.name == "KPS text position offset")
+            newPath.name =       "Buttons KPS text position";
+
+        else if (parPath.name == "BPM text position offset")
+            newPath.name =       "Buttons BPM text position";
+
+        // 1 - 20 ARE UP TO DATE
+        // if (parPath.name == "1. Visual key text position offset: 0,0")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Key counter text position offset: 0,0")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. KPS text position offset: 0,0")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. BPM text position offset: 0,0")
+        //     newPath.name = 		 "";
+
+
+        // 1 - 15 ARE REFACTORED PARAMETERS. FUNCTIONALITY CHANGED
+        // else if (parPath.name == "Button 1 text position offset")
+        //     newPath.name = 		 "Button text 1 position";
+
+        // UP TO DATE
+        // else if (parPath.name == "Enable advanced mode for button text positions")
+        //     newPath.name = 		 ""
+        // 1 - 20 ARE UP TO DATE
+        // if (parPath.name == "1. Text color")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Character size")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Outline thickness")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Outline color")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Text bounds")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Bold")
+        //     newPath.name = 		 "";
+        // UP TO DATE
+        // if (parPath.name == "1. Italic")
+        //     newPath.name = 		 "";
+
+        // v0.2< supported only 15 keys, not 20
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Position offset"); 
+            n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
+        {
+            newPath.name = "Button text " + std::to_string(n) + " position";
+        }
+    }
+
+    else if (parPath.collection == "[Button graphics]")
+    {
+        if (parPath.name == "Distance between buttons")
+            newPath.name = 	"Distance";
+        else if (parPath.name == "Distance")
+            newPath.name = 		 "Button distance";
+
+        else if (parPath.name == "Texture filepath")
+            newPath.name = 		 "Button texture";
+
+        else if (parPath.name == "Texture size")
+            newPath.name = 		 "Button texture size";
+
+        else if (parPath.name == "Texture color")
+            newPath.name = 		 "Button texture color";
+    }
+
+    else if (parPath.collection == "[Button graphics advanced settings]")
+    {
+        if (parPath.name == "Enable advanced mode for button graphics")
+            newPath.name = 	"Enable advanced mode for button positions";
+        
+        // v0.2< supported only 15 keys, not 20
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Position offset"); 
+            n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
+        {
+            newPath.name = "Button " + std::to_string(n) + " position offset";
+        }
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "Button @ position offset"); 
+            n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
+        {
+            newPath.name = "Button " + std::to_string(n) + " position";
+        }
+
+        // v0.2< supported only 15 keys, not 20
+        else if (const auto n = Utility::retrieveNumber(parPath.name, "@. Size"); 
+            n != -1 && n <= static_cast<int>(Settings::OldSupportedAdvancedKeysNumber))
+        {
+            newPath.name = "Button " + std::to_string(n) + " size";
+        }
+
+        // 1 - 20 ARE UP TO DATE
+        // else if (parPath.name == "1. Position offset")
+        // newPath.name = 		 "";
+        // else if (parPath.name == "1. Color")
+        // newPath.name = 		 "";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Common parameters]")
+    {
+        if (parPath.name == "Animation duration (frames)")
+        {
+            newPath.name = 	"Animation frames";
+            newPath.collection = "[Animation graphics]";
+        }
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Light animation]")
+    {
+        if (parPath.name == "Enabled")
+            newPath.name =  "Light animation enabled";
+        else if (parPath.name == "Light animation enabled")
+        {
+            newPath.name = 		 "Light animation";
+            newPath.collection = "[Animation graphics]";
+        }
+
+        else if (parPath.name == "Texture filepath")
+        {
+            newPath.name = 		 "Animation texture";
+            newPath.collection = "[Animation graphics]";
+        }
+
+        else if (parPath.name == "Scale on click (%)")
+        {
+            newPath.name = 		 "Animation scale on click (%)";
+            newPath.collection = "[Animation graphics]";
+        }
+
+        else if (parPath.name == "Color")
+        {
+            newPath.name = 		 "Animation color";
+            newPath.collection = "[Animation graphics]";
+        }
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Press animation]")
+    {
+        if (parPath.name == "Enabled")
+            newPath.name = 	"Press animation enabled";
+        else if (parPath.name == "Press animation enabled")
+        {
+            newPath.name = 		 "Press animation";
+            newPath.collection = "[Animation graphics]";
+        }
+
+        else if (parPath.name == "Offset")
+        {
+            newPath.name = 		 "Animation offset";
+            newPath.collection = "[Animation graphics]";
+        }
+    }
+
+    else if (parPath.collection == "[Main window]")
+    {
+        if (parPath.name == "Background texture filepath")
+            newPath.name = 	"Background texture";
+
+        else if (parPath.name == "Title bar")
+            newPath.name = 		 "Window title bar";
+
+        else if (parPath.name == "Bonus size top")
+            newPath.name = 		 "Window bonus size top";
+
+        else if (parPath.name == "Bonus size bottom")
+            newPath.name = 		 "Window bonus size bottom";
+
+        else if (parPath.name == "Bonus size left")
+            newPath.name = 		 "Window bonus size left";
+
+        else if (parPath.name == "Bonus size right")
+            newPath.name = 		 "Window bonus size right";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Extra KPS window]")
+    {
+        if (parPath.name == "Background color")
+            newPath.name =  "KPS Background color";
+
+        else if (parPath.name == "Text color")
+            newPath.name = 		 "KPS text color";
+
+        else if (parPath.name == "Number color")
+            newPath.name = 		 "KPS number color";
+
+        else if (parPath.name == "Text font filepath")
+            newPath.name = 		 "KPS window text font";
+
+        else if (parPath.name == "Number font filepaht")
+            newPath.name = 		 "KPS window number font";
+
+        else if (parPath.name == "Top padding")
+            newPath.name = 		 "KPS top padding";
+
+        else if (parPath.name == "Distance between text")
+            newPath.name = 		 "KPS extra window distance between text";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Key press visualization]")
+    {
+        if (parPath.name == "Spawn position offset")
+            newPath.name = 	"Origin";
+            
+        // UP TO DATE
+        // if (parPath.name == "Enabled")
+        //     newPath.name = 		 "";
+        // if (parPath.name == "Speed")
+        //     newPath.name = 		 "";
+        // if (parPath.name == "Movement rotation")
+        //     newPath.name = 		 "";
+        // if (parPath.name == "Fade out distance")
+        //     newPath.name = 		 "";
+        // if (parPath.name == "Spawn position offset")
+        //     newPath.name = 		 "";
+        // if (parPath.name == "Color")
+        //     newPath.name = 		 "";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Key press visualization advanced settings]")
+    {
+        // UP TO DATE
+        //      if (parPath.name == "Enable advanced mode for key press visualization")
+        //     newPath.name = 		 "";
+        // else if (parPath.name == "1. Speed")
+        //     newPath.name = 		 "";
+        // else if (parPath.name == "1. Rotation")
+        //     newPath.name = 		 "";
+        // else if (parPath.name == "1. Fade line length")
+        //     newPath.name = 		 "";
+        // else if (parPath.name == "1. Spawn position offset")
+        //     newPath.name = 		 "";
+        // else if (parPath.name == "1. Color")
+        //     newPath.name = 		 "";
+    }
+
+
+
+
+
+    else if (parPath.collection == "[Other]")
+    {
+        if (parPath.name == "Value to multiply on click")
+            newPath.collection = "[Theme developer]";
+    }
+
+
+
+
+
+    if (newPath == parPath)
+        newPath = ParameterPath();
+
+    return newPath;
 }

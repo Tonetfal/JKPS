@@ -31,12 +31,16 @@ void Button::processInput()
 
 void Button::reset()
 {
+    const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
+    const auto advMode = isInSupportedRange && Settings::ButtonTextAdvancedMode;
+    const auto chSz = !advMode ? Settings::ButtonTextCharacterSize : Settings::ButtonTextAdvCharacterSize[mBtnIdx];
+
     LogButton::reset();
     setTextStrings();
     // text could be too large, but if everything was reset then original ch size must be set and controlled
     for (auto &text : mTexts)
     {
-        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        text->setCharacterSize(chSz);
         GfxButton::keepInBounds(*text);
     }
     GfxButton::centerOrigins();
@@ -44,19 +48,23 @@ void Button::reset()
 
 void Button::setTextStrings()
 {
-    const bool lAlt = sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
-    const bool advMode = Settings::ButtonTextSepPosAdvancedMode;
+    const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
+    const auto advMode = isInSupportedRange && Settings::ButtonTextAdvancedMode;
+    const auto chSz = !advMode ? Settings::ButtonTextCharacterSize : Settings::ButtonTextAdvCharacterSize[mBtnIdx];
+
+    const auto lAlt = Settings::ShowOppOnAlt && sf::Keyboard::isKeyPressed(sf::Keyboard::LAlt);
+    const auto sepValAdvMode = isInSupportedRange && Settings::ButtonTextSepPosAdvancedMode;
 
     if (Settings::ButtonTextShowVisualKeys) 
     {
-        if ((!lAlt) || (lAlt && advMode && Settings::ButtonTextShowTotal))
+        if ((!lAlt) || (lAlt && sepValAdvMode && Settings::ButtonTextShowTotal))
             mTexts[VisualKey]->setString(LogButton::mKey.visualStr);
         else
             mTexts[VisualKey]->setString(std::to_string(LogButton::mTotal));
     }
     if (Settings::ButtonTextShowTotal)
     {
-        if ((!lAlt) || (lAlt && advMode && Settings::ButtonTextShowVisualKeys))
+        if ((!lAlt) || (lAlt && sepValAdvMode && Settings::ButtonTextShowVisualKeys))
             mTexts[KeyCounter]->setString(std::to_string(LogButton::mTotal));
         else
             mTexts[KeyCounter]->setString(LogButton::mKey.visualStr);
@@ -73,7 +81,7 @@ void Button::setTextStrings()
 
     for (auto &text : mTexts)
     {
-        text->setCharacterSize(Settings::ButtonTextCharacterSize);
+        text->setCharacterSize(chSz);
         GfxButton::keepInBounds(*text);
     }
     GfxButton::centerOrigins();
@@ -81,10 +89,14 @@ void Button::setTextStrings()
 
 void Button::controlBounds()
 {
+    const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
+    const auto advMode = isInSupportedRange && Settings::ButtonTextAdvancedMode;
+    const auto chSz = !advMode ? Settings::ButtonTextCharacterSize : Settings::ButtonTextAdvCharacterSize[mBtnIdx];
+
     for (auto &text : mTexts)
     {
         if (LogButton::mKey.resetChangedState())
-            text->setCharacterSize(Settings::ButtonTextCharacterSize);
+            text->setCharacterSize(chSz);
 
         GfxButton::keepInBounds(*text);
     }
@@ -114,6 +126,20 @@ unsigned Button::size()
 
 bool Button::parameterIdMatches(LogicalParameter::ID id)
 {
+    const auto idU = static_cast<unsigned>(id);
+    
+    const auto textSepValAdvParms = 4ul;
+    const auto firstTextSepValAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnTextAdvVisPosition1);
+    const auto lastTextSepValAdvPar = firstTextSepValAdvPar + textSepValAdvParms * Settings::SupportedAdvancedKeysNumber - 1u;
+
+    const auto textAdvParms = 8ul;
+    const auto firstTextAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnTextAdvClr1);
+    const auto lastTextAdvPar = firstTextAdvPar + textAdvParms * Settings::SupportedAdvancedKeysNumber - 1u;
+
+    const auto gfxBtnAdvParms = 3ul;
+    const auto firstGfxBtnAdvPar = static_cast<unsigned>(LogicalParameter::ID::BtnGfxBtnPos1);
+    const auto lastGfxBtnAdvPar = firstGfxBtnAdvPar + gfxBtnAdvParms * Settings::SupportedAdvancedKeysNumber - 1u;
+
     return 
         id == LogicalParameter::ID::BtnTextClr ||
         id == LogicalParameter::ID::BtnTextChSz ||
@@ -131,70 +157,25 @@ bool Button::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::BtnTextTotPosition ||
         id == LogicalParameter::ID::BtnTextKPSPosition ||
         id == LogicalParameter::ID::BtnTextBPMPosition ||
+
         id == LogicalParameter::ID::BtnGfxDist ||
         id == LogicalParameter::ID::BtnGfxTxtrSz ||
         id == LogicalParameter::ID::BtnGfxTxtrClr ||
+
         id == LogicalParameter::ID::AnimGfxVel ||
         id == LogicalParameter::ID::AnimGfxScl ||
         id == LogicalParameter::ID::AnimGfxClr ||
         id == LogicalParameter::ID::AnimGfxOffset ||
+
         id == LogicalParameter::ID::MainWndwTop ||
         id == LogicalParameter::ID::MainWndwBot ||
         id == LogicalParameter::ID::MainWndwLft ||
         id == LogicalParameter::ID::MainWndwRght ||
+
         id == LogicalParameter::ID::BtnGfxTxtrClr ||
         id == LogicalParameter::ID::BtnTextPosAdvMode ||
-        id == LogicalParameter::ID::BtnTextPos1 ||
-        id == LogicalParameter::ID::BtnTextPos2 ||
-        id == LogicalParameter::ID::BtnTextPos3 ||
-        id == LogicalParameter::ID::BtnTextPos4 ||
-        id == LogicalParameter::ID::BtnTextPos5 ||
-        id == LogicalParameter::ID::BtnTextPos6 ||
-        id == LogicalParameter::ID::BtnTextPos7 ||
-        id == LogicalParameter::ID::BtnTextPos8 ||
-        id == LogicalParameter::ID::BtnTextPos9 ||
-        id == LogicalParameter::ID::BtnTextPos10 ||
-        id == LogicalParameter::ID::BtnTextPos11 ||
-        id == LogicalParameter::ID::BtnTextPos12 ||
-        id == LogicalParameter::ID::BtnTextPos13 ||
-        id == LogicalParameter::ID::BtnTextPos14 ||
-        id == LogicalParameter::ID::BtnTextPos15 ||
-        id == LogicalParameter::ID::BtnGfxDist ||
-        id == LogicalParameter::ID::BtnGfxTxtr ||
-        id == LogicalParameter::ID::BtnGfxTxtrSz ||
-        id == LogicalParameter::ID::BtnGfxTxtrClr ||
-        id == LogicalParameter::ID::BtnGfxBtnPosAdvMode ||
-        id == LogicalParameter::ID::BtnGfxSzAdvMode ||
-        id == LogicalParameter::ID::BtnGfxBtnPos1 ||
-        id == LogicalParameter::ID::BtnGfxSz1 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos2 ||
-        id == LogicalParameter::ID::BtnGfxSz2 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos3 ||
-        id == LogicalParameter::ID::BtnGfxSz3 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos4 ||
-        id == LogicalParameter::ID::BtnGfxSz4 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos5 ||
-        id == LogicalParameter::ID::BtnGfxSz5 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos6 ||
-        id == LogicalParameter::ID::BtnGfxSz6 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos7 ||
-        id == LogicalParameter::ID::BtnGfxSz7 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos8 ||
-        id == LogicalParameter::ID::BtnGfxSz8 ||
-        id == LogicalParameter::ID::BtnGfxBtnPos9 ||
-        id == LogicalParameter::ID::BtnGfxSz9 ||
-        id == LogicalParameter::ID::BtnGfxBtnos10 ||
-        id == LogicalParameter::ID::BtnGfxSz10 ||
-        id == LogicalParameter::ID::BtnGfxBtnos11 ||
-        id == LogicalParameter::ID::BtnGfxSz11 ||
-        id == LogicalParameter::ID::BtnGfxBtnos12 ||
-        id == LogicalParameter::ID::BtnGfxSz12 ||
-        id == LogicalParameter::ID::BtnGfxBtnos13 ||
-        id == LogicalParameter::ID::BtnGfxSz13 ||
-        id == LogicalParameter::ID::BtnGfxBtnos14 ||
-        id == LogicalParameter::ID::BtnGfxSz14 ||
-        id == LogicalParameter::ID::BtnGfxBtnos15 ||
-        id == LogicalParameter::ID::BtnGfxSz15 ||
-        id == LogicalParameter::ID::KeyPressVisRotation ||
-        id == LogicalParameter::ID::KeyPressVisFadeLineLen;
+        id == LogicalParameter::ID::BtnGfxAdvMode ||
+        (idU >= firstTextSepValAdvPar && idU <= lastTextSepValAdvPar) ||
+        (idU >= firstTextAdvPar && idU <= lastTextAdvPar) ||
+        (idU >= firstGfxBtnAdvPar && idU <= lastGfxBtnAdvPar);
 }

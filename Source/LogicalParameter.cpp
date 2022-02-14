@@ -14,6 +14,17 @@ LogicalParameter::LogicalParameter(Type type, void *valPtr, const std::string &p
 , mChanged(false)
 , mDefValStr(defVal)
 { 
+    if (type != Type::Bool && type != Type::String && type != Type::StringPath)
+    {
+        if (defVal.find(' ') != std::string::npos)
+        {
+            std::cerr << "LogicalParameter - parName \"" 
+                + parName + "\"" + " defVal \"" 
+                + defVal + "\" has a space" << std::endl;
+            exit(1);
+        }
+    }
+
     if (type == Type::Color)
         this->mHighLimits = 255;
     if (val == "") 
@@ -88,7 +99,7 @@ void LogicalParameter::setColor(sf::Color color)
 void LogicalParameter::setColor(const std::string &str, unsigned idx)
 {
     assert(mType == Type::Color);
-    assert(idx >= 0u && idx <= 3u);
+    assert(idx <= 3u);
 
     unsigned char c = static_cast<unsigned char>(std::stoi(str));
     switch (idx)

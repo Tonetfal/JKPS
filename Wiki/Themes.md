@@ -11,53 +11,53 @@ To make your own theme you have to provide textures and fonts which you should p
 
 # Themes
 
-These themes may be compatible only with the newest version, if you want to use an old program version then you should look up [here](https://www.dropbox.com/sh/198quwutazjbpza/AADUHDhlNqCA5mYhUh1D0GDZa?dl=0) for old themes.
+These themes may be compatible only with the newest version (v0.2), if you want to use an old program version then you should look up [here](https://www.dropbox.com/sh/198quwutazjbpza/AADUHDhlNqCA5mYhUh1D0GDZa?dl=0) for old themes.
 Themes are in order from new to old (click the name to download)
 
-# [Celestial blue](https://www.dropbox.com/sh/y2zk1t6r4up5lm4/AABYPECmQVpSBCNGgCWuUm_Ra?dl=1)
+# [Celestial blue](https://www.dropbox.com/sh/flhk3wfkkrprozv/AAD9N9o923M-wR3XUorQ_YYua?dl=1)
 ![](Previews/celestial-blue-preview.gif)
 
-# [White-orange 2 with visualization](https://www.dropbox.com/sh/9nonxq681o9rrr6/AABdmxWozVlrleDkQ6O6PkT8a?dl=1)
+# [White-orange 2 with visualization](https://www.dropbox.com/sh/5t3uj4obbsslnhe/AAADDMnDLcMKmCaJng_R3T1qa?dl=1)
 ![](Previews/white-orange-2-with-visualization.gif)
 
-# [7k&4k mania white-orange 2](https://www.dropbox.com/sh/whkvbird34qbc7c/AADQbhes52j56_E2UAseeZ1ja?dl=1)
+# [7k&4k mania white-orange 2](https://www.dropbox.com/sh/h49chtcu9oad2mz/AAB0xlhibL3kgeWtvj0_iL5Ca?dl=1)
 ![](Previews/7k-4k-mania-white-orange-2-preview.gif)
 
-# [7k mania white-orange 2](https://www.dropbox.com/sh/8h530utysuqszy7/AAD2b72y1F9WMKc_IqwyQeuIa?dl=1)
+# [7k mania white-orange 2](https://www.dropbox.com/sh/pia9g93ob3h2ydz/AADoV0OMtyywP5i2iYLvou2ia?dl=1)
 ![](Previews/7k-mania-white-orange-2-preview.gif)
 
-# [ADOFAI white-orange 2](https://www.dropbox.com/sh/o62t0r0c603cn0p/AADEYccFL6HlcSlJRCHnDInVa?dl=1)
+# [ADOFAI white-orange 2](https://www.dropbox.com/sh/xsrxrafkhhmqf9i/AABgyF208tdAu7mluolD03aPa?dl=1)
 ![](Previews/adofai-white-orange-2-preview.gif)
 
-# [White-orange 2](https://www.dropbox.com/sh/jzil6gmlok0mt8d/AACs17TOTEJdQc2RvoHN0ouEa?dl=1)
+# [White-orange 2](https://www.dropbox.com/sh/0wkugdeedof5qnh/AAAJO9edMXeoKRlLw_3LqHGda?dl=1)
 ![](Previews/white-orange-2-preview.gif)
 
-# [Red-violet](https://www.dropbox.com/sh/pmsxo61jsif8zum/AACBBLRm5YaIWuJYbkSMPjR4a?dl=1)
+# [Red-violet](https://www.dropbox.com/sh/xtcwnm762uf1jrr/AACDLwaT7NzYTa4X0bTwa7I6a?dl=1)
 ![](Previews/red-violet-preview.gif)
 
-# [Dark minimalistic 2 nano](https://www.dropbox.com/sh/m1nddmxcui97v22/AACZw8PJL_RlM_HJjcmmg81Ka?dl=1)
+# [Dark minimalistic 2 nano](https://www.dropbox.com/sh/l0rlty6ocqivm48/AABIOik6kaPy4RFD9MFZmapNa?dl=1)
 ![](Previews/dark-minimalistic-2-nano-preview.gif)
 
-# [Dark minimalistic 2](https://www.dropbox.com/sh/thgf4yjiubkj8wg/AABT5hbL8FYXAMffmjS_taVNa?dl=1)
+# [Dark minimalistic 2](https://www.dropbox.com/sh/rbv7bs1nzdv3pv7/AAB3zdOm8O5T2iSQEWZulZZOa?dl=1)
 ![](Previews/dark-minimalistic-2-preview.gif)
 
-# [Dark minimalistic nano](https://www.dropbox.com/sh/1fus2hmx0xn4s4r/AACGesu7riyDYFL3oDxAil3Ua?dl=1)
+# [Dark minimalistic nano](https://www.dropbox.com/sh/ivabmjhai7jbnnd/AAB0NY464iQudW5pNUMRAHy5a?dl=1)
 ![](Previews/dark-minimalistic-1-nano-preview.gif)
 
-# [Dark minimalistic](https://www.dropbox.com/sh/iz8637rh7uc9e5v/AACWHes5YbG5NbIe2zXp8UfYa?dl=1)
+# [Dark minimalistic](https://www.dropbox.com/sh/kv6tbii4n7pzy4z/AACYqI3LUiBG9kpOBmNvyPhGa?dl=1)
 ![](Previews/dark-minimalistic-1-preview.gif)
 
-# [Medieval](https://www.dropbox.com/sh/ezpe13l6hk5fyc1/AACzzbsbTBzTcbAa6d_XNwzoa?dl=1)
+# [Medieval](https://www.dropbox.com/sh/7gacclbkf277qcl/AAAi2mscYILZtGOqqtc8GGgXa?dl=1)
 ![](Previews/medieval-preview.gif)
 
-# [Modern purple](https://www.dropbox.com/sh/n6zeuqkiuvx0xpw/AAD6tINJ74vpgFv8PGdXhslTa?dl=1)
+# [Modern purple](https://www.dropbox.com/sh/1c8lozwtlgprc80/AAB2ddxcMtl92Vv3XLbhNIAea?dl=1)
 ![](Previews/modern-purple-preview.gif)
 
-# [White-orange](https://www.dropbox.com/sh/mlc3jiedl21renv/AAAJ-w92Q5uF59-ZCq-5PyPEa?dl=1)
+# [White-orange](https://www.dropbox.com/sh/mvclkiwjmt990m6/AABZsCw9D8PDGT08cwvXDKTWa?dl=1)
 ![](Previews/white-orange-1-preview.gif)
 
-# [Dark-violet](https://www.dropbox.com/sh/miv1kmbir7ua5cb/AAAtHTxx8YiUu0CBAHtkaKKFa?dl=1)
+# [Dark-violet](https://www.dropbox.com/sh/kkzkxbo5x85wf7j/AAD4rssz6Uq1hAeOjHdoUaDpa?dl=1)
 ![](Previews/dark-violet-preview.gif)
 
-# [Dark classic](https://www.dropbox.com/sh/g1806zg7kifawuq/AABEIi6sPCSGpwgvmEIMXRABa?dl=1)
+# [Dark classic](https://www.dropbox.com/sh/buqshi9vvcd8n0x/AADA6TiA4cv2GknTgVx1WWiYa?dl=1)
 ![](Previews/dark-classic-preview.gif)

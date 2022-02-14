@@ -42,10 +42,9 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         void updateAssets();
         void updateParameters();
 
-        static void setShowBounds(bool b);
+        static void setShowBounds(bool flag, int idx = -1);
         static float getWidth(unsigned idx);
         static float getHeight(unsigned idx);
-        static sf::Vector2f getTextCenter(const sf::Text &text);
         static TextID getTextIdToDisplay();
 
         virtual ~GfxButton();
@@ -82,7 +81,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         {
             public:
                 // RectEmitter(const sf::Texture &texture);
-                RectEmitter();
+                RectEmitter(unsigned btnIdx);
 
                 void update(bool keyState, bool prevKeyState);
                 void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -101,6 +100,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
 
 
             private:
+                const unsigned mBtnIdx;
                 // const sf::Texture &mTexture;
                 sf::Vector2f mTextureScale;
                 sf::VertexArray mMiddleVertecies;
@@ -111,7 +111,6 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 std::vector<sf::Text> mTexts;
                 sf::Vector2f mEmitterPosition;
                 sf::Vector2f mLastRectSize;
-
         };
 
 
@@ -120,6 +119,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
         const FontHolder &mFonts;
         RectEmitter mEmitter;
         sf::RectangleShape mBounds;
+        static int mSelectedKeyBounds;
 
         bool mLastKeyState;
 
