@@ -56,6 +56,7 @@ Click with **right mouse button** on the button to edit it
 # Notes
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with greenscreen write **"GreenscreenBG.png"** in **"Main window" -> "Background texture filepath"** and press Enter or Refresh button.
+- If the lags only in OBS then close its menu.
 - For Linux users: [**SFML 2.5.1**](https://www.sfml-dev.org/) must be installed.
 
 # [Themes](Wiki/Themes.md)
@@ -81,8 +82,6 @@ Click with **right mouse button** on the button to edit it
 [Download](https://github.com/JekiTheMonkey/JKPS/releases/)
 
 [Themes](Wiki/Themes.md)
-
-[Patreon](https://www.patreon.com/jekithemonkey)
 
 # License
 Licensed under the [MIT License](LICENSE).
