@@ -401,7 +401,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     std::vector<size_t> toRemove;
 
     const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
-    const auto advMode = isInSupportedRange && Settings::GfxButtonAdvancedMode;
+    const auto advMode = isInSupportedRange && Settings::KeyPressVisAdvSettingsMode;
     const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
         Settings::KeyPressVisAdvSpeed[mBtnIdx];
     const auto speed = -origSpeed / 10.f;
@@ -415,8 +415,8 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
         auto eachVertexIsOnLimit = true;
 
         // Iterate through all the rectangle vertices
-        const auto vertexIndex = i * 4lu;
-        for (size_t j = vertexIndex; j < vertexIndex + 4lu; ++j)
+        const auto vertexIndex = i * 4ul;
+        for (auto j = vertexIndex; j < vertexIndex + 4ul; ++j)
         {
             // Take vertex reference
             // auto &topSideVertex = mTopVertecies[j];
@@ -470,10 +470,10 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     // If a button is pressed don't let the spawning rectangle go away from the spawn point
     if (keyState)
     {
-        const auto offset = mUsedRectIndices.back() * 4;
+        const auto offset = mUsedRectIndices.back() * 4ul;
 
-        mMiddleVertecies[offset + 2].position.y = 
-        mMiddleVertecies[offset + 3].position.y -= speed;
+        mMiddleVertecies[offset + 2ul].position.y = 
+        mMiddleVertecies[offset + 3ul].position.y -= speed;
 
         // mBottomVertecies[offset + 0].position.y = 
         // mBottomVertecies[offset + 1].position.y -= speed;
@@ -487,8 +487,8 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     {
         const auto offset = mUsedRectIndices.back() * 4ul;
 
-        mMiddleVertecies[offset + 2].position.y = 
-        mMiddleVertecies[offset + 3].position.y -= speed;
+        mMiddleVertecies[offset + 2ul].position.y = 
+        mMiddleVertecies[offset + 3ul].position.y -= speed;
     }
 }
 

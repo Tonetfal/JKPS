@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_CXX_STANDARD 17)
 
-project(JKPS CXX) 
+project(JKPS CXX)
 
 file(GLOB PROJECT_SOURCE_DIR "Source")
 include_directories(${PROJECT_SOURCE_DIR})
@@ -30,7 +30,10 @@ target_compile_options(
     -Wsign-promo
 )
 
+
+
 target_compile_definitions(${PROJECT_NAME} PRIVATE COMPILE_FLAGS)
+target_compile_definitions(${PROJECT_NAME} PUBLIC PROGRAM_VERSION="0.3")
 
 find_package(Threads)
 find_package(SFML 2.5 COMPONENTS system window graphics REQUIRED)

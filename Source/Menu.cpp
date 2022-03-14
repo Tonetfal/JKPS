@@ -14,8 +14,6 @@
 #include <limits.h>
 
 
-std::string Menu::mProgramVersion("v0.2");
-
 Menu::Menu()
 : mScrollSpeed(40.f)
 , mSliderBar(sf::Vector2f(10.f, 200.f))
@@ -199,7 +197,7 @@ void Menu::handleEvent()
             const auto key = event.key;
             if (key.code == sf::Keyboard::Tab)
             {
-                const auto lCtrl = key.code;
+                const auto lCtrl = key.control;
                 const auto lShift = key.shift;
 
                 // Tab forward
@@ -856,7 +854,7 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Alt (hold) - Show opposite buttons values"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version: " + mProgramVersion));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version: " + std::string(PROGRAM_VERSION)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ProgramVersion, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
