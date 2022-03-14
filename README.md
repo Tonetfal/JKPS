@@ -43,7 +43,7 @@ Click with **right mouse button** on the button to edit it
 
 **Tab** - Change cursor on next value (if there is any)
 
-**Tab + Shift** - Change cursor on previous value (if there is any)
+**Shift + Tab** - Change cursor on previous value (if there is any)
 
 **Ctrl + Tab** - Forward tabulation
 
@@ -56,7 +56,7 @@ Click with **right mouse button** on the button to edit it
 # Notes
 - Capture the program as a game in OBS, not as a window.
 - To make the program work with greenscreen write **"GreenscreenBG.png"** in **"Main window" -> "Background texture filepath"** and press Enter or Refresh button.
-- If the lags only in OBS then close its menu.
+- If the program lags only in OBS then close its menu.
 - For Linux users: [**SFML 2.5.1**](https://www.sfml-dev.org/) must be installed.
 
 # [Themes](Wiki/Themes.md)
