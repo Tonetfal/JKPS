@@ -140,5 +140,4 @@ class Menu
         ChangedParametersQueue mChangedParametersQueue;
 
         static bool paramValWasChanged;
-        static std::string mProgramVersion;
 };

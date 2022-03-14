@@ -6,21 +6,21 @@
 #include <SFML/Window/Event.hpp>
 
 
-float Palette::mDistance(0.3f);
+float Palette::mDistance(0.2f);
 
 Palette::Palette(int)
-: mWindowOffset(10.f, 20.f)
+: mWindowOffset(5.f, 10.f)
 , mLineSize(mLine.size())
 , mNormilizedMousePos(0.f, 0.f)
 , mIndicatorColor(sf::Color::White)
-, mLineElemIdx(mLineSize - 1)
+, mLineElemIdx(0)
 , wasButtonPressedOnLine(false)
 , wasButtonPressedOnCanvas(false)
 {
     mWindow.setFramerateLimit(60);
 
     auto color = sf::Color::Red;
-    float colorStep = mLineSize / 2, leftSide = 10.f, rightSide = 50.f;
+    float colorStep = mLineSize / 2, leftSide = 5.f, rightSide = 25.f;
     for (unsigned i = 0; i < mLineSize; i += 2)
     {
         float y = mDistance * i / 2;
@@ -38,19 +38,21 @@ Palette::Palette(int)
         mLine[1].position.x - mLine[0].position.x, 
         mLine[mLineSize - 1].position.y - mLine[0].position.y);
 
-    mLineIndicator.setSize(sf::Vector2f(45.f, 3.f));
+    mLineIndicator.setSize(sf::Vector2f(25.f, 3.f));
     mLineIndicator.setOutlineThickness(1.f);
     mLineIndicator.setFillColor(sf::Color::Black);
     mLineIndicator.setOrigin(mLineIndicator.getSize() / 2.f);
-    mLineIndicator.setPosition(sf::Vector2f(30.f, mLineRect.height));
+    mLineIndicator.setPosition((mLine[0].position + mLine[1].position) / 2.f);
 
-    mCanvas[0].position = sf::Vector2f(75.f, 0.f);
+	const auto decrease = 5.f;
+	const auto origin = sf::Vector2f(35.f, 0.f);
+    mCanvas[0].position = origin + sf::Vector2f(decrease, decrease);
     mCanvas[0].color = sf::Color::White;
-    mCanvas[1].position = sf::Vector2f(75.f, mLineRect.height);
+    mCanvas[1].position = origin + sf::Vector2f(0.f, mLineRect.height) + sf::Vector2f(decrease, -decrease);
     mCanvas[1].color = sf::Color::Black;
-    mCanvas[2].position = sf::Vector2f(475.f, mLineRect.height);
+    mCanvas[2].position = origin + sf::Vector2f(300.f, mLineRect.height) + sf::Vector2f(-decrease, -decrease);
     mCanvas[2].color = sf::Color::Black;
-    mCanvas[3].position = sf::Vector2f(475.f, 0.f);
+    mCanvas[3].position = origin + sf::Vector2f(300.f, 0.f) - sf::Vector2f(decrease, -decrease);
     mCanvas[3].color = sf::Color::Red;
 
     mCanvasRect = sf::FloatRect(
@@ -168,29 +170,23 @@ void Palette::setColor()
 
 void Palette::processOwnEvents()
 {
-    sf::Event event;
+    auto event = sf::Event();
     while (mWindow.pollEvent(event))
     {
         // Move on the line by only one step
         if (event.type == sf::Event::KeyPressed)
         {
             const auto key = event.key;
-
             if (key.code == sf::Keyboard::Left)
-            {
                 goUp();
-            }
             else if (key.code == sf::Keyboard::Right)
-            {
                 goDown();
-            }
 
             if (key.control && key.code == Settings::KeyExit)
             {
                 closeWindow();
                 return;
             }
-
 
             mLineIndicator.setPosition(mLineIndicator.getPosition().x, mLine[mLineElemIdx].position.y);
             setColor();
@@ -199,12 +195,13 @@ void Palette::processOwnEvents()
         // Don't move the indicator of anything if the left mouse button wasn't pressed on that area
         if (event.type == sf::Event::MouseButtonPressed)
         {
-            sf::Vector2i mousePos(sf::Mouse::getPosition(mWindow) -
-                static_cast<sf::Vector2i>(mWindowOffset));
+            const auto mousePos = 
+				static_cast<sf::Vector2f>(sf::Mouse::getPosition(mWindow)) -
+                static_cast<sf::Vector2f>(mWindowOffset);
 
-            if (mCanvasRect.contains(sf::Vector2f(mousePos)))
+            if (mCanvasRect.contains(mousePos))
                 wasButtonPressedOnCanvas = true;
-            if (mLineRect.contains(sf::Vector2f(mousePos)))
+            if (mLineRect.contains(mousePos))
                 wasButtonPressedOnLine = true;
         }
 
@@ -249,8 +246,8 @@ void Palette::openWindow(sf::Vector2i position)
 #error Unsupported compiler
 #endif
 
-        float width = 500 + mWindowOffset.x * 2;
-        float height = mDistance * (mLineSize - 1) / 2 + mWindowOffset.y * 2;
+        const auto width = 340.f + mWindowOffset.x * 2.f;
+        const auto height = mDistance * (mLineSize - 1) / 2.f + mWindowOffset.y * 2.f;
 
         mWindow.create(sf::VideoMode(width, height), "JKPS RGB color selector", style);
         mWindow.setKeyRepeatEnabled(false);
