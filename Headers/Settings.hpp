@@ -144,6 +144,7 @@ namespace Settings
     extern sf::Vector2f KeyPressVisOrig;
     extern sf::Color KeyPressVisColor;
     extern float KeyPressWidthScale;
+    extern float KeyPressFixedHeight;
 
     // [Key press visualization advanced settings]
     extern bool KeyPressVisAdvSettingsMode;
@@ -153,6 +154,7 @@ namespace Settings
     extern Container<sf::Vector2f> KeyPressVisAdvOrig;
     extern Container<sf::Color> KeyPressVisAdvColor;
     extern Container<float> KeyPressAdvWidthScale;
+    extern Container<float> KeyPressAdvFixedHeight;
 
     // [Other]
     extern bool SaveStats;

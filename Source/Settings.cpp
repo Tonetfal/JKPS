@@ -129,6 +129,7 @@ float KeyPressVisFadeLineLen;
 sf::Vector2f KeyPressVisOrig;
 sf::Color KeyPressVisColor;
 float KeyPressWidthScale;
+float KeyPressFixedHeight;
 
 // [Key press visualization advanced settings]
 bool KeyPressVisAdvSettingsMode;
@@ -138,6 +139,7 @@ Container<float> KeyPressVisAdvFadeLineLen;
 Container<sf::Vector2f> KeyPressVisAdvOrig;
 Container<sf::Color> KeyPressVisAdvColor;
 Container<float> KeyPressAdvWidthScale;
+Container<float> KeyPressAdvFixedHeight;
 
 // [Other]
 bool SaveStats;
