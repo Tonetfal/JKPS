@@ -480,7 +480,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
         if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
         {
             mMiddleVertecies[offset + 2ul].position.y = 
-            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y - minHeight;
+            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y + minHeight;
         }
 
         // mBottomVertecies[offset + 0].position.y = 
@@ -501,7 +501,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
         if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
         {
             mMiddleVertecies[offset + 2ul].position.y = 
-            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y - minHeight;
+            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y + minHeight;
         }
     }
 }
