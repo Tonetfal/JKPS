@@ -5,6 +5,7 @@
 #include "../Headers/Application.hpp"
 #include "../Headers/Utility.hpp"
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 
@@ -407,6 +408,8 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     const auto speed = -origSpeed / 10.f;
     const auto len = !advMode ? Settings::KeyPressVisFadeLineLen : 
         Settings::KeyPressVisAdvFadeLineLen[mBtnIdx];
+    const auto minHeight = !advMode ? Settings::KeyPressFixedHeight :
+        Settings::KeyPressAdvFixedHeight[mBtnIdx];
 
     // Iterate through all rectangles
     for (auto i : mUsedRectIndices)
@@ -425,7 +428,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
 
             // Limit the square to go beyond the line length
             auto move = [len, speed] (sf::Vertex &vertex) 
-                { 
+                {
                     vertex.position.y = -std::min(std::abs(vertex.position.y + speed), len);
                 };
             // move(topSideVertex);
@@ -471,9 +474,14 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     if (keyState)
     {
         const auto offset = mUsedRectIndices.back() * 4ul;
-
         mMiddleVertecies[offset + 2ul].position.y = 
         mMiddleVertecies[offset + 3ul].position.y -= speed;
+
+        if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
+        {
+            mMiddleVertecies[offset + 2ul].position.y = 
+            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y - minHeight;
+        }
 
         // mBottomVertecies[offset + 0].position.y = 
         // mBottomVertecies[offset + 1].position.y -= speed;
@@ -489,6 +497,12 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
 
         mMiddleVertecies[offset + 2ul].position.y = 
         mMiddleVertecies[offset + 3ul].position.y -= speed;
+
+        if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
+        {
+            mMiddleVertecies[offset + 2ul].position.y = 
+            mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y - minHeight;
+        }
     }
 }
 
