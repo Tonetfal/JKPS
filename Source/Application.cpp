@@ -450,7 +450,7 @@ void Application::openWindow()
         mWindow.close();
     mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), "JKPS", style);
     mWindow.setKeyRepeatEnabled(false);
-    mWindow.setFramerateLimit(60);
+    mWindow.setFramerateLimit(Settings::FPSLimit);
 #ifdef linux
     if (style == sf::Style::None)
     {

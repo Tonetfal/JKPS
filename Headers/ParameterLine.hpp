@@ -623,6 +623,8 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             OtherSaveStats,
             OtherShowOppOnAlt,
             OtherMultpl,
+            OtherFPSHint,
+            OtherFPSLimit,
             OtherMty,
 
             SaveStatColl,
