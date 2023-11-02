@@ -718,6 +718,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::SaveStats,                                   "Update statistics on quit", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherShowOppOnAlt,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowOppOnAlt,                                "Show opposite key values on alt press", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl,                 new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonPressMultiplier,                       "Value to multiply on click", "1", 0, 1000000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherFPSLimit,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::FPSLimit,                                    "FPS Limit", "60", 0, 8000)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::MaxKPS,                                      "Saved max KPS", "0", 0u, UINT_MAX)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::Total,                                       "Saved total", "0", 0u, UINT_MAX)));
@@ -806,6 +807,10 @@ void Menu::buildParameterLines()
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeSpace, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::KeyPressVisAdvModeMty, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));
+
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Hint, nullptr, "Recommendation: FPS limit = your keyboard's polling rate\nAfter changing FPS Limit, restart the application"));
+    mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherFPSHint, new ParameterLine(parP, mFonts, mTextures, mWindow)));
+    mParameterLines[ParameterLine::ID::OtherFPSHint]->setCharacterSize(16u);
 
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, mCollectionNames.at(collectionNameIdx++)));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::OtherColl, new ParameterLine(parP, mFonts, mTextures, mWindow)));

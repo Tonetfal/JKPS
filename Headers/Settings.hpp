@@ -160,6 +160,7 @@ namespace Settings
     extern bool SaveStats;
     extern bool ShowOppOnAlt;
     extern unsigned ButtonPressMultiplier;
+    extern unsigned FPSLimit;
 
     // Default assets
     extern unsigned char* KeyCountersDefaultFont;

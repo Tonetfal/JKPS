@@ -586,9 +586,11 @@ struct LogicalParameter
             KeyPressVisAdvModeWidthScale20,
             KeyPressVisAdvModeFixedHeight20,
 
+            OtherFPSHint,
             OtherSaveStats,
             OtherShowOppOnAlt,
             OtherMultpl,
+            OtherFPSLimit,
 
             SaveStatMaxKPS,
             SaveStatTotal,

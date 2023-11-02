@@ -145,6 +145,7 @@ Container<float> KeyPressAdvFixedHeight;
 bool SaveStats;
 bool ShowOppOnAlt;
 unsigned ButtonPressMultiplier;
+unsigned FPSLimit;
 
 // Default assets
 unsigned char* StatisticsDefaultFont = MainProgramFont;
