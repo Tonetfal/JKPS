@@ -17,7 +17,7 @@ Palette::Palette(int)
 , wasButtonPressedOnLine(false)
 , wasButtonPressedOnCanvas(false)
 {
-    mWindow.setFramerateLimit(60);
+    mWindow.setFramerateLimit(Settings::FPSLimit);
 
     auto color = sf::Color::Red;
     float colorStep = mLineSize / 2, leftSide = 5.f, rightSide = 25.f;

@@ -11,7 +11,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
+const sf::Time Application::TimePerFrame = sf::seconds(1.f / static_cast<float>(LogicalParameter::ID::OtherFPSLimit));
 
 Application::Application()
 {
