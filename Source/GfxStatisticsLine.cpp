@@ -154,7 +154,7 @@ std::string *GfxStatisticsLine::getStatLineString(StatisticsID id)
     switch(id)
     {
         case KPS:
-            str = Button::getKeysPerSecond() != 0 ? &Settings::StatisticsKPSText : &Settings::StatisticsKPS2Text;
+            str = !Settings::ShowStatisticsMaxKPS || Button::getKeysPerSecond() != 0 ? &Settings::StatisticsKPSText : &Settings::StatisticsKPS2Text;
             break;
 
         case Total:
@@ -177,7 +177,7 @@ std::string GfxStatisticsLine::getStatValueString(StatisticsID id)
     switch(id)
     {
         case KPS:
-            if (Button::getKeysPerSecond() != 0)
+            if (!Settings::ShowStatisticsMaxKPS || Button::getKeysPerSecond() != 0)
             {
                 // if (show decimal)
                 //     str = eraseDigitsOverHundredths(std::to_string(Button::getKeysPerSecond()));
@@ -224,7 +224,8 @@ bool GfxStatisticsLine::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::StatTextBold ||
         id == LogicalParameter::ID::StatTextItal ||
         id == LogicalParameter::ID::StatTextShow ||
-        id == LogicalParameter::ID::StatTextShowKPS ||
+		id == LogicalParameter::ID::StatTextShowKPS ||
+		id == LogicalParameter::ID::StatTextShowMaxKPS ||
         id == LogicalParameter::ID::StatTextShowTotal ||
         id == LogicalParameter::ID::StatTextShowBPM ||
         (id >= LogicalParameter::ID::StatTextAdvMode && id <= LogicalParameter::ID::StatTextBPMText) ||

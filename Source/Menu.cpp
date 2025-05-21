@@ -542,7 +542,8 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextBold,                new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextBold,                          "Bold", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextItal,                new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::StatisticsTextItalic,                        "Italic", "False")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShow,                new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsText,                          "Enabled", "True")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowKPS,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsKPS,                           "Show KPS", "True")));
+	mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowKPS,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsKPS,                           "Show KPS", "True")));
+	mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowMaxKPS,          new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsMaxKPS,                        "Show Max KPS", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowTotal,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsTotal,                         "Show total", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::StatTextShowBPM,             new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowStatisticsBPM,                           "Show BPM", "True")));
 
@@ -857,7 +858,7 @@ void Menu::buildParameterLines()
     parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Alt (hold) - Show opposite buttons values"));
     mParameterLines.emplace(std::make_pair(static_cast<ParameterLine::ID>(hotKey++), new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
-    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version: " + std::string(PROGRAM_VERSION)));
+    parP = sPtr(new LogicalParameter(LogicalParameter::Type::Collection, nullptr, "Program version: " + std::string("0.3.1")));
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::ProgramVersion, new ParameterLine(parP, mFonts, mTextures, mWindow)));
 
     mParameterLines.emplace(std::make_pair(ParameterLine::ID::LastLine, new ParameterLine(emptyP, mFonts, mTextures, mWindow)));

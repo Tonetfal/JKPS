@@ -19,6 +19,7 @@ bool StatisticsTextBold;
 bool StatisticsTextItalic;
 bool ShowStatisticsText;
 bool ShowStatisticsKPS;
+bool ShowStatisticsMaxKPS;
 bool ShowStatisticsTotal;
 bool ShowStatisticsBPM;
 

@@ -32,7 +32,8 @@ namespace Settings
     extern bool StatisticsTextBold;
     extern bool StatisticsTextItalic;
     extern bool ShowStatisticsText;
-    extern bool ShowStatisticsKPS;
+	extern bool ShowStatisticsKPS;
+	extern bool ShowStatisticsMaxKPS;
     extern bool ShowStatisticsTotal;
     extern bool ShowStatisticsBPM;
 

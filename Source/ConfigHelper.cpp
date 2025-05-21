@@ -10,6 +10,7 @@
 #include <fstream>
 #include <array>
 #include <algorithm>
+#include <cctype>
 
 
 std::string getReadingErrMsg(const LogicalParameter &par, std::string_view collection)

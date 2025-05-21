@@ -41,7 +41,8 @@ struct LogicalParameter
             StatTextBold,
             StatTextItal,
             StatTextShow,
-            StatTextShowKPS,
+			StatTextShowKPS,
+			StatTextShowMaxKPS,
             StatTextShowTotal,
             StatTextShowBPM,
 

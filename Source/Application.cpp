@@ -273,7 +273,7 @@ void Application::unloadChangesQueue()
         if (parameterIdMatches(pair.first))
         {
             mWindow.setSize(sf::Vector2u(getWindowWidth(), getWindowHeight()));
-            mWindow.setView(sf::View(sf::FloatRect(0, 0, mWindow.getSize().x, mWindow.getSize().y)));
+            mWindow.setView(sf::View(sf::FloatRect(0.f, 0.f, mWindow.getSize().x, mWindow.getSize().y)));
             mMenu.requestFocus();
         }
 

@@ -18,6 +18,7 @@
 #include <string>
 #include <cmath>
 #include <mutex>
+#include <cctype>
 
 
 sf::RectangleShape ParameterLine::mCursor(sf::Vector2f(1, 21));
@@ -859,7 +860,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::StatTextBold: return ParameterLine::ID::StatTextBold;
         case LogicalParameter::ID::StatTextItal: return ParameterLine::ID::StatTextItal;
         case LogicalParameter::ID::StatTextShow: return ParameterLine::ID::StatTextShow;
-        case LogicalParameter::ID::StatTextShowKPS: return ParameterLine::ID::StatTextShowKPS;
+		case LogicalParameter::ID::StatTextShowKPS: return ParameterLine::ID::StatTextShowKPS;
+		case LogicalParameter::ID::StatTextShowMaxKPS: return ParameterLine::ID::StatTextShowMaxKPS;
         case LogicalParameter::ID::StatTextShowTotal: return ParameterLine::ID::StatTextShowTotal;
         case LogicalParameter::ID::StatTextShowBPM: return ParameterLine::ID::StatTextShowBPM;
 
