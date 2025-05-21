@@ -79,7 +79,7 @@ Click with **right mouse button** on the button to edit it
 
 # Links
 
-[Download](https://github.com/JekiTheMonkey/JKPS/releases/)
+[Download](https://github.com/Tonetfal/JKPS/releases/)
 
 [Themes](Wiki/Themes.md)
 
