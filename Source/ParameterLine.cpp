@@ -1237,7 +1237,8 @@ ParameterLine::ID ParameterLine::parIdToParLineId(LogicalParameter::ID id)
         case LogicalParameter::ID::BgClr: return ParameterLine::ID::BgClr;
         case LogicalParameter::ID::BgScale: return ParameterLine::ID::BgScale;
 
-        case LogicalParameter::ID::MainWndwTitleBar: return ParameterLine::ID::MainWndwTitleBar;
+		case LogicalParameter::ID::MainWndwTitleBar: return ParameterLine::ID::MainWndwTitleBar;
+		case LogicalParameter::ID::RenderUpdateFrequency: return ParameterLine::ID::RenderUpdateFrequency;
         case LogicalParameter::ID::MainWndwTop: return ParameterLine::ID::MainWndwTop;
         case LogicalParameter::ID::MainWndwBot: return ParameterLine::ID::MainWndwBot;
         case LogicalParameter::ID::MainWndwLft: return ParameterLine::ID::MainWndwLft;

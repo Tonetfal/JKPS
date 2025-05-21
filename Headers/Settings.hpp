@@ -119,6 +119,7 @@ namespace Settings
 
     // [Main window]
     extern bool WindowTitleBar;
+	extern unsigned RenderUpdateFrequency;
     extern int WindowBonusSizeTop;
     extern int WindowBonusSizeBottom;
     extern int WindowBonusSizeLeft;

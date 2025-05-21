@@ -11,7 +11,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 
 
-const sf::Time Application::TimePerFrame = sf::seconds(1.f / 60.f);
+const sf::Time Application::TimePerHookUpdate = sf::seconds(1.f / 60.f);
 
 Application::Application()
 {
@@ -50,53 +50,83 @@ Application::Application()
 void Application::run()
 {
     sf::Clock clock;
-    auto timeSinceLastUpdate = sf::Time::Zero;
+	auto timeSinceLastEventUpdate = sf::Time::Zero;
+	auto timeSinceLastHooksUpdate = sf::Time::Zero;
 
     while (mWindow.isOpen())
     {
         auto dt = clock.restart();
-        timeSinceLastUpdate += dt;
-        while (timeSinceLastUpdate > TimePerFrame)
-        {
-            timeSinceLastUpdate -= TimePerFrame;
+		timeSinceLastEventUpdate += dt;
+		timeSinceLastHooksUpdate += dt;
 
-            processInput();
-            update();
-        }
+		while (true)
+		{
+			int updateType = UpdateType::None;
+			if (timeSinceLastHooksUpdate > TimePerHookUpdate)
+			{
+				timeSinceLastHooksUpdate -= TimePerHookUpdate;
+				updateType |= UpdateType::Hooks;
+			}
+
+			int frames = getRenderUpdateFrequency();
+			sf::Time TimePerEventUpdate = sf::seconds(1.f / static_cast<float>(frames));
+			if (timeSinceLastEventUpdate > TimePerEventUpdate)
+			{
+				timeSinceLastEventUpdate -= TimePerEventUpdate;
+				updateType |= UpdateType::Event;
+			}
+
+			if (updateType == UpdateType::None)
+			{
+				break;
+			}
+
+			processInput(static_cast<UpdateType>(updateType));
+			update(static_cast<UpdateType>(updateType));
+		}
 
         render();
     }
 }
 
-void Application::processInput()
+void Application::processInput(UpdateType type)
 {
-    // Open/close other windows, add/rm keys
-    handleEvent();
+	if (type & UpdateType::Event)
+	{
+		// Open/close other windows, add/rm keys
+		handleEvent();
 
-    // Update changed parameters
-    if (mMenu.isOpen())
-        unloadChangesQueue();
+		// Update changed parameters
+		if (mMenu.isOpen())
+			unloadChangesQueue();
 
-    // Update assets if there is a request
-    if (ParameterLine::resetRefreshState())
-        resetAssets();
-    
-    // Take buttons realtime input
-    for (auto &button : mButtons)
-        button->processInput();
+		// Update assets if there is a request
+		if (ParameterLine::resetRefreshState())
+			resetAssets();
+	}
 
-    if (!Settings::WindowTitleBar)
-        moveWindow();
+	if (type & UpdateType::Hooks)
+	{
+		// Take buttons realtime input
+		for (auto &button : mButtons)
+			button->processInput();
+	}
 
-    // Make separate windows handle own events
-    if (mMenu.isOpen())
-        mMenu.processInput();
-    if (mGfxButtonSelector->isOpen())
-        mGfxButtonSelector->handleOwnInput();
-    if (mKPSWindow->isOpen())
-        mKPSWindow->handleOwnEvent();
-    if (mGraph->isOpen())
-        mGraph->handleOwnEvent();
+	if (type & UpdateType::Event)
+	{
+		if (!Settings::WindowTitleBar)
+			moveWindow();
+
+		// Make separate windows handle own events
+		if (mMenu.isOpen())
+			mMenu.processInput();
+		if (mGfxButtonSelector->isOpen())
+			mGfxButtonSelector->handleOwnInput();
+		if (mKPSWindow->isOpen())
+			mKPSWindow->handleOwnEvent();
+		if (mGraph->isOpen())
+			mGraph->handleOwnEvent();
+	}
 }
 
 void Application::handleEvent()
@@ -198,23 +228,31 @@ void Application::handleEvent()
     }
 }
 
-void Application::update()
+void Application::update(UpdateType type)
 {
-    for (auto &button : mButtons)
-        button->update();
-    for (auto &line : mStatistics)
-        line->update();
+	if (type & UpdateType::Event)
+	{
+		for (auto &button : mButtons)
+			button->update();
+		for (auto &line : mStatistics)
+			line->update();
 
-    if (mMenu.isOpen())
-        mMenu.update();
-    
-    if (mKPSWindow->isOpen())
-        mKPSWindow->update();
+		if (mMenu.isOpen())
+			mMenu.update();
 
-    // if (mGraph->isOpen())
-    //     mGraph->update();
+		if (mKPSWindow->isOpen())
+			mKPSWindow->update();
 
-    Button::moveIndex();
+		// if (mGraph->isOpen())
+		//     mGraph->update();
+	}
+
+	if (type & UpdateType::Hooks)
+	{
+		Button::moveIndex();
+		for (auto &button : mButtons)
+			button->accumulateBeatsPerMinute();
+	}
 }
 
 void Application::render()
@@ -281,6 +319,11 @@ void Application::unloadChangesQueue()
         {
             openWindow();
         }
+
+		if (pair.first == LogicalParameter::ID::RenderUpdateFrequency)
+		{
+			mWindow.setFramerateLimit(getRenderUpdateFrequency());
+		}
 
         mBackground->rescale();
     }
@@ -450,7 +493,7 @@ void Application::openWindow()
         mWindow.close();
     mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), "JKPS", style);
     mWindow.setKeyRepeatEnabled(false);
-    mWindow.setFramerateLimit(60);
+    mWindow.setFramerateLimit(getRenderUpdateFrequency());
 #ifdef linux
     if (style == sf::Style::None)
     {
@@ -519,4 +562,9 @@ bool Application::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::MainWndwBot ||
         id == LogicalParameter::ID::MainWndwLft ||
         id == LogicalParameter::ID::MainWndwRght;
+}
+
+int Application::getRenderUpdateFrequency() const
+{
+	return Settings::RenderUpdateFrequency;
 }

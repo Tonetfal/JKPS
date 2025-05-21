@@ -443,6 +443,7 @@ class ParameterLine : public sf::Drawable, public sf::Transformable, public std:
             BgClr,
             BgScale,
             MainWndwTitleBar,
+			RenderUpdateFrequency,
             MainWndwTop,
             MainWndwBot,
             MainWndwLft,

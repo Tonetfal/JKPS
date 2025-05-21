@@ -2,6 +2,7 @@
 #include "../Headers/Settings.hpp"
 
 #include <cassert>
+#include <iostream>
 
 
 unsigned LogButton::mBufferIndex(0);
@@ -13,6 +14,7 @@ float LogButton::statBeatsPerMinute(0);
 
 LogButton::LogButton(const unsigned idx, LogKey &key)
 : mState(false)
+, mLastAccumulateBpmBufferIndex(mBuffer.size())
 , mKey(key)
 , mKeysPerSecond(0)
 , mTotal(0)
@@ -55,7 +57,7 @@ void LogButton::processRealtimeInput()
     }
 
     mPrevKpsBuffer[mPrevKpsBufferIndex] = mKeysPerSecond;
-    statBeatsPerMinute += getLocalBeatsPerMinute();
+	accumulateBeatsPerMinute();
 }
 
 bool LogButton::isButtonPressed() const
@@ -70,7 +72,16 @@ void LogButton::moveIndex()
     if (++mPrevKpsBufferIndex == 9)
         mPrevKpsBufferIndex = 0;
     
-    statBeatsPerMinute = 0;
+	statBeatsPerMinute = 0;
+}
+
+void LogButton::accumulateBeatsPerMinute()
+{
+	if (mBufferIndex != mLastAccumulateBpmBufferIndex)
+	{
+		statBeatsPerMinute += getLocalBeatsPerMinute();
+		mLastAccumulateBpmBufferIndex = mBufferIndex;
+	}
 }
 
 void LogButton::reset()

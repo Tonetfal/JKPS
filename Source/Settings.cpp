@@ -104,6 +104,7 @@ bool isGreenscreenSet;
 
 // [Main window]
 bool WindowTitleBar;
+unsigned RenderUpdateFrequency;
 int WindowBonusSizeTop;
 int WindowBonusSizeBottom;
 int WindowBonusSizeLeft;

@@ -18,6 +18,13 @@
 #include <memory>
 
 
+enum UpdateType
+{
+	None = 0,
+	Event = 1 << 0,
+	Hooks = 1 << 1
+};
+
 class Application
 {
     public:
@@ -30,11 +37,13 @@ class Application
 
         static bool parameterIdMatches(LogicalParameter::ID id);
 
+		int getRenderUpdateFrequency() const;
+
 
     private:
-        void processInput();
+		void processInput(UpdateType type);
         void handleEvent();
-		void update();
+		void update(UpdateType type);
 		void render();
 
         void unloadChangesQueue();
@@ -60,7 +69,7 @@ class Application
 
 
     private:
-        static const sf::Time TimePerFrame;
+        static const sf::Time TimePerHookUpdate;
 
         sf::RenderWindow mWindow;
         

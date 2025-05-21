@@ -418,6 +418,7 @@ struct LogicalParameter
             BgClr,
             BgScale,
             MainWndwTitleBar,
+			RenderUpdateFrequency,
             MainWndwTop,
             MainWndwBot,
             MainWndwLft,

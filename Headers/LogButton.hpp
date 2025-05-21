@@ -14,9 +14,9 @@ class LogButton
         void processRealtimeInput();
 
         static void moveIndex();
-        static unsigned resetPressesInCurrentFrame();
         bool isButtonPressed() const;
 
+		void accumulateBeatsPerMinute();
         void reset();
 
         static float getKeysPerSecond();
@@ -45,6 +45,7 @@ class LogButton
     private:
         const unsigned mBtnIdx;
         bool mState;
+		unsigned mLastAccumulateBpmBufferIndex;
         
         // Calculation related
         std::array<unsigned, 60lu> mBuffer;
