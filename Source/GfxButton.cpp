@@ -44,7 +44,7 @@ GfxButton::GfxButton(const unsigned idx, const TextureHolder &textureHolder, con
     mBounds.setOutlineThickness(1.f);
 }
 
-void GfxButton::update(bool keyState)
+void GfxButton::update(float deltaSeconds, bool keyState)
 {
     if (Settings::LightAnimation)
         keyState ? lightKey() : fadeKey();
@@ -58,11 +58,11 @@ void GfxButton::update(bool keyState)
         {
             const auto &buttonSprite = *mSprites[ButtonSprite];
             const auto rect = buttonSprite.getGlobalBounds();
-            mEmitter.create({ rect.width, rect.height });
+            mEmitter.create(deltaSeconds, { rect.width, rect.height });
         }
     }
 
-    mEmitter.update(keyState, mLastKeyState);
+    mEmitter.update(deltaSeconds, keyState, mLastKeyState);
 
     mLastKeyState = keyState;
 }
@@ -393,7 +393,7 @@ GfxButton::RectEmitter::RectEmitter(unsigned btnIdx)
         mAvailableRectIndices.emplace_back(i);
 }
 
-void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
+void GfxButton::RectEmitter::update(float deltaSeconds, bool keyState, bool prevKeyState)
 {
     // Don't update anything if there is no active rectangles
     if (mUsedRectIndices.empty())
@@ -405,7 +405,7 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     const auto advMode = isInSupportedRange && Settings::KeyPressVisAdvSettingsMode;
     const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
         Settings::KeyPressVisAdvSpeed[mBtnIdx];
-    const auto speed = -origSpeed / 10.f;
+    const auto speed = (-origSpeed * deltaSeconds * getConstantSpeedScale()) / 10.f;
     const auto len = !advMode ? Settings::KeyPressVisFadeLineLen : 
         Settings::KeyPressVisAdvFadeLineLen[mBtnIdx];
     const auto minHeight = !advMode ? Settings::KeyPressFixedHeight :
@@ -427,9 +427,9 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
             // auto &bottomSideVertex = mBottomVertecies[j];
 
             // Limit the square to go beyond the line length
-            auto move = [len, speed] (sf::Vertex &vertex) 
+            auto move = [len, speed, deltaSeconds] (sf::Vertex &vertex)
                 {
-                    vertex.position.y = -std::min(std::abs(vertex.position.y + speed), len);
+                    vertex.position.y = -std::min(std::abs(vertex.position.y + speed * deltaSeconds * getConstantSpeedScale()), len);
                 };
             // move(topSideVertex);
             move(middleVertex);
@@ -475,28 +475,22 @@ void GfxButton::RectEmitter::update(bool keyState, bool prevKeyState)
     {
         const auto offset = mUsedRectIndices.back() * 4ul;
         mMiddleVertecies[offset + 2ul].position.y = 
-        mMiddleVertecies[offset + 3ul].position.y -= speed;
+        mMiddleVertecies[offset + 3ul].position.y -= speed * deltaSeconds * getConstantSpeedScale();
 
         if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
         {
             mMiddleVertecies[offset + 2ul].position.y = 
             mMiddleVertecies[offset + 3ul].position.y = mMiddleVertecies[offset].position.y + minHeight;
         }
-
-        // mBottomVertecies[offset + 0].position.y = 
-        // mBottomVertecies[offset + 1].position.y -= speed;
-
-        // mBottomVertecies[offset + 2].position.y = 
-        // mBottomVertecies[offset + 3].position.y -= speed;
     }
 
-    // // Move the nearest rectangle up on release
+    // Move the nearest rectangle up on release
     if (prevKeyState && !keyState && !mUsedRectIndices.empty())
     {
         const auto offset = mUsedRectIndices.back() * 4ul;
 
         mMiddleVertecies[offset + 2ul].position.y = 
-        mMiddleVertecies[offset + 3ul].position.y -= speed;
+        mMiddleVertecies[offset + 3ul].position.y -= speed * deltaSeconds * getConstantSpeedScale();
 
         if (minHeight > 0 && std::abs(mMiddleVertecies[offset].position.y) > minHeight)
         {
@@ -542,13 +536,23 @@ void GfxButton::RectEmitter::pushVertecies(sf::VertexArray &vertexArray, sf::Ver
     }
 }
 
-void GfxButton::RectEmitter::create(sf::Vector2f buttonSize)
+float GfxButton::RectEmitter::getConstantSpeedScale()
+{
+	// Originally the speed was 60px per frame, and the frame rate was capped to 60, 
+	// so by default it was travelling 3600px/s.
+	// Now that rendering frame rate is dynamic, the "speed" property defines
+	// pixels per second, not pixels per frame; to keep it compatible with older versions
+	// in terms of speed, convert the px/f speed to px/s
+	return 60.f;
+}
+
+void GfxButton::RectEmitter::create(float deltaSeconds, sf::Vector2f buttonSize)
 {
     const auto isInSupportedRange = mBtnIdx < Settings::SupportedAdvancedKeysNumber;
     const auto advMode = isInSupportedRange && Settings::KeyPressVisAdvSettingsMode;
     const auto origSpeed = !advMode ? Settings::KeyPressVisSpeed : 
         Settings::KeyPressVisAdvSpeed[mBtnIdx];
-    const auto speed = -origSpeed / 10.f;
+    const auto speed = (-origSpeed * deltaSeconds * getConstantSpeedScale()) / 10.f;
     // const auto wScale = (!advMode ? Settings::KeyPressWidthScale : Settings::KeyPressAdvWidthScale[mBtnIdx]) / 100.f;
     // buttonSize.x *= wScale;
 

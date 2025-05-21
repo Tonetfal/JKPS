@@ -36,7 +36,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
     public:
         GfxButton(const unsigned idx, const TextureHolder& textureHolder, const FontHolder& fontHolder);
 
-        void update(bool keyState);
+        void update(float deltaSeconds, bool keyState);
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
         void updateAssets();
@@ -83,11 +83,11 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 // RectEmitter(const sf::Texture &texture);
                 RectEmitter(unsigned btnIdx);
 
-                void update(bool keyState, bool prevKeyState);
+                void update(float deltaSeconds, bool keyState, bool prevKeyState);
                 void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
                 void setPosition(sf::Vector2f position);
-                void create(sf::Vector2f buttonSize);
+                void create(float deltaSeconds, sf::Vector2f buttonSize);
 
                 void scaleTexture(sf::Vector2f buttonSize);
 
@@ -98,6 +98,7 @@ class GfxButton : public sf::Drawable, public sf::Transformable
                 sf::Color getVertexColor(const sf::VertexArray &vertexArray, size_t vertexIndex) const;
                 void pushVertecies(sf::VertexArray &vertexArray, sf::Vertex *toPush, size_t offset, sf::Vector2f buttonSize);
 
+				static float getConstantSpeedScale();
 
             private:
                 const unsigned mBtnIdx;

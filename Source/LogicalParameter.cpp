@@ -227,10 +227,10 @@ void LogicalParameter::setValStr(const std::string &str, unsigned idx)
     mValStr = str;
     switch (mType)
     {
-        case LogicalParameter::Type::Unsigned: setDigit(std::stoi(str)); break;
-        case LogicalParameter::Type::Int: setDigit(std::stoi(str)); break;
-        case LogicalParameter::Type::Bool: setBool(str); break;
+        case LogicalParameter::Type::Unsigned:
+        case LogicalParameter::Type::Int:
         case LogicalParameter::Type::Float: setDigit(std::stoi(str)); break;
+        case LogicalParameter::Type::Bool: setBool(str); break;
         case LogicalParameter::Type::String:
         case LogicalParameter::Type::StringPath: setString(str); break;
         case LogicalParameter::Type::Color: setColor(str, idx); break;

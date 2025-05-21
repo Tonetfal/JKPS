@@ -10,8 +10,8 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 
-
-const sf::Time Application::TimePerHookUpdate = sf::seconds(1.f / 60.f);
+const unsigned HooksUpdateFrequency = 60u;
+const sf::Time Application::TimePerHookUpdate = sf::seconds(1.f / static_cast<float>(HooksUpdateFrequency));
 
 Application::Application()
 {
@@ -68,8 +68,7 @@ void Application::run()
 				updateType |= UpdateType::Hooks;
 			}
 
-			int frames = getRenderUpdateFrequency();
-			sf::Time TimePerEventUpdate = sf::seconds(1.f / static_cast<float>(frames));
+			const sf::Time TimePerEventUpdate = sf::seconds(1.f / static_cast<float>(getRenderUpdateFrequency()));
 			if (timeSinceLastEventUpdate > TimePerEventUpdate)
 			{
 				timeSinceLastEventUpdate -= TimePerEventUpdate;
@@ -82,7 +81,7 @@ void Application::run()
 			}
 
 			processInput(static_cast<UpdateType>(updateType));
-			update(static_cast<UpdateType>(updateType));
+			update(TimePerEventUpdate.asSeconds(), static_cast<UpdateType>(updateType));
 		}
 
         render();
@@ -228,12 +227,12 @@ void Application::handleEvent()
     }
 }
 
-void Application::update(UpdateType type)
+void Application::update(float deltaSeconds, UpdateType type)
 {
 	if (type & UpdateType::Event)
 	{
 		for (auto &button : mButtons)
-			button->update();
+			button->update(deltaSeconds);
 		for (auto &line : mStatistics)
 			line->update();
 
@@ -322,7 +321,7 @@ void Application::unloadChangesQueue()
 
 		if (pair.first == LogicalParameter::ID::RenderUpdateFrequency)
 		{
-			mWindow.setFramerateLimit(getRenderUpdateFrequency());
+			mWindow.setFramerateLimit(getApplicationUpdateFrequency());
 		}
 
         mBackground->rescale();
@@ -493,7 +492,7 @@ void Application::openWindow()
         mWindow.close();
     mWindow.create(sf::VideoMode(getWindowWidth(), getWindowHeight()), "JKPS", style);
     mWindow.setKeyRepeatEnabled(false);
-    mWindow.setFramerateLimit(getRenderUpdateFrequency());
+    mWindow.setFramerateLimit(getApplicationUpdateFrequency());
 #ifdef linux
     if (style == sf::Style::None)
     {
@@ -564,7 +563,12 @@ bool Application::parameterIdMatches(LogicalParameter::ID id)
         id == LogicalParameter::ID::MainWndwRght;
 }
 
-int Application::getRenderUpdateFrequency() const
+unsigned Application::getRenderUpdateFrequency() const
 {
 	return Settings::RenderUpdateFrequency;
+}
+
+unsigned Application::getApplicationUpdateFrequency() const
+{
+	return std::max(Settings::RenderUpdateFrequency, HooksUpdateFrequency);
 }

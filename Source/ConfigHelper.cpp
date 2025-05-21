@@ -350,6 +350,7 @@ void readParameter(LogicalParameter &par, std::string collection)
         return;
     }
 
+
     switch(par.mType)
     {
         case LogicalParameter::Type::Unsigned: 
@@ -364,6 +365,7 @@ void readParameter(LogicalParameter &par, std::string collection)
         case LogicalParameter::Type::VectorF:  par.setVector(readVectorParameter(par, valStr)); break;
         default: break;
     }
+
 
     if (par.mType == LogicalParameter::Type::StringPath)
     {
@@ -385,23 +387,29 @@ void readParameter(LogicalParameter &par, std::string collection)
     }
 }
 
-float readDigitParameter(const LogicalParameter &par, const std::string &valStr)
+float readDigitParameter(const LogicalParameter &par, std::string &valStr)
 {
-    auto handleError = [&] () 
+    auto handleError = [&] (bool useDefault) 
         { 
-            ofErrLog << getOutOfBoundsErrMsg(par);
-            return readDigitParameter(par, par.getDefValStr()); 
+			const std::string errStr = getOutOfBoundsErrMsg(par);
+			if (ofErrLog.is_open())
+			{
+				ofErrLog << errStr;
+			}
+			std::cout << errStr;
+			valStr = useDefault ? par.getDefValStr() : std::to_string(static_cast<int>(par.mLowLimits));
+            return readDigitParameter(par, valStr); 
         };
 
     const auto lowLim = par.mLowLimits, highLim = par.mHighLimits;
 
     if (!isNumber(valStr))
-        handleError();
+        handleError(true);
 
     const auto val = std::stof(valStr);
 
-    if ((val < lowLim || val > highLim) && ofErrLog.is_open())
-        return handleError();
+    if (lowLim > val || val > highLim)
+        return handleError(false);
 
     return val;
 }

@@ -17,9 +17,9 @@ Button::Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder
     ++mSize;
 }
 
-void Button::update()
+void Button::update(float deltaSeconds)
 {
-    GfxButton::update(LogButton::isButtonPressed());
+    GfxButton::update(deltaSeconds, LogButton::isButtonPressed());
     setTextStrings();
     controlBounds();
 }

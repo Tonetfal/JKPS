@@ -26,7 +26,7 @@ std::queue<LogKey> oldGetLogKeys();
 std::queue<LogKey> oldGetLogButtons();
 std::string scanParameterValue(const std::string &par, bool &parameterFound, bool &parameterEmpty, std::string collection);
 void readParameter(LogicalParameter &par, std::string collection);
-float readDigitParameter(const LogicalParameter &par, const std::string &valStr);
+float readDigitParameter(const LogicalParameter &par, std::string &valStr);
 sf::Vector2f readVectorParameter(const LogicalParameter &par, const std::string &valStr);
 sf::Color readColorParameter(const LogicalParameter &par, const std::string &valStr);
 bool readBoolParameter(const LogicalParameter &par, const std::string &valStr);

@@ -112,32 +112,27 @@ void GfxButtonSelector::handleButtonModificationEvent(sf::Event event)
             }
             strChanged = true;
         }
-
-        if (key.code == sf::Keyboard::Delete)
+        else if (key.code == sf::Keyboard::Delete)
         {
             if (str.size() > mSelectedBtnTextIndex)
                 rmChOnIdx(str, mSelectedBtnTextIndex);
             strChanged = true;
         }
-        
-        if (key.code == sf::Keyboard::Left)
+        else if (key.code == sf::Keyboard::Left)
         {
             if (mSelectedBtnTextIndex > 0)
                 --mSelectedBtnTextIndex;
         }
-
-        if (key.code == sf::Keyboard::Right)
+        else if (key.code == sf::Keyboard::Right)
         {
             if (str.size() > mSelectedBtnTextIndex)
                 ++mSelectedBtnTextIndex;
         }
-
-        if (key.code == sf::Keyboard::Home)
-        {
-            mSelectedBtnTextIndex = 0;
-        }
-
-        if (key.code == sf::Keyboard::End)
+		else if (key.code == sf::Keyboard::Home)
+		{
+			mSelectedBtnTextIndex = 0;
+		}
+        else if (key.code == sf::Keyboard::End)
         {
             mSelectedBtnTextIndex = str.size();
         }

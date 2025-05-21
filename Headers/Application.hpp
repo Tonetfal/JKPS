@@ -37,13 +37,14 @@ class Application
 
         static bool parameterIdMatches(LogicalParameter::ID id);
 
-		int getRenderUpdateFrequency() const;
+		unsigned getRenderUpdateFrequency() const;
+		unsigned getApplicationUpdateFrequency() const;
 
 
     private:
 		void processInput(UpdateType type);
         void handleEvent();
-		void update(UpdateType type);
+		void update(float deltaSeconds, UpdateType type);
 		void render();
 
         void unloadChangesQueue();

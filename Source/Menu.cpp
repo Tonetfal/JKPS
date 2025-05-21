@@ -668,7 +668,7 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgClr,                       new LogicalParameter(LogicalParameter::Type::Color,         &Settings::BackgroundColor,                             "Background color", "140,140,140,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::BgScale,                     new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ScaleBackground,                             "Scale background texture if it does not fit", "True")));
 	mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTitleBar,            new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::WindowTitleBar,                              "Title bar", "False")));
-	mParameters.emplace(std::make_pair(LogicalParameter::ID::RenderUpdateFrequency,       new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::RenderUpdateFrequency,                       "Render update frequency", "120", 1, 1000)));
+	mParameters.emplace(std::make_pair(LogicalParameter::ID::RenderUpdateFrequency,       new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::RenderUpdateFrequency,                       "Render update frequency", "120", 10, 1000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwTop,                 new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeTop,                          "Bonus size top", "6", -10000, 10000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwBot,                 new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeBottom,                       "Bonus size bottom", "6", -10000, 10000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::MainWndwLft,                 new LogicalParameter(LogicalParameter::Type::Int,           &Settings::WindowBonusSizeLeft,                         "Bonus size left", "6", -10000, 10000)));
@@ -687,13 +687,13 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KPSWndwDistBtw,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KPSWindowDistanceBetween,                    "Distance between text", "50", -10000, 10000)));
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisToggle,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KeyPressVisToggle,                           "Enabled", "False")));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed,            new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisSpeed,                            "Speed", "60", -5000, 5000)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisSpeed,            new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisSpeed,                            "Speed", "40", 0, 5000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisRotation,         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisRotation,                         "Movement rotation", "0", -360, 360)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisOrig,             new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisOrig,                             "Spawn position offset", "0,-5", -10000, 10000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFadeLineLen,      new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisFadeLineLen,                      "Fade out distance", "500", -10000, 10000)));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisColor,            new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisColor,                            "Color", "255,255,255,255")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisWidthScale,       new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressWidthScale,                          "Bonus width scale (%)", "100", -1000, 1000)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFixedHeight,      new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressFixedHeight,                         "Fixed height to replace holds", "0", -300, 300)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisFixedHeight,      new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressFixedHeight,                         "Fixed height to replace holds", "0", 0, 300)));
     
     mParameters.emplace(std::make_pair(LogicalParameter::ID::KeyPressVisAdvMode,          new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::KeyPressVisAdvSettingsMode,                  "Enable advanced mode for key press visualization", "False")));
     for (auto i = 0lu; i < Settings::SupportedAdvancedKeysNumber; ++i)
@@ -708,13 +708,13 @@ void Menu::buildParametersMap()
         const auto fixHeight =         LogicalParameter::ID(unsigned(LogicalParameter::ID::KeyPressVisAdvModeFixedHeight1) + i * parms);
         const auto iStr = std::to_string(i + 1);
 
-        mParameters.emplace(std::make_pair(speed,                                         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvSpeed[i],                      iStr + ". Speed", "60", -5000, 5000)));
+        mParameters.emplace(std::make_pair(speed,                                         new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvSpeed[i],                      iStr + ". Speed", "40", 0, 5000)));
         mParameters.emplace(std::make_pair(rot,                                           new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvRotation[i],                   iStr + ". Rotation", "0", -360, 360)));
         mParameters.emplace(std::make_pair(orig,                                          new LogicalParameter(LogicalParameter::Type::VectorF,       &Settings::KeyPressVisAdvOrig[i],                       iStr + ". Spawn position offset", "0,0", -10000, 10000)));
         mParameters.emplace(std::make_pair(len,                                           new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressVisAdvFadeLineLen[i],                iStr + ". Fade line length", "500", -10000, 10000)));
         mParameters.emplace(std::make_pair(clr,                                           new LogicalParameter(LogicalParameter::Type::Color,         &Settings::KeyPressVisAdvColor[i],                      iStr + ". Color", "255,255,255,255")));
         mParameters.emplace(std::make_pair(wScale,                                        new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressAdvWidthScale[i],                    iStr + ". Bonus width scale", "100", -1000, 1000)));
-        mParameters.emplace(std::make_pair(fixHeight,                                     new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressAdvFixedHeight[i],                   iStr + ". Fixed height to replace holds", "0", -300, 300)));
+        mParameters.emplace(std::make_pair(fixHeight,                                     new LogicalParameter(LogicalParameter::Type::Float,         &Settings::KeyPressAdvFixedHeight[i],                   iStr + ". Fixed height to replace holds", "0", 0, 300)));
     }
 
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherSaveStats,              new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::SaveStats,                                   "Update statistics on quit", "False")));

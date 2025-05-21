@@ -198,6 +198,7 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
             }
         }
 
+		bool hasRemovedSomething = false;
         if (keyCode == sf::Keyboard::Backspace)
         {
             if (mSelectedValueIndex != 0)
@@ -220,9 +221,10 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                     --mSelectedValueIndex;
                 }
             }
+
+			hasRemovedSomething = true;
         }
-        
-        if (keyCode == sf::Keyboard::Delete)
+        else if (keyCode == sf::Keyboard::Delete)
         {
             const auto strSize = str.size();
 
@@ -243,29 +245,26 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                         // ex.: -500, remove 5, result "-0", if 500, then "0"
                         str = (str[0] == '-' ? "-0" : "0");
                     }
-                    --mSelectedValueIndex;
                 }
             }
-        }
 
-        if (keyCode == sf::Keyboard::Left)
+			hasRemovedSomething = true;
+        }
+		if (keyCode == sf::Keyboard::Left)
         {
             if (mSelectedValueIndex > 0)
                 --mSelectedValueIndex;
         }
-
-        if (keyCode == sf::Keyboard::Right)
+		else if (keyCode == sf::Keyboard::Right)
         {
             if (str.size() > mSelectedValueIndex)
                 ++mSelectedValueIndex;
         }
-
-        if (keyCode == sf::Keyboard::Home)
+        else if (keyCode == sf::Keyboard::Home)
         {
             mSelectedValueIndex = 0;
         }
-
-        if (keyCode == sf::Keyboard::End)
+        else if (keyCode == sf::Keyboard::End)
         {
             mSelectedValueIndex = str.size();
         }
@@ -295,6 +294,20 @@ bool ParameterLine::handleValueModEvent(sf::Event event)
                 }
             }
         }
+		else if (hasRemovedSomething && (mType == LogicalParameter::Type::Int 
+		|| mType == LogicalParameter::Type::Float || mType == LogicalParameter::Type::Unsigned))
+		{
+			// This is a dirty hack; we set the value string to the parameter so that it clamps it, 
+			// and then we read it whatever it clamped
+			const int prevLen = str.length();
+			mParameter->setValStr(str, btnIdx);
+			ConfigHelper::readDigitParameter(*mParameter, str);
+			const int newLen = str.length();
+			if (newLen != prevLen)
+			{
+				mSelectedValueIndex++;
+			}
+		}
 
         mParameter->setValStr(str, btnIdx);
         mSelectedValue->mValText.setString(str);

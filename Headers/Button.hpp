@@ -11,7 +11,7 @@ class Button : public LogButton, public GfxButton
     public:
         Button(LogKey &key, const TextureHolder &textureHolder, const FontHolder &fontHolder);
 
-        void update();
+        void update(float deltaSeconds);
         void processInput();
 
         void reset();

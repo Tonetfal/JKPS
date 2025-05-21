@@ -681,6 +681,12 @@ struct LogicalParameter
         std::string mValStr;
 };
 
+template<typename T>
+T clamp(T val, T low, T high)
+{
+	return low > val ? low : val > high ? high : val;
+}
+
 template <typename T>
 void LogicalParameter::setDigit(T var)
 {
@@ -688,9 +694,18 @@ void LogicalParameter::setDigit(T var)
 
     switch(mType)
     {
-        case Type::Unsigned: *mVal.uP = var; mValStr = std::to_string(static_cast<unsigned>(var)); break;
-        case Type::Int: *mVal.iP = var; mValStr = std::to_string(static_cast<int>(var)); break;
-        case Type::Float: *mVal.fP = var; mValStr = std::to_string(static_cast<int>(var)); /*+ 1 dec digit*/ break;
+		case Type::Unsigned: 
+			*mVal.uP = clamp<unsigned>(var, mLowLimits, mHighLimits);
+			mValStr = std::to_string(static_cast<int>(*mVal.uP));
+			break;
+        case Type::Int: 
+			*mVal.iP = clamp<int>(var, mLowLimits, mHighLimits);
+			mValStr = std::to_string(static_cast<int>(*mVal.iP));
+			break;
+        case Type::Float: 
+			*mVal.fP = clamp<float>(var, mLowLimits, mHighLimits);
+			mValStr = std::to_string(static_cast<int>(*mVal.fP)); /*+ 1 dec digit*/
+			break;
         
         default: break;
     }
