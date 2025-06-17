@@ -69,7 +69,7 @@ void LogButton::moveIndex()
 {
     if (++mBufferIndex == 60)
         mBufferIndex = 0;
-    if (++mPrevKpsBufferIndex == 9)
+    if (++mPrevKpsBufferIndex == 7)
         mPrevKpsBufferIndex = 0;
     
 	statBeatsPerMinute = 0;

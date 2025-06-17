@@ -749,7 +749,7 @@ void saveConfig(
             ofCfg << ": " << mainParP->getValStr();
         ofCfg << "\n";
 
-        if (parmLinePair->first == ParameterLine::ID::Info1)
+        if (parmLinePair != parameterLines.end() && parmLinePair->first == ParameterLine::ID::Info1)
             commentsSection = true;
     }
 

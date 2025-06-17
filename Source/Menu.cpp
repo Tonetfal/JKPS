@@ -721,12 +721,12 @@ void Menu::buildParametersMap()
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherShowOppOnAlt,           new LogicalParameter(LogicalParameter::Type::Bool,          &Settings::ShowOppOnAlt,                                "Show opposite key values on alt press", "True")));
     mParameters.emplace(std::make_pair(LogicalParameter::ID::OtherMultpl,                 new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::ButtonPressMultiplier,                       "Value to multiply on click", "1", 0, 1000000)));
 
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::MaxKPS,                                      "Saved max KPS", "0", 0u, UINT_MAX)));
-    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::Total,                                       "Saved total", "0", 0u, UINT_MAX)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatMaxKPS,              new LogicalParameter(LogicalParameter::Type::Float,         &Settings::MaxKPS,                                      "Saved max KPS", "0", 0u, INT_MAX)));
+    mParameters.emplace(std::make_pair(LogicalParameter::ID::SaveStatTotal,               new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::Total,                                       "Saved total", "0", 0u, INT_MAX)));
     for (auto i = 0ul; i < Settings::SupportedAdvancedKeysNumber; ++i)
     {
         auto id =                      LogicalParameter::ID(unsigned(LogicalParameter::ID::SaveStatTotal1) + i);
-        mParameters.emplace(std::make_pair(id,                                            new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KeysTotal[i],                                "Saved total " + std::to_string(i + 1), "0", 0, UINT_MAX)));
+        mParameters.emplace(std::make_pair(id,                                            new LogicalParameter(LogicalParameter::Type::Unsigned,      &Settings::KeysTotal[i],                                "Saved total " + std::to_string(i + 1), "0", 0, INT_MAX)));
     }
 }
 
@@ -1006,7 +1006,10 @@ void Menu::updateSaveStatsStrings()
 
     while (it->first <= LogicalParameter::ID::SaveStatTotal15 && it != mParameters.end())
     {
-        it->second->setValStr(std::to_string(it->second->getDigit<unsigned>()));
+		const auto digit = it->second->getDigit<unsigned>();
+		const std::string digitStr = std::to_string(digit);
+        it->second->setValStr(digitStr);
+		const std::string test = it->second->getValStr();
         ++it;
     }
 }
